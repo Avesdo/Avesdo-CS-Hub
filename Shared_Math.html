@@ -1,0 +1,119 @@
+<script>
+// ==========================================
+// SHARED MATH ENGINE (FRONTEND & BACKEND)
+// ==========================================
+
+function calculateProjectScoreLogic(project, weightsObj, totalFeaturesCount) {
+    if (!project || project.projectStatus === 'Onboarding' || project.projectStatus === 'Closed') {
+        return "N/A";
+    }
+    
+    const w = weightsObj || { opActivity: 40, featAdoption: 30, userVol: 20, csat: 10 };
+    const op = project.opActivity || 0;
+    const uv = project.userVol || 0;
+    const featLen = totalFeaturesCount > 0 ? totalFeaturesCount : 1;
+    const featPct = Math.round(((project.features || []).length / featLen) * 100);
+
+    let earned = (op * (w.opActivity / 100)) + (featPct * (w.featAdoption / 100)) + (uv * (w.userVol / 100));
+    let possible = 100 - (w.csat || 10);
+
+    if (project.csat === 'Satisfied' || project.csat === 'Neutral' || project.csat === 'Dissatisfied') {
+        possible = 100;
+        if (project.csat === 'Satisfied') earned += (100 * (w.csat / 100));
+        if (project.csat === 'Neutral') earned += (50 * (w.csat / 100));
+    }
+
+    const score = possible > 0 ? Math.round((earned / possible) * 100) : 0;
+    return isNaN(score) ? 0 : score;
+}
+
+function calculateClientScoreLogic(client, activeProjects, clientWeightsObj, totalFeaturesCount) {
+    const cw = clientWeightsObj || { billing: 15, engagement: 50, utilization: 25, experience: 10 };
+
+    if (!activeProjects || activeProjects.length === 0) {
+        return {
+            healthScore: "N/A",
+            metrics: { billing: 100, billingStatus: 'Current', projAct: 0, userAct: 0, feat: 0, csat: "N/A", onbCsat: "N/A", supportCsat: "N/A" }
+        };
+    }
+
+    const featLen = totalFeaturesCount > 0 ? totalFeaturesCount : 1;
+    let totalOp = 0, totalFeat = 0, totalUser = 0;
+    let worstBilling = 100;
+    let worstStatus = 'Current';
+
+    activeProjects.forEach(p => {
+        totalOp += (p.opActivity || 0);
+        totalFeat += Math.round(((p.features || []).length / featLen) * 100);
+        totalUser += (p.userVol || 0);
+
+        let pBill = p.billing || 'Current';
+        let bScore = 100;
+
+        if (p.projectStatus === 'Suspended' || pBill === 'Suspended') { 
+            bScore = 0; worstStatus = 'Suspended'; 
+        } else if (pBill === 'Overdue 60+ Days' && worstStatus !== 'Suspended') { 
+            bScore = 0; worstStatus = 'Overdue 60+ Days'; 
+        } else if (pBill === 'Overdue 30 Days' && worstStatus !== 'Suspended' && worstStatus !== 'Overdue 60+ Days') { 
+            bScore = 50; worstStatus = 'Overdue 30 Days'; 
+        }
+        if (bScore < worstBilling) worstBilling = bScore;
+    });
+
+    let pAct = Math.round(totalOp / activeProjects.length);
+    let fAct = Math.round(totalFeat / activeProjects.length);
+    let uAct = Math.round(totalUser / activeProjects.length);
+
+    let ratedProjs = activeProjects.filter(p => p.csat === 'Satisfied' || p.csat === 'Neutral' || p.csat === 'Dissatisfied');
+    let onbCsatVal = "N/A";
+
+    if (ratedProjs.length > 0) {
+        let totalCsat = 0;
+        ratedProjs.forEach(p => {
+            if (p.csat === 'Satisfied') totalCsat += 100;
+            else if (p.csat === 'Neutral') totalCsat += 50;
+        });
+        onbCsatVal = Math.round(totalCsat / ratedProjs.length);
+    }
+
+    let supportCsatVal = client.supportCsat !== undefined ? client.supportCsat : "N/A";
+    let finalCsat = 0;
+    let hasCsat = false;
+
+    if (onbCsatVal !== "N/A" && supportCsatVal !== "N/A") {
+        finalCsat = Math.round((onbCsatVal + supportCsatVal) / 2);
+        hasCsat = true;
+    } else if (onbCsatVal !== "N/A") {
+        finalCsat = onbCsatVal;
+        hasCsat = true;
+    } else if (supportCsatVal !== "N/A") {
+        finalCsat = supportCsatVal;
+        hasCsat = true;
+    }
+
+    let engagementScore = (pAct + uAct) / 2;
+    let earned = (worstBilling * (cw.billing / 100)) + (engagementScore * (cw.engagement / 100)) + (fAct * (cw.utilization / 100));
+    let possible = 100 - cw.experience;
+
+    if (hasCsat) {
+        earned += (finalCsat * (cw.experience / 100));
+        possible = 100;
+    }
+
+    const score = possible > 0 ? Math.round((earned / possible) * 100) : 0;
+    
+    return {
+        healthScore: isNaN(score) ? 0 : score,
+        metrics: {
+            billing: worstBilling,
+            billingStatus: worstStatus,
+            projAct: pAct,
+            userAct: uAct,
+            feat: fAct,
+            csat: hasCsat ? finalCsat : "N/A",
+            onbCsat: onbCsatVal,
+            supportCsat: supportCsatVal
+        }
+    };
+}
+</script>

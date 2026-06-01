@@ -1,0 +1,844 @@
+<script>
+// ==========================================
+// 1. STATE & EVENT DELEGATION
+// ==========================================
+let c_displayLimit = 50;
+var c_colFilters = { companyName: [], clientType: [], accountManager: [], healthBucket: [] };
+var currentKpiFilter = 'all';
+var c_sort = { col: 'healthScore', ascending: true };
+window.AvesdoState.ui.activeClient = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cSearch = document.getElementById('clientSearch');
+    if (cSearch) {
+        cSearch.removeAttribute('onkeyup');
+        cSearch.addEventListener('input', window.debounce(() => {
+            c_displayLimit = 50;
+            if(typeof window.applyFiltersAndSort === 'function') window.applyFiltersAndSort(false, true); // Silent render
+        }, 300));
+    }
+
+    const listView = document.querySelector('#page-health .overflow-y-auto');
+    if(listView) {
+        listView.addEventListener('scroll', function() {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+                if (c_displayLimit < (window.currentFilteredClients || []).length) {
+                    window.loadMoreClients();
+                }
+            }
+        });
+    }
+
+    const clientTable = document.getElementById('clientTableBody');
+    if (clientTable) {
+        clientTable.addEventListener('click', function(e) {
+            if(e.target.closest('.radix-trigger') || e.target.closest('.radix-popover') || e.target.closest('button') || e.target.closest('input') || e.target.closest('.filter-icon')) {
+                return;
+            }
+           
+            const tr = e.target.closest('tr[data-id]');
+            if (!tr) return;
+           
+            const cId = tr.dataset.id;
+
+            let targetTab = 'health';
+           
+            if (e.target.closest('.sparkline-trigger')) targetTab = 'trends';
+            else if (e.target.closest('.td-projects')) targetTab = 'projects';
+
+            if(typeof window.openDrawer === 'function') {
+                window.openDrawer({clientId: cId}, targetTab);
+            }
+        });
+    }
+});
+
+// ==========================================
+// 2. KPI METRICS
+// ==========================================
+window.updateKPIs = function(clients = window.AvesdoState.data.clients) {
+    let healthyThresh = window.AvesdoState.settings ? window.AvesdoState.settings.scoring.thresholds.healthy : 80;
+    let warningThresh = window.AvesdoState.settings ? window.AvesdoState.settings.scoring.thresholds.warning : 50;
+    let thirtyDaysAgo = new Date().getTime() - (30 * 24 * 60 * 60 * 1000);
+
+    let risk = 0, warning = 0, healthy = 0, active = 0;
+    let prevRisk = 0, prevWarn = 0, prevHealth = 0, prevActive = 0;
+
+    clients.forEach(c => {
+        let isActiveNow = (c.activeProjectCount > 0 || c.onboardingProjectCount > 0);
+        if (isActiveNow) active++;
+
+        let hasCurrentScore = (c.healthScore !== "N/A" && typeof c.healthScore === 'number');
+        if (hasCurrentScore) {
+            if (c.healthScore >= healthyThresh) healthy++;
+            else if (c.healthScore >= warningThresh) warning++;
+            else risk++;
+        }
+
+        let pastScore = null;
+        if (window.globalHealthHistory && window.globalHealthHistory[c.clientId]) {
+            let pastRecords = window.globalHealthHistory[c.clientId].filter(h => h.timeVal <= thirtyDaysAgo).sort((a,b) => b.timeVal - a.timeVal);
+            if (pastRecords.length > 0) {
+                pastScore = pastRecords[0].score;
+            } else {
+                pastScore = hasCurrentScore ? c.healthScore : null; 
+            }
+        } else {
+            pastScore = hasCurrentScore ? c.healthScore : null;
+        }
+
+        let isActivePast = pastScore !== null || isActiveNow;
+        if (isActivePast) prevActive++;
+
+        if (pastScore !== null && pastScore !== "N/A" && typeof pastScore === 'number') {
+            if (pastScore >= healthyThresh) prevHealth++;
+            else if (pastScore >= warningThresh) prevWarn++;
+            else prevRisk++;
+        }
+    });
+
+    window.safeSet('kpi-risk', 'innerHTML', window.getTrendHtml(risk, prevRisk, '', '', 'text-destructive', 'last 30 days', true));
+    window.safeSet('kpi-warning', 'innerHTML', window.getTrendHtml(warning, prevWarn, '', '', 'text-orange-500', 'last 30 days', true));
+    window.safeSet('kpi-healthy', 'innerHTML', window.getTrendHtml(healthy, prevHealth, '', '', 'text-lime-600', 'last 30 days'));
+    window.safeSet('kpi-active', 'innerHTML', window.getTrendHtml(active, prevActive, '', '', 'text-foreground', 'last 30 days'));
+}
+
+// ==========================================
+// 3. FILTERING & SORTING LOGIC
+// ==========================================
+window.populateClientDropdowns = function() {
+    const renderCbList = (id, items, filterArr, valProp) => {
+        const el = document.getElementById(id);
+        const pop = document.getElementById(id.replace('-list', ''));
+        if(el && pop && !pop.classList.contains('active')) {
+            el.innerHTML = items.map(item => `<label class="flex items-center gap-2 cursor-pointer hover:bg-[#f1f5f9] p-1.5 rounded-md transition-colors"><input type="checkbox" value="${window.sanitizeHTML(item)}" class="ch-cb-${valProp} w-3.5 h-3.5 rounded border-input text-primary focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all shadow-sm outline-none" onchange="window.toggleClientMulti('${valProp}', this.value, this.checked)" ${filterArr.includes(item) ? 'checked' : ''}><span class="text-sm font-medium text-foreground truncate">${window.sanitizeHTML(item)}</span></label>`).join('');
+        }
+    };
+   
+    const companies = [...new Set(window.AvesdoState.data.clients.map(c => c.companyName || 'Unnamed'))].sort();
+    renderCbList('ch-f-company-list', companies, c_colFilters.companyName, 'companyName');
+    renderCbList('ch-f-type-list', globalTypes, c_colFilters.clientType, 'clientType');
+    renderCbList('ch-f-manager-list', pt_managers, c_colFilters.accountManager, 'accountManager');
+}
+
+window.toggleClientMulti = function(field, val, isChecked) {
+    if (isChecked) {
+        if (!c_colFilters[field].includes(val)) c_colFilters[field].push(val);
+    } else {
+        c_colFilters[field] = c_colFilters[field].filter(v => v !== val);
+    }
+    c_displayLimit = 50;
+    window.applyFiltersAndSort(false, true);
+}
+
+window.removeClientMultiFilter = function(field, val) {
+    c_colFilters[field] = c_colFilters[field].filter(v => v !== val);
+    document.querySelectorAll(`.ch-cb-${field}`).forEach(cb => {
+        if (cb.value === val) cb.checked = false;
+    });
+    c_displayLimit = 50;
+    window.applyFiltersAndSort(false, true);
+}
+
+window.handleClientSort = function(col) {
+    if (c_sort.col === col) c_sort.ascending = !c_sort.ascending;
+    else { c_sort.col = col; c_sort.ascending = true; }
+    c_displayLimit = 50;
+    window.applyFiltersAndSort(false, true);
+}
+
+window.resetClientFilters = function() {
+    document.getElementById('clientSearch').value = '';
+    c_colFilters = { companyName: [], clientType: [], accountManager: [], healthBucket: [] };
+    document.querySelectorAll('#page-health input[type=checkbox]').forEach(cb => cb.checked = false);
+    c_displayLimit = 50;
+    window.setKpiFilter('all');
+}
+
+window.setKpiFilter = function(type) {
+    document.querySelectorAll('.ch-tab').forEach(t => {
+        t.setAttribute('data-state', 'inactive');
+        t.classList.remove('bg-white', 'text-foreground', 'shadow-sm');
+        t.classList.add('text-muted-foreground');
+    });
+    const activeTab = document.querySelector(`.ch-tab[data-type="${type}"]`);
+    if(activeTab) {
+        activeTab.setAttribute('data-state', 'active');
+        activeTab.classList.add('bg-white', 'text-foreground', 'shadow-sm');
+        activeTab.classList.remove('text-muted-foreground');
+    }
+
+    if (type === 'active' || type === 'all') {
+        currentKpiFilter = type;
+        c_colFilters.healthBucket = [];
+        document.querySelectorAll('.ch-cb-healthBucket').forEach(cb => cb.checked = false);
+    } else {
+        currentKpiFilter = 'all';
+        c_colFilters.healthBucket = [type];
+        document.querySelectorAll('.ch-cb-healthBucket').forEach(cb => { cb.checked = (cb.value === type); });
+    }
+   
+    c_displayLimit = 50;
+    window.applyFiltersAndSort(false, true);
+}
+
+window.renderClientActiveFilters = function() {
+    const container = document.getElementById('ch-active-filters'); if(!container) return; let html = '';
+   
+    const makePill = (type, rawVal, displayVal, label) => `<span class="inline-flex items-center gap-1.5 bg-muted border border-border text-foreground text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">${label}: ${window.sanitizeHTML(displayVal)} <button onclick="window.removeClientMultiFilter('${type}', '${rawVal.replace(/'/g, "\\'")}')" class="hover:text-destructive transition-colors active:scale-95 transition-all duration-200"><i data-lucide="x" class="w-3 h-3"></i></button></span>`;
+   
+    c_colFilters.clientType.forEach(t => html += makePill('clientType', t, t, 'Type'));
+    c_colFilters.accountManager.forEach(m => html += makePill('accountManager', m, m, 'Manager'));
+    c_colFilters.companyName.forEach(n => html += makePill('companyName', n, n, 'Company'));
+    c_colFilters.healthBucket.forEach(h => html += makePill('healthBucket', h, h.charAt(0).toUpperCase() + h.slice(1), 'Health'));
+   
+    if (html !== '') { html += `<button onclick="window.resetClientFilters()" class="text-xs font-medium text-muted-foreground hover:text-foreground ml-1 underline decoration-border underline-offset-2 transition-colors focus:outline-none active:scale-95 transition-all duration-200">Clear Filters</button>`; }
+    container.innerHTML = html;
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+window.applyFiltersAndSort = function(isAppend = false, isSilent = false) {
+  const searchEl = document.getElementById('clientSearch');
+  let healthyThresh = window.AvesdoState.settings ? window.AvesdoState.settings.scoring.thresholds.healthy : 80;
+  let warningThresh = window.AvesdoState.settings ? window.AvesdoState.settings.scoring.thresholds.warning : 50;
+
+  let filtered = window.universalFilterAndSort(window.AvesdoState.data.clients, {
+      searchQuery: searchEl ? searchEl.value : '',
+      searchFields: ['companyName', 'accountManager'],
+      multiFilters: {
+          clientType: c_colFilters.clientType,
+          accountManager: c_colFilters.accountManager,
+          companyName: c_colFilters.companyName
+      },
+      customFilter: (c) => {
+          if (currentKpiFilter === 'active' && !(c.activeProjectCount > 0 || c.onboardingProjectCount > 0)) return false;
+          
+          if (c_colFilters.healthBucket && c_colFilters.healthBucket.length > 0) {
+              if (c.healthScore === "N/A") return false;
+              let isRisk = c.healthScore < warningThresh;
+              let isWarn = c.healthScore >= warningThresh && c.healthScore < healthyThresh;
+              let isHealth = c.healthScore >= healthyThresh;
+             
+              if (!((c_colFilters.healthBucket.includes('risk') && isRisk) ||
+                    (c_colFilters.healthBucket.includes('warning') && isWarn) ||
+                    (c_colFilters.healthBucket.includes('healthy') && isHealth))) return false;
+          }
+          return true;
+      },
+      sortCol: c_sort.col,
+      sortAsc: c_sort.ascending,
+      sortType: c_sort.col === 'healthScore' ? 'health' : 'string'
+  });
+
+  window.currentFilteredClients = filtered;
+ 
+  window.updateKPIs(window.AvesdoState.data.clients);
+  window.renderClientActiveFilters();
+  window.renderClientTable(filtered, isAppend, isSilent);
+}
+
+// ==========================================
+// 4. RENDERING & DATA SYNC
+// ==========================================
+window.buildClientRow = function(client) {
+    let hProps = window.getHealthBadgeProps(client.healthScore);
+    let tProps = window.getBadgeProps('ClientType', client.clientType);
+    let mProps = window.getBadgeProps('Manager', client.accountManager);
+
+    let cName = window.sanitizeHTML(client.companyName);
+    let sparklineHtml = typeof window.createSparkline === 'function' ? window.createSparkline(client.clientId) : '';
+
+    return `
+    <tr class="border-b border-border transition-colors hover:bg-[#f1f5f9] group cursor-pointer" data-id="${client.clientId}">
+        <td class="px-4 py-2.5 align-middle font-medium text-foreground w-[25%] sticky left-0 z-10 bg-white group-hover:bg-[#f1f5f9] transition-colors border-r border-transparent shadow-[2px_0_0_0_rgba(0,0,0,0.02)]"><div class="line-clamp-1 group-hover:text-primary transition-colors">${cName}</div></td>
+        <td class="px-4 py-2.5 align-middle w-[20%] hidden lg:table-cell">${window.buildBadge(tProps, client.clientType || 'Not Set')}</td>
+        <td class="px-4 py-2.5 align-middle w-[20%] hover:bg-[#f8fafc] rounded-md transition-colors">
+            <div class="flex items-center gap-3">
+                ${window.buildBadge(hProps, client.healthScore)}
+                ${sparklineHtml}
+            </div>
+        </td>
+        <td class="px-4 py-2.5 align-middle text-foreground td-projects hover:bg-[#f8fafc] rounded-md transition-colors w-[20%] hidden sm:table-cell"><span class="font-semibold">${client.activeProjectCount || 0}</span> <span class="text-border mx-1">/</span> <span class="font-semibold text-muted-foreground">${client.onboardingProjectCount || 0}</span> <span class="text-border mx-1">/</span> <span class="text-muted-foreground">${client.closedProjectCount || 0}</span></td>
+        <td class="px-4 py-2.5 align-middle hidden md:table-cell w-[15%]">${window.buildBadge(mProps, client.accountManager || 'Not Set')}</td>
+    </tr>`;
+};
+
+window.loadMoreClients = function() {
+    const tbody = document.getElementById("clientTableBody");
+    const btnRow = document.getElementById("ch-load-more-row");
+    if (btnRow) btnRow.remove();
+
+    let clients = window.currentFilteredClients || window.AvesdoState.data.clients;
+    let newSlice = clients.slice(c_displayLimit, c_displayLimit + 50);
+    c_displayLimit += 50;
+
+    let html = newSlice.map(c => window.buildClientRow(c)).join('');
+
+    if (c_displayLimit < clients.length) {
+        let remaining = clients.length - c_displayLimit;
+        html += `<tr id="ch-load-more-row"><td colspan="5" class="py-6 text-center border-0 text-[13px] text-muted-foreground font-medium"><button onclick="window.loadMoreClients()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white hover:bg-[#f8fafc] hover:text-accent-foreground h-9 px-6 shadow-sm"><i data-lucide="chevron-down" class="w-4 h-4 mr-2"></i>Load More (${remaining} Remaining)</button></td></tr>`;
+    }
+
+    tbody.insertAdjacentHTML('beforeend', html);
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+};
+
+window.renderClientTable = function(clients = window.AvesdoState.data.clients, isAppend = false, isSilent = false) {
+    const tbody = document.getElementById("clientTableBody"); if(!tbody) return;
+    const totClients = document.getElementById('ch-total-clients');
+    if(totClients) totClients.innerText = clients.length;
+   
+    if (typeof window.fetchSparklineData === 'function' && !window.globalHealthHistory && !window.isFetchingHistory) window.fetchSparklineData();
+
+    let hasExistingData = tbody.querySelectorAll('tr[data-id]').length > 0;
+
+    if (!isAppend && !isSilent) {
+        c_displayLimit = 50;
+        if (!hasExistingData) {
+            let skeletonHtml = '';
+            for (let i = 0; i < 5; i++) {
+                skeletonHtml += `
+                <tr class="animate-pulse border-b border-border">
+                    <td class="px-4 py-2.5 align-middle w-[25%]"><div class="h-4 bg-muted rounded w-3/4"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden lg:table-cell w-[20%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                    <td class="px-4 py-2.5 align-middle w-[20%]"><div class="flex items-center gap-2"><div class="h-5 bg-muted rounded-full w-10"></div><div class="h-6 bg-muted rounded w-12"></div></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden sm:table-cell w-[20%]"><div class="h-4 bg-muted rounded w-2/3"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden md:table-cell w-[15%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                </tr>`;
+            }
+            tbody.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-200');
+            tbody.innerHTML = skeletonHtml;
+        } else {
+            tbody.classList.add('opacity-50', 'pointer-events-none');
+            tbody.style.transition = 'opacity 0.2s ease';
+        }
+    } else if (!isAppend) {
+        c_displayLimit = 50;
+        tbody.classList.add('opacity-50', 'pointer-events-none');
+        tbody.style.transition = 'opacity 0.2s ease';
+    }
+
+    let timeoutDelay = isSilent ? 0 : 10;
+    setTimeout(() => {
+        if (clients.length === 0) {
+            tbody.classList.remove('opacity-50', 'pointer-events-none');
+            tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-16 text-center text-muted-foreground bg-white">
+                <i data-lucide="folder-search" class="w-12 h-12 mx-auto text-muted mb-4 opacity-50"></i>
+                <p class="text-base font-semibold text-foreground mb-1">No Clients Found</p>
+                <p class="text-sm text-muted-foreground mb-6 max-w-md mx-auto">It looks like there are no clients matching your current filters. You can clear your filters, or add a new client below.</p>
+                <button onclick="window.openModal('modal-add-client')" class="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-5 py-2.5 mx-auto focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add New Client
+                </button>
+            </td></tr>`;
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            return;
+        }
+
+        let visibleClients = clients.slice(0, c_displayLimit);
+        let tableHtml = visibleClients.map(c => window.buildClientRow(c)).join('');
+
+        if (c_displayLimit < clients.length) {
+            let remaining = clients.length - visibleClients.length;
+            tableHtml += `<tr id="ch-load-more-row"><td colspan="5" class="py-6 text-center border-0 text-[13px] text-muted-foreground font-medium"><button onclick="window.loadMoreClients()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white hover:bg-[#f8fafc] hover:text-accent-foreground h-9 px-6 shadow-sm"><i data-lucide="chevron-down" class="w-4 h-4 mr-2"></i>Load More (${remaining} Remaining)</button></td></tr>`;
+        }
+
+        if (isAppend) {
+            const btnRow = document.getElementById("ch-load-more-row");
+            if (btnRow) btnRow.remove();
+            tbody.insertAdjacentHTML('beforeend', tableHtml);
+        } else {
+            tbody.classList.remove('opacity-50', 'pointer-events-none');
+            tbody.innerHTML = tableHtml;
+            if (!isSilent) {
+                tbody.style.animation = 'none';
+                void tbody.offsetHeight;
+                tbody.style.animation = 'fadeIn 0.3s ease-out forwards';
+            }
+        }
+
+        if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }, timeoutDelay);
+};
+
+window.updateField = function(clientId, field, newValue) {
+    window.closePopups();
+    let client = window.AvesdoState.data.clients.find(c => c.clientId === clientId);
+    if(!client) return;
+   
+    const oldVal = client[field] || 'Not Set';
+    const parsedVal = newValue === 'Not Set' ? '' : newValue;
+    if (oldVal === parsedVal) return;
+   
+    client[field] = parsedVal;
+    window.addAutoLog('client', clientId, `Updated ${field === 'clientType' ? 'Type' : 'Manager'} from '${oldVal}' to '${parsedVal || 'Not Set'}'`);
+   
+    if(field === 'clientType') {
+        const dT = document.getElementById('cd-hdr-type-badge');
+        if(window.AvesdoState.ui.activeClient && window.AvesdoState.ui.activeClient.clientId === clientId && dT) {
+            let tProps = window.getBadgeProps('ClientType', parsedVal);
+            let badgeHtml = window.buildBadge(tProps, parsedVal || 'Not Set', 'px-2.5 py-0.5 text-[11px] font-semibold transition-colors shadow-sm');
+            dT.innerHTML = `<div class="flex items-center gap-1 group/badge">${badgeHtml} <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground opacity-0 group-hover/badge:opacity-100 transition-opacity shrink-0"></i></div>`;
+        }
+    }
+   
+    if(field === 'accountManager') {
+        const dT = document.getElementById('cd-hdr-manager-badge');
+        if(window.AvesdoState.ui.activeClient && window.AvesdoState.ui.activeClient.clientId === clientId && dT) {
+            let mProps = window.getBadgeProps('Manager', parsedVal);
+            let badgeHtml = window.buildBadge(mProps, parsedVal || 'Not Set', 'px-2.5 py-0.5 text-[11px] font-semibold transition-colors shadow-sm');
+            dT.innerHTML = `<div class="flex items-center gap-1 group/badge">${badgeHtml} <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground opacity-0 group-hover/badge:opacity-100 transition-opacity shrink-0"></i></div>`;
+        }
+    }
+   
+    window.applyFiltersAndSort(false, true); 
+    if(typeof window.renderDashboard === 'function') window.renderDashboard();
+    window.syncClient(clientId);
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+// ==========================================
+// 5. CLIENT DRAWER LOGIC
+// ==========================================
+
+window.openDrawer = function(clientLookup, targetTab = 'health') {
+  try {
+      window.AvesdoState.ui.activeClient = window.AvesdoState.data.clients.find(c => c.clientId === clientLookup.clientId) || clientLookup;
+      if(!window.AvesdoState.ui.activeClient) return;
+
+      const cdSkel = document.getElementById('cd-trend-skeleton');
+      const cdCvs = document.getElementById('cd-trendChart');
+      const cdLst = document.getElementById('cd-trend-list');
+      if (cdSkel) cdSkel.classList.remove('hidden');
+      if (cdCvs) cdCvs.classList.add('hidden');
+      if (cdLst) cdLst.innerHTML = `<tr><td colspan="3" class="p-4"><div class="h-4 bg-muted animate-pulse rounded w-full"></div></td></tr><tr><td colspan="3" class="p-4"><div class="h-4 bg-muted animate-pulse rounded w-full"></div></td></tr><tr><td colspan="3" class="p-4"><div class="h-4 bg-muted animate-pulse rounded w-full"></div></td></tr>`;
+     
+      if (typeof window.trendChartInstances !== 'undefined' && window.trendChartInstances['cd-trendChart']) {
+          window.trendChartInstances['cd-trendChart'].destroy();
+          window.trendChartInstances['cd-trendChart'] = null;
+      }
+     
+      let activeProjsForScoring = window.AvesdoState.data.projects.filter(p => (p.clients || []).includes(window.AvesdoState.ui.activeClient.companyName) && p.projectStatus !== 'Onboarding' && p.projectStatus !== 'Closed');
+     
+      window.safeSet('drawerCompany', 'innerText', window.AvesdoState.ui.activeClient.companyName);
+      
+      let tProps = window.getBadgeProps('ClientType', window.AvesdoState.ui.activeClient.clientType);
+      const typeBadgeBtn = document.getElementById('cd-hdr-type-badge');
+      if (typeBadgeBtn) {
+          let badgeHtml = window.buildBadge(tProps, window.AvesdoState.ui.activeClient.clientType || 'Not Set', 'px-2.5 py-0.5 text-[11px] font-semibold transition-colors shadow-sm');
+          typeBadgeBtn.innerHTML = `<div class="flex items-center gap-1 group/badge">${badgeHtml} <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground opacity-0 group-hover/badge:opacity-100 transition-opacity shrink-0"></i></div>`;
+      }
+      
+      let mProps = window.getBadgeProps('Manager', window.AvesdoState.ui.activeClient.accountManager);
+      const mgrBadgeBtn = document.getElementById('cd-hdr-manager-badge');
+      if (mgrBadgeBtn) {
+          let badgeHtml = window.buildBadge(mProps, window.AvesdoState.ui.activeClient.accountManager || 'Not Set', 'px-2.5 py-0.5 text-[11px] font-semibold transition-colors shadow-sm');
+          mgrBadgeBtn.innerHTML = `<div class="flex items-center gap-1 group/badge">${badgeHtml} <i data-lucide="chevron-down" class="w-3 h-3 text-muted-foreground opacity-0 group-hover/badge:opacity-100 transition-opacity shrink-0"></i></div>`;
+      }
+     
+      const popType = document.getElementById('popup-drawer-type');
+      if(popType) popType.innerHTML = globalTypes.map(t => `<div class="radix-item" onclick="window.updateField('${window.AvesdoState.ui.activeClient.clientId}', 'clientType', '${t}')">${window.sanitizeHTML(t)}</div>`).join('');
+     
+      const popMgr = document.getElementById('popup-drawer-manager');
+      if(popMgr) popMgr.innerHTML = pt_managers.map(m => `<div class="radix-item" onclick="window.updateField('${window.AvesdoState.ui.activeClient.clientId}', 'accountManager', '${m}')">${window.sanitizeHTML(m)}</div>`).join('') + `<div class="radix-item text-muted-foreground border-t border-border mt-1 pt-1" onclick="window.updateField('${window.AvesdoState.ui.activeClient.clientId}', 'accountManager', '')">Clear Selection</div>`;
+     
+      let hasSuspended = window.AvesdoState.data.projects.some(p => (p.clients||[]).includes(window.AvesdoState.ui.activeClient.companyName) && p.projectStatus === 'Suspended');
+      let existingBanner = document.getElementById('cd-dynamic-sus-banner');
+      if (existingBanner) existingBanner.remove();
+     
+      if (hasSuspended) {
+          let banner = document.createElement('div');
+          banner.id = 'cd-dynamic-sus-banner';
+          banner.className = "bg-destructive/10 text-destructive border-b border-destructive/20 px-8 py-3 text-sm font-semibold flex items-center gap-2 shrink-0 w-full";
+          banner.innerHTML = `<i data-lucide="alert-triangle" class="w-5 h-5 shrink-0"></i> <span>This client has suspended projects due to outstanding invoices.</span>`;
+          let drawerHeader = document.querySelector('#clientDrawer > div.px-8.py-8');
+          if (drawerHeader) {
+              drawerHeader.parentNode.insertBefore(banner, drawerHeader);
+          }
+      }
+
+      if(activeProjsForScoring.length === 0) {
+          window.safeClassRemove('cd-no-active-banner', 'hidden');
+          const pDetails = document.getElementById('ch-pillars-content');
+          if (pDetails) pDetails.classList.add('hidden');
+         
+          const hEmpty = document.getElementById('ch-health-empty');
+          if (hEmpty) {
+              hEmpty.classList.remove('hidden');
+              hEmpty.classList.add('flex');
+          }
+         
+          window.safeSet('gaugeValue', 'innerText', 'N/A');
+          const gaugeFill = document.getElementById('gaugeFill');
+          if(gaugeFill) { gaugeFill.style.strokeDashoffset = 0; gaugeFill.style.stroke = 'hsl(var(--muted))'; }
+      } else {
+          window.safeClassAdd('cd-no-active-banner', 'hidden');
+          const pDetails = document.getElementById('ch-pillars-content');
+          if (pDetails) pDetails.classList.remove('hidden');
+         
+          const hEmpty = document.getElementById('ch-health-empty');
+          if (hEmpty) {
+              hEmpty.classList.add('hidden');
+              hEmpty.classList.remove('flex');
+          }
+
+          window.AvesdoState.ui.activeClient.metrics = window.AvesdoState.ui.activeClient.metrics || { billing:100, billingStatus: 'Current', projAct:0, userAct:0, feat:0, csat:"N/A", onbCsat:"N/A", supportCsat:"N/A" };
+          const score = window.AvesdoState.ui.activeClient.healthScore === "N/A" ? 0 : window.AvesdoState.ui.activeClient.healthScore;
+          window.safeSet('gaugeValue', 'innerText', window.AvesdoState.ui.activeClient.healthScore);
+         
+          let hProps = window.getHealthBadgeProps(score);
+         
+          const gaugeFill = document.getElementById('gaugeFill');
+          if(gaugeFill) {
+              gaugeFill.style.strokeDashoffset = 264 - (264 * score / 100);
+              if (score === 0 && window.AvesdoState.ui.activeClient.healthScore === "N/A") {
+                  gaugeFill.setAttribute('class', 'gauge-fill text-muted-foreground');
+                  gaugeFill.style.stroke = 'currentColor';
+              } else {
+                  gaugeFill.setAttribute('class', `gauge-fill ${hProps.text}`);
+                  gaugeFill.style.stroke = 'currentColor';
+              }
+          }
+          const gaugeValEl = document.getElementById('gaugeValue');
+          if(gaugeValEl) {
+              gaugeValEl.className = `text-3xl font-bold ${score === 0 && window.AvesdoState.ui.activeClient.healthScore === "N/A" ? 'text-muted-foreground' : hProps.text}`;
+          }
+
+          let engagementScore = Math.round((window.AvesdoState.ui.activeClient.metrics.projAct + window.AvesdoState.ui.activeClient.metrics.userAct) / 2);
+          let suspendedWarningHtml = hasSuspended ? `<div class="bg-destructive/10 border border-destructive/20 text-destructive px-3 py-2 rounded-md text-[13px] font-medium mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i>Account contains suspended projects due to outstanding invoices.</div>` : '';
+         
+          if(pDetails) {
+              let w = window.AvesdoState.settings.scoring.clientWeights;
+              const getC = (v) => window.getHealthBadgeProps(v).text;
+              const getF = (v) => window.getHealthBadgeProps(v).fill;
+             
+              let bStat = window.AvesdoState.ui.activeClient.metrics.billingStatus || 'Current';
+              let bCur = bStat === 'Current' ? '<span class="text-lime-600 font-bold">Current</span>' : '-';
+              let b30 = bStat === 'Overdue 30 Days' ? '<span class="text-orange-500 font-bold">Overdue</span>' : '-';
+              let b60 = (bStat === 'Overdue 60+ Days' || bStat === 'Suspended') ? '<span class="text-destructive font-bold">Critical</span>' : '-';
+             
+              let oCsat = window.AvesdoState.ui.activeClient.metrics.onbCsat !== "N/A" ? `${window.AvesdoState.ui.activeClient.metrics.onbCsat}/100` : "N/A";
+              let sCsat = window.AvesdoState.ui.activeClient.metrics.supportCsat !== "N/A" ? `${window.AvesdoState.ui.activeClient.metrics.supportCsat}/100` : "N/A";
+              let combinedCsat = window.AvesdoState.ui.activeClient.metrics.csat !== "N/A" && window.AvesdoState.ui.activeClient.metrics.csat !== 0 ? `${window.AvesdoState.ui.activeClient.metrics.csat}/100` : "N/A";
+             
+              const buildPillar = (title, desc, s, contentHtml) => {
+                  let textCol = getC(s);
+                  let fillCol = getF(s);
+                  return `
+                  <details class="bg-white border border-border rounded-xl shadow-sm mb-4 transition-all duration-300 hover:border-primary/40 group">
+                      <summary class="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center">
+                          <div class="flex flex-col pr-4">
+                              <span class="mb-1 text-sm font-bold text-foreground tracking-tight">${title}</span>
+                              <span class="text-xs text-muted-foreground font-medium leading-snug">${desc}</span>
+                          </div>
+                          <div class="flex items-center gap-3 shrink-0">
+                              <div class="w-20 h-2 bg-muted rounded-full overflow-hidden hidden sm:flex">
+                                  <div class="h-full transition-all ${fillCol}" style="width: ${s}%"></div>
+                              </div>
+                              <span class="w-8 text-right font-bold text-xl tabular-nums transition-colors ${textCol}">${s}</span>
+                              <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180"></i>
+                          </div>
+                      </summary>
+                      <div class="px-5 pb-5 pt-4 border-t border-border text-sm text-muted-foreground space-y-3 bg-white">
+                          ${contentHtml}
+                      </div>
+                  </details>`;
+              };
+             
+              let p1 = buildPillar(`Financial Standing (${w.billing}%)`, `Tracks recent invoice payments to indicate financial health.`, window.AvesdoState.ui.activeClient.metrics.billing, `
+                  ${suspendedWarningHtml}
+                  <div class="flex justify-between items-center"><span>Invoices < 30 Days</span><span class="font-semibold">${bCur}</span></div>
+                  <div class="flex justify-between items-center"><span>Invoices 30-60 Days</span><span class="font-semibold">${b30}</span></div>
+                  <div class="flex justify-between items-center"><span>Invoices 60+ Days</span><span class="font-semibold">${b60}</span></div>
+              `);
+              
+              let p2 = buildPillar(`Platform Engagement (${w.engagement}%)`, `Measures overall event activity and user logins.`, engagementScore, `
+                  <div class="flex justify-between items-center"><span>Operational Activity</span><span class="font-semibold text-foreground">${window.AvesdoState.ui.activeClient.metrics.projAct}/100</span></div>
+                  <div class="flex justify-between items-center"><span>Active User Volume</span><span class="font-semibold text-foreground">${window.AvesdoState.ui.activeClient.metrics.userAct}/100</span></div>
+              `);
+              
+              let p3 = buildPillar(`Product Utilization (${w.utilization}%)`, `Measures how many available features are added to projects.`, window.AvesdoState.ui.activeClient.metrics.feat, `
+                  <div class="flex justify-between items-center"><span>Feature Adoption Rate</span><span class="font-semibold text-foreground">${window.AvesdoState.ui.activeClient.metrics.feat}%</span></div>
+              `);
+              
+              let p4 = buildPillar(`Client Experience (${w.experience}%)`, `Average CSAT across onboarding and support.`, window.AvesdoState.ui.activeClient.metrics.csat, `
+                  <div class="flex justify-between items-center"><span>Onboarding CSAT</span><span class="font-semibold text-foreground">${oCsat}</span></div>
+                  <div class="flex justify-between items-center"><span>Support CSAT</span><span class="font-semibold text-foreground">${sCsat}</span></div>
+              `);
+
+              pDetails.innerHTML = p1 + p2 + p3 + p4;
+          }
+      }
+
+      window.renderDrawerProjectsAll();
+      if(typeof window.renderClientDrawerServicesList === 'function') window.renderClientDrawerServicesList();
+      window.renderClientNotes(window.AvesdoState.ui.activeClient);
+     
+      const delBtn = document.querySelector('#clientDrawer button[onclick*="deleteActiveClient"]');
+      if(delBtn) {
+          delBtn.dataset.confirm = '';
+          if(delBtn.dataset.originalCssText) delBtn.style.cssText = delBtn.dataset.originalCssText;
+          if(delBtn.dataset.originalHtml) delBtn.innerHTML = delBtn.dataset.originalHtml;
+          delBtn.classList.remove('border-destructive', 'bg-destructive/10', 'text-destructive', 'shadow-md');
+      }
+     
+      const overlay = document.getElementById('drawerOverlay'); const drawer = document.getElementById('clientDrawer');
+      if(overlay) { overlay.classList.remove('hidden'); setTimeout(() => overlay.classList.remove('opacity-0'), 10); }
+      if(drawer) drawer.classList.remove('translate-x-full');
+
+      if(typeof window.switchTab === 'function') window.switchTab(targetTab);
+      if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: document.getElementById('clientDrawer') });
+  } catch (err) {
+      console.error(err);
+  }
+}
+
+window.deleteActiveClient = function() {
+    if (!window.AvesdoState.ui.activeClient) return;
+    const btn = document.querySelector('#clientDrawer button[onclick*="deleteActiveClient"]');
+   
+    if (btn) {
+        if (!btn.dataset.confirm) {
+            btn.dataset.confirm = 'true';
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.dataset.originalCssText = btn.style.cssText;
+           
+            btn.innerHTML = `<span class="text-destructive font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> Confirm Delete</span>`;
+            btn.classList.add('border-destructive', 'bg-destructive/10', 'shadow-md');
+            btn.style.position = 'absolute';
+            btn.style.right = '3.5rem';
+            btn.style.zIndex = '50';
+           
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+           
+            setTimeout(() => {
+                if (btn && btn.dataset.confirm === 'true') {
+                    btn.dataset.confirm = '';
+                    btn.innerHTML = btn.dataset.originalHtml;
+                    btn.style.cssText = btn.dataset.originalCssText || '';
+                    btn.classList.remove('border-destructive', 'bg-destructive/10', 'shadow-md');
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                }
+            }, 3000);
+            return;
+        }
+    } else {
+        if(!confirm("Are you sure you want to delete this client?")) return;
+    }
+   
+    let cId = window.AvesdoState.ui.activeClient.clientId;
+    let cName = window.AvesdoState.ui.activeClient.companyName;
+   
+    window.AvesdoState.data.clients = window.AvesdoState.data.clients.filter(x => x.clientId !== cId);
+    window.AvesdoState.data.globalClients = (window.AvesdoState.data.globalClients || []).filter(x => x.id !== cId);
+
+    let syncDelay = 0;
+    if (typeof window.AvesdoState.data.projects !== 'undefined') {
+        window.AvesdoState.data.projects.forEach(p => {
+            if (p.clientIds && p.clientIds.includes(cId)) {
+                p.clientIds = p.clientIds.filter(id => id !== cId);
+                p.clients = p.clients.filter(name => name !== cName);
+                setTimeout(() => { if(typeof window.syncProject === 'function') window.syncProject(p.id); }, syncDelay);
+                syncDelay += 800;
+            }
+        });
+    }
+
+    if (typeof window.AvesdoState.data.services !== 'undefined') {
+        window.AvesdoState.data.services.forEach(s => {
+            if (s.clientId === cId) {
+                s.clientId = '';
+                s.clientName = 'No Client';
+                setTimeout(() => { if(typeof window.syncService === 'function') window.syncService(s.id, 1, "Removed deleted client"); }, syncDelay);
+                syncDelay += 800;
+            }
+        });
+    }
+
+    window.closeClientDrawer();
+    if (typeof window.applyFiltersAndSort === 'function') window.applyFiltersAndSort(false, true);
+    if (typeof window.populateClientDropdowns === 'function') window.populateClientDropdowns();
+   
+    if (typeof window.setupPtPopovers === 'function') window.setupPtPopovers();
+    if (typeof window.populateServiceDropdowns === 'function') window.populateServiceDropdowns();
+   
+    if (typeof window.renderDashboard === 'function') window.renderDashboard(true);
+   
+    if(typeof window.showSyncToast === 'function') window.showSyncToast("Deleting...", true);
+    google.script.run
+        .withSuccessHandler((res) => {
+            if(res.success) {
+                if(typeof window.hideSyncToast === 'function') window.hideSyncToast("Client Deleted");
+                google.script.run.withSuccessHandler(t => window.lastKnownSync = t).checkGlobalTimestamp();
+            }
+        })
+        .withFailureHandler((err) => {
+            if (err.message === "SYNC_CONFLICT") {
+                window.showSyncToast("Conflict: Could not delete, data out of sync. Refreshing...", false, true);
+                if(typeof window.runSyncCheck === 'function') window.runSyncCheck(true);
+            } else {
+                window.showSyncToast("Failed to delete.", false, true);
+            }
+        })
+        .deleteClientRecord(cId, window.lastKnownSync);
+}
+
+window.renderDrawerProjectsAll = function() {
+    window.renderDrawerProjectsGroup('Active');
+    window.renderDrawerProjectsGroup('Onboarding');
+    window.renderDrawerProjectsGroup('Closed');
+}
+
+window.renderDrawerProjectsGroup = function(statusGroup) {
+  const pList = document.getElementById(`drawerProjectList-${statusGroup}`);
+  if(!pList) return; pList.innerHTML = "";
+
+  let fProj = window.AvesdoState.data.projects.filter(p => (p.clients || []).includes(window.AvesdoState.ui.activeClient.companyName) && (statusGroup === 'Active' ? ['Active', 'Suspended'].includes(p.projectStatus) : p.projectStatus === statusGroup));
+  let hasPhase = statusGroup === 'Onboarding';
+ 
+  if (fProj.length === 0) {
+      pList.innerHTML = `<tr><td colspan="${hasPhase ? 4 : 3}" class="px-4 py-2.5 text-center text-sm text-muted-foreground">No ${statusGroup.toLowerCase()} projects.</td></tr>`;
+      return;
+  }
+ 
+  let col = drawerSortState['proj_'+statusGroup].column; let asc = drawerSortState['proj_'+statusGroup].ascending;
+  fProj.sort((a, b) => {
+      if (statusGroup === 'Active') {
+          if (a.projectStatus === 'Suspended' && b.projectStatus !== 'Suspended') return -1;
+          if (b.projectStatus === 'Suspended' && a.projectStatus !== 'Suspended') return 1;
+      }
+     
+      let vA = a[col];
+      let vB = b[col];
+
+      if (col === 'score') {
+          if (vA === "N/A" && vB === "N/A") return 0;
+          if (vA === "N/A") return asc ? 1 : -1;
+          if (vB === "N/A") return asc ? -1 : 1;
+      } else {
+          vA = vA === "N/A" ? -1 : vA;
+          vB = vB === "N/A" ? -1 : vB;
+      }
+
+      return vA < vB ? (asc ? -1 : 1) : (vA > vB ? (asc ? 1 : -1) : 0);
+  });
+
+  let html = fProj.map(p => {
+      let hProps = window.getHealthBadgeProps(p.score);
+      let pName = window.sanitizeHTML(p.name);
+      let phProps = window.getBadgeProps('phase', p.onboardingPhase || 'Not Started');
+     
+      let phaseTd = hasPhase ? `<td class="px-4 py-2.5 text-sm"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold transition-colors shadow-sm ${phProps.bg}"><i data-lucide="${phProps.icon}" class="w-3 h-3 mr-1 inline-block shrink-0"></i>${window.sanitizeHTML(p.onboardingPhase)}</span></td>` : '';
+      let susBadge = p.projectStatus === 'Suspended' ? `<span class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-destructive/10 text-destructive border border-destructive/20">Suspended</span>` : '';
+     
+      return `<tr class="hover:bg-[#f1f5f9] transition-colors cursor-pointer border-b border-border last:border-0" onclick="if(typeof window.openProjectDrawer === 'function') window.openProjectDrawer('${p.id}', 'details')"><td class="px-4 py-2.5 font-medium text-sm text-foreground">${pName}${susBadge}</td>${phaseTd}<td class="px-4 py-2.5 text-sm text-muted-foreground">${p.releaseDateStr}</td><td class="px-4 py-2.5 text-right">${window.buildBadge(hProps, p.score !== "N/A" && p.score ? p.score : '-')}</td></tr>`;
+  }).join('');
+ 
+  pList.innerHTML = html;
+}
+
+window.sortDrawerServices = function(col) {
+    if(drawerSortState.services.column === col) drawerSortState.services.ascending = !drawerSortState.services.ascending;
+    else { drawerSortState.services.column = col; drawerSortState.services.ascending = true; }
+    window.renderClientDrawerServicesList();
+}
+
+window.renderClientDrawerServicesList = function() {
+  const sList = document.getElementById('drawerServiceList');
+  if(!sList) return;
+
+  let clientServices = (typeof window.AvesdoState.data.services !== 'undefined') ? window.AvesdoState.data.services.filter(s => s.clientId === window.AvesdoState.ui.activeClient.clientId) : [];
+ 
+  if (!clientServices || clientServices.length === 0) {
+      sList.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-12 text-center"><i data-lucide="briefcase" class="w-12 h-12 text-muted-foreground opacity-20 mb-3"></i><p class="text-sm font-medium text-muted-foreground">No services found.</p></div>`;
+      if(typeof lucide !== 'undefined') lucide.createIcons();
+      return;
+  }
+ 
+  let col = drawerSortState.services.column; let asc = drawerSortState.services.ascending;
+  clientServices.sort((a, b) => { let vA = col === 'price' ? window.parseCurrency(a[col]) : a[col]; let vB = col === 'price' ? window.parseCurrency(b[col]) : b[col]; return vA < vB ? (asc ? -1 : 1) : (vA > vB ? (asc ? 1 : -1) : 0); });
+ 
+  let html = clientServices.map(s => {
+      let typeProps = window.getBadgeProps('ServiceType', s.type);
+      let statProps = window.getBadgeProps('ServiceStatus', s.status);
+
+      let sName = window.sanitizeHTML(s.name);
+      let pName = (!s.projectName || s.projectName === "Unknown Project" || s.projectName === "No Project" || s.projectName === "Client Level") ? "Client Level" : window.sanitizeHTML(s.projectName);
+      let sType = window.sanitizeHTML(s.type);
+      let dateDisplay = s.dateVal ? new Date(s.dateVal).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'}) : (s.dateStr || s.dateInput || '-');
+      let priceDisplay = "$" + window.parseCurrency(s.price).toLocaleString('en-US', {minimumFractionDigits: 2});
+     
+      return `
+      <div class="flex justify-between items-center p-3 -mx-2 rounded-lg hover:bg-[#f1f5f9] transition-colors cursor-pointer group border-b border-border/50 last:border-0" onclick="if(typeof window.openServiceDrawer === 'function') window.openServiceDrawer('${s.id}')">
+          <div class="flex items-center gap-3 min-w-0 pr-3 w-[70%]">
+              <div class="w-8 h-8 rounded-full text-foreground bg-muted border border-border flex items-center justify-center shrink-0 shadow-sm">
+                  <i data-lucide="briefcase" class="w-4 h-4"></i>
+              </div>
+              <div class="flex flex-col min-w-0">
+                  <span class="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors" title="${sName}">${sName}</span>
+                  <span class="text-[11px] font-semibold text-muted-foreground mt-0.5 truncate" title="${pName}">${pName}</span>
+              </div>
+          </div>
+          <div class="flex flex-col items-end justify-center shrink-0 w-[30%]">
+              <span class="text-sm font-bold text-foreground tabular-nums">${priceDisplay}</span>
+              <span class="text-[11px] text-muted-foreground font-semibold tabular-nums mt-0.5">${dateDisplay}</span>
+          </div>
+      </div>`;
+  }).join('');
+ 
+  sList.innerHTML = html;
+  if(typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+window.addClientNote = function() {
+    const t = document.getElementById('newNoteText').value;
+    if (!t.trim() || !window.AvesdoState.ui.activeClient) return;
+    window.addAutoLog('client', window.AvesdoState.ui.activeClient.clientId, t);
+    document.getElementById('newNoteText').value = '';
+    window.renderClientNotes(window.AvesdoState.ui.activeClient);
+    window.syncClient(window.AvesdoState.ui.activeClient.clientId);
+}
+
+window.renderClientNotes = function(c) {
+    if(typeof window.universalRenderNotes === 'function') window.universalRenderNotes(c.notes, 'drawerNotesList');
+};
+
+window.exportClientsCSV = function() {
+    const dataToExport = window.currentFilteredClients || window.AvesdoState.data.clients;
+    const headers = ["Company Name", "Client Type", "Health Score", "Active Projects", "Onboarding Projects", "Closed Projects", "Account Manager"];
+    const rowMapper = (c) => {
+        let name = `"${(c.companyName || '').replace(/"/g, '""')}"`;
+        let type = `"${(c.clientType || '').replace(/"/g, '""')}"`;
+        let score = c.healthScore;
+        let active = c.activeProjectCount || 0;
+        let onb = c.onboardingProjectCount || 0;
+        let closed = c.closedProjectCount || 0;
+        let mgr = `"${(c.accountManager || '').replace(/"/g, '""')}"`;
+     
+        return `${name},${type},${score},${active},${onb},${closed},${mgr}`;
+    };
+
+    if(typeof window.universalExportCSV === 'function') window.universalExportCSV("Client_Health", headers, dataToExport, rowMapper);
+};
+
+window.syncClient = function(id) {
+    let c = window.AvesdoState.data.clients.find(x => x.clientId === id);
+    if(!c) return;
+
+    window.universalSync({
+        type: 'clients',
+        id: id,
+        entity: c,
+        apiAction: 'updateClient',
+        successMsg: 'Client Saved',
+        onRollback: (isPreCheck) => {
+            if (!isPreCheck) {
+                window.calculateClientScore(c);
+            }
+            if(typeof window.applyFiltersAndSort === 'function') window.applyFiltersAndSort(false, true);
+            if(document.getElementById('clientDrawer') && !document.getElementById('clientDrawer').classList.contains('translate-x-full')) {
+                if(typeof window.openDrawer === 'function') window.openDrawer({clientId: c.clientId}, window.cd_activeTab);
+            }
+        }
+    });
+};
+</script>

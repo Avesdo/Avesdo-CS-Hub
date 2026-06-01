@@ -1,0 +1,290 @@
+<div id="modalOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden transition-opacity opacity-0"></div>
+
+<div id="modal-add-client" class="fixed inset-0 m-auto w-full max-w-md bg-white border border-border rounded-xl shadow-2xl z-[105] hidden flex-col transition-all h-fit text-card-foreground">
+    <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
+        <h3 class="font-semibold text-lg tracking-tight text-foreground">Add New Client</h3>
+        <button onclick="window.closeModal('modal-add-client')" class="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none shrink-0 active:scale-95 duration-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+   
+    <div class="p-6 overflow-y-auto max-h-[75vh] custom-thin-scroll">
+        <div id="ac-error" class="text-destructive text-sm font-semibold hidden bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"></div>
+       
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
+            <div>
+                 <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Company Name <span class="text-destructive">*</span></label>
+                 <input type="text" id="ac-name" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm" placeholder="Enter company name...">
+            </div>
+             <div>
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Client Type <span class="text-destructive">*</span></label>
+                <div class="relative w-full">
+                    <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'ac-pop-type-container')">
+                          <span id="ac-type-text" class="truncate text-foreground" data-val="">Select Type</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                    </button>
+                     <div id="ac-pop-type-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full custom-thin-scroll">
+                        <div id="ac-pop-type"></div>
+                    </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
+             <div>
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Account Manager</label>
+                <div class="relative w-full">
+                    <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'ac-pop-mgr-container')">
+                        <span id="ac-mgr-text" class="truncate text-foreground" data-val="">Select Account Manager</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                      </button>
+                    <div id="ac-pop-mgr-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full custom-thin-scroll">
+                        <div id="ac-pop-mgr"></div>
+                     </div>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-border/50">
+                 <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Initial Note <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                 <textarea id="ac-note" rows="3" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll" placeholder="Enter an optional note..."></textarea>
+            </div>
+         </div>
+    </div>
+
+    <div class="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl">
+        <button onclick="window.closeModal('modal-add-client')" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Cancel</button>
+        <button onclick="window.saveNewClient()" class="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm h-10 px-6 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Create Client</button>
+    </div>
+</div>
+
+<div id="modal-add-project" class="fixed inset-0 m-auto w-full max-w-lg bg-white border border-border rounded-xl shadow-2xl z-[105] hidden flex-col transition-all h-[90vh] text-card-foreground">
+    <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
+        <h3 class="font-semibold text-lg tracking-tight text-foreground">Add New Project</h3>
+        <button onclick="window.closeModal('modal-add-project')" class="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none shrink-0 active:scale-95 duration-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+   
+    <div class="p-6 overflow-y-auto flex-1 custom-thin-scroll">
+        <div id="ap-error" class="text-destructive text-sm font-semibold hidden bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"></div>
+       
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
+            <div>
+                 <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Project Name <span class="text-destructive">*</span></label>
+                 <input type="text" id="ap-name" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm" placeholder="Enter project name...">
+            </div>
+
+             <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-[11px] font-semibold text-muted-foreground">Attached Clients <span class="text-destructive">*</span></label>
+                    <button type="button" onclick="window.openAddClientModal()" class="text-[10px] font-bold text-primary hover:underline transition-all active:scale-95 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:outline-none rounded-sm px-1"><i data-lucide="plus" class="w-3 h-3 inline-block align-text-bottom"></i> Add Client</button>
+                 </div>
+                <div class="relative w-full">
+                    <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'ap-pop-clients-container')">
+                     <span id="ap-text-clients" class="truncate text-foreground">Select Clients</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                    </button>
+                     <div id="ap-pop-clients-container" class="radix-popover p-3 shadow-xl border border-border rounded-xl z-[90] w-full" data-noup="true">
+                        <div class="relative mb-2">
+                             <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none"></i>
+                            <input type="text" class="w-full rounded bg-muted border-transparent pl-8 pr-3 py-1.5 text-xs focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 outline-none input-field shadow-sm" placeholder="Search clients..." oninput="window.filterPopoverList('ap-clients-list', this.value)">
+                         </div>
+                        <div id="ap-clients-list" class="max-h-48 overflow-y-auto space-y-0.5 pr-1 custom-thin-scroll"></div>
+                    </div>
+                 </div>
+             </div>
+
+            <div class="grid grid-cols-2 gap-5 pt-2">
+                <div class="relative">
+                     <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Release Date <span class="text-destructive">*</span></label>
+                     <button class="w-full text-left radix-trigger bordered bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.openDatePopover(event, 'ap')">
+                        <span id="ap-date-text" class="text-foreground truncate flex-1 pointer-events-none">Select Date</span>
+                        <i data-lucide="calendar" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                    </button>
+                   <div id="pop-date-ap" class="radix-popover w-[270px] p-3 shadow-xl border border-border rounded-xl z-[90]">
+                         <div class="relative mb-2 w-full">
+                            <input type="text" id="date-text-ap" class="w-full min-w-0 rounded-md border border-input bg-card px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 h-[38px] text-sm date-trigger font-mono text-center" placeholder="YYYY-MM-DD" onchange="window.handleManualDateEntry('ap', this.value)" onclick="event.stopPropagation()">
+                         </div>
+                        <div id="inline-cal-ap" class="bg-background rounded-md mb-2 min-h-[220px] w-full"></div>
+                        <div class="flex gap-2 pt-2 border-t border-border mt-2">
+                             <button type="button" onclick="window.clearProjectDate('ap')" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 text-destructive w-full shadow-sm">Clear</button>
+                            <button type="button" onclick="window.closePopups()" class="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 shadow-sm w-full">Done</button>
+                         </div>
+                    </div>
+                </div>
+                 <div>
+                     <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Units <span class="text-destructive">*</span></label>
+                    <input type="number" id="ap-units" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 h-10 text-sm" placeholder="0">
+                 </div>
+            </div>
+        </div>
+
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
+            <div class="grid grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Account Manager <span class="text-destructive">*</span></label>
+                      <div class="relative w-full">
+                        <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'ap-pop-mgr-container')">
+                        <span id="ap-mgr-text" class="truncate text-foreground" data-val="">Select Account Manager</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                        </button>
+                          <div id="ap-pop-mgr-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full custom-thin-scroll">
+                            <div id="ap-pop-mgr"></div>
+                          </div>
+                    </div>
+                </div>
+                <div>
+                     <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Features <span class="text-destructive">*</span></label>
+                    <div class="relative w-full">
+                        <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'ap-pop-features-container')">
+                             <span id="ap-text-feat" class="truncate text-foreground">Select Features</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                        </button>
+                         <div id="ap-pop-features-container" class="radix-popover p-3 shadow-xl border border-border rounded-xl z-[90] w-full right-align" data-noup="true">
+                             <div class="relative mb-2">
+                                 <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none"></i>
+                                 <input type="text" class="w-full rounded bg-muted border-transparent pl-8 pr-3 py-1.5 text-xs focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 outline-none input-field shadow-sm" placeholder="Search features..." oninput="window.filterPopoverList('ap-features-list', this.value)">
+                             </div>
+                             <div id="ap-features-list" class="max-h-48 overflow-y-auto space-y-0.5 pr-1 custom-thin-scroll"></div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
+            <div>
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Checklist URL <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                 <div class="relative flex items-center">
+                    <i data-lucide="link" class="absolute left-3 w-4 h-4 text-muted-foreground"></i>
+                    <input type="text" id="ap-checklist" class="w-full min-w-0 rounded-md border border-input bg-white pl-9 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm" placeholder="Enter checklist URL...">
+                </div>
+            </div>
+           
+            <div>
+                  <label class="block text-[11px] font-semibold text-muted-foreground mb-2">KYC Details <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                <textarea id="ap-kyc" rows="2" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll" placeholder="Enter essential KYC details..."></textarea>
+            </div>
+            
+            <div class="pt-3 border-t border-border/50">
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Initial Note <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                <textarea id="ap-notes" rows="2" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll" placeholder="Enter an optional note..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl mt-auto">
+        <button onclick="window.closeModal('modal-add-project')" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Cancel</button>
+         <button onclick="window.saveNewProject()" class="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm h-10 px-6 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Create Project</button>
+    </div>
+</div>
+
+<div id="modal-add-service" class="fixed inset-0 m-auto w-full max-w-lg bg-white border border-border rounded-xl shadow-2xl z-[105] hidden flex-col transition-all h-[90vh] text-card-foreground">
+    <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
+        <h3 class="font-semibold text-lg tracking-tight text-foreground">Add New Service</h3>
+         <button onclick="window.closeModal('modal-add-service')" class="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none shrink-0 active:scale-95 duration-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+   
+    <div class="p-6 overflow-y-auto flex-1 custom-thin-scroll">
+        <div id="as-error" class="text-destructive text-sm font-semibold hidden bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"></div>
+       
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
+            <div>
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Service Name <span class="text-destructive">*</span></label>
+                 <div class="relative w-full">
+                    <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'as-pop-name-container')">
+                        <span id="as-name-text" class="truncate text-foreground" data-val="">Select or Enter Service</span>
+                         <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                     </button>
+                    <div id="as-pop-name-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full custom-thin-scroll" data-noup="true">
+                         <div class="p-2 border-b border-border mb-1">
+                             <input type="text" id="as-custom-name" placeholder="Enter custom service name..." class="w-full text-sm outline-none bg-transparent" onclick="event.stopPropagation()" onkeydown="event.stopPropagation(); if(event.key==='Enter') { window.setAsName(this.value, ''); }" oninput="event.stopPropagation(); if(this.value.trim().length > 0) { window.setAsName(this.value, '', true); }">
+                         </div>
+                        <div id="as-name-list"></div>
+                    </div>
+             </div>
+             </div>
+
+            <div class="grid grid-cols-2 gap-5 pt-2">
+                <div>
+                    <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Type <span class="text-destructive">*</span></label>
+                     <div class="relative w-full">
+                        <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'as-pop-type-container')">
+                              <span id="as-type-text" class="truncate text-foreground" data-val="Additional">Additional</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                         </button>
+                        <div id="as-pop-type-container" class="radix-popover p-1 shadow-xl border border-border rounded-xl z-[90] w-full">
+                            <div class="radix-item" onclick="window.setAsType('Additional')">Additional</div>
+                              <div class="radix-item" onclick="window.setAsType('Included')">Included</div>
+                        </div>
+                    </div>
+                  </div>
+                <div id="as-price-container">
+                    <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Price <span class="text-destructive">*</span></label>
+                     <div class="relative flex items-center">
+                         <span class="absolute left-3 text-muted-foreground font-semibold text-sm">$</span>
+                        <input type="text" id="as-price" class="w-full min-w-0 rounded-md border border-input bg-white pl-7 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 h-10 text-sm" placeholder="0.00" oninput="window.formatCurrencyInput(this)">
+                     </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
+            <div class="grid grid-cols-2 gap-5">
+                 <div>
+                     <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Client <span class="text-destructive">*</span></label>
+                    <div class="relative w-full">
+                         <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'as-pop-client-container')">
+                             <span id="as-client-text" class="truncate text-foreground" data-val="">Select Client</span>
+                             <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                         </button>
+                        <div id="as-pop-client-container" class="radix-popover p-3 shadow-xl border border-border rounded-xl z-[90] w-[300px]" data-noup="true">
+                            <div class="relative mb-2">
+                                 <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none"></i>
+                                <input type="text" class="w-full rounded bg-muted border-transparent pl-8 pr-3 py-1.5 text-xs focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 outline-none input-field shadow-sm" placeholder="Search clients..." oninput="window.filterPopoverList('as-client-list', this.value)">
+                             </div>
+                            <div id="as-client-list" class="max-h-48 overflow-y-auto space-y-0.5 pr-1 custom-thin-scroll"></div>
+                         </div>
+                     </div>
+                </div>
+                <div>
+                     <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Project <span class="text-destructive">*</span></label>
+                    <div class="relative w-full">
+                        <button id="as-project-trigger" class="radix-trigger bordered w-full bg-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'as-pop-project-container')" disabled>
+                             <span id="as-project-text" class="truncate text-foreground" data-val="">Select Project</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                          </button>
+                        <div id="as-pop-project-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full right-align custom-thin-scroll">
+                             <div id="as-project-list"></div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+            <div class="pt-2">
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Account Manager <span class="text-destructive">*</span></label>
+                <div class="relative w-full">
+                     <button class="radix-trigger bordered w-full bg-white shadow-sm h-10 active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-[3px] focus:ring-primary/20" onclick="window.togglePop(event, 'as-pop-mgr-container')">
+                        <span id="as-mgr-text" class="truncate text-foreground" data-val="">Select Account Manager</span>
+                         <i data-lucide="chevron-down" class="w-4 h-4 text-muted-foreground shrink-0"></i>
+                     </button>
+                    <div id="as-pop-mgr-container" class="radix-popover p-1 max-h-48 overflow-y-auto shadow-xl border border-border rounded-xl z-[90] w-full custom-thin-scroll">
+                         <div id="as-pop-mgr"></div>
+                     </div>
+                </div>
+            </div>
+         </div>
+
+        <div class="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
+            <div>
+                 <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Client Contact Name <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                 <input type="text" id="as-contact" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm" placeholder="Enter primary contact name...">
+             </div>
+
+            <div class="pt-3 border-t border-border/50">
+                <label class="block text-[11px] font-semibold text-muted-foreground mb-2">Initial Note <span class="text-muted-foreground font-normal">(Optional)</span></label>
+                <textarea id="as-note" rows="2" class="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll" placeholder="Enter an optional note..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl mt-auto">
+        <button onclick="window.closeModal('modal-add-service')" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Cancel</button>
+        <button onclick="window.saveNewService()" class="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm h-10 px-6 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">Create Service</button>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+**/**
+!*.js
+!*.ts
+!appsscript.json
+!*.html
+test_*.js
+node_modules/**
+compile.js

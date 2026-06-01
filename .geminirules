@@ -1,0 +1,14 @@
+# Antigravity Instructions and Rules
+
+Please always follow these rules during our pair programming session and execution of tasks in this workspace:
+
+1. **Multi-Agent Usage**: Always use multiple agents (subagents) whenever possible to delegate tasks, parallelize research/execution, or verify work.
+2. **Testing & Verification**: Always test and verify changes before confirming any update.
+3. **Clean Workspace**: Ensure no temporary testing or working files are left behind in the workspace after tasks are completed.
+4. **Preserve Functionality**: Absolutely no existing functionality should be broken, lost, or silently removed. Only cut code if it is explicitly part of the fix or requested.
+5. **Testing Guides**: Every code update must be accompanied by a non-technical, plain-English, step-by-step testing guide so the user (who has no coding knowledge or experience) knows exactly how to verify the fix in the live application.
+6. **Changelog Artifact**: Keep a running, cumulative changelog with date and time stamps sorted to latest updates at the top. This changelog must be maintained as a workspace/brain artifact (`changelog.md`), appending new updates to the top without clearing previous history.
+7. **Non-Technical Language**: Write all changelog items and testing instructions in plain, simple English with no coding jargon or technical assumptions. Focus purely on user-facing actions, UI elements, and visible behaviors.
+
+
+

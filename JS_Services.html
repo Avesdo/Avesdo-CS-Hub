@@ -1,0 +1,1037 @@
+<script>
+// ==========================================
+// 1. STATE & EVENT DELEGATION
+// ==========================================
+var sv_tabFilter = 'all';
+var sv_displayLimit = 50;
+var sv_colFilters = { name: [], project: [], client: [], type: [], manager: [], status: [], invoice: [], dateFrom: null, dateTo: null };
+var sv_sort = { col: 'dateVal', asc: false };
+var sv_dateFilterTemp = { fromMonth: 'all', fromYear: 'all', toMonth: 'all', toYear: 'all' };
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchEl = document.getElementById('serviceSearch');
+    if (searchEl) {
+        searchEl.removeAttribute('onkeyup');
+        searchEl.addEventListener('input', window.debounce(() => {
+            sv_displayLimit = 50;
+            window.renderServiceLedger(false, true);
+        }, 300));
+    }
+
+    const listView = document.querySelector('#page-services .overflow-y-auto');
+    if(listView) {
+        listView.addEventListener('scroll', function() {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+                if (sv_displayLimit < (window.currentFilteredServices || []).length) {
+                    window.loadMoreServices();
+                }
+            }
+        });
+    }
+
+    const serviceTable = document.getElementById('serviceTableBody');
+    if (serviceTable) {
+        serviceTable.addEventListener('click', function(e) {
+            if(e.target.closest('.radix-trigger') || e.target.closest('.radix-popover') || e.target.closest('input')) {
+                return;
+            }
+            const tr = e.target.closest('tr[data-id]');
+            if (!tr) return;
+            const sId = tr.dataset.id;
+            if(typeof window.openServiceDrawer === 'function') {
+                window.openServiceDrawer(sId);
+            }
+         });
+    }
+});
+
+// ==========================================
+// 2. FILTER & DROPDOWN LOGIC
+// ==========================================
+
+window.populateServiceDropdowns = function() {
+    window.populateSvYearDropdowns();
+   
+    let dynamicStatuses = [];
+    if(typeof window.AvesdoState.settings !== 'undefined' && window.AvesdoState.settings.settingsData) dynamicStatuses = window.AvesdoState.settings.settingsData.filter(s => s.category === 'ServiceStatus').map(s=>s.name);
+    if (dynamicStatuses.length === 0) dynamicStatuses = ['Proposal Sent', 'Accepted', 'Awaiting Inputs', 'In Progress', 'Completed', 'Not Accepted'];
+
+    const renderCbList = (id, items, filterArr, valProp) => {
+        const el = document.getElementById(id);
+        const pop = document.getElementById(id.replace('-list', ''));
+        if(el && pop && !pop.classList.contains('active')) {
+            el.innerHTML = items.map(item => `<label class="flex items-center gap-2 cursor-pointer hover:bg-[#f1f5f9] p-1.5 rounded-md transition-colors"><input type="checkbox" value="${window.sanitizeHTML(item)}" class="sv-cb-${valProp} w-3.5 h-3.5 rounded border-input text-primary focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-all shadow-sm outline-none" onchange="window.toggleSvMulti('${valProp}', this.value, this.checked)" ${filterArr.includes(item) ? 'checked' : ''}><span class="text-sm font-medium text-foreground truncate">${window.sanitizeHTML(item)}</span></label>`).join('');
+        }
+    };
+   
+    renderCbList('sv-f-name-list', [...new Set(window.AvesdoState.data.services.map(s => s.name))].filter(Boolean).sort(), sv_colFilters.name, 'name');
+    renderCbList('sv-f-proj-list', [...new Set(window.AvesdoState.data.services.map(s => s.projectName))].filter(Boolean).sort(), sv_colFilters.project, 'project');
+    renderCbList('sv-f-client-list', [...new Set(window.AvesdoState.data.services.map(s => s.clientName))].filter(Boolean).sort(), sv_colFilters.client, 'client');
+    renderCbList('sv-f-type-list', ['Additional', 'Included'], sv_colFilters.type, 'type');
+    renderCbList('sv-f-mgr-list', pt_managers, sv_colFilters.manager, 'manager');
+    renderCbList('sv-f-status-list', dynamicStatuses, sv_colFilters.status, 'status');
+    renderCbList('sv-f-invoice-list', ['Paid', 'Sent', 'Not Sent'], sv_colFilters.invoice, 'invoice');
+};
+
+window.populateSvYearDropdowns = function() {
+    const currentYear = new Date().getFullYear();
+    let years = new Set([currentYear - 1, currentYear, currentYear + 1, currentYear + 2]);
+    if (window.AvesdoState.data.services) {
+        window.AvesdoState.data.services.forEach(s => { if (s.dateVal) years.add(new Date(s.dateVal).getFullYear()); });
+    }
+    const sortedYears = [...years].sort((a,b) => a - b);
+    const options = `<div class="radix-item text-sm" onclick="window.setSvDateFilterVal('year-from', 'all', 'Select...')">Clear</div>` + sortedYears.map(y => `<div class="radix-item text-sm" onclick="window.setSvDateFilterVal('year-from', ${y}, '${y}')">${y}</div>`).join('');
+    const popFrom = document.getElementById('sv-f-year-from-pop');
+    const popTo = document.getElementById('sv-f-year-to-pop');
+    if (popFrom) popFrom.innerHTML = options;
+    if (popTo) popTo.innerHTML = options.replace(/year-from/g, 'year-to');
+};
+
+window.setSvDateFilterVal = function(type, val, label) {
+    if(type === 'month-from') { sv_dateFilterTemp.fromMonth = val; window.safeSet('sv-txt-month-from', 'innerText', label); }
+    if(type === 'year-from') { sv_dateFilterTemp.fromYear = val; window.safeSet('sv-txt-year-from', 'innerText', label); }
+    if(type === 'month-to') { sv_dateFilterTemp.toMonth = val; window.safeSet('sv-txt-month-to', 'innerText', label); }
+    if(type === 'year-to') { sv_dateFilterTemp.toYear = val; window.safeSet('sv-txt-year-to', 'innerText', label); }
+   
+    ['sv-f-month-from-pop', 'sv-f-year-from-pop', 'sv-f-month-to-pop', 'sv-f-year-to-pop'].forEach(pid => {
+        let p = document.getElementById(pid);
+        if(p) { p.style.display = 'none'; p.classList.remove('active'); }
+    });
+
+    const btn = document.getElementById('btn-apply-sv-date-filter');
+    if (btn) {
+        if (sv_dateFilterTemp.fromMonth !== 'all' && sv_dateFilterTemp.fromYear !== 'all' && sv_dateFilterTemp.toMonth !== 'all' && sv_dateFilterTemp.toYear !== 'all') {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+};
+
+window.applySvDateFilter = function() {
+    if (sv_dateFilterTemp.fromMonth !== 'all' && sv_dateFilterTemp.fromYear !== 'all') {
+        sv_colFilters.dateFrom = new Date(sv_dateFilterTemp.fromYear, sv_dateFilterTemp.fromMonth, 1).getTime();
+    }
+    if (sv_dateFilterTemp.toMonth !== 'all' && sv_dateFilterTemp.toYear !== 'all') {
+        sv_colFilters.dateTo = new Date(sv_dateFilterTemp.toYear, sv_dateFilterTemp.toMonth + 1, 0, 23, 59, 59).getTime();
+    }
+    window.closePopups();
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+};
+
+window.clearSvDateFilter = function() {
+    sv_dateFilterTemp = { fromMonth: 'all', fromYear: 'all', toMonth: 'all', toYear: 'all' };
+    window.safeSet('sv-txt-month-from', 'innerText', 'Select...'); window.safeSet('sv-txt-year-from', 'innerText', 'Select...');
+    window.safeSet('sv-txt-month-to', 'innerText', 'Select...'); window.safeSet('sv-txt-year-to', 'innerText', 'Select...');
+    sv_colFilters.dateFrom = null; sv_colFilters.dateTo = null;
+    const btn = document.getElementById('btn-apply-sv-date-filter');
+    if(btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+   
+    window.closePopups();
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+};
+
+window.setSvTab = function(tabId, element) {
+    sv_tabFilter = tabId;
+    document.querySelectorAll('.sv-tab').forEach(t => {
+        t.setAttribute('data-state', 'inactive');
+        t.classList.remove('bg-white', 'text-foreground', 'shadow-sm', 'border', 'border-black/5');
+        t.classList.add('hover:text-foreground', 'text-muted-foreground');
+    });
+
+    if (element) {
+        element.setAttribute('data-state', 'active');
+        element.classList.add('bg-white', 'text-foreground', 'shadow-sm', 'border', 'border-black/5');
+        element.classList.remove('hover:text-foreground', 'text-muted-foreground');
+    }
+   
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+}
+
+window.toggleSvMulti = function(field, val, isChecked) {
+    if (isChecked) {
+        if (!sv_colFilters[field].includes(val)) sv_colFilters[field].push(val);
+    } else {
+        sv_colFilters[field] = sv_colFilters[field].filter(v => v !== val);
+    }
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+}
+
+window.removeSvMultiFilter = function(field, val) {
+    sv_colFilters[field] = sv_colFilters[field].filter(v => v !== val);
+    document.querySelectorAll(`.sv-cb-${field}`).forEach(cb => {
+         if (cb.value === val) cb.checked = false;
+    });
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+}
+
+window.sortSv = function(col) {
+    if(sv_sort.col === col) sv_sort.asc = !sv_sort.asc;
+    else { sv_sort.col = col; sv_sort.asc = false; }
+    sv_displayLimit = 50;
+    window.renderServiceLedger(false, true);
+}
+
+// ==========================================
+// 3. SERVICE DRAWER & AUTO-SAVE LOGIC
+// ==========================================
+
+window.updateServiceField = function(field, val, overrideId = null) {
+    let targetId = overrideId || window.AvesdoState.ui.activeServiceId;
+    if (!targetId) return;
+   
+    let s = window.AvesdoState.data.services.find(x => x.id === targetId);
+    if (!s) return;
+   
+    let oldVal = s[field];
+    let newVal = val;
+
+    if (field === 'price' || field === 'commission') {
+        newVal = "$" + window.parseCurrency(val).toFixed(2);
+        if (targetId === window.AvesdoState.ui.activeServiceId) {
+            let el = field === 'price' ? document.getElementById('sd-input-price') : document.getElementById('sd-input-comm');
+            if (el) el.value = window.parseCurrency(val).toFixed(2);
+        }
+    }
+   
+    if (field === 'dateInput' || field === 'datePaidInput') {
+        const isValid = /^\d{4}-\d{2}-\d{2}$/.test(val);
+        if (val && isValid) {
+            let parts = val.split('-');
+            let d = new Date(parts[0], parts[1]-1, parts[2]);
+            if (field === 'dateInput') {
+                s.dateVal = d.getTime();
+                s.dateStr = d.toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'});
+            } else {
+                s.datePaidVal = d.getTime();
+                s.datePaidStr = d.toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'});
+            }
+        } else if (!val) {
+            if (field === 'dateInput') { s.dateVal = 0; s.dateStr = "No Date"; }
+            if (field === 'datePaidInput') { s.datePaidVal = 0; s.datePaidStr = "No Date"; }
+        }
+    }
+
+    if (oldVal === newVal) return;
+    s[field] = newVal;
+
+    if(typeof window.addAutoLog === 'function') {
+        window.addAutoLog('service', s.id, `Updated ${field} to ${newVal}`);
+        if (targetId === window.AvesdoState.ui.activeServiceId) window.renderServiceNotes(s);
+    }
+   
+    if (field === 'status' || field === 'outcome') {
+        if (field === 'status') {
+            if (newVal === 'Accepted' && s.outcome !== 'Won') {
+                s.outcome = 'Won';
+                if(typeof window.addAutoLog === 'function') { window.addAutoLog('service', s.id, `Auto-updated Outcome to Won`); if (targetId === window.AvesdoState.ui.activeServiceId) window.renderServiceNotes(s); }
+            }
+            if (newVal === 'Not Accepted' && s.outcome !== 'Lost') {
+                s.outcome = 'Lost';
+                if(typeof window.addAutoLog === 'function') { window.addAutoLog('service', s.id, `Auto-updated Outcome to Lost`); if (targetId === window.AvesdoState.ui.activeServiceId) window.renderServiceNotes(s); }
+            }
+        }
+        if (field === 'outcome') {
+            if (newVal === 'Won' && s.status !== 'Accepted') {
+                s.status = 'Accepted';
+                if(typeof window.addAutoLog === 'function') { window.addAutoLog('service', s.id, `Auto-updated Status to Accepted`); if (targetId === window.AvesdoState.ui.activeServiceId) window.renderServiceNotes(s); }
+            }
+            if (newVal === 'Lost' && s.status !== 'Not Accepted') {
+                s.status = 'Not Accepted';
+                if(typeof window.addAutoLog === 'function') { window.addAutoLog('service', s.id, `Auto-updated Status to Not Accepted`); if (targetId === window.AvesdoState.ui.activeServiceId) window.renderServiceNotes(s); }
+            }
+        }
+    }
+
+    if (targetId === window.AvesdoState.ui.activeServiceId) {
+        if (field === 'type') {
+            let typeProps = window.getBadgeProps('ServiceType', s.type);
+            const typeBadgeBtn = document.getElementById('sd-overview-type-btn');
+            if (typeBadgeBtn) typeBadgeBtn.innerHTML = `<span class="${typeProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${typeProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.type || 'Additional')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+            const hdrTypeBadge = document.getElementById('sd-badge-type');
+            if(hdrTypeBadge) { hdrTypeBadge.className = ''; hdrTypeBadge.innerHTML = window.buildBadge(typeProps, s.type || 'Additional', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+           
+            const priceContainer = document.getElementById('sd-price-container');
+            const invContainer = document.getElementById('sd-invoice-container');
+            const commContainer = document.getElementById('sd-comm-container');
+           
+            if (s.type === 'Included') {
+                if (priceContainer) priceContainer.classList.add('hidden');
+                if (invContainer) invContainer.classList.add('hidden');
+                if (commContainer) commContainer.classList.add('hidden');
+                s.price = "$0.00";
+                const pEl = document.getElementById('sd-input-price');
+                if (pEl) pEl.value = "0.00";
+               
+                s.outcome = 'Included';
+                s.status = 'Awaiting Inputs';
+                s.commissionPaid = 'Not Applicable';
+               
+                let oProps = window.getBadgeProps('ServiceOutcome', 'Included');
+                let sProps = window.getBadgeProps('ServiceStatus', 'Awaiting Inputs');
+                
+                const outBadgeBtn = document.getElementById('sd-overview-outcome-btn');
+                if(outBadgeBtn) outBadgeBtn.innerHTML = `<span class="${oProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${oProps.icon}" class="w-4 h-4 shrink-0"></i>Included</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+                const statBadgeBtn = document.getElementById('sd-overview-status-btn');
+                if(statBadgeBtn) statBadgeBtn.innerHTML = `<span class="${sProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${sProps.icon}" class="w-4 h-4 shrink-0"></i>Awaiting Inputs</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+                const hdrStat = document.getElementById('sd-badge-status');
+                if(hdrStat) { hdrStat.className = ''; hdrStat.innerHTML = window.buildBadge(sProps, 'Awaiting Inputs', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+               
+            } else {
+                if (priceContainer) priceContainer.classList.remove('hidden');
+                if (invContainer) invContainer.classList.remove('hidden');
+                if (commContainer) commContainer.classList.remove('hidden');
+               
+                if (s.outcome === 'Included') {
+                    s.outcome = 'Pending';
+                    s.status = 'Proposal Sent';
+                    s.commissionPaid = 'No';
+                   
+                    let oProps = window.getBadgeProps('ServiceOutcome', 'Pending');
+                    let sProps = window.getBadgeProps('ServiceStatus', 'Proposal Sent');
+                   
+                    const outBadgeBtn = document.getElementById('sd-overview-outcome-btn');
+                    if(outBadgeBtn) outBadgeBtn.innerHTML = `<span class="${oProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${oProps.icon}" class="w-4 h-4 shrink-0"></i>Pending</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+                    const statBadgeBtn = document.getElementById('sd-overview-status-btn');
+                    if(statBadgeBtn) statBadgeBtn.innerHTML = `<span class="${sProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${sProps.icon}" class="w-4 h-4 shrink-0"></i>Proposal Sent</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+                    const hdrStat = document.getElementById('sd-badge-status');
+                    if(hdrStat) { hdrStat.className = ''; hdrStat.innerHTML = window.buildBadge(sProps, 'Proposal Sent', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+                }
+            }
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+       
+        if (field === 'status' || field === 'outcome') {
+            window.safeSet('sd-trig-date-text', 'innerText', s.dateStr);
+            window.safeSet('date-text-sd', 'value', s.dateInput);
+           
+            let statProps = window.getBadgeProps('ServiceStatus', s.status);
+            let outProps = window.getBadgeProps('ServiceOutcome', s.outcome);
+           
+            const statBadgeBtn = document.getElementById('sd-overview-status-btn');
+            if (statBadgeBtn) statBadgeBtn.innerHTML = `<span class="${statProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${statProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.status || 'Proposal Sent')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+            const outBadgeBtn = document.getElementById('sd-overview-outcome-btn');
+            if (outBadgeBtn) outBadgeBtn.innerHTML = `<span class="${outProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${outProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.outcome || 'Pending')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+            
+            const hdrStat = document.getElementById('sd-badge-status');
+            if(hdrStat) { hdrStat.className = ''; hdrStat.innerHTML = window.buildBadge(statProps, s.status || 'Proposal Sent', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+           
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+        if (field === 'manager') window.safeSet('sd-text-mgr', 'innerText', newVal || 'Not Set');
+    }
+   
+    window.syncService(s.id);
+    if(typeof window.renderServiceLedger === 'function') window.renderServiceLedger(false, true);
+    if(typeof window.renderDashboard === 'function') window.renderDashboard(true);
+   
+    const pdDrawer = document.getElementById('projectDrawer');
+    if (pdDrawer && !pdDrawer.classList.contains('translate-x-full')) {
+        let p = window.AvesdoState.data.projects.find(x => x.id === s.projectId);
+        if (p && typeof window.renderProjectDrawerServicesList === 'function') window.renderProjectDrawerServicesList(p);
+    }
+    const cdDrawer = document.getElementById('clientDrawer');
+    if (cdDrawer && !cdDrawer.classList.contains('translate-x-full')) {
+        if(typeof window.renderClientDrawerServicesList === 'function') window.renderClientDrawerServicesList();
+    }
+};
+
+window.openServiceDrawer = function(sId) {
+    window.AvesdoState.ui.activeServiceId = sId;
+    let s = window.AvesdoState.data.services.find(x => x.id === sId);
+    if (!s) return;
+
+    const breadcrumb = document.getElementById('sd-breadcrumb');
+    const breadcrumbText = document.getElementById('sd-breadcrumb-text');
+    const projectDrawer = document.getElementById('projectDrawer');
+    const clientDrawer = document.getElementById('clientDrawer');
+   
+    if (breadcrumb) {
+        if (projectDrawer && !projectDrawer.classList.contains('translate-x-full')) {
+            breadcrumb.classList.remove('hidden');
+            breadcrumb.classList.add('inline-flex');
+            if (breadcrumbText) breadcrumbText.innerText = (!s.projectName || s.projectName === "Unknown Project" || s.projectName === "No Project" || s.projectName === "Client Level") ? "Client Level" : window.sanitizeHTML(s.projectName);
+        } else if (clientDrawer && !clientDrawer.classList.contains('translate-x-full')) {
+            breadcrumb.classList.remove('hidden');
+            breadcrumb.classList.add('inline-flex');
+            if (breadcrumbText) breadcrumbText.innerText = window.AvesdoState.ui.activeClient ? window.AvesdoState.ui.activeClient.companyName : window.sanitizeHTML(s.clientName || 'Client');
+        } else {
+            breadcrumb.classList.add('hidden');
+            breadcrumb.classList.remove('inline-flex');
+        }
+    }
+
+    let dynamicStatuses = [];
+    let dynamicOutcomes = [];
+    if(typeof window.AvesdoState.settings !== 'undefined' && window.AvesdoState.settings.settingsData) {
+        dynamicStatuses = window.AvesdoState.settings.settingsData.filter(x => x.category === 'ServiceStatus').map(x=>x.name);
+        dynamicOutcomes = window.AvesdoState.settings.settingsData.filter(x => x.category === 'ServiceOutcome').map(x=>x.name);
+    }
+    if (dynamicStatuses.length === 0) dynamicStatuses = ['Proposal Sent', 'Accepted', 'Awaiting Inputs', 'In Progress', 'Completed', 'Not Accepted'];
+    if (dynamicOutcomes.length === 0) dynamicOutcomes = ['Pending', 'Won', 'Lost'];
+
+    const popStatus = document.getElementById('sd-pop-status');
+    if(popStatus) popStatus.innerHTML = dynamicStatuses.map(st => `<div class="radix-item" onclick="if(typeof window.updateServiceField === 'function') window.updateServiceField('status', '${window.sanitizeHTML(st)}'); window.closePopups();">${window.sanitizeHTML(st)}</div>`).join('');
+   
+    const popOutcome = document.getElementById('sd-pop-outcome');
+    if(popOutcome) popOutcome.innerHTML = dynamicOutcomes.map(out => `<div class="radix-item" onclick="if(typeof window.updateServiceField === 'function') window.updateServiceField('outcome', '${window.sanitizeHTML(out)}'); window.closePopups();">${window.sanitizeHTML(out)}</div>`).join('');
+
+    window.safeSet('sd-title', 'innerText', window.sanitizeHTML(s.name));
+    window.safeSet('sd-subtitle', 'innerText', `${window.sanitizeHTML(s.clientName)} • ${(!s.projectName || s.projectName === "Unknown Project" || s.projectName === "No Project" || s.projectName === "Client Level") ? "Client Level" : window.sanitizeHTML(s.projectName)}`);
+   
+    let typeProps = window.getBadgeProps('ServiceType', s.type);
+    let statProps = window.getBadgeProps('ServiceStatus', s.status);
+    let outProps = window.getBadgeProps('ServiceOutcome', s.outcome);
+
+    const typeBadgeBtn = document.getElementById('sd-overview-type-btn');
+    if (typeBadgeBtn) typeBadgeBtn.innerHTML = `<span class="${typeProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${typeProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.type || 'Additional')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+    const statBadgeBtn = document.getElementById('sd-overview-status-btn');
+    if (statBadgeBtn) statBadgeBtn.innerHTML = `<span class="${statProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${statProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.status || 'Proposal Sent')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+    const outBadgeBtn = document.getElementById('sd-overview-outcome-btn');
+    if (outBadgeBtn) outBadgeBtn.innerHTML = `<span class="${outProps.bg} inline-flex items-center justify-between w-full rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors shadow-sm cursor-pointer hover:opacity-80"><div class="flex items-center gap-1.5"><i data-lucide="${outProps.icon}" class="w-4 h-4 shrink-0"></i>${window.sanitizeHTML(s.outcome || 'Pending')}</div><i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i></span>`;
+
+    const hdrType = document.getElementById('sd-badge-type');
+    if(hdrType) { hdrType.className = ''; hdrType.innerHTML = window.buildBadge(typeProps, s.type || 'Additional', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+
+    const hdrStat = document.getElementById('sd-badge-status');
+    if(hdrStat) { hdrStat.className = ''; hdrStat.innerHTML = window.buildBadge(statProps, s.status || 'Proposal Sent', 'px-2.5 py-0.5 text-[11px] font-semibold shadow-sm'); }
+
+    const pEl = document.getElementById('sd-input-price');
+    if(pEl) pEl.value = window.parseCurrency(s.price).toFixed(2);
+   
+    const priceContainer = document.getElementById('sd-price-container');
+    const invContainer = document.getElementById('sd-invoice-container');
+    const commContainer = document.getElementById('sd-comm-container');
+   
+    if (s.type === 'Included') {
+        if (priceContainer) priceContainer.classList.add('hidden');
+        if (invContainer) invContainer.classList.add('hidden');
+        if (commContainer) commContainer.classList.add('hidden');
+    } else {
+        if (priceContainer) priceContainer.classList.remove('hidden');
+        if (invContainer) invContainer.classList.remove('hidden');
+        if (commContainer) commContainer.classList.remove('hidden');
+    }
+   
+    window.safeSet('sd-text-mgr', 'innerText', window.sanitizeHTML(s.manager || 'Not Set'));
+    window.safeSet('sd-input-contact', 'value', s.contactName || "");
+   
+    const popMgr = document.getElementById('sd-pop-mgr');
+    if(popMgr && typeof pt_managers !== 'undefined') {
+        popMgr.innerHTML = pt_managers.map(m => `<div class="radix-item" onclick="if(typeof window.updateServiceField === 'function') window.updateServiceField('manager', '${m}'); window.closePopups();">${window.sanitizeHTML(m)}</div>`).join('') + `<div class="radix-item text-muted-foreground border-t border-border mt-1 pt-1" onclick="if(typeof window.updateServiceField === 'function') window.updateServiceField('manager', ''); window.closePopups();">Clear Selection</div>`;
+    }
+
+    let dateDisplay = s.dateVal ? new Date(s.dateVal).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'}) : (s.dateStr || "No Date");
+    window.safeSet('sd-trig-date-text', 'innerText', dateDisplay);
+    window.safeSet('date-text-sd', 'value', s.dateInput || "");
+
+    window.safeSet('sd-input-inv', 'value', s.invoiceNum || "");
+    const invSentChk = document.getElementById('sd-chk-inv-sent'); if(invSentChk) invSentChk.checked = (s.invoiceSent === 'Yes');
+    const invPaidChk = document.getElementById('sd-chk-inv-paid'); if(invPaidChk) invPaidChk.checked = (s.invoicePaid === 'Yes');
+   
+    const commEl = document.getElementById('sd-input-comm');
+    if(commEl) commEl.value = window.parseCurrency(s.commission).toFixed(2);
+    const commPaidChk = document.getElementById('sd-chk-comm-paid');
+    if(commPaidChk) {
+        commPaidChk.checked = (s.commissionPaid === 'Yes');
+        window.handleCommPaidToggle(false);
+    }
+   
+    let commDateDisplay = s.datePaidVal ? new Date(s.datePaidVal).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'}) : (s.datePaidStr || "No Date");
+    window.safeSet('sd-trig-comm-date-text', 'innerText', commDateDisplay);
+    window.safeSet('date-text-sd-comm', 'value', s.datePaidInput || "");
+
+    window.renderServiceNotes(s);
+    if(typeof window.switchServiceTab === 'function') window.switchServiceTab('details');
+
+    const err = document.getElementById('sd-error'); if(err) err.classList.add('hidden');
+    const delBtn = document.querySelector('button[onclick*="deleteActiveService"]');
+    if(delBtn) {
+        delBtn.dataset.confirm = '';
+        if(delBtn.dataset.originalCssText) delBtn.style.cssText = delBtn.dataset.originalCssText;
+        if(delBtn.dataset.originalHtml) delBtn.innerHTML = delBtn.dataset.originalHtml;
+        delBtn.classList.remove('border-destructive', 'bg-destructive/10', 'text-destructive', 'shadow-md');
+    }
+   
+    const drawer = document.getElementById('serviceDrawer');
+    const overlay = document.getElementById('serviceDrawerOverlay');
+    const sArea = document.getElementById('sd-scroll-area');
+    if (sArea) sArea.scrollTop = 0;
+    if (drawer && overlay) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+        drawer.classList.remove('translate-x-full');
+    }
+   
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: document.getElementById('serviceDrawer') });
+}
+
+window.closeServiceDrawer = function() {
+    window.forceCloseServiceDrawer();
+}
+
+// ------------------------------------------
+// BULLETPROOF DELETE CONFIRMATION
+// ------------------------------------------
+window.deleteActiveService = function() {
+    if (!window.AvesdoState.ui.activeServiceId) return;
+    const btn = document.querySelector('button[onclick*="deleteActiveService"]');
+   
+    if (btn) {
+        if (!btn.dataset.confirm) {
+            btn.dataset.confirm = 'true';
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.dataset.originalCssText = btn.style.cssText;
+           
+            btn.innerHTML = `<span class="text-destructive font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i> Confirm Delete</span>`;
+            btn.classList.add('border-destructive', 'bg-destructive/10', 'shadow-md');
+            btn.style.position = 'absolute';
+            btn.style.right = '3.5rem';
+            btn.style.zIndex = '50';
+           
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+           
+            setTimeout(() => {
+                if (btn && btn.dataset.confirm === 'true') {
+                    btn.dataset.confirm = '';
+                    btn.innerHTML = btn.dataset.originalHtml;
+                    btn.style.cssText = btn.dataset.originalCssText || '';
+                    btn.classList.remove('border-destructive', 'bg-destructive/10', 'shadow-md');
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                }
+            }, 3000);
+            return;
+        }
+    } else {
+        if(!confirm("Are you sure you want to delete this service?")) return;
+    }
+   
+    let sId = window.AvesdoState.ui.activeServiceId;
+    let s = window.AvesdoState.data.services.find(x => x.id === sId);
+    if(s) {
+        if(typeof window.addAutoLog === 'function') window.addAutoLog('project', s.projectId, `Deleted Service: ${s.name}`);
+    }
+   
+    window.AvesdoState.data.services = window.AvesdoState.data.services.filter(x => x.id !== sId);
+    window.forceCloseServiceDrawer();
+    if (typeof window.renderServiceLedger === 'function') window.renderServiceLedger(false, true);
+   
+    if (typeof window.renderDashboard === 'function') window.renderDashboard(true);
+   
+    const pdDrawer = document.getElementById('projectDrawer');
+    if (pdDrawer && !pdDrawer.classList.contains('translate-x-full')) {
+        let p = window.AvesdoState.data.projects.find(x => x.id === s.projectId);
+        if (p && typeof window.renderProjectDrawerServicesList === 'function') window.renderProjectDrawerServicesList(p);
+    }
+    const cdDrawer = document.getElementById('clientDrawer');
+    if (cdDrawer && !cdDrawer.classList.contains('translate-x-full')) {
+        if(typeof window.renderClientDrawerServicesList === 'function') window.renderClientDrawerServicesList();
+    }
+   
+    if(typeof window.showSyncToast === 'function') window.showSyncToast("Deleting...", true);
+    google.script.run
+        .withSuccessHandler((res) => {
+            if(res.success) {
+                if(typeof window.hideSyncToast === 'function') window.hideSyncToast("Service Deleted");
+                google.script.run.withSuccessHandler(t => window.lastKnownSync = t).checkGlobalTimestamp();
+            }
+        })
+        .withFailureHandler((err) => {
+            if (err.message === "SYNC_CONFLICT") {
+                window.showSyncToast("Conflict: Could not delete, data out of sync. Refreshing...", false, true);
+                if(typeof window.runSyncCheck === 'function') window.runSyncCheck(true);
+            } else {
+                window.showSyncToast("Failed to delete.", false, true);
+            }
+        })
+        .deleteServiceRecord(sId, window.lastKnownSync);
+}
+
+// ------------------------------------------
+// 4. SERVICE AUTOMATIONS & HELPERS
+// ------------------------------------------
+
+window.handleInvoiceChange = function() {
+    const el = document.getElementById('sd-input-inv');
+    const chk = document.getElementById('sd-chk-inv-sent');
+    if(el && chk && el.value.trim() !== "") {
+        chk.checked = true;
+        window.updateServiceField('invoiceNum', el.value);
+        window.updateServiceField('invoiceSent', 'Yes');
+    } else {
+        window.updateServiceField('invoiceNum', el ? el.value : '');
+    }
+}
+
+window.handleCommPaidToggle = function(markDirty = true) {
+    const chk = document.getElementById('sd-chk-comm-paid');
+    const wrap = document.getElementById('sd-comm-date-wrap');
+    const dateInput = document.getElementById('date-text-sd-comm');
+   
+    if(chk && wrap && dateInput) {
+        if(chk.checked) {
+            wrap.classList.remove('hidden');
+            wrap.classList.add('block');
+           
+            if(!dateInput.value) {
+                let today = new Date();
+                let m = String(today.getMonth() + 1).padStart(2, '0');
+                let d = String(today.getDate()).padStart(2, '0');
+                let dVal = `${today.getFullYear()}-${m}-${d}`;
+                dateInput.value = dVal;
+               
+                let ds = today.toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'});
+                window.safeSet('sd-trig-comm-date-text', 'innerText', ds);
+               
+                if(markDirty) {
+                    window.updateServiceField('datePaidInput', dVal);
+                    window.updateServiceField('commissionPaid', 'Yes');
+                }
+            } else if(markDirty) {
+                window.updateServiceField('commissionPaid', 'Yes');
+            }
+        } else {
+            wrap.classList.add('hidden');
+            wrap.classList.remove('block');
+            dateInput.value = "";
+            window.safeSet('sd-trig-comm-date-text', 'innerText', "No Date");
+           
+            if(markDirty) {
+                window.updateServiceField('datePaidInput', '');
+                window.updateServiceField('commissionPaid', 'No');
+            }
+        }
+    }
+}
+
+window.autoCalcCommission = function() {
+    const pEl = document.getElementById('sd-input-price');
+    const cEl = document.getElementById('sd-input-comm');
+    if(pEl && cEl) {
+        let val = window.parseCurrency(pEl.value) || 0;
+        let comm = val * 0.20;
+        cEl.value = comm.toFixed(2);
+        window.updateServiceField('commission', comm.toFixed(2));
+    }
+}
+
+window.addServiceNote = function() {
+    const t = document.getElementById('sd-newNoteText').value;
+    if (!t.trim() || !window.AvesdoState.ui.activeServiceId) return;
+   
+    if(typeof window.addAutoLog === 'function') window.addAutoLog('service', window.AvesdoState.ui.activeServiceId, t);
+    document.getElementById('sd-newNoteText').value = '';
+   
+    let s = window.AvesdoState.data.services.find(x => x.id === window.AvesdoState.ui.activeServiceId);
+    if(s) {
+        window.renderServiceNotes(s);
+        window.syncService(s.id);
+    }
+}
+
+window.renderServiceNotes = function(s) {
+    if(typeof window.universalRenderNotes === 'function') window.universalRenderNotes(s.notes, 'sd-NotesList');
+};
+
+// ------------------------------------------
+// 5. SERVICE HUB LOGIC (Filtering & KPIs)
+// ------------------------------------------
+
+window.updateSvKPIs = function(data) {
+    let revAll = 0, revYTD = 0, revQTD = 0, commYTD = 0;
+    let prevYTD = 0, prevQTD = 0, prevComm = 0;
+   
+    let today = new Date();
+    let currYear = today.getFullYear();
+    let currQtr = Math.floor(today.getMonth() / 3);
+   
+    data.forEach(s => {
+        if (s.outcome === 'Won') {
+            let p = window.parseCurrency(s.price);
+            let c = window.parseCurrency(s.commission);
+            let d = new Date(s.dateVal || s.dateInput || 0);
+            let y = d.getFullYear();
+            let q = Math.floor(d.getMonth() / 3);
+            
+            revAll += p;
+            if (y === currYear) {
+                revYTD += p;
+                commYTD += c;
+                if (q === currQtr) { revQTD += p; }
+            } else if (y === currYear - 1) {
+                prevYTD += p;
+                prevComm += c;
+                if (q === currQtr) { prevQTD += p; }
+            }
+        }
+    });
+
+    const formatKpiTile = (title, val, prevVal, desc, isTrendUpGood, iconName, bgGlowClass, iconBgClass, iconTextClass, index) => {
+        let contentHtml = "";
+        let delay = (index * 100) + 50;
+       
+        if (title === 'Total Services Revenue') {
+            let displayVal = "$" + val.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            contentHtml = `<div class="text-3xl font-bold text-foreground tracking-tight">${displayVal}</div>`;
+        } else {
+            let periodText = title.includes('Year') ? 'vs last year' : 'vs last quarter';
+            let tHtml = window.getTrendHtml(val, prevVal, '$', '', 'text-foreground', periodText, !isTrendUpGood);
+            contentHtml = `<div class="text-3xl font-bold text-foreground tracking-tight">${tHtml}</div>`;
+        }
+       
+        return `
+        <div tabindex="0" class="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20" style="animation-delay: ${delay}ms;">
+            <div class="absolute -right-6 -top-6 w-24 h-24 ${bgGlowClass} rounded-full blur-xl transition-colors duration-500"></div>
+            <div class="flex items-start justify-between mb-2 relative z-10">
+                <div class="flex flex-col pr-2">
+                     <div class="font-bold text-sm text-foreground flex items-center gap-1.5">${title} <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary"></i></div>
+                     <span class="text-xs text-muted-foreground mt-0.5 leading-snug">${desc}</span>
+                </div>
+                <div class="w-10 h-10 rounded-full ${iconBgClass} ${iconTextClass} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                   <i data-lucide="${iconName}" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="relative z-10 mt-auto pt-2">${contentHtml}</div>
+        </div>`;
+    };
+   
+    let html = '';
+    html += formatKpiTile('Revenue Won This Year', revYTD, prevYTD, 'Total revenue won this year', true, 'trending-up', 'bg-blue-500/5 group-hover:bg-blue-500/10', 'bg-blue-500/10', 'text-blue-600', 0);
+    html += formatKpiTile('Revenue Won This Quarter', revQTD, prevQTD, 'Total revenue won this quarter', true, 'bar-chart-2', 'bg-lime-500/5 group-hover:bg-lime-500/10', 'bg-lime-500/10', 'text-lime-600', 1);
+    html += formatKpiTile('Total Services Revenue', revAll, 0, 'Total historical revenue won', true, 'database', 'bg-indigo-500/5 group-hover:bg-indigo-500/10', 'bg-indigo-500/10', 'text-indigo-600', 2);
+    html += formatKpiTile('Total Commission This Year', commYTD, prevComm, 'Total commission generated this year', true, 'dollar-sign', 'bg-emerald-500/5 group-hover:bg-emerald-500/10', 'bg-emerald-500/10', 'text-emerald-600', 3);
+
+    const kpiContainer = document.getElementById('sv-kpi-container');
+    if (kpiContainer) {
+        kpiContainer.innerHTML = html;
+        if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+}
+
+window.renderActiveSvFilters = function() {
+    const container = document.getElementById('sv-active-filters'); if(!container) return; let html = '';
+    const makePill = (type, val, label) => `<span class="inline-flex items-center gap-1.5 bg-muted border border-border text-foreground text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">${label}: ${window.sanitizeHTML(val)} <button onclick="window.removeSvMultiFilter('${type}', '${val.replace(/'/g, "\\'")}')" class="hover:text-destructive transition-colors active:scale-95 transition-all duration-200"><i data-lucide="x" class="w-3 h-3"></i></button></span>`;
+   
+    if (sv_colFilters.name) sv_colFilters.name.forEach(n => html += makePill('name', n, 'Name'));
+    if (sv_colFilters.project) sv_colFilters.project.forEach(p => html += makePill('project', p, 'Project'));
+    if (sv_colFilters.client) sv_colFilters.client.forEach(c => html += makePill('client', c, 'Client'));
+    if (sv_colFilters.type) sv_colFilters.type.forEach(t => html += makePill('type', t, 'Type'));
+    if (sv_colFilters.manager) sv_colFilters.manager.forEach(m => html += makePill('manager', m, 'Manager'));
+    if (sv_colFilters.status) sv_colFilters.status.forEach(s => html += makePill('status', s, 'Status'));
+    if (sv_colFilters.invoice) sv_colFilters.invoice.forEach(i => html += makePill('invoice', i, 'Invoice'));
+   
+    if (sv_colFilters.dateFrom || sv_colFilters.dateTo) {
+        let l = "Date: ";
+        if (sv_colFilters.dateFrom) l += new Date(sv_colFilters.dateFrom).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+        l += " - ";
+        if (sv_colFilters.dateTo) l += new Date(sv_colFilters.dateTo).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+        html += `<span class="inline-flex items-center gap-1.5 bg-muted border border-border text-foreground text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">${l} <button onclick="window.clearSvDateFilter()" class="hover:text-destructive transition-colors active:scale-95 transition-all duration-200"><i data-lucide="x" class="w-3 h-3"></i></button></span>`;
+    }
+   
+    if (html !== '') { html += `<button onclick="sv_colFilters.name=[]; sv_colFilters.project=[]; sv_colFilters.client=[]; sv_colFilters.type=[]; sv_colFilters.manager=[]; sv_colFilters.status=[]; sv_colFilters.invoice=[]; sv_colFilters.dateFrom=null; sv_colFilters.dateTo=null; window.clearSvDateFilter(); document.querySelectorAll('.sv-cb-name, .sv-cb-project, .sv-cb-client, .sv-cb-type, .sv-cb-manager, .sv-cb-status, .sv-cb-invoice').forEach(cb=>cb.checked=false); window.renderServiceLedger(false, true);" class="text-xs font-medium text-muted-foreground hover:text-foreground ml-1 underline decoration-border underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary/30 rounded-sm px-1">Clear Filters</button>`; }
+    container.innerHTML = html;
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+window.buildServiceRow = function(s, dynamicStatuses) {
+    let tProps = window.getBadgeProps('ServiceType', s.type);
+    let stProps = window.getBadgeProps('ServiceStatus', s.status);
+    let mProps = window.getBadgeProps('Manager', s.manager);
+   
+    let invStatus = 'Not Sent';
+    if (s.invoiceSent === 'Yes' && s.invoicePaid === 'Yes') invStatus = 'Paid';
+    else if (s.invoiceSent === 'Yes') invStatus = 'Sent';
+    let invProps = window.getBadgeProps('Invoice', invStatus);
+
+    let dateStr = s.dateVal ? new Date(s.dateVal).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'}) : (s.dateStr || '-');
+    const formattedPrice = "$" + window.parseCurrency(s.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+   
+    let pName = (!s.projectName || s.projectName === "Unknown Project" || s.projectName === "No Project" || s.projectName === "Client Level") ? "Client Level" : window.sanitizeHTML(s.projectName);
+    let cName = window.sanitizeHTML(s.clientName || '-');
+    let sName = window.sanitizeHTML(s.name || '-');
+   
+    return `<tr class="border-b border-border transition-colors hover:bg-[#f1f5f9] group cursor-pointer" data-id="${s.id}">
+        <td class="px-4 py-2.5 align-middle font-medium text-foreground w-[18%] sticky left-0 z-10 bg-white group-hover:bg-[#f1f5f9] transition-colors border-r border-transparent shadow-[2px_0_0_0_rgba(0,0,0,0.02)]"><div class="line-clamp-1 group-hover:text-primary transition-colors">${sName}</div></td>
+        <td class="px-4 py-2.5 align-middle text-muted-foreground w-[14%] hidden md:table-cell"><div class="line-clamp-1">${pName}</div></td>
+        <td class="px-4 py-2.5 align-middle text-muted-foreground w-[14%] hidden md:table-cell"><div class="line-clamp-1 font-medium">${cName}</div></td>
+        <td class="px-4 py-2.5 align-middle w-[8%] hidden lg:table-cell">${window.buildBadge(tProps, s.type || 'Additional', 'px-2.5 py-0.5 text-[11px] font-semibold')}</td>
+        <td class="px-4 py-2.5 align-middle w-[10%] hidden lg:table-cell">${window.buildBadge(mProps, s.manager || 'Not Set', 'px-2.5 py-0.5 text-[11px] font-semibold')}</td>
+        <td class="px-4 py-2.5 align-middle w-[12%] text-left">
+            <div class="relative w-full text-left">
+                <button class="radix-trigger px-0 h-auto inline-flex items-center justify-start w-full hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20 rounded-sm" onclick="window.togglePop(event, 'pop-sv-st-${s.id}')">
+                    ${window.buildBadge(stProps, s.status || 'Proposal Sent', 'px-2.5 py-0.5 text-[11px] font-semibold')}
+                </button>
+                <div id="pop-sv-st-${s.id}" class="radix-popover shadow-xl border border-border rounded-xl z-[90] p-1 whitespace-normal text-left">
+                    ${dynamicStatuses.map(st => `<div class="radix-item font-medium rounded-md" onclick="if(typeof window.updateServiceField === 'function') window.updateServiceField('status', '${st}', '${s.id}'); window.closePopups();">${window.sanitizeHTML(st)}</div>`).join('')}
+                </div>
+            </div>
+        </td>
+        <td class="px-4 py-2.5 align-middle text-muted-foreground text-sm font-medium w-[8%] hidden sm:table-cell"><div class="truncate">${dateStr}</div></td>
+        <td class="px-4 py-2.5 align-middle text-foreground font-semibold text-right w-[9%]"><div class="truncate">${formattedPrice}</div></td>
+        <td class="px-4 py-2.5 align-middle text-center w-[7%] hidden xl:table-cell">${window.buildBadge(invProps, invStatus, 'px-2.5 py-0.5 text-[11px] font-semibold')}</td>
+    </tr>`;
+};
+
+window.loadMoreServices = function() {
+    const tbody = document.getElementById('serviceTableBody');
+    const btnRow = document.getElementById("sv-load-more-row");
+    if (btnRow) btnRow.remove();
+
+    let filtered = window.currentFilteredServices || window.AvesdoState.data.services;
+    let newSlice = filtered.slice(sv_displayLimit, sv_displayLimit + 50);
+    sv_displayLimit += 50;
+
+    let dynamicStatuses = [];
+    if(typeof window.AvesdoState.settings !== 'undefined' && window.AvesdoState.settings.settingsData) dynamicStatuses = window.AvesdoState.settings.settingsData.filter(s => s.category === 'ServiceStatus').map(s=>s.name);
+    if (dynamicStatuses.length === 0) dynamicStatuses = ['Proposal Sent', 'Accepted', 'Awaiting Inputs', 'In Progress', 'Completed', 'Not Accepted'];
+
+    let html = newSlice.map(s => window.buildServiceRow(s, dynamicStatuses)).join('');
+
+    if (sv_displayLimit < filtered.length) {
+        let remaining = filtered.length - sv_displayLimit;
+        html += `<tr id="sv-load-more-row"><td colspan="9" class="py-6 text-center border-0 text-[13px] text-muted-foreground font-medium"><button onclick="window.loadMoreServices()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white hover:bg-[#f8fafc] hover:text-accent-foreground h-9 px-6 shadow-sm focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"><i data-lucide="chevron-down" class="w-4 h-4 mr-2"></i>Load More (${remaining} Remaining)</button></td></tr>`;
+    }
+
+    tbody.insertAdjacentHTML('beforeend', html);
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+};
+
+window.renderServiceLedger = function(isAppend = false, isSilent = false) {
+    const tbody = document.getElementById('serviceTableBody');
+    if (!tbody) return;
+   
+    let dynamicStatuses = [];
+    if(typeof window.AvesdoState.settings !== 'undefined' && window.AvesdoState.settings.settingsData) dynamicStatuses = window.AvesdoState.settings.settingsData.filter(s => s.category === 'ServiceStatus').map(s=>s.name);
+    if (dynamicStatuses.length === 0) dynamicStatuses = ['Proposal Sent', 'Accepted', 'Awaiting Inputs', 'In Progress', 'Completed', 'Not Accepted'];
+
+    const searchEl = document.getElementById('serviceSearch');
+    let hasExistingData = tbody.querySelectorAll('tr[data-id]').length > 0;
+
+    if (!isAppend && !isSilent) {
+        sv_displayLimit = 50;
+        if (!hasExistingData) {
+
+            let skeletonHtml = '';
+            for (let i = 0; i < 5; i++) {
+                skeletonHtml += `
+                <tr class="animate-pulse border-b border-border">
+                    <td class="px-4 py-2.5 align-middle w-[18%]"><div class="h-4 bg-muted rounded w-3/4"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden md:table-cell w-[14%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden md:table-cell w-[14%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden lg:table-cell w-[8%]"><div class="h-5 bg-muted rounded-full w-10"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden lg:table-cell w-[10%]"><div class="h-4 bg-muted rounded w-2/3"></div></td>
+                    <td class="px-4 py-2.5 align-middle w-[12%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden sm:table-cell w-[8%]"><div class="h-4 bg-muted rounded w-1/2"></div></td>
+                    <td class="px-4 py-2.5 align-middle w-[9%]"><div class="h-4 bg-muted rounded w-1/2 ml-auto"></div></td>
+                    <td class="px-4 py-2.5 align-middle hidden xl:table-cell w-[7%]"><div class="h-4 bg-muted rounded w-1/2 mx-auto"></div></td>
+                </tr>`;
+            }
+            tbody.classList.remove('opacity-50', 'pointer-events-none', 'transition-opacity', 'duration-200');
+            tbody.innerHTML = skeletonHtml;
+        } else {
+            tbody.classList.add('opacity-50', 'pointer-events-none');
+            tbody.style.transition = 'opacity 0.2s ease';
+        }
+    } else if (!isAppend) {
+        sv_displayLimit = 50;
+        tbody.classList.add('opacity-50', 'pointer-events-none');
+        tbody.style.transition = 'opacity 0.2s ease';
+    }
+
+    let filtered = window.universalFilterAndSort(window.AvesdoState.data.services, {
+        searchQuery: searchEl ? searchEl.value : '',
+        searchFields: ['name', 'clientName', 'projectName', 'invoiceNum'],
+        multiFilters: {
+            name: sv_colFilters.name,
+            projectName: sv_colFilters.project,
+            clientName: sv_colFilters.client,
+            type: sv_colFilters.type,
+            manager: sv_colFilters.manager,
+            status: sv_colFilters.status
+        },
+        customFilter: (s) => {
+            if(sv_colFilters.invoice && sv_colFilters.invoice.length > 0) {
+                let iStat = 'Not Sent';
+                if (s.invoiceSent === 'Yes' && s.invoicePaid === 'Yes') iStat = 'Paid';
+                else if (s.invoiceSent === 'Yes') iStat = 'Sent';
+                if (!sv_colFilters.invoice.includes(iStat)) return false;
+            }
+
+            if(sv_colFilters.dateFrom && s.dateVal < sv_colFilters.dateFrom) return false;
+            if(sv_colFilters.dateTo && s.dateVal > sv_colFilters.dateTo) return false;
+
+            if (sv_tabFilter === 'Pending' && s.outcome !== 'Pending') return false;
+            if (sv_tabFilter === 'Won' && s.outcome !== 'Won') return false;
+            if (sv_tabFilter === 'Lost' && s.outcome !== 'Lost') return false;
+            if (sv_tabFilter === 'Additional' && s.type !== 'Additional') return false;
+            if (sv_tabFilter === 'Included' && s.type !== 'Included') return false;
+            return true;
+        },
+        sortCol: sv_sort.col, sortAsc: sv_sort.asc,
+        sortType: (sv_sort.col === 'price' || sv_sort.col === 'commission') ? 'currency' : (sv_sort.col === 'dateVal' ? 'date' : 'string')
+    });
+   
+    window.currentFilteredServices = filtered;
+    window.updateSvKPIs(window.AvesdoState.data.services);
+    window.renderActiveSvFilters();
+
+    let totalServicesCount = filtered.length;
+    let totalRev = 0;
+   
+    filtered.forEach(s => {
+        if (sv_tabFilter === 'Lost' || sv_tabFilter === 'Pending') {
+            totalRev += window.parseCurrency(s.price);
+        } else {
+            if (s.outcome === 'Won') {
+                totalRev += window.parseCurrency(s.price);
+            }
+        }
+    });
+   
+    window.safeSet('sv-total-count', 'innerText', totalServicesCount);
+    window.safeSet('sv-total-value', 'innerText', "$" + totalRev.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+   
+    const revWrapper = document.getElementById('sv-total-rev-wrapper');
+    if (revWrapper) {
+        if (sv_tabFilter === 'Included') revWrapper.classList.add('hidden');
+        else { revWrapper.classList.remove('hidden'); revWrapper.classList.add('flex'); }
+    }
+   
+    let timeoutDelay = isSilent ? 0 : 10;
+    setTimeout(() => {
+        if (filtered.length === 0) {
+            tbody.classList.remove('opacity-50', 'pointer-events-none');
+            tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-16 text-center text-muted-foreground bg-white">
+                <i data-lucide="briefcase" class="w-12 h-12 mx-auto text-muted mb-4 opacity-50"></i>
+                <p class="text-base font-semibold text-foreground mb-1">No Services Found</p>
+                <p class="text-sm text-muted-foreground mb-6 max-w-md mx-auto">It looks like there are no services matching your current filters. You can clear your filters, or add a new service below.</p>
+                <button onclick="window.openModal('modal-add-service')" class="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-5 py-2.5 mx-auto focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add New Service
+                </button>
+            </td></tr>`;
+            if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            return;
+        }
+       
+        let visibleServices = filtered.slice(0, sv_displayLimit);
+        let html = visibleServices.map(s => window.buildServiceRow(s, dynamicStatuses)).join('');
+       
+        if (sv_displayLimit < filtered.length) {
+            let remaining = filtered.length - sv_displayLimit;
+            html += `<tr id="sv-load-more-row"><td colspan="9" class="py-6 text-center border-0 text-[13px] text-muted-foreground font-medium"><button onclick="window.loadMoreServices()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 border border-input bg-white hover:bg-[#f8fafc] hover:text-accent-foreground h-9 px-6 shadow-sm focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"><i data-lucide="chevron-down" class="w-4 h-4 mr-2"></i>Load More (${remaining} Remaining)</button></td></tr>`;
+        }
+
+        if (isAppend) {
+            const btnRow = document.getElementById("sv-load-more-row");
+            if (btnRow) btnRow.remove();
+            tbody.insertAdjacentHTML('beforeend', html);
+        } else {
+            tbody.classList.remove('opacity-50', 'pointer-events-none');
+            tbody.innerHTML = html;
+            if (!isSilent) {
+                tbody.style.animation = 'none';
+                void tbody.offsetHeight;
+                tbody.style.animation = 'fadeIn 0.3s ease-out forwards';
+            }
+        }
+
+        if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }, timeoutDelay);
+};
+
+window.exportServicesCSV = function() {
+    const dataToExport = window.currentFilteredServices || window.AvesdoState.data.services;
+    const headers = ["Service Name", "Project", "Type", "Client", "Manager", "Price", "Outcome", "Status", "Date", "Invoice Sent", "Invoice Paid", "Commission", "Commission Paid", "Date Paid"];
+    const rowMapper = (s) => {
+        let name = `"${(s.name || '').replace(/"/g, '""')}"`;
+        let project = `"${(!s.projectName || s.projectName === "Unknown Project" || s.projectName === "No Project" || s.projectName === "Client Level") ? "Client Level" : s.projectName.replace(/"/g, '""')}"`;
+        let type = `"${(s.type || '').replace(/"/g, '""')}"`;
+        let client = `"${(s.clientName || '').replace(/"/g, '""')}"`;
+        let mgr = `"${(s.manager || '').replace(/"/g, '""')}"`;
+        let price = `"${(s.price || '$0.00').replace(/"/g, '""')}"`;
+        let outcome = `"${(s.outcome || '').replace(/"/g, '""')}"`;
+        let status = `"${(s.status || '').replace(/"/g, '""')}"`;
+        let dateStr = `"${(s.dateInput || s.dateStr || '').replace(/"/g, '""')}"`;
+        let invSent = `"${(s.invoiceSent || 'No')}"`;
+        let invPaid = `"${(s.invoicePaid || 'No')}"`;
+        let comm = `"${(s.commission || '$0.00').replace(/"/g, '""')}"`;
+        let commPaid = `"${(s.commissionPaid || 'No')}"`;
+        let datePaidStr = `"${(s.datePaidInput || s.datePaidStr || '').replace(/"/g, '""')}"`;
+
+        return `${name},${project},${type},${client},${mgr},${price},${outcome},${status},${dateStr},${invSent},${invPaid},${comm},${commPaid},${datePaidStr}`;
+    };
+
+    if(typeof window.universalExportCSV === 'function') window.universalExportCSV("Service_Hub", headers, dataToExport, rowMapper);
+};
+
+window.syncService = function(id, attempt = 1, customMsg) {
+    let s = window.AvesdoState.data.services.find(x => x.id === id);
+    if(!s) return;
+
+    window.universalSync({
+        type: 'services',
+        id: id,
+        entity: s,
+        apiAction: 'updateService',
+        successMsg: customMsg || 'Service Saved',
+        attempt: attempt,
+        maxAttempts: 3,
+        delay: attempt === 1 ? 1500 : 3000,
+        onRollback: (isPreCheck) => {
+            if(typeof window.renderServiceLedger === 'function') window.renderServiceLedger(false, true);
+            if(document.getElementById('serviceDrawer') && !document.getElementById('serviceDrawer').classList.contains('translate-x-full') && window.AvesdoState.ui.activeServiceId === s.id) {
+                 if(typeof window.openServiceDrawer === 'function') window.openServiceDrawer(s.id);
+            }
+        }
+    });
+};
+
+window.universalSwitchTab = function(prefix, tab, tabsList, chartContext) {
+    if (prefix === '') { if (typeof cd_activeTab !== 'undefined') cd_activeTab = tab; }
+    else if (prefix === 'pd-') { if (typeof pd_activeTab !== 'undefined') pd_activeTab = tab; }
+
+    tabsList.forEach(t => {
+        const btn = document.getElementById(prefix + 'tabBtn-' + t);
+        const content = document.getElementById(prefix + 'tabContent-' + t);
+        if(btn) {
+            btn.setAttribute('data-state', t === tab ? 'active' : 'inactive');
+            if (t === tab) {
+                btn.classList.add('border-primary', 'text-foreground');
+                btn.classList.remove('border-transparent', 'text-muted-foreground', 'hover:text-foreground');
+            } else {
+                btn.classList.remove('border-primary', 'text-foreground');
+                btn.classList.add('border-transparent', 'text-muted-foreground', 'hover:text-foreground');
+            }
+        }
+        if(content) {
+            if (t === tab) content.classList.remove('hidden');
+            else content.classList.add('hidden');
+        }
+    });
+
+    if (tab === 'trends' && chartContext) {
+        setTimeout(() => {
+            if (typeof window.updateTrendChart === 'function') window.updateTrendChart(chartContext, 30);
+        }, 50);
+    }
+};
+
+window.switchTab = (tab) => window.universalSwitchTab('', tab, ['health', 'trends', 'projects', 'services', 'kyc'], 'cd');
+window.switchProjectTab = (tab) => window.universalSwitchTab('pd-', tab, ['details', 'health', 'trends', 'features', 'services', 'kyc'], 'pd');
+window.switchServiceTab = (tab) => window.universalSwitchTab('sd-', tab, ['details', 'kyc'], null);
+</script>
