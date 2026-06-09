@@ -91,8 +91,8 @@ export default function AdminHub() {
     const data = await getPendingInitialImports();
     const formattedData = data.map(d => ({
       ...d,
-      developers: d.developers ? d.developers : (d.developerName ? [d.developerName] : []),
-      marketingOrgs: d.marketingOrgs ? d.marketingOrgs : (d.marketingOrgName ? [d.marketingOrgName] : [])
+      developers: Array.isArray(d.developers) ? d.developers : (d.developerName ? [d.developerName] : []),
+      marketingOrgs: Array.isArray(d.marketingOrgs) ? d.marketingOrgs : (d.marketingOrgName ? [d.marketingOrgName] : [])
     }));
     setInitialImports(formattedData);
     setLoadingImports(false);
@@ -930,40 +930,32 @@ export default function AdminHub() {
               Process the initial bulk load of Projects, Developers, and Marketing Orgs.
             </p>
           </div>
-          <div className="flex gap-2 shrink-0">
-            {initialImports.length > 0 && !loadingImports && (
-              <button
-                onClick={async () => {
-                  if (confirm('Are you sure you want to clear all pending import rows? You can re-seed them again afterwards.')) {
-                    setLoadingImports(true);
-                    const { collection, getDocs, deleteDoc, doc } = await import('firebase/firestore');
-                    const { db } = await import('../api/firebase');
-                    const { query, where } = await import('firebase/firestore');
-                    const snap = await getDocs(query(collection(db, 'initial_imports'), where('status', '==', 'pending')));
-                    await Promise.all(snap.docs.map((d: any) => deleteDoc(doc(db, 'initial_imports', d.id))));
-                    await loadInitialImports();
-                  }
-                }}
-                className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-bold shadow-sm transition-colors"
-              >
-                Clear Data
-              </button>
-            )}
-            {initialImports.length === 0 && !loadingImports && (
-              <button
-                onClick={async () => {
-                  setLoadingImports(true);
-                  const initialImportsData = (await import('../data/initial_imports.json')).default;
-                  const { seedInitialImports } = await import('../api/dbService');
-                  await seedInitialImports(initialImportsData);
-                  await loadInitialImports();
-                }}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold shadow-sm transition-colors"
-              >
-                Seed Data from Excel
-              </button>
-            )}
-          </div>
+          {initialImports.length === 0 && !loadingImports && (
+            <button
+              onClick={async () => {
+                const { seedInitialImports } = await import('../api/dbService');
+                const data = (await import('../data/initial_imports.json')).default;
+                await seedInitialImports(data);
+                loadInitialImports();
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              <Package className="w-5 h-5" /> Seed Data from Excel
+            </button>
+          )}
+          {initialImports.length > 0 && !loadingImports && (
+            <button
+              onClick={async () => {
+                const { seedInitialImports } = await import('../api/dbService');
+                const data = (await import('../data/initial_imports.json')).default;
+                await seedInitialImports(data);
+                loadInitialImports();
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+            >
+              <RotateCcw className="w-5 h-5" /> Sync Latest Excel Data (Safe)
+            </button>
+          )}
         </div>
         
         <div className="bg-white border rounded-xl overflow-hidden shadow-sm">

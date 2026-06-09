@@ -702,19 +702,36 @@ export async function resolveAlias(
 
 export async function seedInitialImports(data: any[]) {
   try {
+    const q = query(collection(db, 'initial_imports'));
+    const snap = await getDocs(q);
+    const existingMap = new Map();
+    snap.docs.forEach(d => existingMap.set(d.data().projectId, d));
+
     const chunks = [];
     for (let i = 0; i < data.length; i += 400) {
       chunks.push(data.slice(i, i + 400));
     }
+
     for (const chunk of chunks) {
       const batch = writeBatch(db);
       for (const row of chunk) {
-        const docRef = doc(collection(db, 'initial_imports'));
-        batch.set(docRef, { ...row, firestoreId: docRef.id });
+        const existing = existingMap.get(row.projectId);
+        if (existing) {
+          const eData = existing.data();
+          if (eData.status === 'pending') {
+            batch.update(existing.ref, {
+              developers: row.developers,
+              marketingOrgs: row.marketingOrgs
+            });
+          }
+        } else {
+          const docRef = doc(collection(db, 'initial_imports'));
+          batch.set(docRef, { ...row, firestoreId: docRef.id });
+        }
       }
       await batch.commit();
     }
-    toast.success('Seeded initial imports successfully.');
+    toast.success('Synchronized initial imports successfully. Approved records were preserved.');
   } catch (err) {
     console.error('Failed to seed imports', err);
     toast.error('Failed to seed imports.');
