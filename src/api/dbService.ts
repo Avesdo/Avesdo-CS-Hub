@@ -772,7 +772,7 @@ export async function resolveInitialImport(
             await setDoc(doc(db, 'clients', cId), {
               clientId: cId,
               companyName: devName,
-              type: 'Developer',
+              clientType: 'Developer',
               notes: []
             });
             clientIds.push(cId);
@@ -792,7 +792,7 @@ export async function resolveInitialImport(
             await setDoc(doc(db, 'clients', mId), {
               clientId: mId,
               companyName: orgName,
-              type: 'Sales & Marketing',
+              clientType: 'Sales & Marketing',
               notes: []
             });
             clientIds.push(mId);

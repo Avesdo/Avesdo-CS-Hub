@@ -944,17 +944,38 @@ export default function AdminHub() {
             </button>
           )}
           {initialImports.length > 0 && !loadingImports && (
-            <button
-              onClick={async () => {
-                const { seedInitialImports } = await import('../api/dbService');
-                const data = (await import('../data/initial_imports.json')).default;
-                await seedInitialImports(data);
-                loadInitialImports();
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
-            >
-              <RotateCcw className="w-5 h-5" /> Sync Latest Excel Data (Safe)
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  const { seedInitialImports } = await import('../api/dbService');
+                  const data = (await import('../data/initial_imports.json')).default;
+                  await seedInitialImports(data);
+                  loadInitialImports();
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+              >
+                <RotateCcw className="w-5 h-5" /> Sync Latest Excel Data (Safe)
+              </button>
+              <button
+                onClick={async () => {
+                  const { collection, getDocs, updateDoc, doc } = await import('firebase/firestore');
+                  const { db } = await import('../api/firebase');
+                  const snap = await getDocs(collection(db, 'clients'));
+                  let count = 0;
+                  for (const d of snap.docs) {
+                    const data = d.data();
+                    if ((data as any).type && !data.clientType) {
+                      await updateDoc(doc(db, 'clients', d.id), { clientType: (data as any).type });
+                      count++;
+                    }
+                  }
+                  toast.success(`Fixed ${count} client types!`);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors shadow-sm"
+              >
+                Fix Client Types
+              </button>
+            </div>
           )}
         </div>
         
