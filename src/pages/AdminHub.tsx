@@ -34,9 +34,10 @@ import {
   addGlobalLog,
 } from '../api/dbService';
 import { toast } from '../utils/toast';
+import MultiSelectCombobox from '../components/MultiSelectCombobox';
 
 export default function AdminHub() {
-  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'intake'>('audit');
+  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'intake' | 'initial_imports'>('audit');
   const {
     settings,
     archivedClients,
@@ -70,13 +71,36 @@ export default function AdminHub() {
   const [correctingAliasId, setCorrectingAliasId] = useState<string | null>(null);
   const [correctionTargetId, setCorrectionTargetId] = useState<string>('');
 
+  // --- INITIAL IMPORT STATE ---
+  const [initialImports, setInitialImports] = useState<any[]>([]);
+  const [loadingImports, setLoadingImports] = useState(false);
+
   useEffect(() => {
     if (activeTab === 'audit') {
       loadLogs();
     } else if (activeTab === 'intake') {
       loadAliases();
+    } else if (activeTab === 'initial_imports') {
+      loadInitialImports();
     }
   }, [activeTab]);
+
+  const loadInitialImports = async () => {
+    setLoadingImports(true);
+    const { getPendingInitialImports } = await import('../api/dbService');
+    const data = await getPendingInitialImports();
+    const formattedData = data.map(d => ({
+      ...d,
+      developers: d.developerName ? [d.developerName] : [],
+      marketingOrgs: d.marketingOrgName ? [d.marketingOrgName] : []
+    }));
+    setInitialImports(formattedData);
+    setLoadingImports(false);
+  };
+
+  const handleUpdateImportRow = (id: string, updates: any) => {
+    setInitialImports(prev => prev.map(row => row.firestoreId === id ? { ...row, ...updates } : row));
+  };
 
   const loadAliases = async () => {
     setLoadingAliases(true);
@@ -888,7 +912,113 @@ export default function AdminHub() {
     );
   };
 
+  const renderInitialImports = () => {
+    const rawOptions = [
+      ...clients.map(c => c.companyName || c.name),
+      ...initialImports.flatMap(row => [...(row.developers || []), ...(row.marketingOrgs || [])])
+    ].filter(name => typeof name === 'string' && name.trim() !== '');
+    
+    const uniqueOptions = Array.from(new Set(rawOptions));
+    const clientOptions = uniqueOptions.map(name => ({ name }));
+
+    return (
+      <div className="max-w-5xl mx-auto animate-in fade-in duration-300">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">One-Time Data Import</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Process the initial bulk load of Projects, Developers, and Marketing Orgs.
+            </p>
+          </div>
+          {initialImports.length === 0 && !loadingImports && (
+            <button
+              onClick={async () => {
+                setLoadingImports(true);
+                const initialImportsData = (await import('../data/initial_imports.json')).default;
+                const { seedInitialImports } = await import('../api/dbService');
+                await seedInitialImports(initialImportsData);
+                await loadInitialImports();
+              }}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold shadow-sm transition-colors shrink-0"
+            >
+              Seed Data from Excel
+            </button>
+          )}
+        </div>
+        
+        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+          {loadingImports ? (
+            <div className="p-12 text-center text-sm font-medium text-slate-500 animate-pulse">
+              Loading initial imports...
+            </div>
+          ) : initialImports.length === 0 ? (
+            <div className="p-12 text-center flex flex-col items-center">
+              <CheckCircle2 className="w-8 h-8 text-emerald-400 mb-3" />
+              <p className="text-sm font-medium text-slate-600">No pending imports!</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border/50 max-h-[70vh] overflow-y-auto custom-thin-scroll">
+              <div className="p-4 bg-blue-50 text-blue-800 text-sm font-medium border-b border-blue-100 flex justify-between items-center">
+                <span>Showing top 50 pending rows (Total remaining: {initialImports.length})</span>
+              </div>
+              {initialImports.slice(0, 50).map(row => (
+                <div key={row.firestoreId} className="p-5 hover:bg-slate-50 transition-colors">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Project Name</label>
+                      <input 
+                        className="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all shadow-sm bg-white" 
+                        value={row.projectName || ''} 
+                        onChange={(e) => handleUpdateImportRow(row.firestoreId, { projectName: e.target.value })}
+                        placeholder="Enter project name..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Developers (Client)</label>
+                      <MultiSelectCombobox
+                        options={clientOptions}
+                        selectedValues={row.developers || []}
+                        onChange={(vals) => handleUpdateImportRow(row.firestoreId, { developers: vals })}
+                        placeholder="Select or type developer..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Marketing Orgs</label>
+                      <MultiSelectCombobox
+                        options={clientOptions}
+                        selectedValues={row.marketingOrgs || []}
+                        onChange={(vals) => handleUpdateImportRow(row.firestoreId, { marketingOrgs: vals })}
+                        placeholder="Select or type marketing org..."
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end gap-2">
+                    <button onClick={async () => {
+                      const { resolveInitialImport } = await import('../api/dbService');
+                      await resolveInitialImport(row.firestoreId, 'ignore');
+                      loadInitialImports();
+                    }} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-600 rounded-md hover:bg-slate-200 transition-colors">Ignore</button>
+                    
+                    <button onClick={async () => {
+                      const { resolveInitialImport } = await import('../api/dbService');
+                      await resolveInitialImport(row.firestoreId, 'approve', row);
+                      loadInitialImports();
+                    }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 border border-emerald-600 text-white hover:bg-emerald-600 transition-colors shadow-sm">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Approve
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
+
     <div className="flex flex-1 overflow-hidden flex-col bg-white pt-2 px-4 md:px-6 pb-0">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 shrink-0 relative z-30">
@@ -905,6 +1035,7 @@ export default function AdminHub() {
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
         <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
+            { id: 'initial_imports', label: 'One-Time Excel Import', icon: Package },
             { id: 'intake', label: 'Data Intake & Approvals', icon: FolderOpen },
             { id: 'audit', label: 'Audit Trail', icon: History },
             { id: 'archives', label: 'Archives', icon: ArchiveRestore },
@@ -920,6 +1051,7 @@ export default function AdminHub() {
         </div>
 
         <div className="flex-1 p-6 md:p-10 overflow-y-auto bg-white custom-thin-scroll">
+          {activeTab === 'initial_imports' && renderInitialImports()}
           {activeTab === 'intake' && renderIntake()}
           {activeTab === 'audit' && renderAuditTrail()}
           {activeTab === 'archives' && renderArchives()}

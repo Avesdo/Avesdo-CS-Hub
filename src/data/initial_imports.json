@@ -1,0 +1,6018 @@
+[
+  {
+    "projectId": "5",
+    "projectName": "Westbourne",
+    "developerId": "2",
+    "developerName": "JAGO Developments",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "7",
+    "projectName": "ZZ - Closed - Grayson",
+    "developerId": "4",
+    "developerName": "Pennyfarthing",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "8",
+    "projectName": "Maisonette",
+    "developerId": "5",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "9",
+    "projectName": "Cardero",
+    "developerId": "6",
+    "developerName": "Bosa",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "10",
+    "projectName": "Churchill",
+    "developerId": "7",
+    "developerName": "Belford Properties",
+    "marketingOrgName": "Parallel Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "11",
+    "projectName": "1151 Sunset",
+    "developerId": "8",
+    "developerName": "Kerkhoff Construction Inc",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "12",
+    "projectName": "Columbia",
+    "developerId": "9",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "13",
+    "projectName": "Imperial",
+    "developerId": "10",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "14",
+    "projectName": "Marquee",
+    "developerId": "11",
+    "developerName": "BOSA",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "15",
+    "projectName": "AvalonPark",
+    "developerId": "12",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "16",
+    "projectName": "Hawthorne",
+    "developerId": "13",
+    "developerName": "Pennyfarthing Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "17",
+    "projectName": "Synchro",
+    "developerId": "14",
+    "developerName": "Bold",
+    "marketingOrgName": "Oakwyn Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "18",
+    "projectName": "Tudor House",
+    "developerId": "15",
+    "developerName": "Formwerks",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "19",
+    "projectName": "Bellevue",
+    "developerId": "16",
+    "developerName": "Cressey",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "20",
+    "projectName": "U-Five",
+    "developerId": "17",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "21",
+    "projectName": "ZZ - Closed - The Smithe",
+    "developerId": "18",
+    "developerName": "Boffo",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "22",
+    "projectName": "Avalon Park 2",
+    "developerId": "19",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "23",
+    "projectName": "ZZ - Closed - Henry",
+    "developerId": "20",
+    "developerName": "Homei Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "24",
+    "projectName": "The Grey",
+    "developerId": "21",
+    "developerName": "Westland",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "25",
+    "projectName": "Yukon Residences",
+    "developerId": "22",
+    "developerName": "Alabaster Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "26",
+    "projectName": "Sun Towers",
+    "developerId": "23",
+    "developerName": "Belford Properties",
+    "marketingOrgName": "Parallel Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "27",
+    "projectName": "The Stanton",
+    "developerId": "24",
+    "developerName": "Landmark",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "28",
+    "projectName": "Granville & 57th",
+    "developerId": "25",
+    "developerName": "Intracorp",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "29",
+    "projectName": "Miramar Village",
+    "developerId": "26",
+    "developerName": "Bosa Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "30",
+    "projectName": "Central Green 2",
+    "developerId": "27",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "31",
+    "projectName": "Walden",
+    "developerId": "28",
+    "developerName": "Woodbridge Northwest Communities",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "32",
+    "projectName": "Beachborough",
+    "developerId": "29",
+    "developerName": "Texor Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "33",
+    "projectName": "567 Clarke & Como",
+    "developerId": "30",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "34",
+    "projectName": "Cambie 62",
+    "developerId": "31",
+    "developerName": "GD Omni Investments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "35",
+    "projectName": "Mirabel",
+    "developerId": "32",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "36",
+    "projectName": "The Crest",
+    "developerId": "33",
+    "developerName": "Forrester Group",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "37",
+    "projectName": "Delta Gardens",
+    "developerId": "34",
+    "developerName": "Maple Leaf Homes",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "38",
+    "projectName": "Sussex",
+    "developerId": "35",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "39",
+    "projectName": "The Parker",
+    "developerId": "36",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "40",
+    "projectName": "The Martin",
+    "developerId": "37",
+    "developerName": "Landmark Premiere Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "41",
+    "projectName": "The Foster",
+    "developerId": "38",
+    "developerName": "Landmark Premiere Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "42",
+    "projectName": "SKY Residences at ICE District - Old",
+    "developerId": "39",
+    "developerName": "ONE Properties",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "43",
+    "projectName": "Union",
+    "developerId": "40",
+    "developerName": "Austin Square Developments",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "44",
+    "projectName": "The Grand",
+    "developerId": "41",
+    "developerName": "CCM Investment Group LTD.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "45",
+    "projectName": "Ella",
+    "developerId": "42",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "46",
+    "projectName": "ONE Water Street",
+    "developerId": "43",
+    "developerName": "Kerkhoff Construction Inc",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "47",
+    "projectName": "Vantage",
+    "developerId": "44",
+    "developerName": "EPIX Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "48",
+    "projectName": "THE CENTRE",
+    "developerId": "45",
+    "developerName": "Belford Properties",
+    "marketingOrgName": "Parallel Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "49",
+    "projectName": "Kingly Condos",
+    "developerId": "46",
+    "developerName": "Allied Properties and RioCan",
+    "marketingOrgName": "PSR Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "50",
+    "projectName": "Markham Square West",
+    "developerId": "47",
+    "developerName": "Ideal Developments",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "51",
+    "projectName": "The ONE",
+    "developerId": "48",
+    "developerName": "Mizrahi Developments",
+    "marketingOrgName": "PSR Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "52",
+    "projectName": "The Morrison",
+    "developerId": "49",
+    "developerName": "Creo Developments",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "53",
+    "projectName": "ZZ - Closed - Creston",
+    "developerId": "50",
+    "developerName": "Pennyfarthing Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "54",
+    "projectName": "Semiah",
+    "developerId": "51",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "55",
+    "projectName": "Reside",
+    "developerId": "52",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "56",
+    "projectName": "Avalon Park 3",
+    "developerId": "53",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "57",
+    "projectName": "Basalt",
+    "developerId": "54",
+    "developerName": "Pennyfarthing Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "58",
+    "projectName": "Juneau",
+    "developerId": "55",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "59",
+    "projectName": "The Windsor",
+    "developerId": "56",
+    "developerName": "Imani Development",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "60",
+    "projectName": "Township Commons",
+    "developerId": "57",
+    "developerName": "Kingdom",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "61",
+    "projectName": "Markham Square East",
+    "developerId": "58",
+    "developerName": "Ideal Developments",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "62",
+    "projectName": "Simon 2",
+    "developerId": "59",
+    "developerName": "Otivo Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "63",
+    "projectName": "Heritage",
+    "developerId": "60",
+    "developerName": "Formwerks",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "64",
+    "projectName": "Brookside Villas",
+    "developerId": "61",
+    "developerName": "Konnect Brookside Holdings Ltd.",
+    "marketingOrgName": "Oakwyn Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "65",
+    "projectName": "ZZ - Closed - Hensley",
+    "developerId": "62",
+    "developerName": "Cressey",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "66",
+    "projectName": "Canopy",
+    "developerId": "63",
+    "developerName": "StreetSide Developments",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "67",
+    "projectName": "Wynwood Green",
+    "developerId": "64",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "68",
+    "projectName": "Urbana",
+    "developerId": "65",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "69",
+    "projectName": "U-Six",
+    "developerId": "66",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "70",
+    "projectName": "Pier West Tower A",
+    "developerId": "67",
+    "developerName": "Bosa Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "71",
+    "projectName": "Marquise",
+    "developerId": "68",
+    "developerName": "Blairmore Development Group (LLN Properties)",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "72",
+    "projectName": "Boulevard at Town Centre South",
+    "developerId": "69",
+    "developerName": "Elyx Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "73",
+    "projectName": "Boulevard at Town Centre North",
+    "developerId": "70",
+    "developerName": "Elyx Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "74",
+    "projectName": "U-Seven",
+    "developerId": "71",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "75",
+    "projectName": "1181 Queen West",
+    "developerId": "72",
+    "developerName": "Skale Developments",
+    "marketingOrgName": "Rennie Marketing API 01",
+    "status": "pending"
+  },
+  {
+    "projectId": "76",
+    "projectName": "The Links",
+    "developerId": "73",
+    "developerName": "Infinity Properties (Guildford) Ltd.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "77",
+    "projectName": "Pier West Tower B",
+    "developerId": "74",
+    "developerName": "Bosa Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "78",
+    "projectName": "ZZ - Closed - Jumar",
+    "developerId": "75",
+    "developerName": "Wave Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "79",
+    "projectName": "Brickwater 2",
+    "developerId": "76",
+    "developerName": "Falcon Village - Joint Venture",
+    "marketingOrgName": "WCI Media",
+    "status": "pending"
+  },
+  {
+    "projectId": "80",
+    "projectName": "Playground Condos",
+    "developerId": "77",
+    "developerName": "Fernbrook Homes (Strachan 2) Limited",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "81",
+    "projectName": "Roundhouse",
+    "developerId": "78",
+    "developerName": "Gramercy Development LTD",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "82",
+    "projectName": "Regan West",
+    "developerId": "79",
+    "developerName": "Marcon Regan West (GP) Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "83",
+    "projectName": "The Keeley",
+    "developerId": "80",
+    "developerName": "TAS",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "84",
+    "projectName": "Phase 3 - Cirrus at SOLO District",
+    "developerId": "81",
+    "developerName": "Appia Development",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "85",
+    "projectName": "Glenmore Central",
+    "developerId": "82",
+    "developerName": "Westpoint Projects Inc.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "86",
+    "projectName": "Uovo Residences",
+    "developerId": "83",
+    "developerName": "2114 Yonge Street Inc",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "87",
+    "projectName": "8888 Osler",
+    "developerId": "84",
+    "developerName": "Tria Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "88",
+    "projectName": "Upper Montrose",
+    "developerId": "85",
+    "developerName": "FIG Montrose Developments Ltd",
+    "marketingOrgName": "Gowling WLG",
+    "status": "pending"
+  },
+  {
+    "projectId": "89",
+    "projectName": "Acorn",
+    "developerId": "86",
+    "developerName": "Citrine Homes",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "90",
+    "projectName": "Crest",
+    "developerId": "87",
+    "developerName": "Adera Development Corporation",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "91",
+    "projectName": "Cambie Gardens",
+    "developerId": "88",
+    "developerName": "Onni Group",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "92",
+    "projectName": "Hudson Place One",
+    "developerId": "89",
+    "developerName": "Hudson Place One Inc.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "93",
+    "projectName": "One Water Street (West Tower)",
+    "developerId": "90",
+    "developerName": "Kerkhoff Construction Inc",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "94",
+    "projectName": "Kingswood Squamish",
+    "developerId": "91",
+    "developerName": "Bosa Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "95",
+    "projectName": "Maverick",
+    "developerId": "92",
+    "developerName": "Tien Sher Group of Companies",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "96",
+    "projectName": "Belmont Residences West",
+    "developerId": "93",
+    "developerName": "Ledcor Property Development",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "97",
+    "projectName": "D'or Condos",
+    "developerId": "94",
+    "developerName": "Fernbrook Cityzen",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "98",
+    "projectName": "George Townhomes West",
+    "developerId": "95",
+    "developerName": "Marcon St. George (GP) Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "99",
+    "projectName": "George Townhomes East",
+    "developerId": "96",
+    "developerName": "Marcon St. George (GP) Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "100",
+    "projectName": "George Condos",
+    "developerId": "97",
+    "developerName": "Marcon St. George (GP) Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "101",
+    "projectName": "Avani Centre",
+    "developerId": "98",
+    "developerName": "Avani Centre Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "102",
+    "projectName": "Hunter at Lynn Creek",
+    "developerId": "99",
+    "developerName": "Hunter at Lynn Creek By Intergulf Development (Hunter) Limited Partnership and Intergulf Develoment (Hunter 2) Corp",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "103",
+    "projectName": "Gilmore Place - First Tower",
+    "developerId": "100",
+    "developerName": "Onni Group",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "104",
+    "projectName": "Wilmar Estates",
+    "developerId": "101",
+    "developerName": "Coromandel Wilmar LP",
+    "marketingOrgName": "Peterson Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "105",
+    "projectName": "Arcola",
+    "developerId": "102",
+    "developerName": "Kingswood Real Estate",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "106",
+    "projectName": "Aalto Townhomes",
+    "developerId": "103",
+    "developerName": "1226 Johnson Street Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "107",
+    "projectName": "ZZ - Closed - Luxia at Yorkson",
+    "developerId": "104",
+    "developerName": "Isle of Mann & Pollyco Group of Companies",
+    "marketingOrgName": "Pollyco Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "108",
+    "projectName": "Xander",
+    "developerId": "105",
+    "developerName": "RDG Yorkson Development Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "109",
+    "projectName": "Alexa",
+    "developerId": "106",
+    "developerName": "RDG Yorkson Development Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "110",
+    "projectName": "ZZ - Closed - Chelsea by Cressey",
+    "developerId": "107",
+    "developerName": "Cressey",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "111",
+    "projectName": "Marine and Fell",
+    "developerId": "108",
+    "developerName": "Anthem 725 Marine Developments LP",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "112",
+    "projectName": "Gilmore Place - Third Tower",
+    "developerId": "109",
+    "developerName": "Onni Group",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "113",
+    "projectName": "The Dale Trailside Commons",
+    "developerId": "110",
+    "developerName": "The Dale Trailside Commons Limited Partnership",
+    "marketingOrgName": "Hoffman Real Estate Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "114",
+    "projectName": "Winston at South Oak",
+    "developerId": "111",
+    "developerName": "Coromandel Oak 67 Development LP",
+    "marketingOrgName": "Peterson Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "115",
+    "projectName": "Brooklyn",
+    "developerId": "112",
+    "developerName": "Mission Group Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "116",
+    "projectName": "ZZ - Closed - One Bloor West",
+    "developerId": "113",
+    "developerName": "Mizrahi Developments",
+    "marketingOrgName": "PSR Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "117",
+    "projectName": "Forte",
+    "developerId": "114",
+    "developerName": "StreetSide Developments (B.C.) Ltd.",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "118",
+    "projectName": "The Martin 2",
+    "developerId": "115",
+    "developerName": "Landmark Premiere Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "119",
+    "projectName": "The Foster 2",
+    "developerId": "116",
+    "developerName": "Landmark Premiere Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "120",
+    "projectName": "Haven",
+    "developerId": "117",
+    "developerName": "Park Ridge Homes",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "121",
+    "projectName": "Monument",
+    "developerId": "118",
+    "developerName": "Epta Development Corporation",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "122",
+    "projectName": "Winona",
+    "developerId": "119",
+    "developerName": "Raichu Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "123",
+    "projectName": "Tsawwassen Landing",
+    "developerId": "120",
+    "developerName": "Onni TFN Development No. 1 Limited Partnership",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "124",
+    "projectName": "Scout Condos",
+    "developerId": "121",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "125",
+    "projectName": "Camellia Residences",
+    "developerId": "122",
+    "developerName": "ATL Senior Living",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "126",
+    "projectName": "Soleil",
+    "developerId": "123",
+    "developerName": "RDG White Rock Developments Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "127",
+    "projectName": "56 Harbour",
+    "developerId": "124",
+    "developerName": "Bell Properties",
+    "marketingOrgName": "Test 6",
+    "status": "pending"
+  },
+  {
+    "projectId": "128",
+    "projectName": "Ovation",
+    "developerId": "125",
+    "developerName": "Domus Homes and Vintop Development Corp Sales Team",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "129",
+    "projectName": "The Grande",
+    "developerId": "126",
+    "developerName": "Onni Ioco Road Four Development Limited Partnership",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "130",
+    "projectName": "Junction House",
+    "developerId": "127",
+    "developerName": "Slate with Globizen",
+    "marketingOrgName": "Paul Johnston Unique Urban Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "131",
+    "projectName": "University District North",
+    "developerId": "128",
+    "developerName": "BlueSky Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "132",
+    "projectName": "Maywood on the Park",
+    "developerId": "129",
+    "developerName": "Intracorp Maywood Park Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "133",
+    "projectName": "King Toronto East",
+    "developerId": "130",
+    "developerName": "Westbank / Allied",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "134",
+    "projectName": "King Toronto North",
+    "developerId": "131",
+    "developerName": "Westbank / Allied",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "135",
+    "projectName": "One Central",
+    "developerId": "132",
+    "developerName": "Strand and Macdonald Development",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "136",
+    "projectName": "The Granville",
+    "developerId": "133",
+    "developerName": "Aoyuan Property Group (Canada) Ltd.",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "137",
+    "projectName": "The Winslow",
+    "developerId": "134",
+    "developerName": "Devron Developments",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "138",
+    "projectName": "The Residences at Willoughby Town Centre",
+    "developerId": "135",
+    "developerName": "Qualico",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "139",
+    "projectName": "Avani Centre*",
+    "developerId": "136",
+    "developerName": "Avani Centre Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "140",
+    "projectName": "Gilmore Place - Tower 2",
+    "developerId": "137",
+    "developerName": "Onni Gilmore Ave. Development Limited Partnership & Onni GIlmore Holdings Corp.",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "141",
+    "projectName": "The Paramount",
+    "developerId": "138",
+    "developerName": "Keltic (Brighouse) Development Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "142",
+    "projectName": "King Toronto South",
+    "developerId": "139",
+    "developerName": "WESTBANK / ALLIED",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "143",
+    "projectName": "Cambie Gardens - West",
+    "developerId": "140",
+    "developerName": "Onni Group of Companies",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "144",
+    "projectName": "Mode",
+    "developerId": "141",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "145",
+    "projectName": "THE AUDLEY",
+    "developerId": "142",
+    "developerName": "Oaken Developments (Brydon) Inc.",
+    "marketingOrgName": "Frontline Real Estate Services",
+    "status": "pending"
+  },
+  {
+    "projectId": "146",
+    "projectName": "Oakridge - Sergio Castiglia",
+    "developerId": "143",
+    "developerName": "Westbank",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "147",
+    "projectName": "Oakridge - Piero Lissoni",
+    "developerId": "144",
+    "developerName": "Westbank",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "148",
+    "projectName": "Akimbo",
+    "developerId": "145",
+    "developerName": "Imani Development Madison Limited Partnership",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "149",
+    "projectName": "Atmosphere - Phase 1",
+    "developerId": "146",
+    "developerName": "South Street Development",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "150",
+    "projectName": "Bayview Creek",
+    "developerId": "147",
+    "developerName": "CIM Bayview Creek Inc",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "155",
+    "projectName": "U-Eight",
+    "developerId": "152",
+    "developerName": "Mission Group Enterprises Ltd",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "156",
+    "projectName": "Riverbrook Estates",
+    "developerId": "153",
+    "developerName": "Riverbrook Estates Ltd",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "157",
+    "projectName": "ZZ - Closed - Starling at Lumina Brentwood",
+    "developerId": "154",
+    "developerName": "Thind Properties",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "158",
+    "projectName": "Alpha at Lumina Brentwood",
+    "developerId": "155",
+    "developerName": "Thind Properties",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "159",
+    "projectName": "ZZ - Closed - Gala at Parc Central",
+    "developerId": "156",
+    "developerName": "Essence Properties Inc.",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "160",
+    "projectName": "University District South",
+    "developerId": "157",
+    "developerName": "BlueSky Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "161",
+    "projectName": "The Paramount - Office",
+    "developerId": "158",
+    "developerName": "Keltic (Brighouse) Development Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "162",
+    "projectName": "Waterfall at Lumina Brentwood",
+    "developerId": "159",
+    "developerName": "Thind Properties",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "163",
+    "projectName": "Transit City 3",
+    "developerId": "160",
+    "developerName": "Centre Court",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "164",
+    "projectName": "Georgetown One",
+    "developerId": "161",
+    "developerName": "Anthem Georgetown One Developments LP",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "165",
+    "projectName": "Sun Towers 2",
+    "developerId": "162",
+    "developerName": "Belford Properties",
+    "marketingOrgName": "Parallel Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "166",
+    "projectName": "Riverstone Place",
+    "developerId": "163",
+    "developerName": "Riverstone Place Inc",
+    "marketingOrgName": "Oakwyn Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "167",
+    "projectName": "LM Sydney Homes LP",
+    "developerId": "164",
+    "developerName": "Ledingham McAllister",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "168",
+    "projectName": "Sylvia",
+    "developerId": "165",
+    "developerName": "WOODBRIDGE (121) LIMITED PARTNERSHIP",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "169",
+    "projectName": "Duet",
+    "developerId": "166",
+    "developerName": "Duet Adera Projects Ltd.",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "170",
+    "projectName": "UniK-Town",
+    "developerId": "167",
+    "developerName": "UNIK-TOWN DEVELOPMENT INC.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "171",
+    "projectName": "Times Square Richmond - Commercial",
+    "developerId": "168",
+    "developerName": "Bene (Richmond) Development Ltd. (Times Square Project)",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "172",
+    "projectName": "Castiglia General Strata Office",
+    "developerId": "169",
+    "developerName": "Westbank/Quadreal",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "173",
+    "projectName": "Oakridge - Wellness East",
+    "developerId": "170",
+    "developerName": "Westbank/Quadreal",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "174",
+    "projectName": "Oakridge - General West",
+    "developerId": "171",
+    "developerName": "Westbank/Quadreal",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "175",
+    "projectName": "King Toronto West",
+    "developerId": "172",
+    "developerName": "Westbank / Allied",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "176",
+    "projectName": "One Park",
+    "developerId": "173",
+    "developerName": "Grand Long Holdings Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "177",
+    "projectName": "The Paramount - Retail",
+    "developerId": "174",
+    "developerName": "Keltic (Brighouse) Development Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "178",
+    "projectName": "50 Electronic Avenue",
+    "developerId": "175",
+    "developerName": "50 Electronic (Residential) LP",
+    "marketingOrgName": "Hestia Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "179",
+    "projectName": "ZZ - Closed - Kira",
+    "developerId": "176",
+    "developerName": "Woodbridge Dogwood Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "180",
+    "projectName": "The Vanguard",
+    "developerId": "177",
+    "developerName": "Yonge Grandview Corp.",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "181",
+    "projectName": "Ventura",
+    "developerId": "178",
+    "developerName": "Ventura Properties Ltd",
+    "marketingOrgName": "Pacific Hills Developments",
+    "status": "pending"
+  },
+  {
+    "projectId": "182",
+    "projectName": "Toppen Ridge",
+    "developerId": "179",
+    "developerName": "FB E. 3rd Develoment Limited Partnership",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "183",
+    "projectName": "Tretti Condos",
+    "developerId": "180",
+    "developerName": "Collecdev",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "184",
+    "projectName": "Orchard Park",
+    "developerId": "181",
+    "developerName": "StreetSide Developments (BC) Ltd.",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "185",
+    "projectName": "900 St. Clair",
+    "developerId": "182",
+    "developerName": "Canderel",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "186",
+    "projectName": "Victoria",
+    "developerId": "183",
+    "developerName": "Mosaic Lower Victoria Limited Partnership",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "187",
+    "projectName": "The Theodore Condos",
+    "developerId": "184",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "188",
+    "projectName": "REUNION",
+    "developerId": "185",
+    "developerName": "LANSTONE HOMES (MURRAYVILLE) LTD.",
+    "marketingOrgName": "Frontline Real Estate Services",
+    "status": "pending"
+  },
+  {
+    "projectId": "189",
+    "projectName": "ZZ - Closed - The Kip District Phase Two Condominiums",
+    "developerId": "186",
+    "developerName": "Concert Real Estate Corporation",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "190",
+    "projectName": "Park South",
+    "developerId": "187",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "191",
+    "projectName": "Argyle-Benchmark",
+    "developerId": "188",
+    "developerName": "Benchmark Homes",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "192",
+    "projectName": "2 River Green",
+    "developerId": "189",
+    "developerName": "Aspac Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "193",
+    "projectName": "Ebb&Flow",
+    "developerId": "190",
+    "developerName": "LIONS GATE VILLAGE LIMITED PARTNERSHIP, by its general partner, LIONS GATE VILLAGE PROJECT LTD.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "194",
+    "projectName": "The Henley",
+    "developerId": "191",
+    "developerName": "RKDI (LANGLEY) HOMES LTD.",
+    "marketingOrgName": "The Partners Marketing Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "195",
+    "projectName": "SEAandSKY",
+    "developerId": "192",
+    "developerName": "BlueSky Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "196",
+    "projectName": "ZZ - Closed - Tribute at Parc Central",
+    "developerId": "193",
+    "developerName": "Essence Properties (Parc Central) Inc.",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "197",
+    "projectName": "55C Residences",
+    "developerId": "194",
+    "developerName": "MOD Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "198",
+    "projectName": "Amber Douglas Park",
+    "developerId": "195",
+    "developerName": "Aragon Properties Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "199",
+    "projectName": "Scott & Nicholson",
+    "developerId": "196",
+    "developerName": "Realco Holdings (Scottsdale Centre) Ltd.",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "200",
+    "projectName": "Argyle-Distrikt",
+    "developerId": "197",
+    "developerName": "Distrikt Homes",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "201",
+    "projectName": "Belmont Residences East",
+    "developerId": "198",
+    "developerName": "Belmont Residences East Limited Partnership",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "202",
+    "projectName": "Oakridge - Clemande Burgevin Blachman B7",
+    "developerId": "199",
+    "developerName": "Westbank",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "203",
+    "projectName": "Natura",
+    "developerId": "200",
+    "developerName": "Naturbana Properties Ltd.",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "204",
+    "projectName": "Shift Little Mountain",
+    "developerId": "201",
+    "developerName": "Aragon Properties Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "205",
+    "projectName": "Fraser Hill",
+    "developerId": "202",
+    "developerName": "Park Ridge Homes (Fraser Heights) LP",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "206",
+    "projectName": "Atmosphere Retail",
+    "developerId": "203",
+    "developerName": "South Street Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "207",
+    "projectName": "Ferguson Place",
+    "developerId": "204",
+    "developerName": "Citadel Properties Inc",
+    "marketingOrgName": "Hardy Real Estate Team",
+    "status": "pending"
+  },
+  {
+    "projectId": "208",
+    "projectName": "Founders Block North",
+    "developerId": "205",
+    "developerName": "Anthem East 3rd Developments Limited Partnership and Anthem East 3rd Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "209",
+    "projectName": "Five Road",
+    "developerId": "206",
+    "developerName": "Anthem 5 Road Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "210",
+    "projectName": "Hollybridge at River Green",
+    "developerId": "207",
+    "developerName": "ASPAC Developments",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "211",
+    "projectName": "The Summit",
+    "developerId": "208",
+    "developerName": "Investecs Development Inc.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "212",
+    "projectName": "1515 Rupert",
+    "developerId": "209",
+    "developerName": "Areva Living",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "213",
+    "projectName": "Creekside",
+    "developerId": "210",
+    "developerName": "Streetside Developments (Surrey)",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "214",
+    "projectName": "The Residences at Mandarin Oriental",
+    "developerId": "211",
+    "developerName": "Salem Partners LLC",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "215",
+    "projectName": "Seaside",
+    "developerId": "212",
+    "developerName": "Mosaic",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "216",
+    "projectName": "Brickwater 3",
+    "developerId": "213",
+    "developerName": "Falcon Village - Joint Venture",
+    "marketingOrgName": "WCI Media",
+    "status": "pending"
+  },
+  {
+    "projectId": "217",
+    "projectName": "The Holland",
+    "developerId": "214",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "218",
+    "projectName": "Latimer Village",
+    "developerId": "215",
+    "developerName": "Vesta Properties (Latimer) Ltd.",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "219",
+    "projectName": "West Third",
+    "developerId": "216",
+    "developerName": "Anthem Chesterfield Developments LP and Anthem Chesterfield Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "220",
+    "projectName": "Parker",
+    "developerId": "217",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "221",
+    "projectName": "Texas Brownstones - OLD",
+    "developerId": "218",
+    "developerName": "Novak Brothers Texas Brownstones LLC",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "222",
+    "projectName": "The Forest",
+    "developerId": "219",
+    "developerName": "National Homes (Bradford) Inc.",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "223",
+    "projectName": "Goodwin",
+    "developerId": "220",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "224",
+    "projectName": "Hazelwood",
+    "developerId": "221",
+    "developerName": "Hungerford Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "225",
+    "projectName": "Wilder Crossing",
+    "developerId": "222",
+    "developerName": "INFINITY PROPERTIES (SW GORDON) LTD.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "226",
+    "projectName": "Exchange District 2",
+    "developerId": "223",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "227",
+    "projectName": "Goreway Drive",
+    "developerId": "224",
+    "developerName": "National Homes (Brampton) Inc.",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "228",
+    "projectName": "Goreway",
+    "developerId": "225",
+    "developerName": "National Homes",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "229",
+    "projectName": "The Forest Hill Condominiums",
+    "developerId": "226",
+    "developerName": "Centre Court",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "230",
+    "projectName": "ERA",
+    "developerId": "227",
+    "developerName": "SwissReal Developments",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "231",
+    "projectName": "The Village - Southfields, Caledon",
+    "developerId": "228",
+    "developerName": "Cedarcove Developments Inc.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "232",
+    "projectName": "The Residences at Touchstone Village",
+    "developerId": "229",
+    "developerName": "Greenlane Homes",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "233",
+    "projectName": "Ella.",
+    "developerId": "230",
+    "developerName": "GN Holdings Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "234",
+    "projectName": "Esquimalt Town Square",
+    "developerId": "231",
+    "developerName": "Aragon Esquimalt TC Properties Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "235",
+    "projectName": "Floral Green",
+    "developerId": "232",
+    "developerName": "Avesdo 1",
+    "marketingOrgName": "Test 6",
+    "status": "pending"
+  },
+  {
+    "projectId": "236",
+    "projectName": "Grand Bell Suites",
+    "developerId": "233",
+    "developerName": "Lakeview Development Holdings Inc.",
+    "marketingOrgName": "iRise",
+    "status": "pending"
+  },
+  {
+    "projectId": "237",
+    "projectName": "SOCO One – Tower B",
+    "developerId": "234",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "238",
+    "projectName": "Nordic Condos",
+    "developerId": "235",
+    "developerName": "Collecdev",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "239",
+    "projectName": "ZZ - Closed - Skagen Townhomes",
+    "developerId": "236",
+    "developerName": "Foster Eighth Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "240",
+    "projectName": "Texas Brownstones",
+    "developerId": "237",
+    "developerName": "Novak Brothers Texas Brownstones LLC",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "241",
+    "projectName": "SKY Residences at ICE District",
+    "developerId": "238",
+    "developerName": "SKY ICE DISTRICT RESIDENCES LIMITED PARTNERSHIP",
+    "marketingOrgName": "Milborne Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "242",
+    "projectName": "Horizon 21",
+    "developerId": "239",
+    "developerName": "Centred Development",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "243",
+    "projectName": "The Townhomes at Touchstone Village",
+    "developerId": "240",
+    "developerName": "Greenlane Homes Ltd",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "244",
+    "projectName": "Bertram at Bernard Block",
+    "developerId": "241",
+    "developerName": "Mission Group Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "245",
+    "projectName": "Paradigm",
+    "developerId": "242",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "246",
+    "projectName": "Verge",
+    "developerId": "243",
+    "developerName": "Essence Properties",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "247",
+    "projectName": "Exchange District",
+    "developerId": "244",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "248",
+    "projectName": "SOCO One – Tower A",
+    "developerId": "245",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "249",
+    "projectName": "55 Mercer Condominiums",
+    "developerId": "246",
+    "developerName": "CentreCourt",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "250",
+    "projectName": "88 Queen - Old",
+    "developerId": "247",
+    "developerName": "St Thomas Developments",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "251",
+    "projectName": "Seaside North",
+    "developerId": "248",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "252",
+    "projectName": "Ethan",
+    "developerId": "249",
+    "developerName": "Ethan",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "253",
+    "projectName": "88 Queen2 Old",
+    "developerId": "250",
+    "developerName": "St Thomas Developments",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "254",
+    "projectName": "88 Queen",
+    "developerId": "251",
+    "developerName": "St Thomas Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "255",
+    "projectName": "Founders Block South",
+    "developerId": "252",
+    "developerName": "Anthem Properties Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "256",
+    "projectName": "Promenade Park Towers Phase 2",
+    "developerId": "253",
+    "developerName": "Liberty Development",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "257",
+    "projectName": "Manoir",
+    "developerId": "254",
+    "developerName": "Everglade Development",
+    "marketingOrgName": "icon & Co Boutique",
+    "status": "pending"
+  },
+  {
+    "projectId": "258",
+    "projectName": "Mitchell",
+    "developerId": "255",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "259",
+    "projectName": "Frenchman's Bay",
+    "developerId": "256",
+    "developerName": "Madison Liverpool Limited",
+    "marketingOrgName": "International Home Marketing Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "260",
+    "projectName": "Forester At Burke Mountain",
+    "developerId": "257",
+    "developerName": "Mitchell Street Limited Partnership, by its general partner, Mitchell Street GP Inc.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "261",
+    "projectName": "Field & Fort",
+    "developerId": "258",
+    "developerName": "Altos Properties Corp.",
+    "marketingOrgName": "Frontline Real Estate Services",
+    "status": "pending"
+  },
+  {
+    "projectId": "262",
+    "projectName": "Harmonia Condos at Cite Nature",
+    "developerId": "259",
+    "developerName": "Cite Nature Developments",
+    "marketingOrgName": "McGill Immobilier",
+    "status": "pending"
+  },
+  {
+    "projectId": "263",
+    "projectName": "ZZ - Closed - Holland Row",
+    "developerId": "260",
+    "developerName": "PC Urban",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "264",
+    "projectName": "ZZ - Closed - Rocklin on the Creek",
+    "developerId": "261",
+    "developerName": "Baycrest Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "265",
+    "projectName": "The Sentinel",
+    "developerId": "262",
+    "developerName": "Denna Homes",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "266",
+    "projectName": "Oakridge - Creative Workspace at the Woodlands",
+    "developerId": "263",
+    "developerName": "Westbank",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "267",
+    "projectName": "ZZ - Closed - Perron",
+    "developerId": "264",
+    "developerName": "Listraor (Yukon) Homes Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "268",
+    "projectName": "Demo1",
+    "developerId": "265",
+    "developerName": "Avesdo Developments",
+    "marketingOrgName": "Test 6",
+    "status": "pending"
+  },
+  {
+    "projectId": "269",
+    "projectName": "1414 Bayview",
+    "developerId": "266",
+    "developerName": "Gairloch Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "270",
+    "projectName": "Elston",
+    "developerId": "267",
+    "developerName": "1133321 B.C. Ltd.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "271",
+    "projectName": "The Corners",
+    "developerId": "268",
+    "developerName": "RDG Clayton Development Ltd.",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "272",
+    "projectName": "The Corners - Townhomes",
+    "developerId": "269",
+    "developerName": "RDG Clayton Development Ltd.",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "273",
+    "projectName": "The Tailor",
+    "developerId": "270",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "274",
+    "projectName": "FRAME.",
+    "developerId": "271",
+    "developerName": "Hayer Builders Group",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "275",
+    "projectName": "ZZ - Closed - River + Pine",
+    "developerId": "272",
+    "developerName": "A River's Dance Developments Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "276",
+    "projectName": "Ivylea Towns",
+    "developerId": "273",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "277",
+    "projectName": "Port & Mill",
+    "developerId": "274",
+    "developerName": "StreetSide Developments",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "278",
+    "projectName": "The Brook",
+    "developerId": "275",
+    "developerName": "Clustergarden Estates Inc.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "279",
+    "projectName": "Wood + Water 2",
+    "developerId": "276",
+    "developerName": "Anthem Coyote Creek Two Developments Limited Partnership and Anthem Coyote Creek Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "280",
+    "projectName": "Wood + Water 3",
+    "developerId": "277",
+    "developerName": "Anthem Coyote Creek Three Developments Limited Partnership and Anthem Coyote Creek Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "281",
+    "projectName": "Loma",
+    "developerId": "278",
+    "developerName": "ML Emporio Properties",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "282",
+    "projectName": "Canopy Towers - Building A",
+    "developerId": "279",
+    "developerName": "Liberty Development",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "283",
+    "projectName": "Voyce",
+    "developerId": "280",
+    "developerName": "Forefield Development Group",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "284",
+    "projectName": "Junction Point",
+    "developerId": "281",
+    "developerName": "Gairloch Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "285",
+    "projectName": "Saavin",
+    "developerId": "282",
+    "developerName": "Kirpal Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "286",
+    "projectName": "Baycrest on the Rise",
+    "developerId": "283",
+    "developerName": "Woodbridge Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "287",
+    "projectName": "Habitat",
+    "developerId": "284",
+    "developerName": "Porte, Fabric, Hudson",
+    "marketingOrgName": "Framework Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "288",
+    "projectName": "Kin Collection",
+    "developerId": "285",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "289",
+    "projectName": "Light House",
+    "developerId": "286",
+    "developerName": "Port Royal Village Dev. Inc",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "290",
+    "projectName": "Highpoint",
+    "developerId": "287",
+    "developerName": "Ledingham McAllister",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "291",
+    "projectName": "Apex",
+    "developerId": "288",
+    "developerName": "Denna Homes",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "292",
+    "projectName": "Portside",
+    "developerId": "289",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "293",
+    "projectName": "QA Queen & Ashbridge",
+    "developerId": "290",
+    "developerName": "Context and RioCan Living",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "294",
+    "projectName": "The Homesites at Touchstone Village",
+    "developerId": "291",
+    "developerName": "Greenlane Homes",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "295",
+    "projectName": "Format",
+    "developerId": "292",
+    "developerName": "Cressey Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "296",
+    "projectName": "Format",
+    "developerId": "293",
+    "developerName": "Cressey Developments",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "297",
+    "projectName": "The Stanley District",
+    "developerId": "294",
+    "developerName": "La Pue International",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "298",
+    "projectName": "Georgia",
+    "developerId": "295",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "299",
+    "projectName": "IvyLea 2",
+    "developerId": "296",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "300",
+    "projectName": "Hundredth Square",
+    "developerId": "297",
+    "developerName": "Avesdo Developments",
+    "marketingOrgName": "Test 6",
+    "status": "pending"
+  },
+  {
+    "projectId": "301",
+    "projectName": "Latimer Heights",
+    "developerId": "298",
+    "developerName": "Vesta Properties (Latimer) Ltd.",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "302",
+    "projectName": "East Court Residences",
+    "developerId": "299",
+    "developerName": "ECR",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "303",
+    "projectName": "Alaska",
+    "developerId": "300",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "304",
+    "projectName": "ZZ - Closed - Capital Point",
+    "developerId": "301",
+    "developerName": "Slate Asset Management",
+    "marketingOrgName": "Paul Johnston Unique Urban Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "305",
+    "projectName": "Tyandaga Heights On The Park",
+    "developerId": "302",
+    "developerName": "National Homes",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "306",
+    "projectName": "Fairfield Towns",
+    "developerId": "303",
+    "developerName": "Plazacorp",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "307",
+    "projectName": "NUVO",
+    "developerId": "304",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "308",
+    "projectName": "Holden Row",
+    "developerId": "305",
+    "developerName": "PENMAT MANA JV LTD.",
+    "marketingOrgName": "Milan Mann",
+    "status": "pending"
+  },
+  {
+    "projectId": "309",
+    "projectName": "Archetto",
+    "developerId": "306",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "310",
+    "projectName": "Unison",
+    "developerId": "307",
+    "developerName": "Ecogen Properties Ltd",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "311",
+    "projectName": "NUVO II",
+    "developerId": "308",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "312",
+    "projectName": "Caledon Trails",
+    "developerId": "309",
+    "developerName": "Laurier Homes & Yorkwood Homes",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "313",
+    "projectName": "Tailor",
+    "developerId": "310",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "314",
+    "projectName": "Mackenzie Plaza (Phase 2)",
+    "developerId": "311",
+    "developerName": "0929468 BC LTD",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "315",
+    "projectName": "Smith & Farrow",
+    "developerId": "312",
+    "developerName": "Boffo Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "316",
+    "projectName": "Foundry Langley West",
+    "developerId": "313",
+    "developerName": "Miracon 80 Development Limited Partnership",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "317",
+    "projectName": "ZZ - Closed - Noble",
+    "developerId": "314",
+    "developerName": "Essence Properties (Parc Central) Inc.",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "318",
+    "projectName": "Jinju",
+    "developerId": "315",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "319",
+    "projectName": "do not use",
+    "developerId": "316",
+    "developerName": "Charlotte King Residences Corp.",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "320",
+    "projectName": "400 King West",
+    "developerId": "317",
+    "developerName": "Charlotte King Residences Corp.",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "321",
+    "projectName": "Joy Station",
+    "developerId": "318",
+    "developerName": "Liberty Development",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "322",
+    "projectName": "House of Assembly",
+    "developerId": "319",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "323",
+    "projectName": "Oak + 52 Townhomes",
+    "developerId": "320",
+    "developerName": "Coromandel Properties",
+    "marketingOrgName": "Peterson Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "324",
+    "projectName": "Valeo",
+    "developerId": "321",
+    "developerName": "StreetSide Developments",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "325",
+    "projectName": "The Boroughs",
+    "developerId": "322",
+    "developerName": "StreetSide Developments (BC) Ltd.",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "326",
+    "projectName": "Autograph",
+    "developerId": "323",
+    "developerName": "Pennyfarthing Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "327",
+    "projectName": "Lakestone",
+    "developerId": "324",
+    "developerName": "Macdonald Communities Limited",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "328",
+    "projectName": "Green Square Vert",
+    "developerId": "325",
+    "developerName": "Troika",
+    "marketingOrgName": "Sothebys Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "329",
+    "projectName": "Mackenzie Plaza (Phase 3)",
+    "developerId": "326",
+    "developerName": "0929468 BC Ltd",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "330",
+    "projectName": "Q5",
+    "developerId": "327",
+    "developerName": "TIEN SHER CENTRE POINTE LIMITED PARTNERSHIP, by its general partner, TIEN SHER INVESTMENT (JAMZE) GROUP INC. together with TIEN SHER Q5 DEVELOPMENT GROUP INC.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "331",
+    "projectName": "Livewell",
+    "developerId": "328",
+    "developerName": "Gatehouse Developments (Livewell) Inc.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "332",
+    "projectName": "Oku 64 Oak",
+    "developerId": "329",
+    "developerName": "Ulmus Oku Development Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "333",
+    "projectName": "Madewell",
+    "developerId": "330",
+    "developerName": "Gatehouse Developments (Madewell) Inc.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "334",
+    "projectName": "Redbridge",
+    "developerId": "331",
+    "developerName": "Kingswood Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "335",
+    "projectName": "Will",
+    "developerId": "332",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "336",
+    "projectName": "The Saint George",
+    "developerId": "333",
+    "developerName": "Reliance Properties",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "337",
+    "projectName": "The Vale",
+    "developerId": "334",
+    "developerName": "National Homes",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "338",
+    "projectName": "West",
+    "developerId": "335",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "339",
+    "projectName": "ZZZ - Suspended - Davie and Nicola",
+    "developerId": "336",
+    "developerName": "Align BC Properties Corp",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "340",
+    "projectName": "ZZZ - Suspended - Robson & Cardero",
+    "developerId": "337",
+    "developerName": "Align BC Properties Corp",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "341",
+    "projectName": "ZZZ - Suspended - Cambie and West 41st",
+    "developerId": "338",
+    "developerName": "Align BC Properties Corp",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "342",
+    "projectName": "District Willoughby Town Centre",
+    "developerId": "339",
+    "developerName": "District (Yorkson) Holdings Ltd",
+    "marketingOrgName": "Pollyco Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "343",
+    "projectName": "Eagles' Rest",
+    "developerId": "340",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "344",
+    "projectName": "Aqua Tower 1",
+    "developerId": "341",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "345",
+    "projectName": "McKenzie Mews",
+    "developerId": "342",
+    "developerName": "Amacon Development Corp.",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "346",
+    "projectName": "Luxe",
+    "developerId": "343",
+    "developerName": "Luxe Richmond Development LP",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "347",
+    "projectName": "Forester Two at Burke Mountain",
+    "developerId": "344",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "348",
+    "projectName": "Chloe Kerrisdale",
+    "developerId": "345",
+    "developerName": "Matchpoint Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "349",
+    "projectName": "Vue",
+    "developerId": "346",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "350",
+    "projectName": "Block Residences",
+    "developerId": "347",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "351",
+    "projectName": "Pure",
+    "developerId": "348",
+    "developerName": "Lavern Developments",
+    "marketingOrgName": "rareEarth Project Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "352",
+    "projectName": "Pacific House",
+    "developerId": "349",
+    "developerName": "Lexi Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "353",
+    "projectName": "2 Burrard Place",
+    "developerId": "350",
+    "developerName": "Reliance Properties & Jim Pattison Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "354",
+    "projectName": "error_The Residences at Lakeview Village",
+    "developerId": "351",
+    "developerName": "KiND Development Group",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "355",
+    "projectName": "error_Channel",
+    "developerId": "352",
+    "developerName": "Pennyfarthing Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "356",
+    "projectName": "ZZ - Closed - Channel",
+    "developerId": "353",
+    "developerName": "Pennyfarthing Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "357",
+    "projectName": "The Residences at Lakeview Village",
+    "developerId": "354",
+    "developerName": "KiND Development Group",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "358",
+    "projectName": "PARALLEL by Hayer Builders Group",
+    "developerId": "355",
+    "developerName": "Hayer Builders Group",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "359",
+    "projectName": "Avenue 33",
+    "developerId": "356",
+    "developerName": "Vertex Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "360",
+    "projectName": "Oak & Onyx",
+    "developerId": "357",
+    "developerName": "ML Emporio",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "361",
+    "projectName": "Southaven",
+    "developerId": "358",
+    "developerName": "Park Ridge Homes (South Haven) Limited Partnership",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "362",
+    "projectName": "Water Street By the Park",
+    "developerId": "359",
+    "developerName": "THE PARK) LIMITED PARTNERSHIP",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "363",
+    "projectName": "Eastleigh",
+    "developerId": "360",
+    "developerName": "RF Properties",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "364",
+    "projectName": "Brickwater 4",
+    "developerId": "361",
+    "developerName": "Falcon Village - Joint Venture",
+    "marketingOrgName": "WCI Media",
+    "status": "pending"
+  },
+  {
+    "projectId": "365",
+    "projectName": "Zara at Lakestone",
+    "developerId": "362",
+    "developerName": "Dominium Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "366",
+    "projectName": "Reunion at #MyBelmont",
+    "developerId": "363",
+    "developerName": "Ledcor Property Development",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "367",
+    "projectName": "Baycrest West",
+    "developerId": "364",
+    "developerName": "Woodbridge Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "368",
+    "projectName": "The Arbor",
+    "developerId": "365",
+    "developerName": "Trellis Properties Ltd.",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "369",
+    "projectName": "The Eli",
+    "developerId": "366",
+    "developerName": "THE PARK) LIMITED PARTNERSHIP",
+    "marketingOrgName": "Oakwyn Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "370",
+    "projectName": "The Dylan Demonstration Environment",
+    "developerId": "367",
+    "developerName": "Montana Steele",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "371",
+    "projectName": "Exchange District 3",
+    "developerId": "368",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "372",
+    "projectName": "Holland Two",
+    "developerId": "369",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "373",
+    "projectName": "Melrose",
+    "developerId": "370",
+    "developerName": "ML Emporio Development Ltd",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "374",
+    "projectName": "The Standard",
+    "developerId": "371",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "375",
+    "projectName": "Caban",
+    "developerId": "372",
+    "developerName": "Cressey",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "376",
+    "projectName": "ZZ - Closed - Eclipse",
+    "developerId": "373",
+    "developerName": "Thind Properties",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "377",
+    "projectName": "Cielo Residence",
+    "developerId": "374",
+    "developerName": "Collecdev",
+    "marketingOrgName": "RDS",
+    "status": "pending"
+  },
+  {
+    "projectId": "378",
+    "projectName": "Movala Phase 1",
+    "developerId": "375",
+    "developerName": "Stober Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "379",
+    "projectName": "Eastin",
+    "developerId": "376",
+    "developerName": "Essence Properties",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "380",
+    "projectName": "Westgate",
+    "developerId": "377",
+    "developerName": "Matrix Development",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "381",
+    "projectName": "Britannia Beach",
+    "developerId": "378",
+    "developerName": "Britannia Residential Adera Projects Ltd.",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "382",
+    "projectName": "Chronicle",
+    "developerId": "379",
+    "developerName": "1161629 B.C. Ltd.",
+    "marketingOrgName": "Tangerine Developments Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "383",
+    "projectName": "Oslo",
+    "developerId": "380",
+    "developerName": "Eighth Avenue Development Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "384",
+    "projectName": "Slate",
+    "developerId": "381",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "385",
+    "projectName": "Gryphon Nova",
+    "developerId": "382",
+    "developerName": "Gryphon Development",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "386",
+    "projectName": "Ascent Canmore",
+    "developerId": "383",
+    "developerName": "1730 Bow Valley Trail GP Ltd.",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "387",
+    "projectName": "First & Park",
+    "developerId": "384",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "388",
+    "projectName": "One Park - Tower A",
+    "developerId": "385",
+    "developerName": "Grand Long Holdings Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "389",
+    "projectName": "Applewood Towns",
+    "developerId": "386",
+    "developerName": "Sierra Communities",
+    "marketingOrgName": "International Home Marketing Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "390",
+    "projectName": "IvyLea 3",
+    "developerId": "387",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "391",
+    "projectName": "Holden Row Residences",
+    "developerId": "388",
+    "developerName": "Penmat Mana JV Ltd.",
+    "marketingOrgName": "Milan Mann",
+    "status": "pending"
+  },
+  {
+    "projectId": "392",
+    "projectName": "Central District",
+    "developerId": "389",
+    "developerName": "Icon Homes and Old Orchard Homes",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "393",
+    "projectName": "Just West",
+    "developerId": "390",
+    "developerName": "SIGHTLINE PROPERTIES (KING EDWARD AVE) LTD.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "394",
+    "projectName": "Lakehouse Summerland",
+    "developerId": "391",
+    "developerName": "Kerkhoff Construction Inc",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "395",
+    "projectName": "One Park Tower A - Strata Office",
+    "developerId": "392",
+    "developerName": "Grand Long Holdings Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "396",
+    "projectName": "Luxe Office",
+    "developerId": "393",
+    "developerName": "Luxe Richmond Development Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "397",
+    "projectName": "Lemonade Lane",
+    "developerId": "394",
+    "developerName": "Cedar Street Developments",
+    "marketingOrgName": "Interrobang Developments",
+    "status": "pending"
+  },
+  {
+    "projectId": "398",
+    "projectName": "Viktor",
+    "developerId": "395",
+    "developerName": "ML Emporio Construction Ltd.",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "399",
+    "projectName": "ZZ - Closed - Ellery",
+    "developerId": "396",
+    "developerName": "Isle of Mann",
+    "marketingOrgName": "Pollyco Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "400",
+    "projectName": "Flamingo",
+    "developerId": "397",
+    "developerName": "Tien Sher",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "401",
+    "projectName": "Oakridge X Westbank",
+    "developerId": "398",
+    "developerName": "Westbank & Quadreal",
+    "marketingOrgName": "Rad Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "402",
+    "projectName": "Mirada Estates",
+    "developerId": "399",
+    "developerName": "Miracon 76 Development LP",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "403",
+    "projectName": "Park District",
+    "developerId": "400",
+    "developerName": "Icon Homes",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "404",
+    "projectName": "Jackman at Aldergrove Town Centre",
+    "developerId": "401",
+    "developerName": "Janda Group",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "405",
+    "projectName": "Cascade Canmore",
+    "developerId": "402",
+    "developerName": "Cascade Canmore GP Ltd.",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "406",
+    "projectName": "Duo",
+    "developerId": "403",
+    "developerName": "National Developments and Brixen Developments Inc.",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "407",
+    "projectName": "Shortreed at Aldergrove Town Centre",
+    "developerId": "404",
+    "developerName": "Janda Group Holdings Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "408",
+    "projectName": "Granville",
+    "developerId": "405",
+    "developerName": "Royalview Living Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "409",
+    "projectName": "Prosper",
+    "developerId": "406",
+    "developerName": "Mountain Creations Ltd.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "410",
+    "projectName": "SOLO 4",
+    "developerId": "407",
+    "developerName": "Appia Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "411",
+    "projectName": "Plaza on Yonge",
+    "developerId": "408",
+    "developerName": "5858 Yonge Residences Corp.",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "412",
+    "projectName": "Ivylea 5",
+    "developerId": "409",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "413",
+    "projectName": "Oakhaus Living",
+    "developerId": "410",
+    "developerName": "Kingdom Oakhaus Limited Partnership",
+    "marketingOrgName": "Stratosphere Properties",
+    "status": "pending"
+  },
+  {
+    "projectId": "414",
+    "projectName": "NUVO.",
+    "developerId": "411",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "415",
+    "projectName": "The Scene",
+    "developerId": "412",
+    "developerName": "Langford Central Developments Inc.",
+    "marketingOrgName": "The Agency Real Estate Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "416",
+    "projectName": "Flora",
+    "developerId": "413",
+    "developerName": "Tangerine Developments in Partnership with SageBrooke Properties",
+    "marketingOrgName": "Tangerine Developments Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "417",
+    "projectName": "Emerald",
+    "developerId": "414",
+    "developerName": "Citimark and Woodbridge Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "418",
+    "projectName": "The Dawes South",
+    "developerId": "415",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "419",
+    "projectName": "The Frederick Condominiums",
+    "developerId": "416",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "420",
+    "projectName": "Vanetta at Aldergrove Town Centre",
+    "developerId": "417",
+    "developerName": "Janda Group Holdings Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "421",
+    "projectName": "One Park - Tower C",
+    "developerId": "418",
+    "developerName": "Grand Long Holdings Ltd",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "422",
+    "projectName": "O2",
+    "developerId": "419",
+    "developerName": "Keltic",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "423",
+    "projectName": "Florin",
+    "developerId": "420",
+    "developerName": "Circadian Group and Allaire Living",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "424",
+    "projectName": "Seasons",
+    "developerId": "421",
+    "developerName": "Sightline Properties (West 26th Ave) Ltd.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "425",
+    "projectName": "Nordix at Panorama",
+    "developerId": "422",
+    "developerName": "Dominium Resorts (Panorama) Corp.",
+    "marketingOrgName": "Salesmatic",
+    "status": "pending"
+  },
+  {
+    "projectId": "426",
+    "projectName": "Frame",
+    "developerId": "423",
+    "developerName": "Peterson Group",
+    "marketingOrgName": "Peterson Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "427",
+    "projectName": "Hayer Town Centre by Hayer Builders Group",
+    "developerId": "424",
+    "developerName": "Hayer Builders Group",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "428",
+    "projectName": "Elmwood",
+    "developerId": "425",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "429",
+    "projectName": "Fauna",
+    "developerId": "426",
+    "developerName": "Tangerine Developments in Partnership with SageBrooke Properties",
+    "marketingOrgName": "Tangerine Developments Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "430",
+    "projectName": "Park Place",
+    "developerId": "427",
+    "developerName": "SMARTVMC RESIDENCES",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "431",
+    "projectName": "Holland Haus",
+    "developerId": "428",
+    "developerName": "Isroc Building International Inc",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "432",
+    "projectName": "2 Burrard Place Offices",
+    "developerId": "429",
+    "developerName": "Reliance Properties & Jim Pattison Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "433",
+    "projectName": "Hawksley",
+    "developerId": "430",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "434",
+    "projectName": "Radley",
+    "developerId": "431",
+    "developerName": "YORKTON 108 DEVELOPMENT CORP. and WEST FRASER 108 DEVELOPMENTS LTD.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "435",
+    "projectName": "HEATH EAST",
+    "developerId": "432",
+    "developerName": "MANORLANE HOMES (WILLOUGHBY) INC.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "436",
+    "projectName": "Chroma",
+    "developerId": "433",
+    "developerName": "Forte Living",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "437",
+    "projectName": "Vantage at Westminster Plateau",
+    "developerId": "434",
+    "developerName": "Parr Ventures Limited",
+    "marketingOrgName": "Pacific Hills Developments",
+    "status": "pending"
+  },
+  {
+    "projectId": "438",
+    "projectName": "Vista at Westminster Plateau",
+    "developerId": "435",
+    "developerName": "Parr Ventures Limited",
+    "marketingOrgName": "Pacific Hills Developments",
+    "status": "pending"
+  },
+  {
+    "projectId": "439",
+    "projectName": "Lucent",
+    "developerId": "436",
+    "developerName": "Landa Global Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "440",
+    "projectName": "Alina",
+    "developerId": "437",
+    "developerName": "Strand Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "441",
+    "projectName": "Kitsilano Block",
+    "developerId": "438",
+    "developerName": "4th and Macdonald Ltd.",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "442",
+    "projectName": "Band",
+    "developerId": "439",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "443",
+    "projectName": "The 85 at Scott Road",
+    "developerId": "440",
+    "developerName": "8488 120th Street Holdings Inc.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "444",
+    "projectName": "King East Estates",
+    "developerId": "441",
+    "developerName": "King East Developments Inc.",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "445",
+    "projectName": "Hometown Hillsdale",
+    "developerId": "442",
+    "developerName": "Crystal Homes, Fernbrook Homes and Zancor Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "446",
+    "projectName": "Dahlia",
+    "developerId": "443",
+    "developerName": "SIGHTLINE PROPERTIES (WEST 29TH AVE) LIMITED PARTNERSHIP",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "447",
+    "projectName": "Whitehorn Woods",
+    "developerId": "444",
+    "developerName": "National Homes",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "448",
+    "projectName": "Boden",
+    "developerId": "445",
+    "developerName": "Listraor",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "449",
+    "projectName": "Carven",
+    "developerId": "446",
+    "developerName": "Kenston Kerrisdale Ltd.",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "450",
+    "projectName": "Curio Condos",
+    "developerId": "447",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "451",
+    "projectName": "Prima",
+    "developerId": "448",
+    "developerName": "Anderson Square Holdings",
+    "marketingOrgName": "Patsy Hui PREC",
+    "status": "pending"
+  },
+  {
+    "projectId": "452",
+    "projectName": "Form by Anthem",
+    "developerId": "449",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "453",
+    "projectName": "Exchange Signature Residences",
+    "developerId": "450",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "454",
+    "projectName": "Fox & Aikins",
+    "developerId": "451",
+    "developerName": "PARK RIDGE (FOX & AIKINS) JOINT VENTURE",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "455",
+    "projectName": "FORUM.",
+    "developerId": "452",
+    "developerName": "Hayer Builders Group",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "456",
+    "projectName": "Yonge at Wellesley Station",
+    "developerId": "453",
+    "developerName": "Plaza",
+    "marketingOrgName": "Plaza Corp",
+    "status": "pending"
+  },
+  {
+    "projectId": "457",
+    "projectName": "Movala Phase 2",
+    "developerId": "454",
+    "developerName": "Stober Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "458",
+    "projectName": "Ortus",
+    "developerId": "455",
+    "developerName": "Icona Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "459",
+    "projectName": "Hue",
+    "developerId": "456",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "460",
+    "projectName": "Aqua Tower 2 & 3",
+    "developerId": "457",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "461",
+    "projectName": "Grace Westside",
+    "developerId": "458",
+    "developerName": "Vicini Homes",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "462",
+    "projectName": "The Dawes North",
+    "developerId": "459",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "463",
+    "projectName": "ZZZ - Suspended - Contour",
+    "developerId": "460",
+    "developerName": "Kirpal Group & SVM Homes",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "464",
+    "projectName": "Central Block",
+    "developerId": "461",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "465",
+    "projectName": "Barclay",
+    "developerId": "462",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "466",
+    "projectName": "Eliza at Royal Bay",
+    "developerId": "463",
+    "developerName": "Pacific Capital Real Estate Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "467",
+    "projectName": "Creekside at Aldergrove Town Centre",
+    "developerId": "464",
+    "developerName": "Janda Group Holdings Inc.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "468",
+    "projectName": "Townhomes at Highstreet Village",
+    "developerId": "465",
+    "developerName": "AB Wall Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "469",
+    "projectName": "Pura",
+    "developerId": "466",
+    "developerName": "Adera",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "470",
+    "projectName": "Georgetown Two",
+    "developerId": "467",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "471",
+    "projectName": "The Loop",
+    "developerId": "468",
+    "developerName": "Gramercy Grandview Developments Ltd.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "472",
+    "projectName": "Thornhill",
+    "developerId": "469",
+    "developerName": "SmartCentres",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "473",
+    "projectName": "Baden Park - Seymour by Anthem",
+    "developerId": "470",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "474",
+    "projectName": "Markham Estates",
+    "developerId": "471",
+    "developerName": "City Park Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "475",
+    "projectName": "Baden Park - Yew by Anthem",
+    "developerId": "472",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "476",
+    "projectName": "316 Condos",
+    "developerId": "473",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "477",
+    "projectName": "Willow + Glen",
+    "developerId": "474",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "478",
+    "projectName": "Metroside at Fish Creek Exchange - Building 6",
+    "developerId": "475",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "479",
+    "projectName": "Metroside at Fish Creek Exchange - Building 5",
+    "developerId": "476",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "480",
+    "projectName": "Metroside at Fish Creek Exchange - Building 7",
+    "developerId": "477",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "481",
+    "projectName": "Metroside at Fish Creek Exchange - Townhomes",
+    "developerId": "478",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "482",
+    "projectName": "SoL",
+    "developerId": "479",
+    "developerName": "SoL Adera Projects Ltd.",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "483",
+    "projectName": "SOCO Two",
+    "developerId": "480",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "484",
+    "projectName": "Weston Place",
+    "developerId": "481",
+    "developerName": "Darwin Properties and Citimark",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "485",
+    "projectName": "Above Condos - Tower A",
+    "developerId": "482",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "486",
+    "projectName": "Nolita",
+    "developerId": "483",
+    "developerName": "Fifth Avenue Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "487",
+    "projectName": "ACE on the Drive",
+    "developerId": "484",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "488",
+    "projectName": "Centennial Court - Building 1",
+    "developerId": "485",
+    "developerName": "Ironclad Developments Costin & Carlow Inc.",
+    "marketingOrgName": "Island Realm Real Estate Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "489",
+    "projectName": "5656 Balaclava",
+    "developerId": "486",
+    "developerName": "Hon Developments",
+    "marketingOrgName": "Make Projects",
+    "status": "pending"
+  },
+  {
+    "projectId": "490",
+    "projectName": "Dwell",
+    "developerId": "487",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "491",
+    "projectName": "First & Royal",
+    "developerId": "488",
+    "developerName": "TPL Developments Royal Inc.",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "492",
+    "projectName": "Building One - Condominiums at Highstreet Village",
+    "developerId": "489",
+    "developerName": "AB Wall Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "493",
+    "projectName": "Eastwoods by Anthem",
+    "developerId": "490",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "494",
+    "projectName": "Eminence Phase 1 (Summit)",
+    "developerId": "491",
+    "developerName": "Knox Eminence Development Corp",
+    "marketingOrgName": "Sothebys Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "495",
+    "projectName": "Bailey",
+    "developerId": "492",
+    "developerName": "StreetSide Developments (Bailey) Ltd",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "496",
+    "projectName": "Vantage Townhomes",
+    "developerId": "493",
+    "developerName": "NADG (North American Development Group) and Highpoint Developments",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "497",
+    "projectName": "Building Two - Condominiums at Highstreet Village",
+    "developerId": "494",
+    "developerName": "AB Wall Properties",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "498",
+    "projectName": "South Yards (Tower 1A)",
+    "developerId": "495",
+    "developerName": "Anthem Alpha One Developments Limited Partnership",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "499",
+    "projectName": "Oakbrook",
+    "developerId": "496",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "500",
+    "projectName": "The Selkirks (Phase 4)",
+    "developerId": "497",
+    "developerName": "Mackenzie Village",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "501",
+    "projectName": "Rail District Lot 1",
+    "developerId": "498",
+    "developerName": "Infinity Properties",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "502",
+    "projectName": "Centricity",
+    "developerId": "499",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "503",
+    "projectName": "The Keary",
+    "developerId": "500",
+    "developerName": "The Brewery District Building 8 Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "504",
+    "projectName": "Dunbar at 39th",
+    "developerId": "501",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "505",
+    "projectName": "ZZ - Closed - Yonge City Square Residences",
+    "developerId": "502",
+    "developerName": "The Gupta Group",
+    "marketingOrgName": "Berkshire Hathaway HomeServices Advisory Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "506",
+    "projectName": "Northshore Phase 1 - Condos",
+    "developerId": "503",
+    "developerName": "National Developments",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "507",
+    "projectName": "1818 Alberni",
+    "developerId": "504",
+    "developerName": "Landa Global Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "508",
+    "projectName": "Walker House",
+    "developerId": "505",
+    "developerName": "BM Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "509",
+    "projectName": "The Landmark",
+    "developerId": "506",
+    "developerName": "Landmark Premiere Properties (White Rock) Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "510",
+    "projectName": "SOTO on West 28th",
+    "developerId": "507",
+    "developerName": "Forme Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "511",
+    "projectName": "Sequoia",
+    "developerId": "508",
+    "developerName": "ML Emporio Properties",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "512",
+    "projectName": "2550 Garden Drive",
+    "developerId": "509",
+    "developerName": "Bucci Developments",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "513",
+    "projectName": "ZZ - Closed - Volara",
+    "developerId": "510",
+    "developerName": "Bonanni",
+    "marketingOrgName": "Strategic Sales and Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "514",
+    "projectName": "Raglan House Condominiums",
+    "developerId": "511",
+    "developerName": "Camrost Felcorp",
+    "marketingOrgName": "Pivot Real Estate Group Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "515",
+    "projectName": "Timber House",
+    "developerId": "512",
+    "developerName": "Aragon Properties Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "516",
+    "projectName": "Woodland Block",
+    "developerId": "513",
+    "developerName": "First Track Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "517",
+    "projectName": "Lotus",
+    "developerId": "514",
+    "developerName": "Intracorp",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "518",
+    "projectName": "Umbra",
+    "developerId": "515",
+    "developerName": "Edgar Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "519",
+    "projectName": "Citizen",
+    "developerId": "516",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "520",
+    "projectName": "Kinship",
+    "developerId": "517",
+    "developerName": "PARK RIDGE HOMES (80 AVENUE) LIMITED PARTNERSHIP",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "521",
+    "projectName": "Morrison Walk",
+    "developerId": "518",
+    "developerName": "CREO West LP",
+    "marketingOrgName": "Pacesetter",
+    "status": "pending"
+  },
+  {
+    "projectId": "522",
+    "projectName": "Harlin",
+    "developerId": "519",
+    "developerName": "Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "523",
+    "projectName": "Queenston",
+    "developerId": "520",
+    "developerName": "Annesley (Queenston) Limited Partnership",
+    "marketingOrgName": "Remax Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "524",
+    "projectName": "Eliza South",
+    "developerId": "521",
+    "developerName": "Pacific Capital Real Estate Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "525",
+    "projectName": "The Clifton",
+    "developerId": "522",
+    "developerName": "Autograph Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "526",
+    "projectName": "ASH | 28",
+    "developerId": "523",
+    "developerName": "Terra Blanka & Lotus Living",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "527",
+    "projectName": "Silva 3",
+    "developerId": "524",
+    "developerName": "Wanson",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "528",
+    "projectName": "Laurel on Mill Lake",
+    "developerId": "525",
+    "developerName": "Heinrichs Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "529",
+    "projectName": "Komo",
+    "developerId": "526",
+    "developerName": "Strand Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "530",
+    "projectName": "Earl",
+    "developerId": "527",
+    "developerName": "Chard",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "531",
+    "projectName": "Elements",
+    "developerId": "528",
+    "developerName": "Baydo Development Corporation",
+    "marketingOrgName": "Mizar Real Estate Service Ltd",
+    "status": "pending"
+  },
+  {
+    "projectId": "532",
+    "projectName": "Sokana",
+    "developerId": "529",
+    "developerName": "Kerkhoff (Riverside) LP",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "533",
+    "projectName": "The Mason in the Rail District",
+    "developerId": "530",
+    "developerName": "Infinity Properties",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "534",
+    "projectName": "District Northwest - West Tower",
+    "developerId": "531",
+    "developerName": "Thind",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "535",
+    "projectName": "Highline",
+    "developerId": "532",
+    "developerName": "Thind",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "536",
+    "projectName": "Eclipse",
+    "developerId": "533",
+    "developerName": "Thind",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "537",
+    "projectName": "Marco Polo by Gryphon",
+    "developerId": "534",
+    "developerName": "Gryphon Cambie 49 LP & Gryphon 6128 Holdings Ltd",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "538",
+    "projectName": "Fairborne - Ashton",
+    "developerId": "535",
+    "developerName": "Fairborne CMCC Marie Place Limited Partnership",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "539",
+    "projectName": "District Northwest - North Tower",
+    "developerId": "536",
+    "developerName": "Thind",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "540",
+    "projectName": "Century City",
+    "developerId": "537",
+    "developerName": "Century Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "541",
+    "projectName": "ZZ - Cancelled - 1331 Ambleside",
+    "developerId": "538",
+    "developerName": "Pacific Lyte",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "542",
+    "projectName": "Altus",
+    "developerId": "539",
+    "developerName": "Oviedo Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "543",
+    "projectName": "Rove",
+    "developerId": "540",
+    "developerName": "Staburn Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "544",
+    "projectName": "King & Columbia 1",
+    "developerId": "541",
+    "developerName": "Forme Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "545",
+    "projectName": "King & Columbia 2",
+    "developerId": "542",
+    "developerName": "Forme Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "546",
+    "projectName": "W68",
+    "developerId": "543",
+    "developerName": "Westland Living",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "547",
+    "projectName": "River & Sky",
+    "developerId": "544",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "548",
+    "projectName": "Raphael",
+    "developerId": "545",
+    "developerName": "Landa Global Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "549",
+    "projectName": "Shannon Lynn",
+    "developerId": "546",
+    "developerName": "Suntory City Develop & Investment Group Inc.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "550",
+    "projectName": "ARRIS RESIDENCES",
+    "developerId": "547",
+    "developerName": "Embassy Bosa Inc",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "551",
+    "projectName": "Sokana Phase 2",
+    "developerId": "548",
+    "developerName": "Kerkhoff (Riverside) LP",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "552",
+    "projectName": "Beach House",
+    "developerId": "549",
+    "developerName": "Interrobang Developments Ltd.",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "553",
+    "projectName": "Terrayne",
+    "developerId": "550",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "554",
+    "projectName": "ZZ - Closed - Canopy Towers 2",
+    "developerId": "551",
+    "developerName": "Liberty Development",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "555",
+    "projectName": "York",
+    "developerId": "552",
+    "developerName": "Listraor (Willow) Homes Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "556",
+    "projectName": "Oak & Stone",
+    "developerId": "553",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "557",
+    "projectName": "Ardea",
+    "developerId": "554",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "558",
+    "projectName": "Reign",
+    "developerId": "555",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "559",
+    "projectName": "Ashleigh",
+    "developerId": "556",
+    "developerName": "Ash Street Development Limited Partnership",
+    "marketingOrgName": "Peterson Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "560",
+    "projectName": "The Scene Tower B",
+    "developerId": "557",
+    "developerName": "The Scene at Langford Development Limited Partnership and 1206949 BC Ltd",
+    "marketingOrgName": "The Agency Real Estate Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "561",
+    "projectName": "Debut",
+    "developerId": "558",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "562",
+    "projectName": "Be W 49th",
+    "developerId": "559",
+    "developerName": "Modella Developments",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "563",
+    "projectName": "Maison Wellesley",
+    "developerId": "560",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "564",
+    "projectName": "PARK",
+    "developerId": "561",
+    "developerName": "Anthem",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "565",
+    "projectName": "Magnolia",
+    "developerId": "562",
+    "developerName": "Intracorp",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "566",
+    "projectName": "Joya Condos",
+    "developerId": "563",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "567",
+    "projectName": "Forum",
+    "developerId": "564",
+    "developerName": "Chard Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "568",
+    "projectName": "Highline Commercial",
+    "developerId": "565",
+    "developerName": "Thind",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "569",
+    "projectName": "Entroterra",
+    "developerId": "566",
+    "developerName": "Bucci",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "570",
+    "projectName": "Mission Ridge",
+    "developerId": "567",
+    "developerName": "Pacific Swell & Hazelwood",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "571",
+    "projectName": "Lodana",
+    "developerId": "568",
+    "developerName": "Circadian (Rochester) Developments Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "572",
+    "projectName": "MTN Village - The Stories",
+    "developerId": "569",
+    "developerName": "Anthem Properties Group Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "573",
+    "projectName": "Eminence Phase 2 (Ridge)",
+    "developerId": "570",
+    "developerName": "Knox Eminence Development Corp",
+    "marketingOrgName": "Sothebys Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "574",
+    "projectName": "W16 by Olson Kundig",
+    "developerId": "571",
+    "developerName": "Olson Kundig By Wesgroup Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "575",
+    "projectName": "The Charles",
+    "developerId": "572",
+    "developerName": "Medallion Homes & Hawthorne Developments",
+    "marketingOrgName": "SSC Corp. Ltd",
+    "status": "pending"
+  },
+  {
+    "projectId": "576",
+    "projectName": "Cardinal Condominium Building 3 at Highstreet Village",
+    "developerId": "573",
+    "developerName": "AB Wall",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "577",
+    "projectName": "Billy Phase 1",
+    "developerId": "574",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "578",
+    "projectName": "Marine Landing A",
+    "developerId": "575",
+    "developerName": "Wesbild",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "579",
+    "projectName": "Marine Landing B",
+    "developerId": "576",
+    "developerName": "Wesbild",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "580",
+    "projectName": "Billy Phase 2",
+    "developerId": "577",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "581",
+    "projectName": "Cascadia",
+    "developerId": "578",
+    "developerName": "StreetSide Developments (BC) Ltd.",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "582",
+    "projectName": "Juno",
+    "developerId": "579",
+    "developerName": "StreetSide Developments (BC) Ltd.",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "583",
+    "projectName": "The Grove_deleted",
+    "developerId": "580",
+    "developerName": "Foster Living",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "584",
+    "projectName": "The Grove_removed",
+    "developerId": "581",
+    "developerName": "Foster Living",
+    "marketingOrgName": "",
+    "status": "pending"
+  },
+  {
+    "projectId": "585",
+    "projectName": "The Grove",
+    "developerId": "582",
+    "developerName": "Foster Living",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "586",
+    "projectName": "Encore",
+    "developerId": "583",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "587",
+    "projectName": "Victory - Building B",
+    "developerId": "584",
+    "developerName": "Maskeen",
+    "marketingOrgName": "Steveston Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "588",
+    "projectName": "Guilden",
+    "developerId": "585",
+    "developerName": "RDG Guildford West Development Ltd.",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "589",
+    "projectName": "Town & Centre",
+    "developerId": "586",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "590",
+    "projectName": "Rail District Lot 2",
+    "developerId": "587",
+    "developerName": "Infinity Properties (Clayburn) Ltd.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "591",
+    "projectName": "The Pines",
+    "developerId": "588",
+    "developerName": "The Pines LP and The Pines Residential Holdings Inc.",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "592",
+    "projectName": "Grovemont",
+    "developerId": "589",
+    "developerName": "0998823 BC Ltd",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "593",
+    "projectName": "Cardinal Condominium Building 4 at Highstreet Village",
+    "developerId": "590",
+    "developerName": "AB Wall",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "594",
+    "projectName": "South Yards (Tower 1B)",
+    "developerId": "591",
+    "developerName": "Anthem Alpha One Developments Limited Partnership",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "595",
+    "projectName": "Pierwell",
+    "developerId": "592",
+    "developerName": "SwissReal Group Canada and Brimming Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "596",
+    "projectName": "Bridge & Elliott",
+    "developerId": "593",
+    "developerName": "Headwater Projects",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "597",
+    "projectName": "Peridot",
+    "developerId": "594",
+    "developerName": "Staburn",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "598",
+    "projectName": "Trofeo",
+    "developerId": "595",
+    "developerName": "OpenForm",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "599",
+    "projectName": "Brentwood Block",
+    "developerId": "596",
+    "developerName": "Grosvenor",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "600",
+    "projectName": "One20",
+    "developerId": "597",
+    "developerName": "Three Shores",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "601",
+    "projectName": "Scale",
+    "developerId": "598",
+    "developerName": "SP (Linwood) Holdings Inc.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "602",
+    "projectName": "Bella Park at Royal Bay",
+    "developerId": "599",
+    "developerName": "PCRE Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "603",
+    "projectName": "BridgeCity",
+    "developerId": "600",
+    "developerName": "Oviedo Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "604",
+    "projectName": "Victory - Building A",
+    "developerId": "601",
+    "developerName": "Maskeen",
+    "marketingOrgName": "Steveston Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "605",
+    "projectName": "Victory - Building C",
+    "developerId": "602",
+    "developerName": "Maskeen",
+    "marketingOrgName": "Steveston Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "606",
+    "projectName": "Kora",
+    "developerId": "603",
+    "developerName": "Strand",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "607",
+    "projectName": "Amson Bloc",
+    "developerId": "604",
+    "developerName": "Amson Group",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "608",
+    "projectName": "Reign North Tower",
+    "developerId": "605",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "609",
+    "projectName": "Aston",
+    "developerId": "606",
+    "developerName": "Archwood Developments Ltd.",
+    "marketingOrgName": "AXIS Real Estate Solutions Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "610",
+    "projectName": "Signature Phase 1",
+    "developerId": "607",
+    "developerName": "Crescent Creek Homes Ltd.",
+    "marketingOrgName": "Crescent Creek Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "611",
+    "projectName": "ARCHER",
+    "developerId": "608",
+    "developerName": "North Arc Properties",
+    "marketingOrgName": "Crescent Creek Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "612",
+    "projectName": "GORDON SQUARE",
+    "developerId": "609",
+    "developerName": "Paddington Properties Ltd.",
+    "marketingOrgName": "AXIS Real Estate Solutions Inc.",
+    "status": "pending"
+  },
+  {
+    "projectId": "613",
+    "projectName": "ZZ - Closed - Greyson*",
+    "developerId": "610",
+    "developerName": "3450 Whittier Developments Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "614",
+    "projectName": "Greyson",
+    "developerId": "611",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "615",
+    "projectName": "Signature Phase 2",
+    "developerId": "612",
+    "developerName": "Crescent Creek Homes Ltd.",
+    "marketingOrgName": "Crescent Creek Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "616",
+    "projectName": "28 West",
+    "developerId": "613",
+    "developerName": "Cielle Properties",
+    "marketingOrgName": "Macdonald Platinum Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "617",
+    "projectName": "Fox & Aikins South",
+    "developerId": "614",
+    "developerName": "Park Ridge (Fox & Aikins South) Joint Venture",
+    "marketingOrgName": "ParkRidge Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "618",
+    "projectName": "Ethos",
+    "developerId": "615",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "619",
+    "projectName": "Stowa",
+    "developerId": "616",
+    "developerName": "Genaris",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "620",
+    "projectName": "Origin Condos",
+    "developerId": "617",
+    "developerName": "Marlin Spring Developments",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "621",
+    "projectName": "Canopy Towers 2",
+    "developerId": "618",
+    "developerName": "Liberty Development Corporation",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "622",
+    "projectName": "Portico",
+    "developerId": "619",
+    "developerName": "WANSON (OAKDALE) DEVELOPMENT LTD.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "623",
+    "projectName": "The Wright in The Rail District",
+    "developerId": "620",
+    "developerName": "Infinity Properties",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "624",
+    "projectName": "Jasper",
+    "developerId": "621",
+    "developerName": "Crescent Creek Homes",
+    "marketingOrgName": "Crescent Creek Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "625",
+    "projectName": "Eastin Townhomes",
+    "developerId": "622",
+    "developerName": "Essence Properties Inc",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "626",
+    "projectName": "Nido",
+    "developerId": "623",
+    "developerName": "Wanson (Imperial) Development Ltd & Wanson (Royal Oak) Development Ltd. Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "627",
+    "projectName": "Azure Grove",
+    "developerId": "624",
+    "developerName": "ML Emporio Project Management Ltd.",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "628",
+    "projectName": "Aviva",
+    "developerId": "625",
+    "developerName": "Zail Properties Ltd.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "629",
+    "projectName": "Porthaven",
+    "developerId": "626",
+    "developerName": "Northstar Development",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "630",
+    "projectName": "Jericho Park",
+    "developerId": "627",
+    "developerName": "Essence Properties Inc",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "631",
+    "projectName": "Ksana North (Building A)",
+    "developerId": "628",
+    "developerName": "Vansoho + Quad-City Limited Partnership; and 1143924 B.C. Ltd.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "632",
+    "projectName": "Whitford",
+    "developerId": "629",
+    "developerName": "Citimark and Grosvenor",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "633",
+    "projectName": "Chapter",
+    "developerId": "630",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "634",
+    "projectName": "Avia 1",
+    "developerId": "631",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "635",
+    "projectName": "Avia 2",
+    "developerId": "632",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "636",
+    "projectName": "Soenhaus",
+    "developerId": "633",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "637",
+    "projectName": "Voya 1",
+    "developerId": "634",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "638",
+    "projectName": "Voya 2",
+    "developerId": "635",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "639",
+    "projectName": "Archetype",
+    "developerId": "636",
+    "developerName": "QuadReal Properties Group",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "640",
+    "projectName": "Scott + 77",
+    "developerId": "637",
+    "developerName": "Scott Seventy-7 Limited Partnership",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "641",
+    "projectName": "ZZ - Closed - Alpine Canmore",
+    "developerId": "638",
+    "developerName": "Alpine Canmore GP Ltd.",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "642",
+    "projectName": "Billy Phase 3",
+    "developerId": "639",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "643",
+    "projectName": "Sky Living",
+    "developerId": "640",
+    "developerName": "Allure Ventures",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "644",
+    "projectName": "Renfrew",
+    "developerId": "641",
+    "developerName": "Castlehill Homes",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "645",
+    "projectName": "Scout",
+    "developerId": "642",
+    "developerName": "Heinrichs",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "646",
+    "projectName": "Slate & Ash",
+    "developerId": "643",
+    "developerName": "Pennyfarthing Ash Street Properties Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "647",
+    "projectName": "Bassano",
+    "developerId": "644",
+    "developerName": "Boffo Developments",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "648",
+    "projectName": "Westview Townhomes",
+    "developerId": "645",
+    "developerName": "Trillium Westview Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "649",
+    "projectName": "Ksana South (Building B)",
+    "developerId": "646",
+    "developerName": "Vansoho + Quad-City Limited Partnership; and 1143924 B.C. Ltd.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "650",
+    "projectName": "Mercer Village",
+    "developerId": "647",
+    "developerName": "Plat:form Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "651",
+    "projectName": "edge way",
+    "developerId": "648",
+    "developerName": "Townline",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "652",
+    "projectName": "Pine and Glen East Tower",
+    "developerId": "649",
+    "developerName": "Onni",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "653",
+    "projectName": "Nature's Walk",
+    "developerId": "650",
+    "developerName": "Onni Bonson Road Development Limited Partnership",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "654",
+    "projectName": "Wadams Farm",
+    "developerId": "651",
+    "developerName": "Aragon (Church) Properties Ltd.",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "655",
+    "projectName": "Oakbrook II",
+    "developerId": "652",
+    "developerName": "Crystal Homes and Fernbrook Homes",
+    "marketingOrgName": "Zancor Homes",
+    "status": "pending"
+  },
+  {
+    "projectId": "656",
+    "projectName": "ZZZ - Symposia",
+    "developerId": "653",
+    "developerName": "MOSAIC",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "657",
+    "projectName": "ZZZ - Heartbreak Ridge",
+    "developerId": "654",
+    "developerName": "StreetSide Developments (BC) Ltd.",
+    "marketingOrgName": "StreetSide Developments (BC) Ltd",
+    "status": "pending"
+  },
+  {
+    "projectId": "658",
+    "projectName": "1989 Condominium",
+    "developerId": "655",
+    "developerName": "1989 Appleby Latch Limited Partnership",
+    "marketingOrgName": "In2ition Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "659",
+    "projectName": "Olo Homes",
+    "developerId": "656",
+    "developerName": "Rize Alliance",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "660",
+    "projectName": "Upton Residences",
+    "developerId": "657",
+    "developerName": "Amacon",
+    "marketingOrgName": "West & Main",
+    "status": "pending"
+  },
+  {
+    "projectId": "661",
+    "projectName": "Somerset",
+    "developerId": "658",
+    "developerName": "Boyd Wilson",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "662",
+    "projectName": "Hendry",
+    "developerId": "659",
+    "developerName": "Trillium Projects",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "663",
+    "projectName": "Heartwood at Burke Mountain",
+    "developerId": "660",
+    "developerName": "Streetside Developments (Surrey)",
+    "marketingOrgName": "West One",
+    "status": "pending"
+  },
+  {
+    "projectId": "664",
+    "projectName": "Forest Walk One",
+    "developerId": "661",
+    "developerName": "Create Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "665",
+    "projectName": "Symposia",
+    "developerId": "662",
+    "developerName": "MOSAIC",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "666",
+    "projectName": "ZZ - Closed - M/6",
+    "developerId": "663",
+    "developerName": "Jim Pattison Developments",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "667",
+    "projectName": "Nikola at Innovation District",
+    "developerId": "664",
+    "developerName": "Nikola Government Street Limited Partnership",
+    "marketingOrgName": "Key Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "668",
+    "projectName": "Georgetown Three",
+    "developerId": "665",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "669",
+    "projectName": "Casa Wyn",
+    "developerId": "666",
+    "developerName": "ABH Developer Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "670",
+    "projectName": "ZZZ - Suspended - Munroe",
+    "developerId": "667",
+    "developerName": "Landvision",
+    "marketingOrgName": "Prima Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "671",
+    "projectName": "Satori",
+    "developerId": "668",
+    "developerName": "Everglade Thompson I Limited Partnership",
+    "marketingOrgName": "Stratosphere Properties",
+    "status": "pending"
+  },
+  {
+    "projectId": "672",
+    "projectName": "Billy Phase 4",
+    "developerId": "669",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "673",
+    "projectName": "Spera",
+    "developerId": "670",
+    "developerName": "George Eighty3 Properties Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "674",
+    "projectName": "Alpine Canmore",
+    "developerId": "671",
+    "developerName": "Highpoint Developments",
+    "marketingOrgName": "North American Development Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "675",
+    "projectName": "Mary Anne's Place",
+    "developerId": "672",
+    "developerName": "Placemaker Communities",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "676",
+    "projectName": "The Nova",
+    "developerId": "673",
+    "developerName": "GMMR Stone LLC",
+    "marketingOrgName": "Enkasa",
+    "status": "pending"
+  },
+  {
+    "projectId": "677",
+    "projectName": "Blue Oak",
+    "developerId": "674",
+    "developerName": "950 Hough Investors, LLC",
+    "marketingOrgName": "Enkasa",
+    "status": "pending"
+  },
+  {
+    "projectId": "678",
+    "projectName": "The Merchant",
+    "developerId": "675",
+    "developerName": "Wesmont Homes Ltd.",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "679",
+    "projectName": "Rowan",
+    "developerId": "676",
+    "developerName": "Manorlane Properties (Willowbrook) Inc.",
+    "marketingOrgName": "Milan Mann",
+    "status": "pending"
+  },
+  {
+    "projectId": "680",
+    "projectName": "Fenway",
+    "developerId": "677",
+    "developerName": "Caliber Communities (Fenway) Ltd.",
+    "marketingOrgName": "McQuarrie Hunter LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "681",
+    "projectName": "The Manhattan",
+    "developerId": "678",
+    "developerName": "ML Emporio Towers Limited Partnership",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "682",
+    "projectName": "Frank",
+    "developerId": "679",
+    "developerName": "Enrich Developments",
+    "marketingOrgName": "Prima Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "683",
+    "projectName": "ZZ - Error - Koen",
+    "developerId": "680",
+    "developerName": "Koen by Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "684",
+    "projectName": "Koen",
+    "developerId": "681",
+    "developerName": "Beedie Living",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "685",
+    "projectName": "Rhodes",
+    "developerId": "682",
+    "developerName": "Kersland Homes Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "686",
+    "projectName": "Wilford",
+    "developerId": "683",
+    "developerName": "Allaire Living (Delestre) Inc.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "687",
+    "projectName": "Gryphon 39 by Marco Polo",
+    "developerId": "684",
+    "developerName": "Marco Polo By Gryphon Cambie 49 LP & Gryphon 6128 Holdings Ltd",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "688",
+    "projectName": "Wren",
+    "developerId": "685",
+    "developerName": "West 28 Development Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "689",
+    "projectName": "Rockford",
+    "developerId": "686",
+    "developerName": "Cressey",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "690",
+    "projectName": "1 Market Square",
+    "developerId": "687",
+    "developerName": "Wesgroup",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "691",
+    "projectName": "Forest Walk Two",
+    "developerId": "688",
+    "developerName": "Create Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "692",
+    "projectName": "Northshore Phase 1 - Towns",
+    "developerId": "689",
+    "developerName": "National Developments",
+    "marketingOrgName": "Team 2000 Realty Inc, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "693",
+    "projectName": "Park and Lake",
+    "developerId": "690",
+    "developerName": "Graywood Developments and Falconcrest Homes",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "694",
+    "projectName": "Addition",
+    "developerId": "691",
+    "developerName": "Redekop Ferrario Properties",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "695",
+    "projectName": "Fellow",
+    "developerId": "692",
+    "developerName": "1287870 B.C. LTD",
+    "marketingOrgName": "Tangerine Developments Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "696",
+    "projectName": "Moody Yards Commercial Lot 1",
+    "developerId": "693",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "697",
+    "projectName": "Culmena",
+    "developerId": "694",
+    "developerName": "Tangerine Developments",
+    "marketingOrgName": "Tangerine Developments Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "698",
+    "projectName": "Town & Centre North",
+    "developerId": "695",
+    "developerName": "Mosaic",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "699",
+    "projectName": "Moody Yards Commercial Lot 2",
+    "developerId": "696",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "700",
+    "projectName": "Heath West",
+    "developerId": "697",
+    "developerName": "BMG Projects Inc.",
+    "marketingOrgName": "Milan Mann",
+    "status": "pending"
+  },
+  {
+    "projectId": "701",
+    "projectName": "Claystone",
+    "developerId": "698",
+    "developerName": "Graywood Developments",
+    "marketingOrgName": "Market Vision Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "702",
+    "projectName": "Townside Village Townhomes",
+    "developerId": "699",
+    "developerName": "449991 BC Ltd.",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "703",
+    "projectName": "Signature at River Green",
+    "developerId": "700",
+    "developerName": "Aspac Projects Limited",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "704",
+    "projectName": "Kestrel Adera Projects Ltd.",
+    "developerId": "701",
+    "developerName": "Adera Development Corporation",
+    "marketingOrgName": "Terra Law",
+    "status": "pending"
+  },
+  {
+    "projectId": "705",
+    "projectName": "Astrid",
+    "developerId": "702",
+    "developerName": "Enera Development (W24th) Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "706",
+    "projectName": "102+Park",
+    "developerId": "703",
+    "developerName": "Marcon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "707",
+    "projectName": "Bluejay Condominium Building 6 at Highstreet Village",
+    "developerId": "704",
+    "developerName": "AB Wall Properties at High Street Ltd",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "708",
+    "projectName": "Arden",
+    "developerId": "705",
+    "developerName": "Aria Pacific Cambie Second Development Ltd. Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "709",
+    "projectName": "Olia",
+    "developerId": "706",
+    "developerName": "Peterson",
+    "marketingOrgName": "Magnum Projects Ltd.",
+    "status": "pending"
+  },
+  {
+    "projectId": "710",
+    "projectName": "ZZ - Closed - Grayson1",
+    "developerId": "707",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "711",
+    "projectName": "Grayson Building 1",
+    "developerId": "708",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "712",
+    "projectName": "Trailside",
+    "developerId": "709",
+    "developerName": "Mosaic Homes",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "713",
+    "projectName": "ZZ - Closed - Carousel Towns at Thornhill Walk",
+    "developerId": "710",
+    "developerName": "1000214855 Ontario Inc. in its capacity as a general partner of and on behalf of 9810 Phase 1 LP",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "714",
+    "projectName": "Elliot",
+    "developerId": "711",
+    "developerName": "ATOQ CAPITAL (GROVE) LIMITED PARTNERSHIP",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "715",
+    "projectName": "Harlowe",
+    "developerId": "712",
+    "developerName": "ATOQ CAPITAL (HARLOWE) LIMITED PARTNERSHIP",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "716",
+    "projectName": "Carousel Towns at Thornhill Walk",
+    "developerId": "713",
+    "developerName": "Liberty Development Corporation",
+    "marketingOrgName": "Oracle Group Realty, Brokerage",
+    "status": "pending"
+  },
+  {
+    "projectId": "717",
+    "projectName": "Mountain Tranquility at Silvertip",
+    "developerId": "714",
+    "developerName": "Stone Creek Resorts",
+    "marketingOrgName": "Stone Creek Resorts",
+    "status": "pending"
+  },
+  {
+    "projectId": "718",
+    "projectName": "Cadence Pond - The Lionel",
+    "developerId": "715",
+    "developerName": "Stone Creek Resorts",
+    "marketingOrgName": "Stone Creek Resorts",
+    "status": "pending"
+  },
+  {
+    "projectId": "719",
+    "projectName": "Matteo",
+    "developerId": "716",
+    "developerName": "ML Emporio Properties Ltd",
+    "marketingOrgName": "Wilson Rasmussen LLP",
+    "status": "pending"
+  },
+  {
+    "projectId": "720",
+    "projectName": "Andia",
+    "developerId": "717",
+    "developerName": "Bosa Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "721",
+    "projectName": "West 57th",
+    "developerId": "718",
+    "developerName": "Onni Group",
+    "marketingOrgName": "Onni Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "722",
+    "projectName": "The Hart at Aldergrove Town Centre",
+    "developerId": "719",
+    "developerName": "Janda Group Holdings Inc",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "723",
+    "projectName": "Quilchena West",
+    "developerId": "720",
+    "developerName": "Citimark Group and Western Construction",
+    "marketingOrgName": "Steveston Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "724",
+    "projectName": "Livy",
+    "developerId": "721",
+    "developerName": "NorthStar Development",
+    "marketingOrgName": "Magnum",
+    "status": "pending"
+  },
+  {
+    "projectId": "725",
+    "projectName": "Gradience",
+    "developerId": "722",
+    "developerName": "Apna Group",
+    "marketingOrgName": "Prima Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "726",
+    "projectName": "Oakwoods",
+    "developerId": "723",
+    "developerName": "Aragon",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "727",
+    "projectName": "Harriswood",
+    "developerId": "724",
+    "developerName": "Domus Homes",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "728",
+    "projectName": "Kwasen Village",
+    "developerId": "725",
+    "developerName": "Aquilini Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "729",
+    "projectName": "Alma on Abbott",
+    "developerId": "726",
+    "developerName": "Mission Group",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "730",
+    "projectName": "Nature Haus",
+    "developerId": "727",
+    "developerName": "1283653 B.C. Ltd., IOM Fleetwood Townhomes (2022) Limited Partnership",
+    "marketingOrgName": "Pollyco Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "731",
+    "projectName": "Rindall",
+    "developerId": "728",
+    "developerName": "Woodbridge Rindall Limited Partnership",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "732",
+    "projectName": "Brooke",
+    "developerId": "729",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "733",
+    "projectName": "Delano",
+    "developerId": "730",
+    "developerName": "Fifth Avenue Properties",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "734",
+    "projectName": "Interchange - South Building",
+    "developerId": "731",
+    "developerName": "Apcon 140B Project Limited Partnership",
+    "marketingOrgName": "Fifth Avenue",
+    "status": "pending"
+  },
+  {
+    "projectId": "735",
+    "projectName": "Cavendish",
+    "developerId": "732",
+    "developerName": "Panatch Group",
+    "marketingOrgName": "Hestia Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "736",
+    "projectName": "ZZ - Cancelled - Salt & Meadow 1",
+    "developerId": "733",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "737",
+    "projectName": "Salt & Meadow 2",
+    "developerId": "734",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "738",
+    "projectName": "Salt & Meadow 3",
+    "developerId": "735",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "739",
+    "projectName": "Boardwalk Six",
+    "developerId": "736",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "740",
+    "projectName": "Boardwalk Seven",
+    "developerId": "737",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "741",
+    "projectName": "Ocean Row",
+    "developerId": "738",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "742",
+    "projectName": "Lupine Walk",
+    "developerId": "739",
+    "developerName": "Aquilini",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "743",
+    "projectName": "Latitude",
+    "developerId": "740",
+    "developerName": "Transca Vancouver W49 Ave Ltd.",
+    "marketingOrgName": "MLA Canada",
+    "status": "pending"
+  },
+  {
+    "projectId": "744",
+    "projectName": "Avenue Estates",
+    "developerId": "741",
+    "developerName": "Silverstein Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "745",
+    "projectName": "Avenue Residences",
+    "developerId": "742",
+    "developerName": "Silverstein Properties",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "746",
+    "projectName": "Versant",
+    "developerId": "743",
+    "developerName": "Infinity Properties (Baycrest) Ltd.",
+    "marketingOrgName": "Momentum Realty Inc",
+    "status": "pending"
+  },
+  {
+    "projectId": "747",
+    "projectName": "Holloway Townhomes",
+    "developerId": "744",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "748",
+    "projectName": "Holloway Condos",
+    "developerId": "745",
+    "developerName": "Abstract Developments",
+    "marketingOrgName": "Navi Guraya",
+    "status": "pending"
+  },
+  {
+    "projectId": "749",
+    "projectName": "Vesa at Little Mountain",
+    "developerId": "746",
+    "developerName": "Holborn",
+    "marketingOrgName": "Tandem",
+    "status": "pending"
+  },
+  {
+    "projectId": "750",
+    "projectName": "Cornerstone at Hamilton Village",
+    "developerId": "747",
+    "developerName": "Richton Cornerstone Developments Limited Partnership",
+    "marketingOrgName": "Steveston Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "751",
+    "projectName": "Arte",
+    "developerId": "748",
+    "developerName": "Third East Squamish Limited Partnership",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "752",
+    "projectName": "Line House",
+    "developerId": "749",
+    "developerName": "Forme Development",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "753",
+    "projectName": "Sundays on Grant",
+    "developerId": "750",
+    "developerName": "Anthem Properties",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "754",
+    "projectName": "The Lauderdale",
+    "developerId": "751",
+    "developerName": "The Lauderdale LLC.",
+    "marketingOrgName": "The Agency Real Estate Marketing",
+    "status": "pending"
+  },
+  {
+    "projectId": "755",
+    "projectName": "Above Condos - Tower B",
+    "developerId": "752",
+    "developerName": "Marlin Spring",
+    "marketingOrgName": "Spectrum Sky Realty",
+    "status": "pending"
+  },
+  {
+    "projectId": "756",
+    "projectName": "Renfrew SOUTH",
+    "developerId": "753",
+    "developerName": "Castlehill Homes (GORDON) Ltd.",
+    "marketingOrgName": "Breakside Real Estate Group",
+    "status": "pending"
+  },
+  {
+    "projectId": "757",
+    "projectName": "Bute At Clayton Crest",
+    "developerId": "754",
+    "developerName": "Zenterra Developments",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  },
+  {
+    "projectId": "758",
+    "projectName": "Ridgewood Row",
+    "developerId": "755",
+    "developerName": "Domus",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "759",
+    "projectName": "Park Row - Bellevue",
+    "developerId": "756",
+    "developerName": "Bosa Development (Park Row) LP",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "760",
+    "projectName": "Brookridge Lane",
+    "developerId": "757",
+    "developerName": "Domus",
+    "marketingOrgName": "Rennie Marketing Systems",
+    "status": "pending"
+  },
+  {
+    "projectId": "761",
+    "projectName": "Atlin",
+    "developerId": "758",
+    "developerName": "Zenterra West Clayton LTD",
+    "marketingOrgName": "Avesdo Advisor",
+    "status": "pending"
+  }
+]

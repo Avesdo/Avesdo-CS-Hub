@@ -699,3 +699,130 @@ export async function resolveAlias(
     throw err;
   }
 }
+
+export async function seedInitialImports(data: any[]) {
+  try {
+    const chunks = [];
+    for (let i = 0; i < data.length; i += 400) {
+      chunks.push(data.slice(i, i + 400));
+    }
+    for (const chunk of chunks) {
+      const batch = writeBatch(db);
+      for (const row of chunk) {
+        const docRef = doc(collection(db, 'initial_imports'));
+        batch.set(docRef, { ...row, firestoreId: docRef.id });
+      }
+      await batch.commit();
+    }
+    toast.success('Seeded initial imports successfully.');
+  } catch (err) {
+    console.error('Failed to seed imports', err);
+    toast.error('Failed to seed imports.');
+  }
+}
+
+export async function getPendingInitialImports() {
+  try {
+    const q = query(collection(db, 'initial_imports'), where('status', '==', 'pending'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => d.data());
+  } catch (err) {
+    console.error('Failed to fetch pending imports', err);
+    return [];
+  }
+}
+
+export async function resolveInitialImport(
+  firestoreId: string,
+  action: 'approve' | 'ignore' | 'update',
+  updatedData?: any
+) {
+  try {
+    const docRef = doc(db, 'initial_imports', firestoreId);
+    if (action === 'approve') {
+      const rowData = updatedData;
+      const clientIds: string[] = [];
+
+      // Create Developer Client if needed
+      if (rowData.developers && Array.isArray(rowData.developers)) {
+        for (const devName of rowData.developers) {
+          const q = query(collection(db, 'clients'), where('companyName', '==', devName));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            clientIds.push(snap.docs[0].id);
+          } else {
+            const cId = `C-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
+            await setDoc(doc(db, 'clients', cId), {
+              clientId: cId,
+              companyName: devName,
+              type: 'Developer',
+              notes: []
+            });
+            clientIds.push(cId);
+          }
+        }
+      }
+
+      // Create Marketing Client if needed
+      if (rowData.marketingOrgs && Array.isArray(rowData.marketingOrgs)) {
+        for (const orgName of rowData.marketingOrgs) {
+          const q = query(collection(db, 'clients'), where('companyName', '==', orgName));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            clientIds.push(snap.docs[0].id);
+          } else {
+            const mId = `C-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
+            await setDoc(doc(db, 'clients', mId), {
+              clientId: mId,
+              companyName: orgName,
+              type: 'Sales & Marketing',
+              notes: []
+            });
+            clientIds.push(mId);
+          }
+        }
+      }
+
+      // Create Project
+      if (rowData.projectName) {
+        const q = query(collection(db, 'projects'), where('name', '==', rowData.projectName));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          const pId = `P-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
+          await setDoc(doc(db, 'projects', pId), {
+            id: pId,
+            name: rowData.projectName,
+            projectStatus: 'Onboarding',
+            phase: 'Not Started',
+            clientIds: clientIds,
+            units: 0,
+            healthScore: 100,
+            notes: []
+          });
+        } else {
+          // Update existing project to include these clients
+          const existingProject = snap.docs[0];
+          const existingClientIds = existingProject.data().clientIds || [];
+          const newClientIds = Array.from(new Set([...existingClientIds, ...clientIds]));
+          await updateDoc(doc(db, 'projects', existingProject.id), {
+            clientIds: newClientIds
+          });
+        }
+      }
+
+      await updateDoc(docRef, { status: 'approved' });
+      toast.success('Row approved and processed.');
+    } else if (action === 'ignore') {
+      await updateDoc(docRef, { status: 'ignored' });
+      toast.success('Row ignored.');
+    } else if (action === 'update') {
+      await updateDoc(docRef, { ...updatedData });
+      toast.success('Row updated.');
+    }
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to resolve initial import', err);
+    toast.error('Failed to process row.');
+    throw err;
+  }
+}
