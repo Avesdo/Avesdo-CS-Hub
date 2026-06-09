@@ -743,7 +743,7 @@ export default function ServiceHub() {
                       className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[60]"
                       onClick={() => openDrawer('service', s.id)}
                     >
-                      <td className="sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-3">
+                      <td className="sticky left-0 z-20 group-hover:z-[70] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-3">
                         <TruncatedText
                           text={s.name || 'Unnamed Service'}
                           className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"

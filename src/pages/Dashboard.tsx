@@ -1036,7 +1036,7 @@ export default function Dashboard() {
         <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[400px] min-h-[280px] overflow-hidden lg:col-span-1">
           <div className="flex flex-col items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
             <div className="text-base font-semibold tracking-tight text-foreground">
-              Onboarding Phases
+              Implementation Milestones
             </div>
             <p className="text-xs text-muted-foreground font-medium">
               Projects in each implementation stage
@@ -1112,7 +1112,7 @@ export default function Dashboard() {
               Delivery Statuses
             </div>
             <p className="text-xs text-muted-foreground font-medium">
-              Breakdown of projects based on the launch timeline
+              Breakdown of projects based on delivery status
             </p>
           </div>
           <div className="flex-1 overflow-auto p-6 flex flex-col justify-center">
@@ -1126,7 +1126,7 @@ export default function Dashboard() {
                     style={{ width: `${t.percentage}%`, backgroundColor: hexColor }}
                     onClick={() =>
                       openDrawer('dashDrilldown', undefined, {
-                        title: `Delivery Delivery Status: ${t.name}`,
+                        title: `Delivery Status: ${t.name}`,
                         subtitle: 'Onboarding Projects',
                         contextType: 'timeline',
                         projects: projects.filter(
@@ -1146,7 +1146,7 @@ export default function Dashboard() {
                     key={t.name}
                     onClick={() =>
                       openDrawer('dashDrilldown', undefined, {
-                        title: `Delivery Delivery Status: ${t.name}`,
+                        title: `Delivery Status: ${t.name}`,
                         subtitle: 'Onboarding Projects',
                         contextType: 'timeline',
                         projects: projects.filter(

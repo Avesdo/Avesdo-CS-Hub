@@ -293,7 +293,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = ({
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
                   onClick={() => onSort('timelineStatus')}
                 >
-                  Schedule Status
+                  Delivery Status
                 </div>
                 {setTimelineFilter && (
                   <ColumnFilter
@@ -363,7 +363,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = ({
             className={`hover:bg-slate-50 transition-colors cursor-pointer group hover:relative hover:z-[60] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white'}`}
             onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
           >
-            <td className="sticky left-0 z-20 bg-inherit border-r-0 px-4 py-3" onClick={stopProp}>
+            <td className="sticky left-0 z-20 group-hover:z-[70] bg-inherit border-r-0 px-4 py-3" onClick={stopProp}>
               <input
                 type="checkbox"
                 checked={selectedRows.includes(p.id)}
@@ -371,7 +371,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = ({
                 className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
               />
             </td>
-            <td className="sticky left-12 z-20 bg-inherit border-r-0 px-4 py-3 font-semibold text-foreground">
+            <td className="sticky left-12 z-20 group-hover:z-[70] bg-inherit border-r-0 px-4 py-3 font-semibold text-foreground">
               <TruncatedText
                 text={p.name || 'Unnamed Project'}
                 className="max-w-[250px] 2xl:max-w-[400px] group-hover:text-primary transition-colors"
