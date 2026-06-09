@@ -1,28 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield, LogOut } from 'lucide-react';
+import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield } from 'lucide-react';
 
 export default function Sidebar() {
   const { pendingAliasesCount } = useAppState();
-  const { user: authUser, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [imageError, setImageError] = useState(false);
-
-  const getInitials = (name?: string | null, email?: string | null) => {
-    if (name) {
-      const parts = name.trim().split(' ');
-      if (parts.length > 1) {
-        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-      }
-      return name.substring(0, 2).toUpperCase();
-    }
-    if (email) {
-      return email.substring(0, 2).toUpperCase();
-    }
-    return 'CH';
-  };
 
   return (
     <>
@@ -51,8 +36,8 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
-          <ul className="space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto mt-0">
+          <ul className="space-y-1 flex flex-col w-full">
             {[
               { to: '/', icon: <LayoutDashboard className="w-4 h-4" />, label: 'Dashboard' },
               { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Client Health' },
@@ -63,7 +48,7 @@ export default function Sidebar() {
                 <NavLink
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
+                    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
                   }
                 >
                   {link.icon}
@@ -102,27 +87,20 @@ export default function Sidebar() {
           </NavLink>
         </div>
 
-        <div className="px-3 py-4 mt-auto shrink-0 border-t border-border">
-          <div className="flex items-center gap-3 px-2 py-3 w-full text-left">
-            {authUser?.photoURL && !imageError ? (
-              <img src={authUser.photoURL} alt="User Avatar" className="h-8 w-8 rounded-full shrink-0 object-cover ring-2 ring-primary/10" onError={() => setImageError(true)} />
+        <div className="px-3 py-4 mt-auto shrink-0">
+          <div className="flex items-center gap-3 p-2 w-full text-left">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt={user.displayName || 'User'} className="h-8 w-8 rounded-full shrink-0 object-cover" />
             ) : (
-              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0 uppercase">
-                {getInitials(authUser?.displayName, authUser?.email)}
+              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
+                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'CH'}
               </span>
             )}
             <div className="flex-1 text-left min-w-0">
-              <div className="font-medium text-sm truncate">{authUser?.displayName || authUser?.email?.split('@')[0] || 'Loading...'}</div>
-              <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
+              <div className="font-medium text-sm truncate">{user?.displayName || 'Loading...'}</div>
+              <div className="text-xs text-muted-foreground truncate">{user?.email || ''}</div>
             </div>
           </div>
-          <button
-            onClick={() => logout()}
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 text-slate-700 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Log Out</span>
-          </button>
         </div>
       </aside>
     </>
