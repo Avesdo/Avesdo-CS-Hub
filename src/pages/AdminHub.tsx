@@ -91,8 +91,8 @@ export default function AdminHub() {
     const data = await getPendingInitialImports();
     const formattedData = data.map(d => ({
       ...d,
-      developers: d.developerName ? [d.developerName] : [],
-      marketingOrgs: d.marketingOrgName ? [d.marketingOrgName] : []
+      developers: d.developers ? d.developers : (d.developerName ? [d.developerName] : []),
+      marketingOrgs: d.marketingOrgs ? d.marketingOrgs : (d.marketingOrgName ? [d.marketingOrgName] : [])
     }));
     setInitialImports(formattedData);
     setLoadingImports(false);
@@ -930,20 +930,39 @@ export default function AdminHub() {
               Process the initial bulk load of Projects, Developers, and Marketing Orgs.
             </p>
           </div>
-          {initialImports.length === 0 && !loadingImports && (
-            <button
-              onClick={async () => {
-                setLoadingImports(true);
-                const initialImportsData = (await import('../data/initial_imports.json')).default;
-                const { seedInitialImports } = await import('../api/dbService');
-                await seedInitialImports(initialImportsData);
-                await loadInitialImports();
-              }}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold shadow-sm transition-colors shrink-0"
-            >
-              Seed Data from Excel
-            </button>
-          )}
+          <div className="flex gap-2 shrink-0">
+            {initialImports.length > 0 && !loadingImports && (
+              <button
+                onClick={async () => {
+                  if (confirm('Are you sure you want to clear all pending import rows? You can re-seed them again afterwards.')) {
+                    setLoadingImports(true);
+                    const { collection, getDocs, deleteDoc, doc, db } = await import('../firebase/config');
+                    const { query, where } = await import('firebase/firestore');
+                    const snap = await getDocs(query(collection(db, 'initial_imports'), where('status', '==', 'pending')));
+                    await Promise.all(snap.docs.map(d => deleteDoc(doc(db, 'initial_imports', d.id))));
+                    await loadInitialImports();
+                  }
+                }}
+                className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-bold shadow-sm transition-colors"
+              >
+                Clear Data
+              </button>
+            )}
+            {initialImports.length === 0 && !loadingImports && (
+              <button
+                onClick={async () => {
+                  setLoadingImports(true);
+                  const initialImportsData = (await import('../data/initial_imports.json')).default;
+                  const { seedInitialImports } = await import('../api/dbService');
+                  await seedInitialImports(initialImportsData);
+                  await loadInitialImports();
+                }}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold shadow-sm transition-colors"
+              >
+                Seed Data from Excel
+              </button>
+            )}
+          </div>
         </div>
         
         <div className="bg-white border rounded-xl overflow-hidden shadow-sm">

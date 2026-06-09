@@ -15,25 +15,45 @@ function parseExcel() {
   console.log(`Found ${devData.length} projects in developer sheet.`);
   console.log(`Found ${mktData.length} entries in marketing sheet.`);
   
-  const mktMap = {};
-  mktData.forEach(row => {
-    mktMap[row.BuildingId] = row['Marketing Organization'];
-  });
-  
-  const rows = [];
-  
+  const projectMap = {};
+
   for (const row of devData) {
-    const marketingOrg = mktMap[row.Id] || null;
-    
-    rows.push({
-      projectId: String(row.Id),
-      projectName: row.BuildingName || '',
-      developerId: String(row.DeveloperId),
-      developerName: row.AccountName || '',
-      marketingOrgName: marketingOrg || '',
-      status: 'pending', // pending, approved, ignored
-    });
+    const pId = String(row.Id);
+    if (!projectMap[pId]) {
+      projectMap[pId] = {
+        projectId: pId,
+        projectName: row.BuildingName || '',
+        developers: [],
+        marketingOrgs: [],
+        status: 'pending',
+      };
+    }
+    const devName = row.AccountName || '';
+    if (devName && !projectMap[pId].developers.includes(devName)) {
+      projectMap[pId].developers.push(devName);
+    }
   }
+
+  for (const row of mktData) {
+    const pId = String(row.BuildingId);
+    // Note: The marketing sheet might not have BuildingName if it's missing from devData, 
+    // but we can try to use it if available.
+    if (!projectMap[pId]) {
+      projectMap[pId] = {
+        projectId: pId,
+        projectName: row.BuildingName || '',
+        developers: [],
+        marketingOrgs: [],
+        status: 'pending',
+      };
+    }
+    const mktName = row['Marketing Organization'] || '';
+    if (mktName && !projectMap[pId].marketingOrgs.includes(mktName)) {
+      projectMap[pId].marketingOrgs.push(mktName);
+    }
+  }
+
+  const rows = Object.values(projectMap);
   
   const outPath = path.join(__dirname, '../src/data/initial_imports.json');
   if (!fs.existsSync(path.dirname(outPath))) {
