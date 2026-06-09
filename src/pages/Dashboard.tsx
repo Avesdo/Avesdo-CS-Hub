@@ -644,7 +644,7 @@ export default function Dashboard() {
                     universalExportCSV('Clients', clients, 'All_Clients');
                   }}
                 >
-                  <Users className="w-4 h-4 text-muted-foreground" /> All Clients
+                  <Building className="w-4 h-4 text-muted-foreground" /> All Clients
                 </div>
                 <div
                   className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
@@ -653,7 +653,7 @@ export default function Dashboard() {
                     universalExportCSV('Projects', projects, 'All_Projects');
                   }}
                 >
-                  <ListTodo className="w-4 h-4 text-muted-foreground" /> All Projects
+                  <HousePlus className="w-4 h-4 text-muted-foreground" /> All Projects
                 </div>
                 <div
                   className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
