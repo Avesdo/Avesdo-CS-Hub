@@ -13,7 +13,7 @@ The technology stack is exceptionally modern, follows top-tier industry standard
 * **State Management:** TanStack React Query perfectly layered with native React Context.
 * **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 * **Testing & Code Quality:** Playwright for E2E, Vitest for unit/component testing, ESLint, and Prettier are properly configured.
-* **Data Pipeline:** Google Apps Script (runs isolated in the background to ingest Drive files and securely call the Gemini API).
+* **Data Pipeline:** Google Apps Script (runs isolated in the background to ingest Drive files and securely call the Gemini API). The Admin Hub also includes a dedicated tool to parse and ingest bulk JSON/Excel initial state data directly into Firestore.
 * **Cost Constraint:** The entire application runs on a strict $0 zero-cost Google ecosystem.
 
 ## Global State Management
