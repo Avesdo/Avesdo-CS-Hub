@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
+import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield } from 'lucide-react';
 
 export default function Sidebar() {
-  const { user, pendingAliasesCount } = useAppState();
+  const { pendingAliasesCount } = useAppState();
+  const { user: authUser } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -34,8 +36,8 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto mt-0">
-          <ul className="space-y-1 flex flex-col w-full">
+        <nav className="flex-1 px-3 py-4 overflow-y-auto min-h-0">
+          <ul className="space-y-1">
             {[
               { to: '/', icon: <LayoutDashboard className="w-4 h-4" />, label: 'Dashboard' },
               { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Client Health' },
@@ -46,7 +48,7 @@ export default function Sidebar() {
                 <NavLink
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
+                    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
                   }
                 >
                   {link.icon}
@@ -87,12 +89,12 @@ export default function Sidebar() {
 
         <div className="px-3 py-4 mt-auto shrink-0">
           <div className="flex items-center gap-3 p-2 w-full text-left">
-            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
-              {user?.initials || 'CH'}
+            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0 uppercase">
+              {authUser?.displayName?.substring(0, 2) || authUser?.email?.substring(0, 2) || 'CH'}
             </span>
             <div className="flex-1 text-left min-w-0">
-              <div className="font-medium text-sm truncate">{user?.name || 'Loading...'}</div>
-              <div className="text-xs text-muted-foreground truncate">{user?.email || ''}</div>
+              <div className="font-medium text-sm truncate">{authUser?.displayName || authUser?.email?.split('@')[0] || 'Loading...'}</div>
+              <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
             </div>
           </div>
         </div>
