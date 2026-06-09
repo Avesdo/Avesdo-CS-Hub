@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   AVESDO CS HUB - COMPILED STATIC CSS
+========================================== */
+@layer base {
+  :root {
+    /* 🛡️ STANDARDIZED Z-INDEX HIERARCHY */
+    --z-base: 10;
+    --header-height: 60px;
+    --z-header: 40;
+    --z-drawer-overlay: 100;
+    --z-drawer: 110;
+    --z-modal-overlay: 200;
+    --z-modal: 210;
+    --z-popover: 300;
+    --z-toast: 400;
+  
+    --radius: 0.5rem;
+  
+    --background: oklch(100% 0 0);
+    --foreground: #172122;
+    --card: oklch(100% 0 0);
+    --card-foreground: #172122;
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(14.5% 0 0);
+    --primary: #00bdd9;
+    --primary-rgb: 0 189 217;
+    --primary-foreground: #fbfcfd;
+    --secondary: #f8fafa;
+    --secondary-foreground: #172122;
+    --muted: #f8fafa;
+    --muted-foreground: #74868a;
+    --accent: oklch(97% 0 0);
+    --accent-foreground: oklch(20.5% 0 0);
+    --destructive: oklch(57.7% .245 27.325);
+    --destructive-foreground: oklch(98% 0 0);
+    --border: #e1eaeb;
+    --input: #e1eaeb;
+    --ring: oklch(70.8% 0 0);
+    --sidebar: #fbfcfd;
+    --sidebar-foreground: #172122;
+    --sidebar-primary: #00bdd9;
+    --sidebar-primary-foreground: #fbfcfd;
+    --sidebar-accent: #f0fbfd;
+    --sidebar-accent-foreground: #172122;
+    --sidebar-border: #e1eaeb;
+    --sidebar-ring: oklch(70.8% 0 0);
+    --highlight: #f0fbfd;
+    --highlight-foreground: #00a7c2;
+    --color-amber-500: oklch(76.9% .188 70.08);
+    --color-lime-600: oklch(64.8% .2 131.684);
+    --color-red-600: oklch(57.7% .245 27.325);
+  }
+}
+
+html { scroll-behavior: smooth; }
+* { font-family: 'Inter', sans-serif !important; }
+
+.custom-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+.custom-thin-scroll::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.custom-thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-thin-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.custom-thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================
+   GAUGE COMPONENT (Client/Service Drawers)
+========================================== */
+.gauge-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gauge-svg {
+  width: 120px;
+  height: 120px;
+  transform: rotate(-90deg);
+  position: absolute;
+}
+.gauge-bg {
+  fill: transparent;
+  stroke: #f1f5f9;
+  stroke-width: 8;
+}
+.gauge-fill {
+  fill: transparent;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease-out;
+}

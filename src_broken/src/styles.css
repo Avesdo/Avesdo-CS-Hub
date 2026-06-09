@@ -1,0 +1,110 @@
+"@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n/* ==========================================\n   AVESDO CS HUB - COMPILED STATIC CSS\n========================================== */\n@layer base {\n  :root {\n    /* 🛡️ STANDARDIZED Z-INDEX HIERARCHY */\n    --z-base: 10;\n    --z-header: 40;\n    --z-drawer-overlay: 100;\n    --z-drawer: 110;\n    --z-modal-overlay: 200;\n    --z-modal: 210;\n    --z-popover: 300;\n    --z-toast: 400;\n  \n    --radius: 0.5rem;\n  \n    --background: oklch(100% 0 0);\n    --foreground: #172122;\n    --card: oklch(100% 0 0);\n    --card-foreground: #172122;\n    --popover: oklch(100% 0 0);\n    --popover-foreground: oklch(14.5% 0 0);\n    --primary: #00bdd9;\n    --primary-foreground: #fbfcfd;\n    --secondary: #f8fafa;\n    --secondary-foreground: #172122;\n    --muted: #f8fafa;\n    --muted-foreground: #74868a;\n    --accent: oklch(97% 0 0);\n    --accent-foreground: oklch(20.5% 0 0);\n    --destructive: oklch(57.7% .245 27.325);\n    --destructive-foreground: oklch(98% 0 0);\n    --border: #e1eaeb;\n    --input: #e1eaeb;\n    --ring: oklch(70.8% 0 0);\n    --sidebar: #fbfcfd;\n    --sidebar-foreground: #172122;\n    --sidebar-primary: #00bdd9;\n    --sidebar-primary-foreground: #fbfcfd;\n    --sidebar-accent: #f0fbfd;\n    --sidebar-accent-foreground: #172122;\n    --sidebar-border: #e1eaeb;\n    --sidebar-ring: oklch(70.8% 0 0);\n    --highlight: #f0fbfd;\n    --highlight-foreground: #00a7c2;\n    --color-amber-500: oklch(76.9% .188 70.08);\n    --color-lime-600: oklch(64.8% .2 131.684);\n    --color-red-600: oklch(57.7% .245 27.325);\n  }\n}\n\nhtml { scroll-behavior: smooth; }\n* { font-family: 'Inter', sans-serif !important; }\n\n/* ----------------------------------\n   🎨 DECOUPLED SEMANTIC BADGES\n---------------------------------- */\n.badge {\n    display: inline-flex; align-items: center; justify-content: center;\n    border-radius: 9999px; border-width: 1px; padding: 0.125rem 0.5rem;\n    font-size: 11px;\n    font-weight: 600; box-shadow: 0 1p
+<truncated 10616 bytes>
+html { scroll-behavior: smooth; }
+* { font-family: 'Inter', sans-serif !important; }
+
+.custom-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+.custom-thin-scroll::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.custom-thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-thin-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.custom-thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+/* Custom Scrollbars */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.custom-thin-scroll {
+.custom-thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================
+   GAUGE COMPONENT (Client/Service Drawers)
+========================================== */
+.gauge-container {
+  position: relative;
+  width: 84px;
+  height: 84px;
+}
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.gauge-bg {
+  fill: transparent;
+  stroke: #e2e8f0;
+  stroke-width: 8;
+}
+.gauge-fill {
+  fill: transparent;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease-out;
+}
+/* ==========================================
+   GAUGE COMPONENT (Client/Service Drawers)
+========================================== */
+.gauge-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.gauge-bg {
+  fill: transparent;
+  stroke: #e2e8f0;
+  stroke-width: 10;
+}
+.gauge-fill {
+  fill: transparent;
+  stroke-width: 10;
+.gauge-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+.gauge-svg {
+  width: 120px;
+  height: 120px;
+  transform: rotate(-90deg);
+  position: absolute;
+}
+  position: absolute;
+}
+.gauge-bg {
+  fill: transparent;
+  stroke: #f1f5f9;
+  stroke-width: 8;
+}
+.gauge-fill {
+  fill: transparent;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease-out;
+}
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease-out;
+}

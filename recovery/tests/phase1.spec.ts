@@ -1,0 +1,12 @@
+"import { test, expect } from '@playwright/test';\n\ntest.describe('Phase 1: Global Navigation & Foundation Aesthetics', () => {\n  test.beforeEach(async ({ page }) => {\n    await page.goto('http://localhost:5173');\n  });\n\n  test('Sidebar & Routing', async ({ page }) => {\n    // hover and click on Client Health\n    const clientLink = page.getByText('Client Health', { exact: true });\n    await expect(clientLink).toBeVisible();\n    await clientLink.click();\n    await expect(page).toHaveURL(/.*\\/clients/);\n\n    const projectLink = page.getByText('Project Tracker', { exact: true });\n    await projectLink.click();\n    await expect(page).toHaveURL(/.*\\/projects/);\n  });\n\n  test('Global Search Bar', async ({ page }) => {\n    const searchInput = page.getByPlaceholder('Search clients, projects, or services...');\n    \n    // Input & Focus\n    await searchInput.click();\n    await expect(searchInput).toBeFocused();\n    // Verify focus ring classes based on .geminirules\n    await expect(searchInput).toHaveClass(/focus:ring-primary\\/20/);\n    await expect(searchInput).toHaveClass(/focus:border-primary/);\n\n    // Query Logic & Execution\n    await searchInput.fill('a');\n    // Wait for the dropdown to appear. It's usually rendered inside an absolute positioning container.\n    // We expect at least one result or a 'No results' text inside the popover.\n    // The search component uses combobox or similar.\n    const searchResultsContainer = page.locator('.z-50.absolute');\n    await expect(searchResultsContainer).toBeVisible();\n\n    // Escape Key\n    await page.keyboard.press('Escape');\n    // The popover should be hidden\n    await expect(searchResultsContainer).toBeHidden();\n  });\n\n  test('Header & Profile', async ({ page }) => {\n    // The header should be present\n    const header = page.locator('header').first();\n    await expect(header).toBeVisible();\n    \n    // Test profile/avatar rendering (the initial 'A' for Admin usually or a user icon)\n    // The top right usually has a but
+<truncated 883 bytes>
+    // Query Logic & Execution
+    await searchInput.fill('test');
+    // Wait for the dropdown to appear.
+    const searchResultsContainer = page.locator('.z-50.absolute').first();
+    // we need to wait for debounce (200ms) plus search
+    await page.waitForTimeout(500);
+    await expect(searchResultsContainer).toBeVisible({ timeout: 10000 });
+
+    // Escape Key
+    await page.keyboard.press('Escape');

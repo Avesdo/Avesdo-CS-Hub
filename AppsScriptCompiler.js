@@ -1,193 +1,343 @@
 /**
  * AVESDO CS HUB - GEMINI AI DATA COMPILER & FIRESTORE MIGRATOR
- * 
- * Instructions:
- * 1. Open your Google Drive and create a folder named "Avesdo Messy Reports". Note down its Folder ID.
- * 2. In your Google Apps Script Editor:
- *    - Create a new script file and paste this code.
- *    - Update the PROJECT_ID and FOLDER_ID constants below.
- *    - Get a Gemini API Key from Google AI Studio (free tier) and add it as a Script Property: 'GEMINI_API_KEY'.
- *    - Update your appsscript.json to include the Firestore OAuth Scope: "https://www.googleapis.com/auth/datastore"
  */
 
-const PROJECT_ID = "avesdo-cs-hub"; // Your Firebase Project ID
-const FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID"; // Drive Folder ID containing raw report sheets
+const PROJECT_ID = "avesdo-cs-hub"; 
+const FOLDER_ID = "1b6QtozrK6pl9rjBLuMAjW_yj31E_OG1-"; 
 const GEMINI_API_KEY = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+const MAX_EXECUTION_TIME_MS = 4.5 * 60 * 1000; 
 
-/**
- * MIGRATION FUNCTION: Run this once to copy all existing Google Sheet data to Firestore!
- */
-function migrateSheetsToFirestore() {
-  Logger.log("Initializing data fetch from Google Sheets...");
-  
-  // Call the existing Apps Script function that formats the sheets into clean JSON payloads
-  const state = getInitialAppState();
-  
-  Logger.log("Uploading user profile info...");
-  const user = getUserInfo();
-  writeToFirestore("settings", "user_profile", user);
-  
-  Logger.log("Uploading settings to Firestore...");
-  writeToFirestore("settings", "global_config", state.settings);
-
-  Logger.log(`Uploading ${state.clients.length} clients to Firestore...`);
-  state.clients.forEach(c => {
-    writeToFirestore("clients", c.clientId, c);
-  });
-
-  Logger.log(`Uploading ${state.projects.length} projects to Firestore...`);
-  state.projects.forEach(p => {
-    writeToFirestore("projects", p.id, p);
-  });
-
-  Logger.log(`Uploading ${state.services.length} services to Firestore...`);
-  state.services.forEach(s => {
-    writeToFirestore("services", s.id, s);
-  });
-
-  Logger.log("Uploading health history log to Firestore...");
-  try {
-    const historyMap = getAllHealthHistory();
-    writeToFirestore("settings", "health_history", { historyMap: historyMap });
-    Logger.log("Health history migrated successfully.");
-  } catch (e) {
-    Logger.log("Error migrating health history: " + e.toString());
-  }
-
-  Logger.log("Migration complete! All Google Sheet records are now synced to Cloud Firestore.");
-}
-
-/**
- * Main function: run this to compile messy files in Drive and upload to Firestore
- */
 function compileAndIngestReports() {
   if (!GEMINI_API_KEY) {
-    throw new Error("Please add your 'GEMINI_API_KEY' to Script Properties in Settings > Script Properties.");
+    throw new Error("Please add your 'GEMINI_API_KEY' to Script Properties.");
   }
 
-  Logger.log("Scanning Drive folder for messy reports...");
+  const startTime = Date.now();
+  const props = PropertiesService.getScriptProperties();
+  const resumeFileId = props.getProperty('RESUME_FILE_ID');
+  let resumeRowIndex = parseInt(props.getProperty('RESUME_ROW_INDEX'), 10) || 1;
+
+  Logger.log("Waking up. Fetching master databases from Firestore...");
+  
+  const masterClients = fetchCollectionFromFirestore("clients");
+  const masterProjects = fetchCollectionFromFirestore("projects");
+  const masterServices = fetchCollectionFromFirestore("services");
+  const aliasMappings = fetchCollectionFromFirestore("aliases");
+  
+  const dict = { client: {}, project: {}, service: {} };
+  
+  aliasMappings.forEach(alias => {
+    // Both 'verified' and 'pending_approval' aliases are stored in memory to prevent duplicate requests to Gemini in the same run.
+    if (alias.type && alias.rawName && alias.targetId) {
+      if (dict[alias.type]) {
+        dict[alias.type][alias.rawName.toLowerCase()] = { id: alias.targetId, status: alias.status };
+      }
+    }
+  });
+
   const folder = DriveApp.getFolderById(FOLDER_ID);
   const files = folder.getFiles();
-  
-  // 1. Fetch current master clients from Firestore to use for matching
-  const masterClients = fetchMasterClientsFromFirestore();
-  Logger.log(`Found ${masterClients.length} existing master clients in Firestore.`);
+  let timeLimitReached = false;
 
   while (files.hasNext()) {
     const file = files.next();
-    if (file.getMimeType() === MimeType.GOOGLE_SHEETS) {
+    
+    if (resumeFileId && file.getId() !== resumeFileId) {
+      continue;
+    }
+    
+    if (file.getMimeType() === MimeType.GOOGLE_SHEETS || file.getMimeType() === MimeType.CSV) {
+      const fileName = file.getName().toLowerCase();
       Logger.log(`Processing file: ${file.getName()}`);
-      processSingleReport(file, masterClients);
       
-      // Move file to a "Processed" subdirectory to avoid re-running it
+      const spreadsheet = SpreadsheetApp.open(file);
+      const sheet = spreadsheet.getSheets()[0];
+      const rows = sheet.getDataRange().getValues();
+      
+      if (rows.length <= 1) {
+        archiveFile(file, folder);
+        props.deleteProperty('RESUME_FILE_ID');
+        props.deleteProperty('RESUME_ROW_INDEX');
+        resumeRowIndex = 1;
+        continue;
+      }
+      
+      const headers = rows[0].map(h => h.toString().trim().toLowerCase());
+      
+      // Routing Logic Based on Filename
+      let reportType = 'general';
+      if (fileName.includes('activity')) reportType = 'activity';
+      else if (fileName.includes('support')) reportType = 'support';
+      else if (fileName.includes('financial')) reportType = 'financial';
+
+      for (let i = resumeRowIndex; i < rows.length; i++) {
+        if (Date.now() - startTime > MAX_EXECUTION_TIME_MS) {
+          Logger.log(`Approaching time limit. Saving state at row ${i} to resume later.`);
+          props.setProperty('RESUME_FILE_ID', file.getId());
+          props.setProperty('RESUME_ROW_INDEX', i.toString());
+          ScriptApp.newTrigger("compileAndIngestReports").timeBased().after(1 * 60 * 1000).create();
+          timeLimitReached = true;
+          break;
+        }
+
+        const row = rows[i];
+        
+        // Execute specialized parsing
+        if (reportType === 'activity') {
+            processActivityRow(row, headers, dict, masterClients, masterProjects, masterServices);
+        } else if (reportType === 'support') {
+            processSupportRow(row, headers, dict, masterClients, masterProjects, masterServices);
+        } else if (reportType === 'financial') {
+            processFinancialRow(row, headers, dict, masterClients, masterProjects, masterServices);
+        } else {
+            processGeneralRow(row, headers, dict, masterClients, masterProjects, masterServices);
+        }
+      }
+      
+      if (timeLimitReached) break;
+      
       archiveFile(file, folder);
+      props.deleteProperty('RESUME_FILE_ID');
+      props.deleteProperty('RESUME_ROW_INDEX');
+      resumeRowIndex = 1;
     }
   }
-  Logger.log("Finished compilation and ingestion run.");
-}
 
-/**
- * Processes a single sheet, alignments client names with Gemini, and saves to Firestore
- */
-function processSingleReport(file, masterClients) {
-  const spreadsheet = SpreadsheetApp.open(file);
-  const sheet = spreadsheet.getSheets()[0];
-  const rows = sheet.getDataRange().getValues();
-  
-  if (rows.length <= 1) return; // Empty sheet
-  
-  // Assume Row 0 is headers: Client Name, Project Name, Status, Units, etc.
-  const headers = rows[0].map(h => h.toString().trim());
-  const clientNameIdx = headers.findIndex(h => h.toLowerCase().includes("client") || h.toLowerCase().includes("company"));
-  const projectNameIdx = headers.findIndex(h => h.toLowerCase().includes("project"));
-  
-  if (clientNameIdx === -1) {
-    Logger.log(`Skipping sheet ${file.getName()} - No client name column found.`);
-    return;
-  }
-
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    const rawClientName = row[clientNameIdx];
-    const rawProjectName = projectNameIdx !== -1 ? row[projectNameIdx] : "";
-    if (!rawClientName) continue;
-
-    Logger.log(`Aligning client name: "${rawClientName}"`);
-    
-    // 2. Ask Gemini to match raw name to our master list or recommend a new client ID
-    const matchResult = alignClientNameWithGemini(rawClientName, masterClients);
-    
-    let clientId = "";
-    if (matchResult.matchFound && matchResult.matchedClientId) {
-      clientId = matchResult.matchedClientId;
-      Logger.log(`Gemini matched "${rawClientName}" to master ID: ${clientId} (${matchResult.matchedClientName})`);
-    } else {
-      // Create new client in master list and Firestore
-      clientId = "C-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
-      const newClient = {
-        clientId: clientId,
-        companyName: matchResult.suggestedCleanName || rawClientName,
-        clientType: "Developer",
-        accountManager: "Unassigned",
-        healthScore: "N/A",
-        activeProjectCount: 0,
-        notes: []
-      };
-      
-      Logger.log(`Gemini suggests new Client Profile: "${newClient.companyName}" (ID: ${clientId})`);
-      writeToFirestore("clients", clientId, newClient);
-      
-      // Update our local master copy list for subsequent rows in this loop
-      masterClients.push({ clientId: clientId, companyName: newClient.companyName });
-    }
-
-    // 3. Write project details if present
-    if (rawProjectName) {
-      const projectId = "P-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
-      const newProject = {
-        id: projectId,
-        name: rawProjectName,
-        clientIds: [clientId],
-        clients: [matchResult.matchedClientName || matchResult.suggestedCleanName || rawClientName],
-        assignee: "Unassigned",
-        projectStatus: "Onboarding",
-        timelineStatus: "Not Started",
-        onboardingPhase: "Not Started",
-        releaseDate: "",
-        units: 0,
-        score: "N/A",
-        notes: []
-      };
-      writeToFirestore("projects", projectId, newProject);
+  if (!timeLimitReached) {
+    const triggers = ScriptApp.getProjectTriggers();
+    for (let i = 0; i < triggers.length; i++) {
+      if (triggers[i].getHandlerFunction() === "compileAndIngestReports") {
+        ScriptApp.deleteTrigger(triggers[i]);
+      }
     }
   }
 }
 
-/**
- * Calls the Gemini API to align messy names using AI classification
- */
-function alignClientNameWithGemini(rawName, masterList) {
+function processActivityRow(row, headers, dict, masterClients, masterProjects, masterServices) {
+    const clientIdx = headers.findIndex(h => h.includes("client") || h.includes("company"));
+    const projectIdx = headers.findIndex(h => h.includes("project"));
+    
+    // Placeholder index mapping for raw math fields.
+    const rawActivityAIdx = headers.findIndex(h => h.includes("login count") || h.includes("logins"));
+    const rawActivityBIdx = headers.findIndex(h => h.includes("actions taken") || h.includes("actions"));
+    const rawUserVolIdx = headers.findIndex(h => h.includes("active users") || h.includes("seats"));
+    
+    if (clientIdx === -1 || projectIdx === -1) return;
+
+    const rawClient = row[clientIdx].toString().trim();
+    const rawProject = row[projectIdx].toString().trim();
+    
+    if (!rawClient || !rawProject) return;
+
+    const alignment = getOrCreateAlignment(rawClient, rawProject, "", dict, masterClients, masterProjects, masterServices);
+    
+    // Mathematical formula placeholder:
+    let opScore = 0;
+    if (rawActivityAIdx !== -1 && rawActivityBIdx !== -1) {
+        opScore = Math.min(((Number(row[rawActivityAIdx]) || 0) + (Number(row[rawActivityBIdx]) || 0)) / 2, 100);
+    }
+    
+    let userScore = 0;
+    if (rawUserVolIdx !== -1) {
+        userScore = Math.min((Number(row[rawUserVolIdx]) || 0) * 10, 100); 
+    }
+
+    if (alignment.isPending) {
+        stageData("activity", alignment, row, headers, { opScore, userScore });
+        return;
+    }
+
+    if (alignment.projectId) {
+        writeToFirestore("projects", alignment.projectId, { score_op: opScore, score_usr: userScore });
+        Logger.log(`Updated Activity for Project ${alignment.projectId} - Op: ${opScore}, Usr: ${userScore}`);
+    }
+}
+
+function processSupportRow(row, headers, dict, masterClients, masterProjects, masterServices) {
+    const companyIdx = headers.findIndex(h => h.includes("company") || h.includes("client"));
+    const emailIdx = headers.findIndex(h => h.includes("email"));
+    const csatIdx = headers.findIndex(h => h.includes("csat") || h.includes("satisfaction"));
+
+    let rawClient = "";
+    if (companyIdx !== -1) rawClient = row[companyIdx].toString().trim();
+    else if (emailIdx !== -1) {
+        const email = row[emailIdx].toString().trim();
+        rawClient = email.split('@')[1] || ""; // Fallback to domain mapping
+    }
+
+    if (!rawClient || csatIdx === -1) return;
+
+    const alignment = getOrCreateAlignment(rawClient, "", "", dict, masterClients, masterProjects, masterServices);
+    const csatVal = row[csatIdx].toString().trim();
+
+    if (alignment.isPending) {
+        stageData("support", alignment, row, headers, { csatVal });
+        return;
+    }
+
+    if (alignment.clientId) {
+        // We write the raw response. `Backend_Scoring.js` and React will average it later.
+        const client = masterClients.find(c => c.clientId === alignment.clientId);
+        if (client) {
+            const currentResponses = client.csatResponses || [];
+            currentResponses.push({ date: new Date().getTime(), response: csatVal });
+            writeToFirestore("clients", alignment.clientId, { csatResponses: currentResponses });
+            Logger.log(`Added Support CSAT to Client ${alignment.clientId}: ${csatVal}`);
+        }
+    }
+}
+
+function processFinancialRow(row, headers, dict, masterClients, masterProjects, masterServices) {
+    const clientIdx = headers.findIndex(h => h.includes("client") || h.includes("company"));
+    const statusIdx = headers.findIndex(h => h.includes("status") || h.includes("invoice"));
+
+    if (clientIdx === -1 || statusIdx === -1) return;
+
+    const rawClient = row[clientIdx].toString().trim();
+    if (!rawClient) return;
+    
+    const statusVal = row[statusIdx].toString().trim();
+
+    const alignment = getOrCreateAlignment(rawClient, "", "", dict, masterClients, masterProjects, masterServices);
+    
+    if (alignment.isPending) {
+        stageData("financial", alignment, row, headers, { invoiceStatus: statusVal });
+        return;
+    }
+
+    if (alignment.clientId) {
+        writeToFirestore("clients", alignment.clientId, { invoiceStatus: statusVal });
+        Logger.log(`Updated Financial Status for Client ${alignment.clientId}: ${statusVal}`);
+    }
+}
+
+function processGeneralRow(row, headers, dict, masterClients, masterProjects, masterServices) {
+    const clientIdx = headers.findIndex(h => h.includes("client") || h.includes("company"));
+    const projectIdx = headers.findIndex(h => h.includes("project"));
+    const serviceIdx = headers.findIndex(h => h.includes("service"));
+
+    if (clientIdx === -1) return;
+
+    const rawClient = row[clientIdx] ? row[clientIdx].toString().trim() : "";
+    const rawProject = projectIdx !== -1 && row[projectIdx] ? row[projectIdx].toString().trim() : "";
+    const rawService = serviceIdx !== -1 && row[serviceIdx] ? row[serviceIdx].toString().trim() : "";
+
+    if (!rawClient) return;
+
+    const alignment = getOrCreateAlignment(rawClient, rawProject, rawService, dict, masterClients, masterProjects, masterServices);
+    
+    if (alignment.isPending) {
+        stageData("general", alignment, row, headers, {});
+    }
+}
+
+function getOrCreateAlignment(rawClient, rawProject, rawService, dict, masterClients, masterProjects, masterServices) {
+  let clientNode = dict.client[rawClient.toLowerCase()];
+  let projectNode = rawProject ? dict.project[rawProject.toLowerCase()] : null;
+  let serviceNode = rawService ? dict.service[rawService.toLowerCase()] : null;
+
+  let clientId = clientNode ? clientNode.id : null;
+  let projectId = projectNode ? projectNode.id : null;
+  let serviceId = serviceNode ? serviceNode.id : null;
+
+  const isPending = (clientNode && clientNode.status === 'pending_approval') || 
+                    (projectNode && projectNode.status === 'pending_approval') || 
+                    (serviceNode && serviceNode.status === 'pending_approval');
+
+  const needsAlignment = [];
+  if (!clientNode && rawClient) needsAlignment.push({ type: "client", rawName: rawClient });
+  if (rawProject && !projectNode) needsAlignment.push({ type: "project", rawName: rawProject });
+  if (rawService && !serviceNode) needsAlignment.push({ type: "service", rawName: rawService });
+
+  if (needsAlignment.length > 0) {
+    Logger.log(`Asking Gemini to align: ${needsAlignment.map(n => n.rawName).join(", ")}`);
+    const alignmentResult = alignEntitiesWithGemini(needsAlignment, masterClients, masterProjects, masterServices);
+    
+    if (!clientNode && alignmentResult.client) {
+      clientId = alignmentResult.client.id || "C-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+      saveAlias("client", rawClient, clientId, dict, true); // Save as pending
+    }
+    
+    if (rawProject && !projectNode && alignmentResult.project) {
+      projectId = alignmentResult.project.id || "P-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+      saveAlias("project", rawProject, projectId, dict, true);
+    }
+    
+    if (rawService && !serviceNode && alignmentResult.service) {
+      serviceId = alignmentResult.service.id || "S-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+      saveAlias("service", rawService, serviceId, dict, true);
+    }
+    
+    return { clientId, projectId, serviceId, isPending: true };
+  }
+
+  return { clientId, projectId, serviceId, isPending };
+}
+
+function stageData(type, alignment, row, headers, calculatedData) {
+    const stageId = "STG-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+    const payload = {
+        id: stageId,
+        type: type,
+        alignment: alignment,
+        calculatedData: calculatedData,
+        timestamp: new Date().getTime(),
+        rowData: headers.reduce((acc, h, i) => { acc[h] = row[i]; return acc; }, {})
+    };
+    writeToFirestore("staged_imports", stageId, payload);
+    Logger.log(`Staged data row pending alias approval (Stage ID: ${stageId})`);
+}
+
+function saveAlias(type, rawName, targetId, dict, isPending) {
+  const status = isPending ? "pending_approval" : "verified";
+  dict[type][rawName.toLowerCase()] = { id: targetId, status: status };
+  
+  const aliasId = "A-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+  writeToFirestore("aliases", aliasId, {
+    type: type,
+    rawName: rawName,
+    targetId: targetId,
+    status: status
+  });
+  Logger.log(`Saved Alias: [${type}] "${rawName}" -> ${targetId} (${status})`);
+}
+
+function alignEntitiesWithGemini(needsAlignment, masterClients, masterProjects, masterServices) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
   
+  const clientList = masterClients.map(c => `${c.clientId} - ${c.companyName}`).join("\n");
+  const projectList = masterProjects.map(p => `${p.id} - ${p.name}`).join("\n");
+  const serviceList = masterServices.map(s => `${s.id} - ${s.name}`).join("\n");
+
+  const entitiesStr = JSON.stringify(needsAlignment);
+
   const prompt = {
     contents: [{
       parts: [{
-        text: `Analyze this raw client/organization name: "${rawName}"
+        text: `You are an AI data aligner. Your job is to take raw, messy strings and map them to standard IDs.
         
-        Compare it against this list of verified master clients (format: ID - Name):
-        ${JSON.stringify(masterList)}
-        
-        Determine if this raw name refers to one of our existing master clients (even with typos, abbreviations, suffixes like Inc, Corp, Co, or alternative spellings).
-        
-        Return a JSON response object with exactly this schema:
-        {
-          "matchFound": true/false,
-          "matchedClientId": "ID of match or empty string",
-          "matchedClientName": "Name of match or empty string",
-          "suggestedCleanName": "A clean standardized company name to create if no match found (remove junk, standardize casing)"
-        }
-        
-        Respond only in raw JSON. No markdown formatting, no backticks.`
+Here are the entities we need to align:
+${entitiesStr}
+
+Here is the master list of Clients:
+${clientList}
+
+Here is the master list of Projects:
+${projectList}
+
+Here is the master list of Services:
+${serviceList}
+
+Analyze the raw names. Determine if they refer to an existing master record.
+If a match exists, provide its ID. If it does not exist, provide an empty string for the ID.
+
+Return ONLY a JSON response object with exactly this schema:
+{
+  "client": { "id": "matched ID or empty string" },
+  "project": { "id": "matched ID or empty string" },
+  "service": { "id": "matched ID or empty string" }
+}
+Do not return any markdown tags or backticks, just raw JSON.`
       }]
     }]
   };
@@ -204,117 +354,69 @@ function alignClientNameWithGemini(rawName, masterList) {
   
   try {
     const json = JSON.parse(resultText);
-    const textOutput = json.candidates[0].content.parts[0].text.trim();
+    let textOutput = json.candidates[0].content.parts[0].text.trim();
+    textOutput = textOutput.replace(/^```json/g, "").replace(/```$/g, "").trim();
     return JSON.parse(textOutput);
   } catch (e) {
     Logger.log("Failed parsing Gemini response: " + resultText);
-    return { matchFound: false, matchedClientId: "", matchedClientName: "", suggestedCleanName: rawName };
+    return {};
   }
 }
 
 /**
- * Firestore Helper: Fetches master clients list from Firestore REST API
+ * Firestore Helpers
  */
-function fetchMasterClientsFromFirestore() {
-  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/clients`;
-  const options = {
-    method: "GET",
-    headers: {
-      "Authorization": "Bearer " + ScriptApp.getOAuthToken(),
-      "Accept": "application/json"
-    },
-    muteHttpExceptions: true
-  };
-
+function fetchCollectionFromFirestore(collection) {
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${collection}?pageSize=1000`;
+  const options = { method: "GET", headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken(), "Accept": "application/json" }, muteHttpExceptions: true };
   const response = UrlFetchApp.fetch(url, options);
-  if (response.getResponseCode() !== 200) {
-    Logger.log("Firestore client collection is empty or uninitialized.");
-    return [];
-  }
-  
+  if (response.getResponseCode() !== 200) return [];
   const data = JSON.parse(response.getContentText());
   if (!data.documents) return [];
-  
-  return data.documents.map(doc => {
-    // Map Firestore document format back to simple key-value for Gemini
-    const fields = doc.fields;
-    return {
-      clientId: fields.clientId ? fields.clientId.stringValue : "",
-      companyName: fields.companyName ? fields.companyName.stringValue : ""
-    };
-  });
+  return data.documents.map(doc => parseFirestoreDoc(doc.fields));
 }
 
-/**
- * Firestore Helper: Writes documents to Firestore using the REST API
- */
-/**
- * Recursive helper to serialize any JavaScript type to the expected Firestore REST value structure
- */
+function parseFirestoreDoc(fields) {
+  const result = {};
+  for (let k in fields) {
+    const valObj = fields[k];
+    if (valObj.stringValue !== undefined) result[k] = valObj.stringValue;
+    else if (valObj.integerValue !== undefined) result[k] = parseInt(valObj.integerValue, 10);
+    else if (valObj.doubleValue !== undefined) result[k] = parseFloat(valObj.doubleValue);
+    else if (valObj.booleanValue !== undefined) result[k] = valObj.booleanValue;
+    else if (valObj.arrayValue !== undefined) result[k] = valObj.arrayValue.values ? valObj.arrayValue.values.map(v => v.stringValue || v.integerValue) : [];
+    else result[k] = null;
+  }
+  return result;
+}
+
 function toFirestoreValue(val) {
-  if (val === null || val === undefined) {
-    return { nullValue: null };
-  }
-  if (Array.isArray(val)) {
-    return { arrayValue: { values: val.map(toFirestoreValue) } };
-  }
+  if (val === null || val === undefined) return { nullValue: null };
+  if (Array.isArray(val)) return { arrayValue: { values: val.map(toFirestoreValue) } };
   if (typeof val === 'object') {
     const fields = {};
-    for (let k in val) {
-      if (val[k] !== undefined && val[k] !== null) {
-        fields[k] = toFirestoreValue(val[k]);
-      }
-    }
+    for (let k in val) if (val[k] !== undefined && val[k] !== null) fields[k] = toFirestoreValue(val[k]);
     return { mapValue: { fields: fields } };
   }
-  if (typeof val === 'number') {
-    return { doubleValue: val };
-  }
-  if (typeof val === 'boolean') {
-    return { booleanValue: val };
-  }
+  if (typeof val === 'number') return Number.isInteger(val) ? { integerValue: val.toString() } : { doubleValue: val };
+  if (typeof val === 'boolean') return { booleanValue: val };
   return { stringValue: String(val) };
 }
 
-/**
- * Firestore Helper: Writes documents to Firestore using the REST API
- */
 function writeToFirestore(collection, docId, data) {
   const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${collection}/${docId}`;
-  
   const fields = {};
-  for (let key in data) {
-    if (data[key] !== undefined && data[key] !== null) {
-      fields[key] = toFirestoreValue(data[key]);
-    }
-  }
-
+  for (let key in data) if (data[key] !== undefined && data[key] !== null) fields[key] = toFirestoreValue(data[key]);
   const payload = { fields: fields };
-  const options = {
-    method: "PATCH",
-    contentType: "application/json",
-    headers: {
-      "Authorization": "Bearer " + ScriptApp.getOAuthToken()
-    },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
+  const options = { method: "PATCH", contentType: "application/json", headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken() }, payload: JSON.stringify(payload), muteHttpExceptions: true };
   const response = UrlFetchApp.fetch(url, options);
-  if (response.getResponseCode() !== 200) {
-    Logger.log(`Failed writing to Firestore: ${response.getContentText()}`);
-  }
+  if (response.getResponseCode() !== 200) Logger.log(`Failed writing to Firestore: ${response.getContentText()}`);
 }
 
-/**
- * File Helper: Archives processed reports to prevent duplicate runs
- */
 function archiveFile(file, sourceFolder) {
   let archiveFolder;
-  try {
-    archiveFolder = sourceFolder.getFoldersByName("Processed").next();
-  } catch (e) {
-    archiveFolder = sourceFolder.createFolder("Processed");
-  }
+  const folders = sourceFolder.getFoldersByName("Processed");
+  if (folders.hasNext()) archiveFolder = folders.next();
+  else archiveFolder = sourceFolder.createFolder("Processed");
   file.moveTo(archiveFolder);
 }

@@ -1,0 +1,1 @@
+      <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
