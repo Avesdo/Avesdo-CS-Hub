@@ -18,7 +18,7 @@ export default function ClientHealthTab({ client }: ClientHealthTabProps) {
         <Activity className="w-6 h-6 shrink-0 text-muted-foreground mb-1" />
         <span>No active data to score.</span>
         <span className="font-normal text-xs max-w-xs">
-          Metrics will automatically calculate once an onboarding project is released.
+          Metrics will automatically calculate when the client has active projects.
         </span>
       </div>
     );
