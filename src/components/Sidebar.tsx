@@ -9,6 +9,20 @@ export default function Sidebar() {
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+      }
+      return name.charAt(0).toUpperCase();
+    }
+    if (email) {
+      return email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
   return (
     <>
       <div
@@ -89,9 +103,13 @@ export default function Sidebar() {
 
         <div className="px-3 py-4 mt-auto shrink-0 border-t border-border/50">
           <div className="flex items-center gap-3 p-2 w-full text-left">
-            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
-              {authUser?.displayName?.charAt(0)?.toUpperCase() || authUser?.email?.charAt(0)?.toUpperCase() || 'U'}
-            </span>
+            {authUser?.photoURL ? (
+              <img src={authUser.photoURL} alt={authUser.displayName || 'User'} className="h-8 w-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
+                {getInitials(authUser?.displayName, authUser?.email)}
+              </span>
+            )}
             <div className="flex-1 text-left min-w-0">
               <div className="font-medium text-sm truncate">{authUser?.displayName || 'User'}</div>
               <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
