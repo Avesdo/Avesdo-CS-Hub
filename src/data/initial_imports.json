@@ -30,11 +30,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -42,7 +40,7 @@
     "projectId": "9",
     "projectName": "Cardero",
     "developers": [
-      "Bosa"
+      "Bosa Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -54,7 +52,7 @@
       "Belford Properties"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "Key Marketing",
       "Parallel Project Marketing"
     ],
@@ -67,9 +65,9 @@
       "Kerkhoff Construction Inc"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -82,7 +80,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -95,7 +93,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -105,7 +103,7 @@
     "projectId": "14",
     "projectName": "Marquee",
     "developers": [
-      "BOSA"
+      "Bosa Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -117,7 +115,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -136,10 +134,10 @@
     "projectId": "17",
     "projectName": "Synchro",
     "developers": [
-      "Bold"
+      "Bold Properties"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing"
+      "Oakwyn Realty"
     ],
     "status": "pending"
   },
@@ -150,7 +148,7 @@
       "Formwerks"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "Macdonald Realty",
       "Oakwyn Realty"
     ],
@@ -160,7 +158,7 @@
     "projectId": "19",
     "projectName": "Bellevue",
     "developers": [
-      "Cressey"
+      "Cressey Developments"
     ],
     "marketingOrgs": [
       "Cressey Development Group",
@@ -181,7 +179,7 @@
     "projectId": "21",
     "projectName": "ZZ - Closed - The Smithe",
     "developers": [
-      "Boffo"
+      "Boffo Developments"
     ],
     "marketingOrgs": [
       "MLA Canada"
@@ -195,7 +193,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -218,8 +216,7 @@
     ],
     "marketingOrgs": [
       "Key Marketing",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -239,7 +236,7 @@
       "Belford Properties"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "Key Marketing",
       "Parallel Project Marketing"
     ],
@@ -252,7 +249,7 @@
       "Landmark"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -264,10 +261,8 @@
       "Intracorp"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -318,11 +313,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -346,11 +339,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -372,7 +363,7 @@
       "Maple Leaf Homes"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -384,10 +375,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -399,10 +390,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -413,7 +404,7 @@
       "Landmark Premiere Properties"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -425,7 +416,7 @@
       "Landmark Premiere Properties"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -445,7 +436,7 @@
     "projectId": "43",
     "projectName": "Union",
     "developers": [
-      "Austin Square Developments"
+      "Ecogen Properties"
     ],
     "marketingOrgs": [
       "Key Marketing"
@@ -456,7 +447,7 @@
     "projectId": "44",
     "projectName": "The Grand",
     "developers": [
-      "CCM Investment Group LTD."
+      "CCM Investment Group Ltd."
     ],
     "marketingOrgs": [
       "Key Marketing"
@@ -479,9 +470,9 @@
       "Kerkhoff Construction Inc"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -505,7 +496,7 @@
       "Belford Properties"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "Key Marketing",
       "Parallel Project Marketing"
     ],
@@ -515,7 +506,8 @@
     "projectId": "49",
     "projectName": "Kingly Condos",
     "developers": [
-      "Allied Properties and RioCan"
+      "Allied Properties",
+      "RioCan"
     ],
     "marketingOrgs": [
       "PSR Brokerage"
@@ -577,11 +569,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -594,11 +584,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -609,7 +597,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -633,7 +621,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -658,7 +646,7 @@
       "Kingdom"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -691,7 +679,7 @@
       "Formwerks"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "Macdonald Realty",
       "Oakwyn Realty"
     ],
@@ -704,7 +692,7 @@
       "Konnect Brookside Holdings Ltd."
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing"
+      "Oakwyn Realty"
     ],
     "status": "pending"
   },
@@ -712,7 +700,7 @@
     "projectId": "65",
     "projectName": "ZZ - Closed - Hensley",
     "developers": [
-      "Cressey"
+      "Cressey Developments"
     ],
     "marketingOrgs": [
       "Cressey Development Group",
@@ -727,11 +715,11 @@
       "StreetSide Developments"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -767,15 +755,14 @@
     "projectId": "70",
     "projectName": "Pier West Tower A",
     "developers": [
-      "Bosa Development"
+      "Bosa Properties"
     ],
     "marketingOrgs": [
       "City Homes Realty",
-      "Magnum",
-      "QuadReal Properties",
+      "Magnum Projects",
+      "QuadReal Property Group",
       "Rad Marketing",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -783,7 +770,7 @@
     "projectId": "71",
     "projectName": "Marquise",
     "developers": [
-      "Blairmore Development Group (LLN Properties)"
+      "Blairmore Development"
     ],
     "marketingOrgs": [
       "Key Marketing"
@@ -797,7 +784,7 @@
       "Elyx Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -808,7 +795,7 @@
       "Elyx Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -828,8 +815,7 @@
       "Skale Developments"
     ],
     "marketingOrgs": [
-      "Paul Johnston Unique Urban Homes",
-      "Rennie Marketing API 01"
+      "Paul Johnston Unique Urban Homes"
     ],
     "status": "pending"
   },
@@ -843,7 +829,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -851,14 +837,13 @@
     "projectId": "77",
     "projectName": "Pier West Tower B",
     "developers": [
-      "Bosa Development"
+      "Bosa Properties"
     ],
     "marketingOrgs": [
       "City Homes Realty",
-      "Magnum",
+      "Magnum Projects",
       "Rad Marketing",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -902,7 +887,7 @@
       "Gramercy Development LTD"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -915,11 +900,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -939,10 +922,10 @@
     "projectId": "84",
     "projectName": "Phase 3 - Cirrus at SOLO District",
     "developers": [
-      "Appia Development"
+      "Appia Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -961,7 +944,7 @@
     "projectId": "86",
     "projectName": "Uovo Residences",
     "developers": [
-      "2114 Yonge Street Inc"
+      "Sher Corporation"
     ],
     "marketingOrgs": [
       "Milborne Group"
@@ -986,7 +969,7 @@
       "FIG Montrose Developments Ltd"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Gowling WLG"
     ],
     "status": "pending"
@@ -1006,7 +989,7 @@
     "projectId": "90",
     "projectName": "Crest",
     "developers": [
-      "Adera Development Corporation"
+      "Adera Developments"
     ],
     "marketingOrgs": [
       "Adera Realty",
@@ -1022,7 +1005,7 @@
       "Onni Group"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1034,10 +1017,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1048,9 +1031,9 @@
       "Kerkhoff Construction Inc"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -1083,7 +1066,7 @@
       "Ledcor Property Development"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -1107,11 +1090,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1124,11 +1105,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1141,11 +1120,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1153,10 +1130,10 @@
     "projectId": "101",
     "projectName": "Avani Centre",
     "developers": [
-      "Avani Centre Inc."
+      "Avani Centre"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -1176,7 +1153,7 @@
       "Onni Group"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1187,7 +1164,7 @@
       "Coromandel Wilmar LP"
     ],
     "marketingOrgs": [
-      "CielleProperties",
+      "Cielle Properties",
       "Fanson Capital",
       "Gowling WLG",
       "MLA Canada",
@@ -1212,13 +1189,11 @@
     "projectId": "106",
     "projectName": "Aalto Townhomes",
     "developers": [
-      "1226 Johnson Street Limited Partnership"
+      "Intracorp Projects"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1241,9 +1216,9 @@
       "RDG Yorkson Development Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -1254,9 +1229,9 @@
       "RDG Yorkson Development Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -1264,7 +1239,7 @@
     "projectId": "110",
     "projectName": "ZZ - Closed - Chelsea by Cressey",
     "developers": [
-      "Cressey"
+      "Cressey Developments"
     ],
     "marketingOrgs": [
       "Cressey Development Group",
@@ -1276,7 +1251,7 @@
     "projectId": "111",
     "projectName": "Marine and Fell",
     "developers": [
-      "Anthem 725 Marine Developments LP"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -1288,7 +1263,7 @@
       "Onni Group"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1310,7 +1285,7 @@
       "Coromandel Oak 67 Development LP"
     ],
     "marketingOrgs": [
-      "CielleProperties",
+      "Cielle Properties",
       "Fanson Capital",
       "Gowling WLG",
       "MLA Canada",
@@ -1324,7 +1299,7 @@
     "projectId": "115",
     "projectName": "Brooklyn",
     "developers": [
-      "Mission Group Homes"
+      "Mission Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -1347,11 +1322,11 @@
       "StreetSide Developments (B.C.) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -1363,7 +1338,7 @@
       "Landmark Premiere Properties"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -1375,7 +1350,7 @@
       "Landmark Premiere Properties"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -1423,7 +1398,7 @@
       "Onni TFN Development No. 1 Limited Partnership"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1456,9 +1431,9 @@
       "RDG White Rock Developments Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -1468,14 +1443,7 @@
     "developers": [
       "Bell Properties"
     ],
-    "marketingOrgs": [
-      "Avesdo 2",
-      "Avesdo 3",
-      "Avesdo Estates",
-      "Avesdo_UUA",
-      "Test 5",
-      "Test 6"
-    ],
+    "marketingOrgs": [],
     "status": "pending"
   },
   {
@@ -1486,10 +1454,8 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1500,7 +1466,7 @@
       "Onni Ioco Road Four Development Limited Partnership"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1511,7 +1477,7 @@
       "Slate with Globizen"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "Paul Johnston Unique Urban Homes"
     ],
     "status": "pending"
@@ -1532,10 +1498,8 @@
       "Intracorp Maywood Park Limited Partnership"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1546,7 +1510,7 @@
       "Westbank / Allied"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1558,7 +1522,7 @@
       "Westbank / Allied"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1570,7 +1534,7 @@
       "Strand and Macdonald Development"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -1579,10 +1543,10 @@
     "projectId": "136",
     "projectName": "The Granville",
     "developers": [
-      "Aoyuan Property Group (Canada) Ltd."
+      "Aoyuan International"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -1606,11 +1570,11 @@
       "Qualico"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -1619,10 +1583,10 @@
     "projectId": "139",
     "projectName": "Avani Centre*",
     "developers": [
-      "Avani Centre Inc."
+      "Avani Centre"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -1633,7 +1597,7 @@
       "Onni Gilmore Ave. Development Limited Partnership & Onni GIlmore Holdings Corp."
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1644,7 +1608,7 @@
       "Keltic (Brighouse) Development Ltd."
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -1656,7 +1620,7 @@
       "WESTBANK / ALLIED"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1668,7 +1632,7 @@
       "Onni Group of Companies"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -1679,7 +1643,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -1702,7 +1666,7 @@
       "Westbank"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1714,7 +1678,7 @@
       "Westbank"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1738,7 +1702,7 @@
       "South Street Development"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -1746,7 +1710,7 @@
     "projectId": "150",
     "projectName": "Bayview Creek",
     "developers": [
-      "CIM Bayview Creek Inc"
+      "CIM International Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -1755,7 +1719,7 @@
     "projectId": "155",
     "projectName": "U-Eight",
     "developers": [
-      "Mission Group Enterprises Ltd"
+      "Mission Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -1767,9 +1731,9 @@
       "Riverbrook Estates Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -1782,11 +1746,10 @@
       "Thind Properties"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -1798,11 +1761,10 @@
       "Thind Properties"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -1811,7 +1773,7 @@
     "projectId": "159",
     "projectName": "ZZ - Closed - Gala at Parc Central",
     "developers": [
-      "Essence Properties Inc."
+      "Essence Properties"
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
@@ -1836,7 +1798,7 @@
       "Keltic (Brighouse) Development Ltd."
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -1848,11 +1810,10 @@
       "Thind Properties"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -1870,7 +1831,7 @@
     "projectId": "164",
     "projectName": "Georgetown One",
     "developers": [
-      "Anthem Georgetown One Developments LP"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -1882,7 +1843,7 @@
       "Belford Properties"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "Key Marketing",
       "Parallel Project Marketing"
     ],
@@ -1895,7 +1856,7 @@
       "Riverstone Place Inc"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing"
+      "Oakwyn Realty"
     ],
     "status": "pending"
   },
@@ -1915,7 +1876,7 @@
       "WOODBRIDGE (121) LIMITED PARTNERSHIP"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -1948,10 +1909,10 @@
     "projectId": "171",
     "projectName": "Times Square Richmond - Commercial",
     "developers": [
-      "Bene (Richmond) Development Ltd. (Times Square Project)"
+      "Bene Development Ltd."
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -1962,7 +1923,7 @@
       "Westbank/Quadreal"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1974,7 +1935,7 @@
       "Westbank/Quadreal"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1986,7 +1947,7 @@
       "Westbank/Quadreal"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -1998,7 +1959,7 @@
       "Westbank / Allied"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -2010,11 +1971,11 @@
       "Grand Long Holdings Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "CBRE",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -2025,7 +1986,7 @@
       "Keltic (Brighouse) Development Ltd."
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -2034,7 +1995,7 @@
     "projectId": "178",
     "projectName": "50 Electronic Avenue",
     "developers": [
-      "50 Electronic (Residential) LP"
+      "Panatch Group"
     ],
     "marketingOrgs": [
       "Hestia Marketing"
@@ -2048,7 +2009,7 @@
       "Woodbridge Dogwood Limited Partnership"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -2074,7 +2035,7 @@
       "Ventura Properties Ltd"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Pacific Hills Developments"
     ],
     "status": "pending"
@@ -2086,7 +2047,7 @@
       "FB E. 3rd Develoment Limited Partnership"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "Macdonald Realty",
       "Oakwyn Realty"
     ],
@@ -2111,11 +2072,11 @@
       "StreetSide Developments (BC) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -2194,7 +2155,7 @@
       "Benchmark Homes"
     ],
     "marketingOrgs": [
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -2202,10 +2163,10 @@
     "projectId": "192",
     "projectName": "2 River Green",
     "developers": [
-      "Aspac Developments Ltd."
+      "Aspac Developments"
     ],
     "marketingOrgs": [
-      "Aspac Projects Limited"
+      "Aspac Developments"
     ],
     "status": "pending"
   },
@@ -2216,7 +2177,7 @@
       "LIONS GATE VILLAGE LIMITED PARTNERSHIP, by its general partner, LIONS GATE VILLAGE PROJECT LTD."
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -2247,7 +2208,7 @@
     "projectId": "196",
     "projectName": "ZZ - Closed - Tribute at Parc Central",
     "developers": [
-      "Essence Properties (Parc Central) Inc."
+      "Essence Properties"
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
@@ -2271,12 +2232,11 @@
     "projectId": "198",
     "projectName": "Amber Douglas Park",
     "developers": [
-      "Aragon Properties Ltd."
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -2287,7 +2247,7 @@
       "Realco Holdings (Scottsdale Centre) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP"
     ],
@@ -2300,7 +2260,7 @@
       "Distrikt Homes"
     ],
     "marketingOrgs": [
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -2308,10 +2268,10 @@
     "projectId": "201",
     "projectName": "Belmont Residences East",
     "developers": [
-      "Belmont Residences East Limited Partnership"
+      "Ledcor Property Development"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -2322,7 +2282,7 @@
       "Westbank"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -2334,7 +2294,7 @@
       "Naturbana Properties Ltd."
     ],
     "marketingOrgs": [
-      "Kerkhoff Construction Inc",
+      "Kerkhoff Construction",
       "McQuarrie Hunter LLP",
       "rareEarth Project Marketing"
     ],
@@ -2344,12 +2304,11 @@
     "projectId": "204",
     "projectName": "Shift Little Mountain",
     "developers": [
-      "Aragon Properties Ltd."
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -2374,7 +2333,7 @@
       "South Street Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -2393,7 +2352,7 @@
     "projectId": "208",
     "projectName": "Founders Block North",
     "developers": [
-      "Anthem East 3rd Developments Limited Partnership and Anthem East 3rd Developments Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2402,7 +2361,7 @@
     "projectId": "209",
     "projectName": "Five Road",
     "developers": [
-      "Anthem 5 Road Developments Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2411,10 +2370,10 @@
     "projectId": "210",
     "projectName": "Hollybridge at River Green",
     "developers": [
-      "ASPAC Developments"
+      "Aspac Developments"
     ],
     "marketingOrgs": [
-      "Aspac Projects Limited"
+      "Aspac Developments"
     ],
     "status": "pending"
   },
@@ -2446,11 +2405,11 @@
       "Streetside Developments (Surrey)"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -2468,7 +2427,7 @@
     "projectId": "215",
     "projectName": "Seaside",
     "developers": [
-      "Mosaic"
+      "Mosaic Homes"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2492,10 +2451,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -2514,7 +2473,7 @@
     "projectId": "219",
     "projectName": "West Third",
     "developers": [
-      "Anthem Chesterfield Developments LP and Anthem Chesterfield Developments Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2544,9 +2503,9 @@
       "National Homes (Bradford) Inc."
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -2566,7 +2525,7 @@
       "Hungerford Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -2580,7 +2539,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -2592,7 +2551,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -2603,9 +2562,9 @@
       "National Homes (Brampton) Inc."
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -2616,9 +2575,9 @@
       "National Homes"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -2669,7 +2628,7 @@
       "GN Holdings Limited Partnership"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "MLA Canada"
     ],
     "status": "pending"
@@ -2678,28 +2637,11 @@
     "projectId": "234",
     "projectName": "Esquimalt Town Square",
     "developers": [
-      "Aragon Esquimalt TC Properties Ltd."
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
-    ],
-    "status": "pending"
-  },
-  {
-    "projectId": "235",
-    "projectName": "Floral Green",
-    "developers": [
-      "Avesdo 1"
-    ],
-    "marketingOrgs": [
-      "Avesdo 2",
-      "Avesdo 3",
-      "Avesdo Estates",
-      "Avesdo_UUA",
-      "Test 5",
-      "Test 6"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -2710,7 +2652,7 @@
       "Lakeview Development Holdings Inc."
     ],
     "marketingOrgs": [
-      "iRise"
+      "iRise Realty"
     ],
     "status": "pending"
   },
@@ -2718,7 +2660,7 @@
     "projectId": "237",
     "projectName": "SOCO One – Tower B",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2742,7 +2684,7 @@
       "Foster Eighth Limited Partnership"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -2793,7 +2735,7 @@
     "projectId": "244",
     "projectName": "Bertram at Bernard Block",
     "developers": [
-      "Mission Group Homes"
+      "Mission Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2805,7 +2747,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -2830,7 +2772,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -2838,7 +2780,7 @@
     "projectId": "248",
     "projectName": "SOCO One – Tower A",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2847,7 +2789,7 @@
     "projectId": "249",
     "projectName": "55 Mercer Condominiums",
     "developers": [
-      "CentreCourt"
+      "Centre Court"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2895,7 +2837,6 @@
       "St Thomas Developments"
     ],
     "marketingOrgs": [
-      "Market Vision",
       "Market Vision Realty"
     ],
     "status": "pending"
@@ -2904,7 +2845,7 @@
     "projectId": "255",
     "projectName": "Founders Block South",
     "developers": [
-      "Anthem Properties Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -2918,8 +2859,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -2930,7 +2870,7 @@
       "Everglade Development"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique"
+      "icon&Co. Boutique"
     ],
     "status": "pending"
   },
@@ -2962,10 +2902,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -3007,10 +2947,10 @@
     "projectId": "264",
     "projectName": "ZZ - Closed - Rocklin on the Creek",
     "developers": [
-      "Baycrest Limited Partnership"
+      "Woodbridge Homes"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -3036,7 +2976,7 @@
       "Westbank"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -3051,22 +2991,6 @@
       "Davie Fane",
       "Locarno",
       "MLA Canada"
-    ],
-    "status": "pending"
-  },
-  {
-    "projectId": "268",
-    "projectName": "Demo1",
-    "developers": [
-      "Avesdo Developments"
-    ],
-    "marketingOrgs": [
-      "Avesdo 2",
-      "Avesdo 3",
-      "Avesdo Estates",
-      "Avesdo_UUA",
-      "Test 5",
-      "Test 6"
     ],
     "status": "pending"
   },
@@ -3100,9 +3024,9 @@
       "RDG Clayton Development Ltd."
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -3113,9 +3037,9 @@
       "RDG Clayton Development Ltd."
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -3126,10 +3050,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -3166,10 +3089,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -3182,11 +3104,11 @@
       "StreetSide Developments"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -3195,7 +3117,7 @@
     "projectId": "278",
     "projectName": "The Brook",
     "developers": [
-      "Clustergarden Estates Inc."
+      "Genesis Homes"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3204,7 +3126,7 @@
     "projectId": "279",
     "projectName": "Wood + Water 2",
     "developers": [
-      "Anthem Coyote Creek Two Developments Limited Partnership and Anthem Coyote Creek Developments Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3213,7 +3135,7 @@
     "projectId": "280",
     "projectName": "Wood + Water 3",
     "developers": [
-      "Anthem Coyote Creek Three Developments Limited Partnership and Anthem Coyote Creek Developments Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3240,8 +3162,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -3287,7 +3208,7 @@
       "Woodbridge Homes"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -3323,7 +3244,7 @@
       "Port Royal Village Dev. Inc"
     ],
     "marketingOrgs": [
-      "Aragon Properties Ltd."
+      "Aragon Properties"
     ],
     "status": "pending"
   },
@@ -3334,7 +3255,7 @@
       "Ledingham McAllister"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -3363,11 +3284,12 @@
     "projectId": "293",
     "projectName": "QA Queen & Ashbridge",
     "developers": [
-      "Context and RioCan Living"
+      "Context",
+      "RioCan"
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -3430,28 +3352,11 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
-    ],
-    "status": "pending"
-  },
-  {
-    "projectId": "300",
-    "projectName": "Hundredth Square",
-    "developers": [
-      "Avesdo Developments"
-    ],
-    "marketingOrgs": [
-      "Avesdo 2",
-      "Avesdo 3",
-      "Avesdo Estates",
-      "Avesdo_UUA",
-      "Test 5",
-      "Test 6"
     ],
     "status": "pending"
   },
@@ -3484,7 +3389,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -3497,7 +3402,7 @@
       "Slate Asset Management"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "Paul Johnston Unique Urban Homes"
     ],
     "status": "pending"
@@ -3509,9 +3414,9 @@
       "National Homes"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -3530,12 +3435,13 @@
     "projectId": "307",
     "projectName": "NUVO",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -3559,10 +3465,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -3575,7 +3480,7 @@
       "Ecogen Properties Ltd"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -3583,12 +3488,13 @@
     "projectId": "311",
     "projectName": "NUVO II",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -3601,7 +3507,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -3614,11 +3520,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -3657,7 +3561,7 @@
     "projectId": "317",
     "projectName": "ZZ - Closed - Noble",
     "developers": [
-      "Essence Properties (Parc Central) Inc."
+      "Essence Properties"
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
@@ -3670,7 +3574,7 @@
     "projectId": "318",
     "projectName": "Jinju",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3706,8 +3610,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -3718,10 +3621,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -3734,7 +3636,7 @@
       "Coromandel Properties"
     ],
     "marketingOrgs": [
-      "CielleProperties",
+      "Cielle Properties",
       "Fanson Capital",
       "Gowling WLG",
       "MLA Canada",
@@ -3751,11 +3653,11 @@
       "StreetSide Developments"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -3767,11 +3669,11 @@
       "StreetSide Developments (BC) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -3868,7 +3770,7 @@
       "Kingswood Properties"
     ],
     "marketingOrgs": [
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada"
     ],
     "status": "pending"
@@ -3882,11 +3784,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -3897,7 +3797,7 @@
       "Reliance Properties"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -3908,9 +3808,9 @@
       "National Homes"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -3929,7 +3829,7 @@
     "projectId": "339",
     "projectName": "ZZZ - Suspended - Davie and Nicola",
     "developers": [
-      "Align BC Properties Corp"
+      "Align Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3938,7 +3838,7 @@
     "projectId": "340",
     "projectName": "ZZZ - Suspended - Robson & Cardero",
     "developers": [
-      "Align BC Properties Corp"
+      "Align Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3947,7 +3847,7 @@
     "projectId": "341",
     "projectName": "ZZZ - Suspended - Cambie and West 41st",
     "developers": [
-      "Align BC Properties Corp"
+      "Align Group"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -3969,12 +3869,13 @@
     "projectId": "343",
     "projectName": "Eagles' Rest",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -3992,12 +3893,12 @@
     "projectId": "345",
     "projectName": "McKenzie Mews",
     "developers": [
-      "Amacon Development Corp."
+      "Amacon"
     ],
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -4011,10 +3912,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -4026,10 +3927,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -4041,7 +3942,7 @@
     ],
     "marketingOrgs": [
       "Faithwilson",
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4054,7 +3955,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -4069,7 +3970,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -4104,7 +4005,7 @@
       "Reliance Properties & Jim Pattison Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4115,8 +4016,8 @@
       "KiND Development Group"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
-      "Fifth Avenue"
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4149,8 +4050,8 @@
       "KiND Development Group"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
-      "Fifth Avenue"
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4173,7 +4074,7 @@
       "Vertex Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4211,7 +4112,7 @@
       "THE PARK) LIMITED PARTNERSHIP"
     ],
     "marketingOrgs": [
-      "ACE Project Real Estate Solutions Inc.",
+      "Ace Project Marketing Group",
       "Oakwyn Realty"
     ],
     "status": "pending"
@@ -4223,8 +4124,8 @@
       "RF Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Momentum Realty Inc"
+      "Fifth Avenue REM",
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -4247,8 +4148,8 @@
     ],
     "marketingOrgs": [
       "Dominium",
-      "Epic Real Estate",
-      "Fifth Avenue"
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4259,7 +4160,7 @@
       "Ledcor Property Development"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4270,7 +4171,7 @@
       "Woodbridge Homes"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -4284,7 +4185,6 @@
       "Trellis Properties Ltd."
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty"
     ],
     "status": "pending"
@@ -4296,7 +4196,7 @@
       "THE PARK) LIMITED PARTNERSHIP"
     ],
     "marketingOrgs": [
-      "ACE Project Real Estate Solutions Inc.",
+      "Ace Project Marketing Group",
       "Oakwyn Realty"
     ],
     "status": "pending"
@@ -4318,7 +4218,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -4330,10 +4230,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -4354,7 +4254,7 @@
     "projectId": "374",
     "projectName": "The Standard",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -4363,7 +4263,7 @@
     "projectId": "375",
     "projectName": "Caban",
     "developers": [
-      "Cressey"
+      "Cressey Developments"
     ],
     "marketingOrgs": [
       "Cressey Development Group",
@@ -4378,11 +4278,10 @@
       "Thind Properties"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -4406,9 +4305,8 @@
       "Stober Group"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
       "Epic Real Estate Solutions",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "MLA Canada"
     ],
     "status": "pending"
@@ -4434,7 +4332,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -4442,7 +4340,7 @@
     "projectId": "381",
     "projectName": "Britannia Beach",
     "developers": [
-      "Britannia Residential Adera Projects Ltd."
+      "Adera Developments"
     ],
     "marketingOrgs": [
       "Adera Realty",
@@ -4455,11 +4353,11 @@
     "projectId": "382",
     "projectName": "Chronicle",
     "developers": [
-      "1161629 B.C. Ltd."
+      "Tangerine Developments"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Tangerine Developments Ltd."
+      "Fifth Avenue REM",
+      "Tangerine Developments"
     ],
     "status": "pending"
   },
@@ -4470,7 +4368,7 @@
       "Eighth Avenue Development Group"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -4501,10 +4399,10 @@
     "projectId": "386",
     "projectName": "Ascent Canmore",
     "developers": [
-      "1730 Bow Valley Trail GP Ltd."
+      "Highpoint Developments"
     ],
     "marketingOrgs": [
-      "C21 Realty",
+      "Century 21 Realty",
       "North American Development Group"
     ],
     "status": "pending"
@@ -4529,11 +4427,11 @@
       "Grand Long Holdings Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "CBRE",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4555,10 +4453,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -4583,9 +4480,9 @@
       "Icon Homes and Old Orchard Homes"
     ],
     "marketingOrgs": [
-      "Icon Homes Builder",
+      "Icon Homes",
       "International Home Marketing Group",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -4607,9 +4504,9 @@
       "Kerkhoff Construction Inc"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -4622,11 +4519,11 @@
       "Grand Long Holdings Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "CBRE",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4638,10 +4535,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -4699,7 +4596,7 @@
       "Westbank & Quadreal"
     ],
     "marketingOrgs": [
-      "QuadReal Properties",
+      "QuadReal Property Group",
       "Rad Marketing"
     ],
     "status": "pending"
@@ -4722,9 +4619,9 @@
       "Icon Homes"
     ],
     "marketingOrgs": [
-      "Icon Homes Builder",
+      "Icon Homes",
       "International Home Marketing Group",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -4735,7 +4632,7 @@
       "Janda Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4746,7 +4643,7 @@
       "Cascade Canmore GP Ltd."
     ],
     "marketingOrgs": [
-      "C21 Realty",
+      "Century 21 Realty",
       "North American Development Group"
     ],
     "status": "pending"
@@ -4758,9 +4655,9 @@
       "National Developments and Brixen Developments Inc."
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -4771,7 +4668,7 @@
       "Janda Group Holdings Inc."
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4791,7 +4688,7 @@
       "Mountain Creations Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4802,7 +4699,7 @@
       "Appia Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4810,7 +4707,7 @@
     "projectId": "411",
     "projectName": "Plaza on Yonge",
     "developers": [
-      "5858 Yonge Residences Corp."
+      "Plaza Corp"
     ],
     "marketingOrgs": [
       "Plaza Corp"
@@ -4824,10 +4721,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -4873,8 +4769,8 @@
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
-      "Fifth Avenue",
-      "Tangerine Developments Ltd."
+      "Fifth Avenue REM",
+      "Tangerine Developments"
     ],
     "status": "pending"
   },
@@ -4882,10 +4778,11 @@
     "projectId": "417",
     "projectName": "Emerald",
     "developers": [
-      "Citimark and Woodbridge Homes"
+      "Citimark",
+      "Woodbridge Homes"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -4899,10 +4796,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -4916,7 +4812,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -4927,7 +4823,7 @@
       "Janda Group Holdings Inc."
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -4938,11 +4834,11 @@
       "Grand Long Holdings Ltd"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
+      "BakerWest Real Estate",
       "CBRE",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -4953,7 +4849,7 @@
       "Keltic"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -4962,7 +4858,8 @@
     "projectId": "423",
     "projectName": "Florin",
     "developers": [
-      "Circadian Group and Allaire Living"
+      "Circadian Group",
+      "Allaire Living"
     ],
     "marketingOrgs": [
       "Allaire Living",
@@ -5000,7 +4897,7 @@
       "Peterson Group"
     ],
     "marketingOrgs": [
-      "CielleProperties",
+      "Cielle Properties",
       "Fanson Capital",
       "Gowling WLG",
       "MLA Canada",
@@ -5031,11 +4928,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5047,8 +4942,8 @@
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
-      "Fifth Avenue",
-      "Tangerine Developments Ltd."
+      "Fifth Avenue REM",
+      "Tangerine Developments"
     ],
     "status": "pending"
   },
@@ -5067,9 +4962,7 @@
     "developers": [
       "Isroc Building International Inc"
     ],
-    "marketingOrgs": [
-      "AdLogic"
-    ],
+    "marketingOrgs": [],
     "status": "pending"
   },
   {
@@ -5079,7 +4972,7 @@
       "Reliance Properties & Jim Pattison Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -5123,7 +5016,7 @@
       "Forte Living"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5134,7 +5027,7 @@
       "Parr Ventures Limited"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Pacific Hills Developments"
     ],
     "status": "pending"
@@ -5146,7 +5039,7 @@
       "Parr Ventures Limited"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Pacific Hills Developments"
     ],
     "status": "pending"
@@ -5159,8 +5052,7 @@
     ],
     "marketingOrgs": [
       "Key Marketing",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5182,7 +5074,7 @@
       "4th and Macdonald Ltd."
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -5194,10 +5086,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5205,7 +5097,7 @@
     "projectId": "443",
     "projectName": "The 85 at Scott Road",
     "developers": [
-      "8488 120th Street Holdings Inc."
+      "Lion Estate Construction"
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group"
@@ -5227,12 +5119,14 @@
     "projectId": "445",
     "projectName": "Hometown Hillsdale",
     "developers": [
-      "Crystal Homes, Fernbrook Homes and Zancor Homes"
+      "Crystal Homes",
+      "Fernbrook Homes",
+      "Zancor Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -5255,9 +5149,9 @@
       "National Homes"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -5292,10 +5186,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -5316,7 +5209,7 @@
     "projectId": "452",
     "projectName": "Form by Anthem",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5329,7 +5222,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -5365,7 +5258,7 @@
       "Plaza"
     ],
     "marketingOrgs": [
-      "Brandfactory",
+      "The Brand Factory Group",
       "Plaza Corp"
     ],
     "status": "pending"
@@ -5377,9 +5270,8 @@
       "Stober Group"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
       "Epic Real Estate Solutions",
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "MLA Canada"
     ],
     "status": "pending"
@@ -5404,11 +5296,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5428,7 +5318,7 @@
       "Vicini Homes"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -5439,10 +5329,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -5468,7 +5357,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -5482,11 +5370,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5497,11 +5383,10 @@
       "Pacific Capital Real Estate Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Island Realm Real Estate Ltd.",
-      "McCarthy",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Fifth Avenue REM",
+      "Island Realm Real Estate",
+      "McCarthy Realty",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5512,7 +5397,7 @@
       "Janda Group Holdings Inc."
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5523,7 +5408,7 @@
       "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5531,7 +5416,7 @@
     "projectId": "469",
     "projectName": "Pura",
     "developers": [
-      "Adera"
+      "Adera Developments"
     ],
     "marketingOrgs": [
       "Adera Realty",
@@ -5556,7 +5441,7 @@
       "Gramercy Grandview Developments Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5573,7 +5458,7 @@
     "projectId": "473",
     "projectName": "Baden Park - Seymour by Anthem",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5591,7 +5476,7 @@
     "projectId": "475",
     "projectName": "Baden Park - Yew by Anthem",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5603,10 +5488,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -5620,7 +5504,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -5694,7 +5577,7 @@
     "projectId": "483",
     "projectName": "SOCO Two",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5706,8 +5589,8 @@
       "Darwin Properties and Citimark"
     ],
     "marketingOrgs": [
-      "CitiMark",
-      "Magnum",
+      "Citimark",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -5719,10 +5602,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -5746,7 +5628,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5757,8 +5639,8 @@
       "Ironclad Developments Costin & Carlow Inc."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Island Realm Real Estate Ltd."
+      "Fifth Avenue REM",
+      "Island Realm Real Estate"
     ],
     "status": "pending"
   },
@@ -5769,7 +5651,7 @@
       "Hon Developments"
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "Make Projects"
     ],
     "status": "pending"
@@ -5778,7 +5660,7 @@
     "projectId": "490",
     "projectName": "Dwell",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5802,7 +5684,7 @@
       "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5822,8 +5704,8 @@
       "Knox Eminence Development Corp"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "MLA Canada",
       "Sothebys Realty"
     ],
@@ -5836,11 +5718,11 @@
       "StreetSide Developments (Bailey) Ltd"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -5852,7 +5734,7 @@
       "NADG (North American Development Group) and Highpoint Developments"
     ],
     "marketingOrgs": [
-      "C21 Realty",
+      "Century 21 Realty",
       "McKinley Beach Sales",
       "North American Development Group"
     ],
@@ -5865,7 +5747,7 @@
       "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -5873,7 +5755,7 @@
     "projectId": "498",
     "projectName": "South Yards (Tower 1A)",
     "developers": [
-      "Anthem Alpha One Developments Limited Partnership"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -5882,12 +5764,13 @@
     "projectId": "499",
     "projectName": "Oakbrook",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -5911,7 +5794,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -5935,7 +5818,7 @@
       "The Brewery District Building 8 Limited Partnership"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5946,7 +5829,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5968,9 +5851,9 @@
       "National Developments"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -5982,8 +5865,7 @@
     ],
     "marketingOrgs": [
       "Key Marketing",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -5991,12 +5873,11 @@
     "projectId": "508",
     "projectName": "Walker House",
     "developers": [
-      "BM Group"
+      "Milan Mann"
     ],
     "marketingOrgs": [
       "Milan Mann",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6007,7 +5888,7 @@
       "Landmark Premiere Properties (White Rock) Ltd."
     ],
     "marketingOrgs": [
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada"
     ],
     "status": "pending"
@@ -6019,9 +5900,7 @@
       "Forme Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6045,8 +5924,7 @@
       "Bucci Developments"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6054,7 +5932,7 @@
     "projectId": "513",
     "projectName": "ZZ - Closed - Volara",
     "developers": [
-      "Bonanni"
+      "Bonanni Developments"
     ],
     "marketingOrgs": [
       "Strategic Sales and Marketing"
@@ -6069,7 +5947,7 @@
     ],
     "marketingOrgs": [
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc."
+      "Pivot Real Estate Group"
     ],
     "status": "pending"
   },
@@ -6077,12 +5955,11 @@
     "projectId": "515",
     "projectName": "Timber House",
     "developers": [
-      "Aragon Properties Ltd."
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6093,8 +5970,7 @@
       "First Track Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6105,10 +5981,8 @@
       "Intracorp"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6119,8 +5993,7 @@
       "Edgar Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6167,7 +6040,7 @@
       "Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6175,11 +6048,11 @@
     "projectId": "523",
     "projectName": "Queenston",
     "developers": [
-      "Annesley (Queenston) Limited Partnership"
+      "Tessera Group"
     ],
     "marketingOrgs": [
-      "Momentum Realty Inc",
-      "Remax Canada"
+      "Momentum Realty",
+      "RDS"
     ],
     "status": "pending"
   },
@@ -6190,11 +6063,10 @@
       "Pacific Capital Real Estate Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Island Realm Real Estate Ltd.",
-      "McCarthy",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Fifth Avenue REM",
+      "Island Realm Real Estate",
+      "McCarthy Realty",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6205,8 +6077,7 @@
       "Autograph Group"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6218,8 +6089,7 @@
     ],
     "marketingOrgs": [
       "Lotus Living",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6231,8 +6101,7 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6262,11 +6131,10 @@
     "projectId": "530",
     "projectName": "Earl",
     "developers": [
-      "Chard"
+      "Chard Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6288,9 +6156,9 @@
       "Kerkhoff (Riverside) LP"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -6306,7 +6174,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -6317,11 +6185,10 @@
       "Thind"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -6333,11 +6200,10 @@
       "Thind"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -6349,11 +6215,10 @@
       "Thind"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -6376,8 +6241,8 @@
       "Fairborne CMCC Marie Place Limited Partnership"
     ],
     "marketingOrgs": [
-      "ACE Project Real Estate Solutions Inc.",
-      "Magnum"
+      "Ace Project Marketing Group",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -6388,11 +6253,10 @@
       "Thind"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -6404,8 +6268,7 @@
       "Century Group"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6416,7 +6279,7 @@
       "Pacific Lyte"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6428,8 +6291,7 @@
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6440,8 +6302,7 @@
       "Staburn Group"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6452,9 +6313,7 @@
       "Forme Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6465,9 +6324,7 @@
       "Forme Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6479,8 +6336,7 @@
     ],
     "marketingOrgs": [
       "Key Marketing",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6488,12 +6344,13 @@
     "projectId": "547",
     "projectName": "River & Sky",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -6506,8 +6363,7 @@
     ],
     "marketingOrgs": [
       "Key Marketing",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6518,8 +6374,8 @@
       "Suntory City Develop & Investment Group Inc."
     ],
     "marketingOrgs": [
-      "ACE Project Real Estate Solutions Inc.",
-      "Amareal Estate Marketing Inc."
+      "Ace Project Marketing Group",
+      "Amareal Estate Marketing"
     ],
     "status": "pending"
   },
@@ -6531,10 +6387,9 @@
     ],
     "marketingOrgs": [
       "City Homes Realty",
-      "Magnum",
+      "Magnum Projects",
       "Rad Marketing",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6545,9 +6400,9 @@
       "Kerkhoff (Riverside) LP"
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "Interrobang Developments",
       "North American Development Group"
     ],
@@ -6574,10 +6429,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6590,8 +6445,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -6616,7 +6470,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -6628,7 +6481,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6639,7 +6492,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6647,7 +6500,7 @@
     "projectId": "559",
     "projectName": "Ashleigh",
     "developers": [
-      "Ash Street Development Limited Partnership"
+      "Peterson Group"
     ],
     "marketingOrgs": [
       "Gowling WLG",
@@ -6685,8 +6538,7 @@
       "Modella Developments"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6707,7 +6559,7 @@
     "projectId": "564",
     "projectName": "PARK",
     "developers": [
-      "Anthem"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -6719,10 +6571,8 @@
       "Intracorp"
     ],
     "marketingOrgs": [
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6733,10 +6583,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -6749,8 +6598,7 @@
       "Chard Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6761,11 +6609,10 @@
       "Thind"
     ],
     "marketingOrgs": [
-      "Anthem Properties - Highline",
-      "KSV Restructuring Inc.",
+      "Anthem Properties",
+      "KSV Restructuring",
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
+      "Rennie Group",
       "Tandem"
     ],
     "status": "pending"
@@ -6774,11 +6621,10 @@
     "projectId": "569",
     "projectName": "Entroterra",
     "developers": [
-      "Bucci"
+      "Bucci Developments"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6790,9 +6636,8 @@
     ],
     "marketingOrgs": [
       "Hazelwood Construction",
-      "Island Realm Real Estate Ltd.",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Island Realm Real Estate",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6800,7 +6645,7 @@
     "projectId": "571",
     "projectName": "Lodana",
     "developers": [
-      "Circadian (Rochester) Developments Ltd."
+      "Circadian Group"
     ],
     "marketingOrgs": [
       "Allaire Living",
@@ -6812,7 +6657,7 @@
     "projectId": "572",
     "projectName": "MTN Village - The Stories",
     "developers": [
-      "Anthem Properties Group Ltd."
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -6824,8 +6669,8 @@
       "Knox Eminence Development Corp"
     ],
     "marketingOrgs": [
-      "Epic Real Estate",
-      "Fifth Avenue",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM",
       "MLA Canada",
       "Sothebys Realty"
     ],
@@ -6838,7 +6683,7 @@
       "Olson Kundig By Wesgroup Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6850,9 +6695,8 @@
     ],
     "marketingOrgs": [
       "Medallion Homes",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems",
-      "SSC Corp. Ltd"
+      "Rennie Group",
+      "SSC Corp."
     ],
     "status": "pending"
   },
@@ -6860,10 +6704,10 @@
     "projectId": "576",
     "projectName": "Cardinal Condominium Building 3 at Highstreet Village",
     "developers": [
-      "AB Wall"
+      "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -6884,8 +6728,7 @@
     ],
     "marketingOrgs": [
       "Colliers International",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6897,8 +6740,7 @@
     ],
     "marketingOrgs": [
       "Colliers International",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -6918,11 +6760,11 @@
       "StreetSide Developments (BC) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -6934,11 +6776,11 @@
       "StreetSide Developments (BC) Ltd."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -6968,7 +6810,7 @@
       "Foster Living"
     ],
     "marketingOrgs": [
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -6990,7 +6832,7 @@
       "Maskeen"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "McQuarrie Hunter LLP",
       "Steveston Real Estate Group"
     ],
@@ -7003,9 +6845,9 @@
       "RDG Guildford West Development Ltd."
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Fifth Avenue",
-      "Magnum"
+      "BakerWest Real Estate",
+      "Fifth Avenue REM",
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -7028,7 +6870,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -7039,7 +6881,7 @@
       "The Pines LP and The Pines Residential Holdings Inc."
     ],
     "marketingOrgs": [
-      "C21 Realty",
+      "Century 21 Realty",
       "McKinley Beach Sales",
       "North American Development Group"
     ],
@@ -7049,11 +6891,11 @@
     "projectId": "592",
     "projectName": "Grovemont",
     "developers": [
-      "0998823 BC Ltd"
+      "Mann Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Momentum Realty Inc"
+      "Fifth Avenue REM",
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -7061,10 +6903,10 @@
     "projectId": "593",
     "projectName": "Cardinal Condominium Building 4 at Highstreet Village",
     "developers": [
-      "AB Wall"
+      "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -7072,7 +6914,7 @@
     "projectId": "594",
     "projectName": "South Yards (Tower 1B)",
     "developers": [
-      "Anthem Alpha One Developments Limited Partnership"
+      "Anthem Properties"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -7084,9 +6926,8 @@
       "SwissReal Group Canada and Brimming Development"
     ],
     "marketingOrgs": [
-      "Brimmings",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Brimming Development Management",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7097,8 +6938,7 @@
       "Headwater Projects"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7109,8 +6949,7 @@
       "Staburn"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7121,8 +6960,7 @@
       "OpenForm"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7133,10 +6971,9 @@
       "Grosvenor"
     ],
     "marketingOrgs": [
-      "CitiMark",
-      "Magnum",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Citimark",
+      "Magnum Projects",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7147,8 +6984,7 @@
       "Three Shores"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7159,8 +6995,8 @@
       "SP (Linwood) Holdings Inc."
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Momentum Realty Inc"
+      "Fifth Avenue REM",
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -7171,11 +7007,10 @@
       "PCRE Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Island Realm Real Estate Ltd.",
-      "McCarthy",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Fifth Avenue REM",
+      "Island Realm Real Estate",
+      "McCarthy Realty",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7187,8 +7022,7 @@
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7199,7 +7033,7 @@
       "Maskeen"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "McQuarrie Hunter LLP",
       "Steveston Real Estate Group"
     ],
@@ -7212,7 +7046,7 @@
       "Maskeen"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "McQuarrie Hunter LLP",
       "Steveston Real Estate Group"
     ],
@@ -7247,7 +7081,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7255,10 +7089,10 @@
     "projectId": "609",
     "projectName": "Aston",
     "developers": [
-      "Archwood Developments Ltd."
+      "Archwood Developments"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc."
+      "AXIS Real Estate Solutions"
     ],
     "status": "pending"
   },
@@ -7266,10 +7100,10 @@
     "projectId": "610",
     "projectName": "Signature Phase 1",
     "developers": [
-      "Crescent Creek Homes Ltd."
+      "Crescent Creek Homes"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "Crescent Creek Homes"
     ],
     "status": "pending"
@@ -7281,7 +7115,7 @@
       "North Arc Properties"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "Crescent Creek Homes"
     ],
     "status": "pending"
@@ -7293,17 +7127,8 @@
       "Paddington Properties Ltd."
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc."
+      "AXIS Real Estate Solutions"
     ],
-    "status": "pending"
-  },
-  {
-    "projectId": "613",
-    "projectName": "ZZ - Closed - Greyson*",
-    "developers": [
-      "3450 Whittier Developments Ltd."
-    ],
-    "marketingOrgs": [],
     "status": "pending"
   },
   {
@@ -7314,7 +7139,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -7323,10 +7147,10 @@
     "projectId": "615",
     "projectName": "Signature Phase 2",
     "developers": [
-      "Crescent Creek Homes Ltd."
+      "Crescent Creek Homes"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "Crescent Creek Homes"
     ],
     "status": "pending"
@@ -7338,7 +7162,7 @@
       "Cielle Properties"
     ],
     "marketingOrgs": [
-      "CielleProperties",
+      "Cielle Properties",
       "Fanson Capital",
       "Macdonald Platinum Marketing"
     ],
@@ -7382,13 +7206,12 @@
     "projectId": "620",
     "projectName": "Origin Condos",
     "developers": [
-      "Marlin Spring Developments"
+      "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -7403,8 +7226,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -7416,8 +7238,7 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7431,7 +7252,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -7442,7 +7263,7 @@
       "Crescent Creek Homes"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "Crescent Creek Homes"
     ],
     "status": "pending"
@@ -7451,7 +7272,7 @@
     "projectId": "625",
     "projectName": "Eastin Townhomes",
     "developers": [
-      "Essence Properties Inc"
+      "Essence Properties"
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
@@ -7468,8 +7289,7 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7494,7 +7314,7 @@
     ],
     "marketingOrgs": [
       "Cantera Management Group",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -7505,7 +7325,7 @@
       "Northstar Development"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -7513,7 +7333,7 @@
     "projectId": "630",
     "projectName": "Jericho Park",
     "developers": [
-      "Essence Properties Inc"
+      "Essence Properties"
     ],
     "marketingOrgs": [
       "McQuarrie Hunter LLP",
@@ -7529,9 +7349,9 @@
       "Vansoho + Quad-City Limited Partnership; and 1143924 B.C. Ltd."
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue"
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -7539,13 +7359,13 @@
     "projectId": "632",
     "projectName": "Whitford",
     "developers": [
-      "Citimark and Grosvenor"
+      "Citimark",
+      "Grosvenor"
     ],
     "marketingOrgs": [
-      "CitiMark",
-      "Magnum",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Citimark",
+      "Magnum Projects",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7569,7 +7389,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -7584,7 +7404,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -7599,11 +7419,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7616,7 +7434,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -7631,7 +7449,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -7645,9 +7463,8 @@
     ],
     "marketingOrgs": [
       "Cushman & Wakefield",
-      "QuadReal Properties",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7658,7 +7475,7 @@
       "Scott Seventy-7 Limited Partnership"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP"
     ],
@@ -7668,7 +7485,7 @@
     "projectId": "641",
     "projectName": "ZZ - Closed - Alpine Canmore",
     "developers": [
-      "Alpine Canmore GP Ltd."
+      "Highpoint Developments"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -7744,7 +7561,7 @@
       "Trillium Westview Limited Partnership"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "MLA Canada"
     ],
     "status": "pending"
@@ -7756,9 +7573,9 @@
       "Vansoho + Quad-City Limited Partnership; and 1143924 B.C. Ltd."
     ],
     "marketingOrgs": [
-      "BakerWest Real Estate Incorporated",
-      "Epic Real Estate",
-      "Fifth Avenue"
+      "BakerWest Real Estate",
+      "Epic Real Estate Solutions",
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -7770,10 +7587,8 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7785,10 +7600,10 @@
     ],
     "marketingOrgs": [
       "Davie Fane",
-      "Magnum",
+      "Magnum Projects",
       "MLA Canada",
-      "QuadReal Properties",
-      "Rennie Marketing Systems"
+      "QuadReal Property Group",
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7799,7 +7614,7 @@
       "Onni"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -7810,7 +7625,7 @@
       "Onni Bonson Road Development Limited Partnership"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -7818,12 +7633,11 @@
     "projectId": "654",
     "projectName": "Wadams Farm",
     "developers": [
-      "Aragon (Church) Properties Ltd."
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -7831,12 +7645,13 @@
     "projectId": "655",
     "projectName": "Oakbrook II",
     "developers": [
-      "Crystal Homes and Fernbrook Homes"
+      "Crystal Homes",
+      "Fernbrook Homes"
     ],
     "marketingOrgs": [
       "Crystal Homes",
       "International Home Marketing Group",
-      "Pivot Real Estate Group Inc.",
+      "Pivot Real Estate Group",
       "Zancor Homes"
     ],
     "status": "pending"
@@ -7845,7 +7660,7 @@
     "projectId": "656",
     "projectName": "ZZZ - Symposia",
     "developers": [
-      "MOSAIC"
+      "Mosaic Homes"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -7857,7 +7672,7 @@
       "StreetSide Developments (BC) Ltd."
     ],
     "marketingOrgs": [
-      "StreetSide Developments (BC) Ltd"
+      "StreetSide Developments"
     ],
     "status": "pending"
   },
@@ -7879,7 +7694,7 @@
       "Rize Alliance"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -7892,7 +7707,7 @@
     "marketingOrgs": [
       "Hardy Real Estate Team",
       "In2ition Realty",
-      "McCarthy",
+      "McCarthy Realty",
       "MLA Canada",
       "West & Main"
     ],
@@ -7916,7 +7731,7 @@
       "Trillium Projects"
     ],
     "marketingOrgs": [
-      "icon & Co Boutique",
+      "icon&Co. Boutique",
       "MLA Canada"
     ],
     "status": "pending"
@@ -7928,11 +7743,11 @@
       "Streetside Developments (Surrey)"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
+      "Fifth Avenue REM",
       "Key Marketing",
       "McQuarrie Hunter LLP",
       "Oakwyn Realty",
-      "Oracle Group Realty, Brokerage",
+      "Oracle Group Realty",
       "West One"
     ],
     "status": "pending"
@@ -7950,7 +7765,7 @@
     "projectId": "665",
     "projectName": "Symposia",
     "developers": [
-      "MOSAIC"
+      "Mosaic Homes"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -7962,7 +7777,7 @@
       "Jim Pattison Developments"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -8045,7 +7860,7 @@
       "Highpoint Developments"
     ],
     "marketingOrgs": [
-      "C21 Realty",
+      "Century 21 Realty",
       "McKinley Beach Sales",
       "North American Development Group"
     ],
@@ -8075,7 +7890,7 @@
     "projectId": "677",
     "projectName": "Blue Oak",
     "developers": [
-      "950 Hough Investors, LLC"
+      "Diamond Construction"
     ],
     "marketingOrgs": [
       "Enkasa"
@@ -8110,7 +7925,7 @@
     "projectId": "680",
     "projectName": "Fenway",
     "developers": [
-      "Caliber Communities (Fenway) Ltd."
+      "Caliber Communities"
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
@@ -8181,7 +7996,7 @@
     "projectId": "686",
     "projectName": "Wilford",
     "developers": [
-      "Allaire Living (Delestre) Inc."
+      "Allaire Living"
     ],
     "marketingOrgs": [
       "Allaire Living",
@@ -8207,8 +8022,7 @@
       "West 28 Development Limited Partnership"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8216,7 +8030,7 @@
     "projectId": "689",
     "projectName": "Rockford",
     "developers": [
-      "Cressey"
+      "Cressey Developments"
     ],
     "marketingOrgs": [
       "Cressey Development Group",
@@ -8231,7 +8045,7 @@
       "Wesgroup"
     ],
     "marketingOrgs": [
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8251,9 +8065,9 @@
       "National Developments"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
-      "Brixen Developments Inc",
-      "Team 2000 Realty Inc, Brokerage"
+      "Baker Real Estate",
+      "Brixen Developments",
+      "Team 2000 Realty"
     ],
     "status": "pending"
   },
@@ -8277,8 +8091,8 @@
       "Redekop Ferrario Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue",
-      "Momentum Realty Inc"
+      "Fifth Avenue REM",
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -8286,12 +8100,12 @@
     "projectId": "695",
     "projectName": "Fellow",
     "developers": [
-      "1287870 B.C. LTD"
+      "Tangerine Developments"
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
-      "Fifth Avenue",
-      "Tangerine Developments Ltd."
+      "Fifth Avenue REM",
+      "Tangerine Developments"
     ],
     "status": "pending"
   },
@@ -8312,8 +8126,8 @@
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
-      "Fifth Avenue",
-      "Tangerine Developments Ltd."
+      "Fifth Avenue REM",
+      "Tangerine Developments"
     ],
     "status": "pending"
   },
@@ -8321,7 +8135,7 @@
     "projectId": "698",
     "projectName": "Town & Centre North",
     "developers": [
-      "Mosaic"
+      "Mosaic Homes"
     ],
     "marketingOrgs": [],
     "status": "pending"
@@ -8339,7 +8153,7 @@
     "projectId": "700",
     "projectName": "Heath West",
     "developers": [
-      "BMG Projects Inc."
+      "Milan Mann"
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group",
@@ -8364,10 +8178,10 @@
     "projectId": "702",
     "projectName": "Townside Village Townhomes",
     "developers": [
-      "449991 BC Ltd."
+      "Warwickshire Homes"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -8375,10 +8189,10 @@
     "projectId": "703",
     "projectName": "Signature at River Green",
     "developers": [
-      "Aspac Projects Limited"
+      "Aspac Developments"
     ],
     "marketingOrgs": [
-      "Aspac Projects Limited"
+      "Aspac Developments"
     ],
     "status": "pending"
   },
@@ -8386,7 +8200,7 @@
     "projectId": "704",
     "projectName": "Kestrel Adera Projects Ltd.",
     "developers": [
-      "Adera Development Corporation"
+      "Adera Developments"
     ],
     "marketingOrgs": [
       "Adera Realty",
@@ -8402,8 +8216,7 @@
       "Enera Development (W24th) Limited Partnership"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8416,11 +8229,9 @@
     "marketingOrgs": [
       "Davie Fane",
       "Engel & Volkers",
-      "Marcon API",
       "Navi Guraya",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8428,10 +8239,10 @@
     "projectId": "707",
     "projectName": "Bluejay Condominium Building 6 at Highstreet Village",
     "developers": [
-      "AB Wall Properties at High Street Ltd"
+      "AB Wall Properties"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -8439,7 +8250,7 @@
     "projectId": "708",
     "projectName": "Arden",
     "developers": [
-      "Aria Pacific Cambie Second Development Ltd. Partnership"
+      "Aria Pacific"
     ],
     "marketingOrgs": [
       "MLA Canada"
@@ -8453,8 +8264,7 @@
       "Peterson"
     ],
     "marketingOrgs": [
-      "Magnum",
-      "Magnum Projects Ltd."
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -8489,13 +8299,12 @@
     "projectId": "713",
     "projectName": "ZZ - Closed - Carousel Towns at Thornhill Walk",
     "developers": [
-      "1000214855 Ontario Inc. in its capacity as a general partner of and on behalf of 9810 Phase 1 LP"
+      "Liberty Development Group"
     ],
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -8503,7 +8312,7 @@
     "projectId": "714",
     "projectName": "Elliot",
     "developers": [
-      "ATOQ CAPITAL (GROVE) LIMITED PARTNERSHIP"
+      "Genaris Properties"
     ],
     "marketingOrgs": [
       "MLA Canada",
@@ -8515,7 +8324,7 @@
     "projectId": "715",
     "projectName": "Harlowe",
     "developers": [
-      "ATOQ CAPITAL (HARLOWE) LIMITED PARTNERSHIP"
+      "Genaris Properties"
     ],
     "marketingOrgs": [
       "MLA Canada",
@@ -8532,8 +8341,7 @@
     "marketingOrgs": [
       "In2ition Realty",
       "International Home Marketing Group",
-      "Oracle Group Realty",
-      "Oracle Group Realty, Brokerage"
+      "Oracle Group Realty"
     ],
     "status": "pending"
   },
@@ -8576,14 +8384,13 @@
     "projectId": "720",
     "projectName": "Andia",
     "developers": [
-      "Bosa Development"
+      "Bosa Properties"
     ],
     "marketingOrgs": [
       "City Homes Realty",
-      "Magnum",
+      "Magnum Projects",
       "Rad Marketing",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8594,7 +8401,7 @@
       "Onni Group"
     ],
     "marketingOrgs": [
-      "Onni Realty Inc"
+      "Onni Realty"
     ],
     "status": "pending"
   },
@@ -8605,7 +8412,7 @@
       "Janda Group Holdings Inc"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -8613,10 +8420,11 @@
     "projectId": "723",
     "projectName": "Quilchena West",
     "developers": [
-      "Citimark Group and Western Construction"
+      "Citimark Group",
+      "Western Construction"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Steveston Real Estate Group"
     ],
     "status": "pending"
@@ -8628,7 +8436,7 @@
       "NorthStar Development"
     ],
     "marketingOrgs": [
-      "Magnum"
+      "Magnum Projects"
     ],
     "status": "pending"
   },
@@ -8647,12 +8455,11 @@
     "projectId": "726",
     "projectName": "Oakwoods",
     "developers": [
-      "Aragon"
+      "Aragon Properties"
     ],
     "marketingOrgs": [
       "Oakwyn Realty",
-      "Rennie Marketing API 01",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8664,10 +8471,8 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8675,11 +8480,10 @@
     "projectId": "728",
     "projectName": "Kwasen Village",
     "developers": [
-      "Aquilini Development"
+      "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8696,7 +8500,7 @@
     "projectId": "730",
     "projectName": "Nature Haus",
     "developers": [
-      "1283653 B.C. Ltd., IOM Fleetwood Townhomes (2022) Limited Partnership"
+      "Isle of Mann Group"
     ],
     "marketingOrgs": [
       "MLA Canada",
@@ -8711,7 +8515,7 @@
       "Woodbridge Rindall Limited Partnership"
     ],
     "marketingOrgs": [
-      "CitiMark",
+      "Citimark",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
       "MLA Canada"
@@ -8726,7 +8530,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -8746,10 +8549,10 @@
     "projectId": "734",
     "projectName": "Interchange - South Building",
     "developers": [
-      "Apcon 140B Project Limited Partnership"
+      "Apcon Group"
     ],
     "marketingOrgs": [
-      "Fifth Avenue"
+      "Fifth Avenue REM"
     ],
     "status": "pending"
   },
@@ -8771,8 +8574,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8783,8 +8585,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8795,8 +8596,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8807,8 +8607,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8819,8 +8618,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8831,8 +8629,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8843,8 +8640,7 @@
       "Aquilini"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8866,8 +8662,7 @@
       "Silverstein Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8878,8 +8673,7 @@
       "Silverstein Properties"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8893,7 +8687,7 @@
       "Breakside Real Estate Group",
       "Frontline Real Estate Services",
       "McQuarrie Hunter LLP",
-      "Momentum Realty Inc"
+      "Momentum Realty"
     ],
     "status": "pending"
   },
@@ -8905,7 +8699,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -8918,7 +8711,6 @@
     ],
     "marketingOrgs": [
       "Brooke Sales Team",
-      "Holloway Sales Team",
       "Navi Guraya"
     ],
     "status": "pending"
@@ -8941,7 +8733,7 @@
       "Richton Cornerstone Developments Limited Partnership"
     ],
     "marketingOrgs": [
-      "AXIS Real Estate Solutions Inc.",
+      "AXIS Real Estate Solutions",
       "McQuarrie Hunter LLP",
       "Steveston Real Estate Group"
     ],
@@ -8954,8 +8746,7 @@
       "Third East Squamish Limited Partnership"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -8966,9 +8757,7 @@
       "Forme Development"
     ],
     "marketingOrgs": [
-      "Rennie Marketing API 01",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -9000,10 +8789,9 @@
       "Marlin Spring"
     ],
     "marketingOrgs": [
-      "Baker Real Estate Inc",
+      "Baker Real Estate",
       "Milborne Group",
       "RDS",
-      "RDS Brokerage",
       "RioCan",
       "Spectrum Sky Realty"
     ],
@@ -9013,7 +8801,7 @@
     "projectId": "756",
     "projectName": "Renfrew SOUTH",
     "developers": [
-      "Castlehill Homes (GORDON) Ltd."
+      "Castlehill Homes"
     ],
     "marketingOrgs": [
       "Breakside Real Estate Group"
@@ -9037,10 +8825,8 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -9048,14 +8834,13 @@
     "projectId": "759",
     "projectName": "Park Row - Bellevue",
     "developers": [
-      "Bosa Development (Park Row) LP"
+      "Bosa Properties"
     ],
     "marketingOrgs": [
       "City Homes Realty",
-      "Magnum",
+      "Magnum Projects",
       "Rad Marketing",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
@@ -9067,10 +8852,8 @@
     ],
     "marketingOrgs": [
       "MLA Canada",
-      "Oakwyn Marketing",
       "Oakwyn Realty",
-      "Rennie Marketing API 02",
-      "Rennie Marketing Systems"
+      "Rennie Group"
     ],
     "status": "pending"
   },
