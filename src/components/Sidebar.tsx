@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,21 @@ export default function Sidebar() {
   const { pendingAliasesCount } = useAppState();
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      const parts = name.trim().split(' ');
+      if (parts.length > 1) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return 'CH';
+  };
 
   return (
     <>
@@ -89,11 +104,11 @@ export default function Sidebar() {
 
         <div className="px-3 py-4 mt-auto shrink-0 border-t border-border">
           <div className="flex items-center gap-3 px-2 py-3 w-full text-left">
-            {authUser?.photoURL ? (
-              <img src={authUser.photoURL} alt="User Avatar" className="h-8 w-8 rounded-full shrink-0 object-cover ring-2 ring-primary/10" />
+            {authUser?.photoURL && !imageError ? (
+              <img src={authUser.photoURL} alt="User Avatar" className="h-8 w-8 rounded-full shrink-0 object-cover ring-2 ring-primary/10" onError={() => setImageError(true)} />
             ) : (
               <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0 uppercase">
-                {authUser?.displayName?.substring(0, 2) || authUser?.email?.substring(0, 2) || 'CH'}
+                {getInitials(authUser?.displayName, authUser?.email)}
               </span>
             )}
             <div className="flex-1 text-left min-w-0">
