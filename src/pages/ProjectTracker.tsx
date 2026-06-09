@@ -159,10 +159,7 @@ export default function ProjectTracker() {
 
     projects.forEach((p) => {
       const currentUnits = parseInt(p.units as any) || 0;
-      const finalScore =
-        typeof p.healthScore === 'number'
-          ? p.healthScore
-          : calculateProjectHealth(p, settings).totalScore;
+      const finalScore = calculateProjectHealth(p, settings).totalScore;
 
       // Current State
       if (p.projectStatus === 'Onboarding') {
@@ -228,8 +225,7 @@ export default function ProjectTracker() {
     return projects
       .map((p) => {
         const healthCalc = calculateProjectHealth(p, settings);
-        const finalScore =
-          typeof p.healthScore === 'number' ? p.healthScore : healthCalc.totalScore;
+        const finalScore = healthCalc.totalScore;
 
         const hist = healthHistory[p.id] || [];
         const sortedHist = [...hist]

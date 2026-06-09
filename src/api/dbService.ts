@@ -813,7 +813,6 @@ export async function resolveInitialImport(
             phase: 'Not Started',
             clientIds: clientIds,
             units: 0,
-            healthScore: 100,
             notes: []
           });
         } else {
