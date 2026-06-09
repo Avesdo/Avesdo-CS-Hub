@@ -2,11 +2,11 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield } from 'lucide-react';
+import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield, LogOut } from 'lucide-react';
 
 export default function Sidebar() {
   const { pendingAliasesCount } = useAppState();
-  const { user: authUser } = useAuth();
+  const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -87,16 +87,27 @@ export default function Sidebar() {
           </NavLink>
         </div>
 
-        <div className="px-3 py-4 mt-auto shrink-0">
-          <div className="flex items-center gap-3 p-2 w-full text-left">
-            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0 uppercase">
-              {authUser?.displayName?.substring(0, 2) || authUser?.email?.substring(0, 2) || 'CH'}
-            </span>
+        <div className="px-3 py-4 mt-auto shrink-0 border-t border-border">
+          <div className="flex items-center gap-3 px-2 py-3 w-full text-left">
+            {authUser?.photoURL ? (
+              <img src={authUser.photoURL} alt="User Avatar" className="h-8 w-8 rounded-full shrink-0 object-cover ring-2 ring-primary/10" />
+            ) : (
+              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0 uppercase">
+                {authUser?.displayName?.substring(0, 2) || authUser?.email?.substring(0, 2) || 'CH'}
+              </span>
+            )}
             <div className="flex-1 text-left min-w-0">
               <div className="font-medium text-sm truncate">{authUser?.displayName || authUser?.email?.split('@')[0] || 'Loading...'}</div>
               <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
             </div>
           </div>
+          <button
+            onClick={() => logout()}
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 text-slate-700 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Log Out</span>
+          </button>
         </div>
       </aside>
     </>
