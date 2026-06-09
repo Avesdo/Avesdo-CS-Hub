@@ -2,11 +2,11 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield } from 'lucide-react';
+import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield, LogOut } from 'lucide-react';
 
 export default function Sidebar() {
   const { pendingAliasesCount } = useAppState();
-  const { user } = useAuth();
+  const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -87,19 +87,22 @@ export default function Sidebar() {
           </NavLink>
         </div>
 
-        <div className="px-3 py-4 mt-auto shrink-0">
+        <div className="px-3 py-4 mt-auto shrink-0 border-t border-border/50">
           <div className="flex items-center gap-3 p-2 w-full text-left">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt={user.displayName || 'User'} className="h-8 w-8 rounded-full shrink-0 object-cover" />
-            ) : (
-              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
-                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'CH'}
-              </span>
-            )}
+            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
+              {authUser?.displayName?.charAt(0)?.toUpperCase() || authUser?.email?.charAt(0)?.toUpperCase() || 'U'}
+            </span>
             <div className="flex-1 text-left min-w-0">
-              <div className="font-medium text-sm truncate">{user?.displayName || 'Loading...'}</div>
-              <div className="text-xs text-muted-foreground truncate">{user?.email || ''}</div>
+              <div className="font-medium text-sm truncate">{authUser?.displayName || 'User'}</div>
+              <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
             </div>
+            <button
+              onClick={logout}
+              className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors rounded-md shrink-0"
+              title="Log Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>
