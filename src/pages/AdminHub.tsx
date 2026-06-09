@@ -936,10 +936,11 @@ export default function AdminHub() {
                 onClick={async () => {
                   if (confirm('Are you sure you want to clear all pending import rows? You can re-seed them again afterwards.')) {
                     setLoadingImports(true);
-                    const { collection, getDocs, deleteDoc, doc, db } = await import('../firebase/config');
+                    const { collection, getDocs, deleteDoc, doc } = await import('firebase/firestore');
+                    const { db } = await import('../api/firebase');
                     const { query, where } = await import('firebase/firestore');
                     const snap = await getDocs(query(collection(db, 'initial_imports'), where('status', '==', 'pending')));
-                    await Promise.all(snap.docs.map(d => deleteDoc(doc(db, 'initial_imports', d.id))));
+                    await Promise.all(snap.docs.map((d: any) => deleteDoc(doc(db, 'initial_imports', d.id))));
                     await loadInitialImports();
                   }
                 }}
