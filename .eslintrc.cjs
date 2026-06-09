@@ -9,14 +9,17 @@ module.exports = {
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh'],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/ban-ts-comment': 'warn',
-    'prefer-const': 'warn'
+    'prefer-const': 'warn',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    'react-hooks/rules-of-hooks': 'warn',
+    'react-hooks/exhaustive-deps': 'warn',
+    'no-dupe-else-if': 'warn',
+    'no-empty': 'warn',
+    'no-undef': 'warn',
+    'no-use-before-define': 'warn',
+    '@typescript-eslint/no-use-before-define': 'warn'
   },
 }

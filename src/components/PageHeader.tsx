@@ -10,7 +10,14 @@ interface PageHeaderProps {
   actionButton?: React.ReactNode;
 }
 
-export function PageHeader({ title, subtitle, searchTerm, onSearchChange, placeholder = "Search...", actionButton }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  subtitle,
+  searchTerm,
+  onSearchChange,
+  placeholder = 'Search...',
+  actionButton,
+}: PageHeaderProps) {
   return (
     <div className="flex items-center justify-between mb-4 shrink-0">
       <div>
@@ -19,20 +26,18 @@ export function PageHeader({ title, subtitle, searchTerm, onSearchChange, placeh
       </div>
       <div className="flex items-center gap-3">
         {onSearchChange && (
-            <div className="relative w-64">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text" 
-                placeholder={placeholder} 
-                value={searchTerm || ''}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
-              />
-            </div>
+          <div className="relative w-64">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={placeholder}
+              value={searchTerm || ''}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-white border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+            />
+          </div>
         )}
-        {actionButton && (
-          <div className="shrink-0">{actionButton}</div>
-        )}
+        {actionButton && <div className="shrink-0">{actionButton}</div>}
       </div>
     </div>
   );

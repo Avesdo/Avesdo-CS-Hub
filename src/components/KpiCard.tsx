@@ -11,11 +11,19 @@ interface KpiCardProps {
   onClick?: () => void;
 }
 
-export function KpiCard({ title, value, iconName, iconColorClass, badgeText, badgeColorClass, onClick }: KpiCardProps) {
+export function KpiCard({
+  title,
+  value,
+  iconName,
+  iconColorClass,
+  badgeText,
+  badgeColorClass,
+  onClick,
+}: KpiCardProps) {
   const IconComponent = lucide[iconName] as React.ElementType;
 
   return (
-    <div 
+    <div
       className={`bg-white border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between ${onClick ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}`}
       onClick={onClick}
     >

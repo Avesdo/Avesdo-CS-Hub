@@ -2,20 +2,16 @@ import { useEffect, RefObject } from 'react';
 
 type Handler = (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
 
-export function useOnClickOutside(
-  ref: any,
-  handler: Handler,
-  active: boolean = true
-) {
+export function useOnClickOutside(ref: any, handler: Handler, active: boolean = true) {
   useEffect(() => {
     if (!active) return;
-    
+
     const listener = (event: MouseEvent | TouchEvent) => {
       // Do nothing if clicking ref's element or descendent elements
       if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
       }
-      
+
       // Stop the click from bubbling to underlying Modals/Drawers
       event.stopPropagation();
       handler(event);

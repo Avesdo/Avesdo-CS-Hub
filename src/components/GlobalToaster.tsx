@@ -25,16 +25,14 @@ export const GlobalToaster = () => {
           {({ icon, message }) => (
             <>
               {icon}
-              <div className="flex-1 ml-2">
-                {message}
-              </div>
+              <div className="flex-1 ml-2">{message}</div>
               {t.type !== 'blank' && (
-                <button 
+                <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     hotToast.dismiss(t.id);
-                  }} 
+                  }}
                   className="ml-4 opacity-50 hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-1 rounded-sm shrink-0"
                   aria-label="Dismiss notification"
                 >

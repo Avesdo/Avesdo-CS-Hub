@@ -81,7 +81,9 @@ export default function ServiceHub() {
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [managerFilter, setManagerFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(location.state?.dateRange || null);
+  const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(
+    location.state?.dateRange || null
+  );
 
   const activeFilterCount =
     nameFilter.length +
@@ -156,7 +158,11 @@ export default function ServiceHub() {
       updates.outcome = 'Lost';
     } else if (newStatus === 'Completed') {
       updates.dateVal = new Date().getTime();
-      updates.dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      updates.dateStr = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     }
 
     try {
@@ -172,14 +178,24 @@ export default function ServiceHub() {
       );
 
       if (newStatus === 'Completed') {
-         if (s.projectId && s.projectId !== 'N/A') {
-            await addProjectAutoLog(s.projectId, `Service "${s.name}" status changed from ${oldStatus} to ${newStatus}`, user?.name || 'System', true);
-         }
-         if (s.clientIds) {
-             for (const cid of s.clientIds) {
-                 await addAutoLog(cid, `Service "${s.name}" status changed from ${oldStatus} to ${newStatus}`, user?.name || 'System', true);
-             }
-         }
+        if (s.projectId && s.projectId !== 'N/A') {
+          await addProjectAutoLog(
+            s.projectId,
+            `Service "${s.name}" status changed from ${oldStatus} to ${newStatus}`,
+            user?.name || 'System',
+            true
+          );
+        }
+        if (s.clientIds) {
+          for (const cid of s.clientIds) {
+            await addAutoLog(
+              cid,
+              `Service "${s.name}" status changed from ${oldStatus} to ${newStatus}`,
+              user?.name || 'System',
+              true
+            );
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to update status', err);
@@ -293,8 +309,8 @@ export default function ServiceHub() {
 
     services.forEach((s) => {
       if (s.outcome === 'Won') {
-        const p = parseFloat(s.price?.toString().replace(/[^0-9.-]+/g,"")) || 0;
-        const c = parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g,"")) || 0;
+        const p = parseFloat(s.price?.toString().replace(/[^0-9.-]+/g, '')) || 0;
+        const c = parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0;
 
         totalServicesRev += p;
 
@@ -521,51 +537,77 @@ export default function ServiceHub() {
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
-          <div className="flex flex-col gap-3 pb-3 shrink-0 w-full">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
-              <PageTabs 
-                tabs={tabs} 
-                activeTab={activeTab} 
-                onTabChange={(t) => setActiveTab(t as any)} 
-              />
-
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm h-9"
-                />
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <ActiveFilterBar 
-              filters={[
-                { label: 'Name', values: nameFilter, onRemove: (v) => removeFilterItem(setNameFilter, nameFilter, v) },
-                { label: 'Project', values: projectFilter, onRemove: (v) => removeFilterItem(setProjectFilter, projectFilter, v) },
-                { label: 'Client', values: clientFilter, onRemove: (v) => removeFilterItem(setClientFilter, clientFilter, v) },
-                { label: 'Type', values: typeFilter, onRemove: (v) => removeFilterItem(setTypeFilter, typeFilter, v) },
-                { label: 'Manager', values: managerFilter, onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v) },
-                { label: 'Status', values: statusFilter, onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v) },
-                { 
-                  label: 'Completion Date', 
-                  values: dateRange ? [`${dateRange.start || '...'} to ${dateRange.end || '...'}`] : [], 
-                  onRemove: () => setDateRange(null) 
-                }
-              ]}
-              onClearAll={clearAllFilters}
+        <div className="flex flex-col gap-3 pb-3 shrink-0 w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
+            <PageTabs
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={(t) => setActiveTab(t as any)}
             />
+
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search services..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm h-9"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
+
+          <ActiveFilterBar
+            filters={[
+              {
+                label: 'Name',
+                values: nameFilter,
+                onRemove: (v) => removeFilterItem(setNameFilter, nameFilter, v),
+              },
+              {
+                label: 'Project',
+                values: projectFilter,
+                onRemove: (v) => removeFilterItem(setProjectFilter, projectFilter, v),
+              },
+              {
+                label: 'Client',
+                values: clientFilter,
+                onRemove: (v) => removeFilterItem(setClientFilter, clientFilter, v),
+              },
+              {
+                label: 'Type',
+                values: typeFilter,
+                onRemove: (v) => removeFilterItem(setTypeFilter, typeFilter, v),
+              },
+              {
+                label: 'Manager',
+                values: managerFilter,
+                onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
+              },
+              {
+                label: 'Status',
+                values: statusFilter,
+                onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v),
+              },
+              {
+                label: 'Completion Date',
+                values: dateRange
+                  ? [`${dateRange.start || '...'} to ${dateRange.end || '...'}`]
+                  : [],
+                onRemove: () => setDateRange(null),
+              },
+            ]}
+            onClearAll={clearAllFilters}
+          />
+        </div>
 
         <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
           <div className="flex-1 overflow-auto custom-thin-scroll w-full relative">
@@ -762,9 +804,9 @@ export default function ServiceHub() {
             </table>
           </div>
 
-          <TableFooter 
-            totalItems={tableData.length} 
-            label="Total Services Displayed" 
+          <TableFooter
+            totalItems={tableData.length}
+            label="Total Services Displayed"
             rightContent={
               activeTab !== 'Included' ? (
                 <span className="text-[11px] capitalize tracking-wider text-muted-foreground font-bold">

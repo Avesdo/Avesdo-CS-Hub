@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-export type DrawerType = 'client' | 'project' | 'service' | 'dashDrilldown' | 'unscheduledProjects' | null;
+export type DrawerType =
+  | 'client'
+  | 'project'
+  | 'service'
+  | 'dashDrilldown'
+  | 'unscheduledProjects'
+  | null;
 export type ModalType = 'addClient' | 'addProject' | 'addService' | null;
 
 export interface DrawerState {
@@ -36,11 +42,11 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       if (e.key === 'Escape') {
         // If there's an active modal, close the top one
         if (activeModals.length > 0) {
-          setActiveModals(prev => prev.slice(0, -1));
-        } 
+          setActiveModals((prev) => prev.slice(0, -1));
+        }
         // Else if there's an active drawer, close the top one
         else if (activeDrawers.length > 0) {
-          setActiveDrawers(prev => {
+          setActiveDrawers((prev) => {
             if (prev.length === 0) return prev;
             if (prev[prev.length - 1].isClosing) return prev;
             const copy = [...prev];
@@ -48,15 +54,15 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
             return copy;
           });
           setTimeout(() => {
-            setActiveDrawers(prev => prev.filter(d => !d.isClosing));
+            setActiveDrawers((prev) => prev.filter((d) => !d.isClosing));
           }, 300);
         }
       }
     };
-    
+
     // Add event listener with capture phase so it runs before popover listeners
     // Wait, popovers stop propagation, so we shouldn't capture. If we use capture, we override them.
-    // We want popovers to close FIRST. So we use bubble phase. 
+    // We want popovers to close FIRST. So we use bubble phase.
     // If popovers call e.stopPropagation(), this won't trigger. Perfect!
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -64,11 +70,11 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const openModal = (modal: ModalType) => {
     if (modal === null) setActiveModals([]);
-    else setActiveModals(prev => [...prev, modal]);
+    else setActiveModals((prev) => [...prev, modal]);
   };
-  
+
   const closeModal = () => {
-    setActiveModals(prev => prev.slice(0, -1));
+    setActiveModals((prev) => prev.slice(0, -1));
   };
 
   const openDrawer = (type: DrawerType, entityId?: string, data?: any) => {
@@ -76,15 +82,15 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       setActiveDrawers([]);
     } else {
       // If this drawer type is already open, replace it to prevent duplicates of the same type
-      setActiveDrawers(prev => {
-        const filtered = prev.filter(d => d.type !== type);
+      setActiveDrawers((prev) => {
+        const filtered = prev.filter((d) => d.type !== type);
         return [...filtered, { type, entityId, data }];
       });
     }
   };
 
   const closeDrawer = () => {
-    setActiveDrawers(prev => {
+    setActiveDrawers((prev) => {
       if (prev.length === 0) return prev;
       if (prev[prev.length - 1].isClosing) return prev; // Already closing
       const copy = [...prev];
@@ -93,35 +99,38 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     });
 
     setTimeout(() => {
-      setActiveDrawers(prev => {
+      setActiveDrawers((prev) => {
         // Only remove the one that was marked as closing if it's at the top
         // Actually, just filter out all that are isClosing
-        return prev.filter(d => !d.isClosing);
+        return prev.filter((d) => !d.isClosing);
       });
     }, 300);
   };
 
-  const isDrawerOpen = (type: DrawerType) => activeDrawers.some(d => d.type === type);
-  const getDrawerData = (type: DrawerType) => activeDrawers.find(d => d.type === type);
+  const isDrawerOpen = (type: DrawerType) => activeDrawers.some((d) => d.type === type);
+  const getDrawerData = (type: DrawerType) => activeDrawers.find((d) => d.type === type);
   const isModalOpen = (modal: ModalType) => activeModals.includes(modal);
 
   const activeModal = activeModals.length > 0 ? activeModals[activeModals.length - 1] : null;
-  const activeDrawer = activeDrawers.length > 0 ? activeDrawers[activeDrawers.length - 1] : { type: null };
+  const activeDrawer =
+    activeDrawers.length > 0 ? activeDrawers[activeDrawers.length - 1] : { type: null };
 
   return (
-    <UIContext.Provider value={{
-      activeModal,
-      activeModals,
-      isModalOpen,
-      activeDrawers,
-      activeDrawer,
-      openModal,
-      closeModal,
-      openDrawer,
-      closeDrawer,
-      isDrawerOpen,
-      getDrawerData
-    }}>
+    <UIContext.Provider
+      value={{
+        activeModal,
+        activeModals,
+        isModalOpen,
+        activeDrawers,
+        activeDrawer,
+        openModal,
+        closeModal,
+        openDrawer,
+        closeDrawer,
+        isDrawerOpen,
+        getDrawerData,
+      }}
+    >
       {children}
     </UIContext.Provider>
   );

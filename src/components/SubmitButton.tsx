@@ -9,20 +9,19 @@ interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 
 export function SubmitButton({
   isSubmitting,
-  loadingText = "Processing...",
+  loadingText = 'Processing...',
   children,
-  className="",
+  className = '',
   icon,
   ...props
 }: SubmitButtonProps) {
-  
   const IconComponent = icon ? (lucide[icon] as React.ElementType) : null;
 
   return (
     <button
       {...props}
       disabled={isSubmitting || props.disabled}
-      className={`relative inline-flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-all rounded-md ${isSubmitting ? "bg-primary/70 cursor-not-allowed" : "bg-primary hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm"} ${className}`}
+      className={`relative inline-flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-all rounded-md ${isSubmitting ? 'bg-primary/70 cursor-not-allowed' : 'bg-primary hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm'} ${className}`}
     >
       {isSubmitting ? (
         <>

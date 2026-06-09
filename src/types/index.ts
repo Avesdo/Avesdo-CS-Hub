@@ -3,7 +3,7 @@ export interface Client {
   companyName: string;
   accountManager: string;
   activeProjectCount: number;
-  healthScore: number | "N/A";
+  healthScore: number | 'N/A';
   isArchived?: boolean;
   [key: string]: any; // Allow other properties while migrating
 }
@@ -23,7 +23,7 @@ export interface Project {
   features?: string[];
   units?: number | string;
   history?: any[];
-  healthScore?: number | "N/A";
+  healthScore?: number | 'N/A';
   trendData?: any[];
   [key: string]: any;
 }
@@ -67,5 +67,12 @@ export interface AppState {
   user: any;
   timestamp: string;
   pendingAliasesCount: number;
-  ready: { settings: boolean; clients: boolean; projects: boolean; services: boolean; user: boolean; aliases: boolean };
+  ready: {
+    settings: boolean;
+    clients: boolean;
+    projects: boolean;
+    services: boolean;
+    user: boolean;
+    aliases: boolean;
+  };
 }

@@ -565,53 +565,73 @@ export default function ClientHealth() {
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
-          <div className="flex flex-col gap-3 pb-3 shrink-0 w-full">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
-              <PageTabs
-                tabs={[
-                  { label: 'All Clients', icon: Users },
-                  { label: 'Active', icon: Activity },
-                  { label: 'Healthy', icon: CheckCircle2 },
-                  { label: 'Warning', icon: AlertTriangle },
-                  { label: 'At Risk', icon: AlertCircle },
-                ]}
-                activeTab={activeTab}
-                onTabChange={(t) => setActiveTab(t as any)}
-              />
+        <div className="flex flex-col gap-3 pb-3 shrink-0 w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
+            <PageTabs
+              tabs={[
+                { label: 'All Clients', icon: Users },
+                { label: 'Active', icon: Activity },
+                { label: 'Healthy', icon: CheckCircle2 },
+                { label: 'Warning', icon: AlertTriangle },
+                { label: 'At Risk', icon: AlertCircle },
+              ]}
+              activeTab={activeTab}
+              onTabChange={(t) => setActiveTab(t as any)}
+            />
 
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search clients..."
-                  className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm"
-                  value={globalSearch}
-                  onChange={(e) => setGlobalSearch(e.target.value)}
-                />
-                {globalSearch && (
-                  <button
-                    onClick={() => setGlobalSearch('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm"
+                value={globalSearch}
+                onChange={(e) => setGlobalSearch(e.target.value)}
+              />
+              {globalSearch && (
+                <button
+                  onClick={() => setGlobalSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
-
-            {activeFilterCount > 0 && (
-              <ActiveFilterBar 
-                filters={[
-                  { label: 'Company', values: nameFilter, onRemove: (v) => removeFilterItem(setNameFilter, nameFilter, v) },
-                  { label: 'Type', values: typeFilter, onRemove: (v) => removeFilterItem(setTypeFilter, typeFilter, v) },
-                  { label: 'Health', values: healthFilter, onRemove: (v) => removeFilterItem(setHealthFilter, healthFilter, v) },
-                  { label: 'Projects', values: projectFilter, onRemove: (v) => removeFilterItem(setProjectFilter, projectFilter, v) },
-                  { label: 'Manager', values: managerFilter, onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v) }
-                ]}
-                onClearAll={clearAllFilters}
-              />
-            )}
           </div>
+
+          {activeFilterCount > 0 && (
+            <ActiveFilterBar
+              filters={[
+                {
+                  label: 'Company',
+                  values: nameFilter,
+                  onRemove: (v) => removeFilterItem(setNameFilter, nameFilter, v),
+                },
+                {
+                  label: 'Type',
+                  values: typeFilter,
+                  onRemove: (v) => removeFilterItem(setTypeFilter, typeFilter, v),
+                },
+                {
+                  label: 'Health',
+                  values: healthFilter,
+                  onRemove: (v) => removeFilterItem(setHealthFilter, healthFilter, v),
+                },
+                {
+                  label: 'Projects',
+                  values: projectFilter,
+                  onRemove: (v) => removeFilterItem(setProjectFilter, projectFilter, v),
+                },
+                {
+                  label: 'Manager',
+                  values: managerFilter,
+                  onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
+                },
+              ]}
+              onClearAll={clearAllFilters}
+            />
+          )}
+        </div>
 
         <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
           <div className="flex-1 overflow-auto custom-thin-scroll w-full relative">

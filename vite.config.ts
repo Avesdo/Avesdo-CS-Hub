@@ -15,9 +15,9 @@ export default defineConfig({
         manualChunks: {
           react: ['react', 'react-dom', 'react-router-dom'],
           firebase: ['firebase/app', 'firebase/firestore'],
-          tanstack: ['@tanstack/react-query', '@tanstack/react-virtual']
-        }
-      }
-    }
-  }
+          tanstack: ['@tanstack/react-query', '@tanstack/react-virtual'],
+        },
+      },
+    },
+  },
 });

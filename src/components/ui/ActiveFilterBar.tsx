@@ -13,11 +13,11 @@ interface ActiveFilterBarProps {
 }
 
 export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
-  const activeItems = filters.flatMap(group => 
-    group.values.map(val => ({
+  const activeItems = filters.flatMap((group) =>
+    group.values.map((val) => ({
       groupLabel: group.label,
       value: val,
-      onRemove: group.onRemove
+      onRemove: group.onRemove,
     }))
   );
 
@@ -25,10 +25,12 @@ export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 mt-0.5 mb-1 animate-in fade-in slide-in-from-top-1 px-1">
-      <span className="text-xs font-semibold text-slate-500 tracking-wider mr-1">Active Filters:</span>
+      <span className="text-xs font-semibold text-slate-500 tracking-wider mr-1">
+        Active Filters:
+      </span>
       {onClearAll && activeItems.length > 1 && (
-        <button 
-          onClick={onClearAll} 
+        <button
+          onClick={onClearAll}
           className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 rounded-full border border-slate-200 hover:border-red-200 focus:outline-none focus:ring-2 focus:ring-red-500/20 shadow-sm mr-1"
         >
           <FilterX className="w-3 h-3" />
@@ -36,10 +38,13 @@ export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
         </button>
       )}
       {activeItems.map((item, idx) => (
-        <span key={`${item.groupLabel}-${item.value}-${idx}`} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+        <span
+          key={`${item.groupLabel}-${item.value}-${idx}`}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+        >
           {item.groupLabel}: <span className="text-foreground">{item.value}</span>
-          <button 
-            onClick={() => item.onRemove(item.value)} 
+          <button
+            onClick={() => item.onRemove(item.value)}
             className="hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full"
           >
             <X className="w-3 h-3" />

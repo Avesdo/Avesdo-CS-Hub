@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, User } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+  AlertCircle,
+  User,
+} from 'lucide-react';
 import { useAppState } from '../../context/AppStateContext';
 import { getSafeHex, hexToRgba } from '../../utils/uiUtils';
 
@@ -28,8 +34,21 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
   const handleToday = () => setCurrentDate(new Date());
@@ -43,12 +62,18 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
     return d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
   };
 
-  const unscheduledProjects = projects.filter(p => p.projectStatus === 'Onboarding' && (!p.releaseDateVal || p.releaseDateVal === 0));
+  const unscheduledProjects = projects.filter(
+    (p) => p.projectStatus === 'Onboarding' && (!p.releaseDateVal || p.releaseDateVal === 0)
+  );
 
   const getTimelineHex = (timelineStatus: string) => {
-    let item = (settings?.timelines || settings?.timelineStatuses)?.find((s: any) => s.name === timelineStatus);
+    let item = (settings?.timelines || settings?.timelineStatuses)?.find(
+      (s: any) => s.name === timelineStatus
+    );
     if (!item) {
-        item = (settings?.archivedData?.timelines || settings?.archivedData?.timelineStatuses)?.find((s: any) => s.name === timelineStatus);
+      item = (settings?.archivedData?.timelines || settings?.archivedData?.timelineStatuses)?.find(
+        (s: any) => s.name === timelineStatus
+      );
     }
     return getSafeHex(item?.color, 'slate');
   };
@@ -60,19 +85,21 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
     const pPhase = p.onboardingPhase || 'Not Set';
 
     return (
-      <div 
+      <div
         key={p.id}
         onClick={() => openDrawer('project', p.id)}
         className="p-2 mb-1.5 rounded-md border border-l-4 shadow-sm cursor-pointer hover:-translate-y-[1px] hover:shadow-md transition-all group"
-        style={{ 
+        style={{
           borderLeftColor: borderHex,
           borderTopColor: hexToRgba(borderHex, 0.3),
           borderRightColor: hexToRgba(borderHex, 0.3),
           borderBottomColor: hexToRgba(borderHex, 0.3),
-          backgroundColor: hexToRgba(borderHex, 0.08)
+          backgroundColor: hexToRgba(borderHex, 0.08),
         }}
       >
-        <div className="font-bold truncate text-slate-800 leading-tight mb-1 text-[11px]">{pName}</div>
+        <div className="font-bold truncate text-slate-800 leading-tight mb-1 text-[11px]">
+          {pName}
+        </div>
         <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-normal overflow-hidden">
           <User className="w-3 h-3 shrink-0 opacity-70" />
           <span className="truncate">{mgr}</span>
@@ -85,7 +112,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
 
   const renderCalendarCells = () => {
     const cells = [];
-    
+
     // Previous month trailing cells
     for (let i = firstDay - 1; i >= 0; i--) {
       cells.push(
@@ -98,7 +125,9 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
     // Current month cells
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      let dayProjects = projects.filter(p => p.releaseDate === dateStr && p.projectStatus !== 'Closed');
+      const dayProjects = projects.filter(
+        (p) => p.releaseDate === dateStr && p.projectStatus !== 'Closed'
+      );
       dayProjects.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
       const isWknd = (firstDay + day - 1) % 7 === 0 || (firstDay + day - 1) % 7 === 6;
@@ -111,16 +140,21 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
       const hiddenCount = dayProjects.length - maxVisible;
 
       cells.push(
-        <div key={`day-${day}`} className={`${dayBgClass} p-2 min-h-[120px] flex flex-col relative`}>
-          <div className={`text-xs font-bold mb-2 ${isToday(day, month, year) ? 'text-primary' : 'text-foreground opacity-70'}`}>
+        <div
+          key={`day-${day}`}
+          className={`${dayBgClass} p-2 min-h-[120px] flex flex-col relative`}
+        >
+          <div
+            className={`text-xs font-bold mb-2 ${isToday(day, month, year) ? 'text-primary' : 'text-foreground opacity-70'}`}
+          >
             {day}
           </div>
-          
+
           <div className="space-y-1 w-full flex-1 flex flex-col">
-            {visibleProjs.map(p => renderProjectBlock(p))}
+            {visibleProjs.map((p) => renderProjectBlock(p))}
             {hiddenCount > 0 && (
               <div className="relative w-full text-center mt-1">
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setActivePopover(activePopover === dateStr ? null : dateStr);
@@ -129,19 +163,22 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
                 >
                   +{hiddenCount} More
                 </button>
-                
+
                 {activePopover === dateStr && (
                   <>
-                    <div 
-                      className="fixed inset-0 z-[80]" 
-                      onClick={(e) => { e.stopPropagation(); setActivePopover(null); }} 
+                    <div
+                      className="fixed inset-0 z-[80]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActivePopover(null);
+                      }}
                     />
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-56 p-2 bg-white shadow-xl border border-border rounded-xl z-[90]">
                       <div className="text-xs font-bold text-muted-foreground mb-2 pb-2 border-b border-border text-center">
                         {monthNames[month]} {day}, {year}
                       </div>
                       <div className="max-h-64 overflow-y-auto space-y-1 text-left flex flex-col custom-thin-scroll">
-                        {dayProjects.map(p => renderProjectBlock(p))}
+                        {dayProjects.map((p) => renderProjectBlock(p))}
                       </div>
                     </div>
                   </>
@@ -175,19 +212,19 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
             {monthNames[month]} {year}
           </div>
           <div className="flex items-center gap-1 bg-white rounded-lg border border-border shadow-sm p-1">
-            <button 
+            <button
               onClick={handlePrevMonth}
               className="p-1 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-md transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={handleToday}
               className="px-3 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
               Today
             </button>
-            <button 
+            <button
               onClick={handleNextMonth}
               className="p-1 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-md transition-colors"
             >
@@ -196,7 +233,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
           </div>
         </div>
 
-        <button 
+        <button
           onClick={() => openDrawer('unscheduledProjects', '')}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg shadow-sm hover:border-primary/50 hover:shadow-md transition-all group"
         >
@@ -212,14 +249,15 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = ({ 
         <div className="min-w-[800px]">
           <div className="grid grid-cols-7 border-b border-border bg-white sticky top-0 z-10">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
-              <div key={d} className={`py-3 text-center text-sm font-semibold text-muted-foreground ${i < 6 ? 'border-r border-border' : ''}`}>
+              <div
+                key={d}
+                className={`py-3 text-center text-sm font-semibold text-muted-foreground ${i < 6 ? 'border-r border-border' : ''}`}
+              >
                 {d}
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-7 bg-border gap-[1px]">
-            {renderCalendarCells()}
-          </div>
+          <div className="grid grid-cols-7 bg-border gap-[1px]">{renderCalendarCells()}</div>
         </div>
       </div>
     </div>
