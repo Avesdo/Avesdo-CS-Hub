@@ -45,10 +45,10 @@ Deploying the hub into a live testing environment for team evaluation.
 *   **Staging Environment:** Build and deploy the current application to Firebase Hosting using safe, realistic dummy data.
 *   **User Testing:** Provide access to team members to test usability across various desktop and laptop screens, collecting operational feedback while protecting live records.
 
-### Step 9: The Compiler Build
+### Step 9: The Compiler Build [COMPLETED]
 Developing the system's background data alignment intelligence.
-*   **Apps Script Pipeline (V1 MVP):** Construct the Google Apps Script workflow to watch designated Google Drive folders and automatically parse incoming CSV or Excel reports. (Note: This is a fast-path MVP for launch; to be migrated to Cloud Functions in Step 13).
-*   **Entity Resolution Engine:** Securely connect the pipeline to the Gemini API (via Google AI Studio free tier). Write robust instructions instructing the AI to read mismatched company names across unaligned files and map them back to a single, unified canonical Client ID.
+*   **Apps Script Pipeline (V1 MVP):** Constructed the Google Apps Script workflow to watch designated Google Drive folders and automatically parse incoming CSV or Excel reports. (Note: This is a fast-path MVP for launch; to be migrated to Cloud Functions in Step 13).
+*   **Entity Resolution Engine:** Securely connected the pipeline to the Gemini API (via Google AI Studio free tier). The AI maps mismatched company names to a single, unified canonical Client ID. Structured data (Support CSAT, Active Users, Feature Adoption, Financials) bypasses the AI for high-speed bulk ingestion into Firestore.
 
 ### Step 10: The Security & Authentication Lockdown [COMPLETED]
 Final hardening of the app security perimeter before full production rollout.
@@ -69,10 +69,11 @@ A secondary, microscopic deep dive into every individual page asset once operati
 
 ### Step 13: Feature & Functional Expansion
 Scaling the application's capabilities onto your stable, verified framework.
+*   **Rich Text Notes:** Upgrade the plain-text notes to a rich-text WYSIWYG editor for better formatting.
 *   **State Management Upgrade (Zustand):** Replace native React `AppStateContext` with a robust Zustand store to prevent unnecessary re-renders as state complexity increases.
 *   **Data Pipeline Enterprise Upgrade:** Migrate the V1 Apps Script data ingestion pipeline into robust Node.js **Google Cloud Functions** utilizing the GCP free tier.
+*   **Action Items & Task Management:** Implement a granular to-do system where CSMs can create actionable tasks with deadlines, linked directly to specific Clients or Projects.
 *   **Future Development:** Safely plan and introduce entirely new operational tools, expanded metrics, custom dashboards, and functional integrations into your clean, modular codebase.
 *   **User Roles & Permissions (RBAC):** Introduce a Role-Based Access Control system to restrict Admin Hub and Settings to Administrators. Allow Account Managers to have a "My Workspace" view that defaults to their assigned clients and projects.
-*   **Action Items & Task Management:** Implement a granular to-do system where CSMs can create actionable tasks with deadlines, linked directly to specific Clients or Projects.
-*   **File Attachments & Rich Text Notes:** Integrate Firebase Storage for uploading contracts and scoping documents directly to profiles. Upgrade the plain-text notes to a rich-text WYSIWYG editor for better formatting.
+*   **File Attachments:** Integrate Firebase Storage for uploading contracts and scoping documents directly to profiles.
 *   *plus more...*

@@ -21,17 +21,17 @@ export function SubmitButton({
     <button
       {...props}
       disabled={isSubmitting || props.disabled}
-      className={`relative inline-flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-all rounded-md ${isSubmitting ? 'bg-primary/70 cursor-not-allowed' : 'bg-primary hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm'} ${className}`}
+      className={`relative inline-flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-all duration-200 rounded-md ${isSubmitting ? 'bg-primary/70 cursor-not-allowed' : 'bg-primary hover:bg-primary/90 active:scale-[0.98] hover:-translate-y-[1px] hover:shadow-md shadow-sm'} ${className}`}
     >
       {isSubmitting ? (
         <>
-          <lucide.Loader2 className="w-4 h-4 animate-spin" />
-          <span>{loadingText}</span>
+          <lucide.Loader2 className="w-4 h-4 animate-spin text-white/90" />
+          <span className="animate-in fade-in duration-300">{loadingText}</span>
         </>
       ) : (
         <>
-          {IconComponent && <IconComponent className="w-4 h-4" />}
-          <span>{children}</span>
+          {IconComponent && <IconComponent className="w-4 h-4 animate-in fade-in duration-300" />}
+          <span className="animate-in fade-in duration-300">{children}</span>
         </>
       )}
     </button>

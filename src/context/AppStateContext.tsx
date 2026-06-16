@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { setupRealtimeListeners } from '../api/dbService';
 import { AppState } from '../types';
+import { calculateClientHealth, calculateProjectHealth } from '../utils/scoringUtils';
+import { useAuth } from './AuthContext';
 
 const defaultState: AppState = {
   settings: null,
@@ -19,7 +21,6 @@ const defaultState: AppState = {
     clients: false,
     projects: false,
     services: false,
-    user: false,
     aliases: false,
   },
 };
@@ -32,6 +33,7 @@ export function useAppState() {
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { user: authUser, loading: authLoading } = useAuth();
 
   const { data: state } = useQuery({
     queryKey: ['appState'],
@@ -54,76 +56,144 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const currentState = React.useMemo(() => {
     if (!state) return defaultState;
 
+    const mappedUser = authUser
+      ? {
+          name: authUser.displayName || authUser.email?.split('@')[0] || 'Unknown User',
+          email: authUser.email || '',
+          initials: (authUser.displayName || authUser.email?.split('@')[0] || 'U')
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase(),
+        }
+      : null;
+
     // Dynamically resolve names from UUIDs so the database doesn't need to store duplicates!
     return {
       ...state,
+      user: mappedUser,
       clients: state.clients.map((c) => {
         const cProjects = state.projects.filter((p) => {
           const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
           return resolvedIds.includes(c.clientId) || resolvedIds.includes(c.id);
         });
-        const activeProjectsCount = cProjects.filter(
+        const activeProjectCount = cProjects.filter(
           (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
         ).length;
-        const onboardingProjectsCount = cProjects.filter(
+        const onboardingProjectCount = cProjects.filter(
           (p) => p.projectStatus === 'Onboarding'
         ).length;
-        const closedProjectsCount = cProjects.filter(
+        const closedProjectCount = cProjects.filter(
           (p) => p.projectStatus === 'Closed' || p.projectStatus === 'Completed'
         ).length;
+
+        const healthResult = calculateClientHealth(c, state.projects, state.settings);
+        const healthScore =
+          activeProjectCount === 0 && !healthResult.hasSuspended ? 'N/A' : healthResult.totalScore;
+
         return {
           ...c,
-          activeProjectsCount,
-          onboardingProjectsCount,
-          closedProjectsCount,
+          activeProjectCount,
+          onboardingProjectCount,
+          closedProjectCount,
+          healthScore,
         };
       }),
       projects: state.projects.map((p) => {
         const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
+
+        let devIds = p.developerIds || [];
+        let smIds = p.salesMarketingIds || [];
+
+        if (devIds.length === 0 && smIds.length === 0 && resolvedIds.length > 0) {
+          const resolvedClients = resolvedIds
+            .map((id) => state.clients.find((c) => c.clientId === id || c.id === id))
+            .filter(Boolean) as any[];
+          devIds = resolvedClients
+            .filter((c) => c.clientType === 'Developer' || !c.clientType)
+            .map((c) => c.clientId || c.id);
+          smIds = resolvedClients
+            .filter((c) => c.clientType === 'Sales & Marketing')
+            .map((c) => c.clientId || c.id);
+        }
+
+        const clients = resolvedIds
+          .map(
+            (id: string) => state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
+          )
+          .filter(Boolean) as string[];
+
+        const developers = devIds
+          .map(
+            (id: string) => state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
+          )
+          .filter(Boolean) as string[];
+
+        const salesMarketingClients = smIds
+          .map(
+            (id: string) => state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
+          )
+          .filter(Boolean) as string[];
+
+        const pHealth = calculateProjectHealth(p, state.settings);
+        const healthScore = pHealth.totalScore;
+
         return {
           ...p,
-          clients: resolvedIds
-            .map(
-              (id: string) =>
-                state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
-            )
-            .filter(Boolean) as string[],
+          clients,
+          developerIds: devIds,
+          developers,
+          salesMarketingIds: smIds,
+          salesMarketingClients,
+          healthScore,
         };
       }),
       services: state.services.map((s) => {
         let resolvedIds = s.clientIds || (s.clientId ? [s.clientId] : []);
 
         // Inherit clients from project if service doesn't have any directly
-        if (resolvedIds.length === 0 && s.projectId && s.projectId !== 'N/A') {
-          const assignedProject = state.projects.find((p) => p.id === s.projectId);
-          if (assignedProject) {
-            resolvedIds =
-              assignedProject.clientIds ||
-              (assignedProject.clientId ? [assignedProject.clientId] : []);
+        if (resolvedIds.length === 0) {
+          const pIds = s.projectIds || (s.projectId && s.projectId !== 'N/A' ? [s.projectId] : []);
+          for (const pId of pIds) {
+            const assignedProject = state.projects.find((p) => p.id === pId);
+            if (assignedProject) {
+              const pClientIds =
+                assignedProject.clientIds ||
+                (assignedProject.clientId ? [assignedProject.clientId] : []);
+              resolvedIds = Array.from(new Set([...resolvedIds, ...pClientIds]));
+            }
           }
         }
 
-        let resolvedManager = s.manager || s.assignee;
+        let resolvedManagers =
+          s.managers || (s.manager || s.assignee ? [s.manager || s.assignee] : []);
         if (
-          (!resolvedManager ||
-            resolvedManager === 'Unassigned' ||
-            resolvedManager === 'Not Set' ||
-            resolvedManager === 'Unknown') &&
-          s.projectId &&
-          s.projectId !== 'N/A'
+          resolvedManagers.length === 0 ||
+          resolvedManagers.every(
+            (m) => !m || m === 'Unassigned' || m === 'Not Set' || m === 'Unknown'
+          )
         ) {
-          const assignedProject = state.projects.find((p) => p.id === s.projectId);
-          if (assignedProject) {
-            resolvedManager =
-              assignedProject.assignee || assignedProject.manager || resolvedManager;
+          const pIds = s.projectIds || (s.projectId && s.projectId !== 'N/A' ? [s.projectId] : []);
+          for (const pId of pIds) {
+            const assignedProject = state.projects.find((p) => p.id === pId);
+            if (assignedProject && (assignedProject.assignee || assignedProject.manager)) {
+              resolvedManagers = [
+                assignedProject.assignee || assignedProject.manager || 'Unassigned',
+              ];
+              break; // Just take the first valid one if falling back
+            }
           }
         }
+
+        const primaryManager = resolvedManagers.length > 0 ? resolvedManagers[0] : 'Unassigned';
 
         return {
           ...s,
           clientIds: resolvedIds,
-          manager: resolvedManager,
-          assignee: resolvedManager,
+          manager: primaryManager,
+          managers: resolvedManagers,
+          assignee: primaryManager,
           clients: resolvedIds
             .map(
               (id: string) =>
@@ -140,15 +210,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         };
       }),
     };
-  }, [state]);
+  }, [state, authUser]);
 
   if (
     !currentState.ready.settings ||
     !currentState.ready.clients ||
     !currentState.ready.projects ||
     !currentState.ready.services ||
-    !currentState.ready.user ||
-    !currentState.ready.aliases
+    !currentState.ready.aliases ||
+    authLoading
   ) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">

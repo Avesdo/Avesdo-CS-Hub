@@ -29,6 +29,7 @@ import ClientProjectsTab from './client/ClientProjectsTab';
 import ClientServicesTab from './client/ClientServicesTab';
 import { NotesTab } from '../ui/NotesTab';
 import { Select } from '../ui/Select';
+import { Tooltip } from '../ui/Tooltip';
 
 export default function ClientDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
@@ -238,7 +239,7 @@ export default function ClientDrawer() {
               >
                 {healthScore}
               </span>
-              <span className="text-[11px] font-medium text-muted-foreground">Health Score</span>
+              <span className="text-[11px] font-medium text-muted-foreground">Health</span>
             </div>
           </div>
 
@@ -282,13 +283,14 @@ export default function ClientDrawer() {
                   <h2 className="text-2xl font-semibold text-foreground tracking-tight leading-tight truncate">
                     {client?.companyName || client?.name}
                   </h2>
-                  <button
-                    onClick={() => setIsEditingName(true)}
-                    className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
-                    title="Edit Name"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                  <Tooltip content="Edit Name" position="bottom">
+                    <button
+                      onClick={() => setIsEditingName(true)}
+                      className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </Tooltip>
                 </>
               )}
             </div>
@@ -339,7 +341,8 @@ export default function ClientDrawer() {
                 onClick={async () => {
                   if (client) {
                     const cid = client.clientId || client.id;
-                    await deleteClientRecord(cid);
+                    const cname = client.companyName || client.name || 'Record';
+                    await deleteClientRecord(cid, cname);
                     await addAutoLog(cid, `Client profile archived`, user?.name || 'System');
                     const cProjects = projects.filter((p: any) => p.clientIds?.includes(cid));
                     for (const p of cProjects)
@@ -365,21 +368,23 @@ export default function ClientDrawer() {
                 <AlertTriangle className="w-4 h-4" /> Confirm Archive
               </button>
             ) : (
-              <button
-                onClick={() => setIsConfirmingDelete(true)}
-                className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                title="Archive Client"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <Tooltip content="Archive Client" position="bottom-right">
+                <button
+                  onClick={() => setIsConfirmingDelete(true)}
+                  className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </Tooltip>
             )}
-            <button
-              onClick={closeDrawer}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
-              title="Close Drawer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Tooltip content="Close Drawer" position="bottom-right">
+              <button
+                onClick={closeDrawer}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </Tooltip>
           </div>
         </div>
 

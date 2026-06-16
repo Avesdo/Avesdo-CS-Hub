@@ -24,6 +24,7 @@ import {
 import ServiceDetailsTab from './service/ServiceDetailsTab';
 import { NotesTab } from '../ui/NotesTab';
 import { Select } from '../ui/Select';
+import { Tooltip } from '../ui/Tooltip';
 
 export default function ServiceDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
@@ -108,9 +109,12 @@ export default function ServiceDrawer() {
           );
         }
       }
-      if (service.projectId && service.projectId !== 'N/A') {
+      const pIds1 =
+        service.projectIds ||
+        (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
+      for (const pId of pIds1) {
         await addProjectAutoLog(
-          service.projectId,
+          pId,
           `Service name updated from "${oldName}" to "${newName}"`,
           user?.name || 'System',
           true
@@ -174,9 +178,12 @@ export default function ServiceDrawer() {
           );
         }
       }
-      if (service.projectId && service.projectId !== 'N/A') {
+      const pIds2 =
+        service.projectIds ||
+        (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
+      for (const pId of pIds2) {
         await addProjectAutoLog(
-          service.projectId,
+          pId,
           `Service "${service.name}" status changed from ${oldStatus} to ${status}`,
           user?.name || 'System',
           true
@@ -189,16 +196,19 @@ export default function ServiceDrawer() {
     if (!service) return;
     setIsConfirmingDelete(false);
     try {
-      await deleteServiceRecord(service.id);
+      await deleteServiceRecord(service.id, service.name || 'Record');
 
       if (service.clientIds) {
         for (const cid of service.clientIds) {
           await addAutoLog(cid, `Service "${service.name}" archived`, user?.name || 'System', true);
         }
       }
-      if (service.projectId && service.projectId !== 'N/A') {
+      const pIds3 =
+        service.projectIds ||
+        (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
+      for (const pId of pIds3) {
         await addProjectAutoLog(
-          service.projectId,
+          pId,
           `Service "${service.name}" archived`,
           user?.name || 'System',
           true
@@ -242,17 +252,18 @@ export default function ServiceDrawer() {
                 ? COLOR_MAP[serviceType.color] || COLOR_MAP.slate
                 : COLOR_MAP.slate;
               return (
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center shadow-sm border transition-colors"
-                  style={{
-                    backgroundColor: hexToRgba(hex, 0.1),
-                    color: hex,
-                    borderColor: hexToRgba(hex, 0.2),
-                  }}
-                  title={service?.type || 'Unknown Type'}
-                >
-                  {renderIcon(serviceType?.icon, 'w-6 h-6')}
-                </div>
+                <Tooltip content={service?.type || 'Unknown Type'}>
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-sm border transition-colors"
+                    style={{
+                      backgroundColor: hexToRgba(hex, 0.1),
+                      color: hex,
+                      borderColor: hexToRgba(hex, 0.2),
+                    }}
+                  >
+                    {renderIcon(serviceType?.icon, 'w-6 h-6')}
+                  </div>
+                </Tooltip>
               );
             })()}
           </div>
@@ -296,13 +307,14 @@ export default function ServiceDrawer() {
                   <h2 className="text-2xl font-semibold text-foreground tracking-tight leading-tight truncate">
                     {service?.name || 'Loading Service...'}
                   </h2>
-                  <button
-                    onClick={() => setIsEditingName(true)}
-                    className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
-                    title="Edit Name"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                  <Tooltip content="Edit Name" position="bottom">
+                    <button
+                      onClick={() => setIsEditingName(true)}
+                      className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </Tooltip>
                 </>
               )}
             </div>
@@ -359,21 +371,23 @@ export default function ServiceDrawer() {
                 <AlertTriangle className="w-4 h-4" /> Confirm Archive
               </button>
             ) : (
-              <button
-                onClick={() => setIsConfirmingDelete(true)}
-                className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                title="Archive Service"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <Tooltip content="Archive Service" position="bottom-right">
+                <button
+                  onClick={() => setIsConfirmingDelete(true)}
+                  className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </Tooltip>
             )}
-            <button
-              onClick={closeDrawer}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
-              title="Close Drawer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Tooltip content="Close Drawer" position="bottom-right">
+              <button
+                onClick={closeDrawer}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </Tooltip>
           </div>
         </div>
 

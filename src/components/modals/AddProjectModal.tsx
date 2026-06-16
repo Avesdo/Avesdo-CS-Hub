@@ -21,7 +21,8 @@ export default function AddProjectModal() {
   const { clients, settings, projects, user } = useAppState();
 
   const [name, setName] = useState('');
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
+  const [selectedDevelopers, setSelectedDevelopers] = useState<string[]>([]);
+  const [selectedSalesMarketing, setSelectedSalesMarketing] = useState<string[]>([]);
   const [activeFeatures, setActiveFeatures] = useState<string[]>([]);
   const [releaseDateVal, setReleaseDateVal] = useState<number | null>(null);
   const [units, setUnits] = useState('');
@@ -52,7 +53,16 @@ export default function AddProjectModal() {
   useEffect(() => {
     const handleClientCreated = (e: Event) => {
       const customEvent = e as CustomEvent;
-      setSelectedClients((prev) => Array.from(new Set([...prev, customEvent.detail])));
+      const newClient = customEvent.detail;
+      const newClientId = newClient.clientId || newClient.id;
+      if (newClient.clientType === 'Developer') {
+        setSelectedDevelopers((prev) => Array.from(new Set([...prev, newClientId])));
+      } else if (newClient.clientType === 'Sales & Marketing') {
+        setSelectedSalesMarketing((prev) => Array.from(new Set([...prev, newClientId])));
+      } else {
+        // Fallback for uncategorized
+        setSelectedDevelopers((prev) => Array.from(new Set([...prev, newClientId])));
+      }
     };
     window.addEventListener('clientCreated', handleClientCreated);
     return () => window.removeEventListener('clientCreated', handleClientCreated);
@@ -70,8 +80,8 @@ export default function AddProjectModal() {
       setErrorMsg('Project Name is required.');
       return;
     }
-    if (selectedClients.length === 0) {
-      setErrorMsg('At least one Attached Client is required.');
+    if (selectedDevelopers.length === 0 && selectedSalesMarketing.length === 0) {
+      setErrorMsg('At least one Attached Client (Developer or Sales & Marketing) is required.');
       return;
     }
     const unitsNum = parseInt(units, 10);
@@ -90,7 +100,10 @@ export default function AddProjectModal() {
 
     setIsSubmitting(true);
     try {
-      const matchedClients = clients.filter((c) => selectedClients.includes(c.clientId || c.id));
+      const allSelectedIds = [...selectedDevelopers, ...selectedSalesMarketing];
+      const matchedClients = clients.filter((c) => allSelectedIds.includes(c.clientId || c.id));
+      const matchedDevs = clients.filter((c) => selectedDevelopers.includes(c.clientId || c.id));
+      const matchedSMs = clients.filter((c) => selectedSalesMarketing.includes(c.clientId || c.id));
 
       let finalReleaseDateStr = '';
       const finalReleaseDateVal = releaseDateVal || 0;
@@ -103,8 +116,12 @@ export default function AddProjectModal() {
       }
 
       const newProject: Project = {
-        id: crypto.randomUUID(),
+        id: `P-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`,
         name: name.trim(),
+        developerIds: matchedDevs.map((c) => c.clientId || c.id),
+        developers: matchedDevs.map((c) => c.companyName || c.name),
+        salesMarketingIds: matchedSMs.map((c) => c.clientId || c.id),
+        salesMarketingClients: matchedSMs.map((c) => c.companyName || c.name),
         clientIds: matchedClients.map((c) => c.clientId || c.id),
         clients: matchedClients.map((c) => c.companyName || c.name),
         features: activeFeatures,
@@ -166,7 +183,8 @@ export default function AddProjectModal() {
 
       // Reset Form
       setName('');
-      setSelectedClients([]);
+      setSelectedDevelopers([]);
+      setSelectedSalesMarketing([]);
       setActiveFeatures([]);
       setReleaseDateVal(null);
       setUnits('');
@@ -245,7 +263,7 @@ export default function AddProjectModal() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-[11px] font-semibold text-muted-foreground">
-                    Attached Client(s) <span className="text-destructive">*</span>
+                    Developer Client(s) <span className="text-destructive">*</span>
                   </label>
                   <button
                     type="button"
@@ -256,18 +274,62 @@ export default function AddProjectModal() {
                   </button>
                 </div>
                 <MultiSelect
-                  values={selectedClients}
+                  values={selectedDevelopers}
                   options={[...clients]
+                    .filter((c) => c.clientType === 'Developer' || !c.clientType)
                     .sort((a, b) =>
                       (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
                     )
                     .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
                   onChange={(vals) => {
-                    setSelectedClients(vals);
+                    setSelectedDevelopers(vals);
                     setErrorMsg('');
                   }}
                   searchable={true}
-                  searchPlaceholder="Search clients..."
+                  searchPlaceholder="Search developer clients..."
+                  className="w-full block mb-4"
+                  trigger={
+                    <button
+                      type="button"
+                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                    >
+                      <span
+                        className={`truncate ${selectedDevelopers.length ? 'text-foreground' : 'text-muted-foreground'}`}
+                      >
+                        {selectedDevelopers.length
+                          ? selectedDevelopers
+                              .map(
+                                (id) =>
+                                  clients.find((c) => c.clientId === id || c.id === id)
+                                    ?.companyName || id
+                              )
+                              .join(', ')
+                          : 'Select Developer Clients...'}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                    </button>
+                  }
+                />
+
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-[11px] font-semibold text-muted-foreground">
+                    Sales & Marketing Client(s)
+                  </label>
+                </div>
+                <MultiSelect
+                  values={selectedSalesMarketing}
+                  options={[...clients]
+                    .filter((c) => c.clientType === 'Sales & Marketing')
+                    .sort((a, b) =>
+                      (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
+                    )
+                    .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                  onChange={(vals) => {
+                    setSelectedSalesMarketing(vals);
+                    setErrorMsg('');
+                  }}
+                  searchable={true}
+                  searchPlaceholder="Search sales & marketing clients..."
                   className="w-full block"
                   trigger={
                     <button
@@ -275,17 +337,17 @@ export default function AddProjectModal() {
                       className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
                     >
                       <span
-                        className={`truncate ${selectedClients.length ? 'text-foreground' : 'text-muted-foreground'}`}
+                        className={`truncate ${selectedSalesMarketing.length ? 'text-foreground' : 'text-muted-foreground'}`}
                       >
-                        {selectedClients.length
-                          ? selectedClients
+                        {selectedSalesMarketing.length
+                          ? selectedSalesMarketing
                               .map(
                                 (id) =>
                                   clients.find((c) => c.clientId === id || c.id === id)
                                     ?.companyName || id
                               )
                               .join(', ')
-                          : 'Select Attached Clients...'}
+                          : 'Select Sales & Marketing Clients...'}
                       </span>
                       <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                     </button>

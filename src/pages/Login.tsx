@@ -36,7 +36,7 @@ export default function Login() {
 
           <button
             onClick={loginWithGoogle}
-            className="flex w-full items-center justify-center gap-3 rounded-[12px] bg-white px-4 py-3.5 text-[16px] font-semibold text-[#334155] shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-4 h-10 text-sm font-medium text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98]"
           >
             <svg className="h-[20px] w-[20px]" aria-hidden="true" viewBox="0 0 24 24">
               <path

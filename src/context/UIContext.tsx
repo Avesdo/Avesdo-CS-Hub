@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from 'react';
 
 export type DrawerType =
   | 'client'
@@ -68,16 +75,16 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeModals, activeDrawers]);
 
-  const openModal = (modal: ModalType) => {
+  const openModal = useCallback((modal: ModalType) => {
     if (modal === null) setActiveModals([]);
     else setActiveModals((prev) => [...prev, modal]);
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setActiveModals((prev) => prev.slice(0, -1));
-  };
+  }, []);
 
-  const openDrawer = (type: DrawerType, entityId?: string, data?: any) => {
+  const openDrawer = useCallback((type: DrawerType, entityId?: string, data?: any) => {
     if (type === null) {
       setActiveDrawers([]);
     } else {
@@ -87,9 +94,9 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         return [...filtered, { type, entityId, data }];
       });
     }
-  };
+  }, []);
 
-  const closeDrawer = () => {
+  const closeDrawer = useCallback(() => {
     setActiveDrawers((prev) => {
       if (prev.length === 0) return prev;
       if (prev[prev.length - 1].isClosing) return prev; // Already closing
@@ -105,7 +112,7 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         return prev.filter((d) => !d.isClosing);
       });
     }, 300);
-  };
+  }, []);
 
   const isDrawerOpen = (type: DrawerType) => activeDrawers.some((d) => d.type === type);
   const getDrawerData = (type: DrawerType) => activeDrawers.find((d) => d.type === type);

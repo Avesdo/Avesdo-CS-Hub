@@ -13,7 +13,8 @@ The technology stack is exceptionally modern, follows top-tier industry standard
 * **State Management:** TanStack React Query perfectly layered with native React Context.
 * **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 * **Testing & Code Quality:** Playwright for E2E, Vitest for unit/component testing, ESLint, and Prettier are properly configured.
-* **Data Pipeline:** Google Apps Script (runs isolated in the background to ingest Drive files and securely call the Gemini API). The Admin Hub also includes a dedicated tool to parse and ingest bulk JSON/Excel initial state data directly into Firestore.
+* **Data Pipeline:** Google Apps Script (`AppsScriptCompiler.js`) runs isolated in the background to ingest Drive files. It utilizes high-speed bulk writes for structured metric files (Active Users, CSAT) and securely calls the Gemini API to resolve unknown aliases for unstructured data into a "Data Intake" approval queue.
+* **Health Scoring Engine:** A centralized `scoringUtils.ts` engine dynamically recalculates Client and Project health scores (Platform Engagement, Feature Adoption, Active Users, Financial Standing, Client Sentiment) live based on weights configured in the Firestore `settings` collection.
 * **Cost Constraint:** The entire application runs on a strict $0 zero-cost Google ecosystem.
 
 ## Global State Management
@@ -30,6 +31,6 @@ Firestore data is intentionally denormalized for speed. When a root record updat
   - `clientIds: string[]` (References back to the client UUID)
 - **`services` collection:**
   - `clientIds: string[]`
-  - `projectId: string`
-
+  - `projectIds: string[]` (Supports multiple assigned projects)
+  - `managers: string[]` (Supports multiple assigned managers)
 **Architecture Note (Data Integrity):** The UI requires the string `companyName` to power the Global Search bar. However, we strictly **DO NOT** store duplicated `companyName` strings inside `projects` or `services` in the database to prevent siloing. Instead, `AppStateContext.tsx` dynamically resolves the UUID connections via a React `useMemo` hook in real-time. This guarantees perfect data integrity without expensive batch updates.

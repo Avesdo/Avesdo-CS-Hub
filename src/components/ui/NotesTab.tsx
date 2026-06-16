@@ -72,7 +72,7 @@ export function NotesTab({
           <button
             onClick={handleAddNote}
             disabled={isSaving || !newNote.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md h-9 px-5 disabled:opacity-50 disabled:active:scale-100"
+            className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md h-9 px-5 disabled:opacity-50 disabled:active:scale-100"
           >
             <Send className="w-4 h-4" />
             Post

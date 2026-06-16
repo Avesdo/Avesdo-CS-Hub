@@ -1,10 +1,11 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAvesdoEmployee() {
+      return request.auth != null && request.auth.token.email.matches('.*@avesdo[.]com$');
+    }
     match /{document=**} {
-      // Only allow Avesdo staff to read and write to the database
-      allow read, write: if request.auth != null && request.auth.token.email.matches('.*@avesdo[.]com');
+      allow read, write: if isAvesdoEmployee();
     }
   }
 }

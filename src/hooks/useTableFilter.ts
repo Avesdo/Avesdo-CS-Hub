@@ -49,9 +49,16 @@ export function useTableFilter<T>({
       );
     }
 
-    return filtered.sort((a, b) => {
-      const valA = a[sortCol];
-      const valB = b[sortCol];
+    return [...filtered].sort((a, b) => {
+      let valA: any = a[sortCol];
+      let valB: any = b[sortCol];
+
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      // Handle nulls/undefined to ensure consistent sorting
+      if (valA == null) valA = typeof valB === 'number' ? 0 : '';
+      if (valB == null) valB = typeof valA === 'number' ? 0 : '';
 
       if (valA < valB) return sortAsc ? -1 : 1;
       if (valA > valB) return sortAsc ? 1 : -1;

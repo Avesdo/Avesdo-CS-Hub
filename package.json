@@ -45,6 +45,7 @@
     "@tanstack/react-virtual": "^3.14.2",
     "@types/uuid": "^10.0.0",
     "chart.js": "^4.4.1",
+    "csv-parse": "^7.0.0",
     "firebase": "^10.8.0",
     "lucide-react": "^1.17.0",
     "papaparse": "^5.5.3",

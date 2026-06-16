@@ -351,14 +351,20 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
   return (
     <div className="flex flex-col space-y-8" ref={popRef}>
-      {(!service?.type || !service?.status || !service?.manager) && (
-        <div
-          id="sd-error"
-          className="bg-red-50 text-red-700 p-3 rounded-md border border-red-200 flex items-start gap-2"
-        >
-          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-          <div className="text-sm">
-            Please ensure Service Type, Manager, and Status are populated.
+      {(!service?.type ||
+        !service?.status ||
+        (!service?.managers?.length && !service?.manager)) && (
+        <div className="px-6 py-3 border-b border-orange-200/50 bg-orange-50/50 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+            <div className="i-lucide-alert-triangle w-4 h-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-orange-800 tracking-tight">
+              Missing Fields
+            </span>
+            <span className="text-xs text-orange-600 font-medium">
+              Please ensure Service Type, Managers, and Status are populated.
+            </span>
           </div>
         </div>
       )}
@@ -423,24 +429,43 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
             className="w-full flex items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:border-primary/50 focus:outline-none min-h-[38px]"
           >
             <span className="truncate font-semibold text-foreground">
-              {service?.manager || 'Unassigned'}
+              {service?.managers?.length
+                ? service.managers.join(', ')
+                : service?.manager || 'Unassigned'}
             </span>
             <div className="i-lucide-chevron-down w-4 h-4 text-muted-foreground shrink-0" />
           </button>
           {openPop === 'manager' && (
-            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1 animate-in fade-in slide-in-from-top-2 duration-200">
-              {settings?.managers?.map((m: any) => (
-                <button
-                  key={m.name}
-                  onClick={() => {
-                    setOpenPop(null);
-                    handleUpdate('manager', m.name, service?.manager, 'Manager');
-                  }}
-                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 flex items-center justify-between whitespace-nowrap"
-                >
-                  {m.name}
-                </button>
-              ))}
+            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1 animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-thin-scroll">
+              {settings?.managers?.map((m: any) => {
+                const isSelected =
+                  service?.managers?.includes(m.name) ||
+                  (!service?.managers && service?.manager === m.name);
+                return (
+                  <button
+                    key={m.name}
+                    onClick={() => {
+                      let newManagers = [
+                        ...(service?.managers || (service?.manager ? [service.manager] : [])),
+                      ];
+                      if (isSelected) {
+                        newManagers = newManagers.filter((name) => name !== m.name);
+                      } else {
+                        newManagers.push(m.name);
+                      }
+                      const payload = {
+                        manager: newManagers.length > 0 ? newManagers[0] : 'Unassigned',
+                        managers: newManagers,
+                      };
+                      handleUpdate('managers', newManagers, service?.managers, 'Managers', payload);
+                    }}
+                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 flex items-center justify-between whitespace-nowrap"
+                  >
+                    {m.name}
+                    {isSelected && <div className="i-lucide-check w-4 h-4 text-primary" />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

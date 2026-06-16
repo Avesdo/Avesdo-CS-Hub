@@ -1,16 +1,17 @@
-import React from 'react';
-import AddClientModal from './modals/AddClientModal';
-import AddProjectModal from './modals/AddProjectModal';
-import AddServiceModal from './modals/AddServiceModal';
-import ClientDrawer from './drawers/ClientDrawer';
-import ProjectDrawer from './drawers/ProjectDrawer';
-import ServiceDrawer from './drawers/ServiceDrawer';
-import DashDrilldownDrawer from './drawers/DashDrilldownDrawer';
-import UnscheduledProjectsDrawer from './drawers/UnscheduledProjectsDrawer';
+import React, { Suspense } from 'react';
+
+const AddClientModal = React.lazy(() => import('./modals/AddClientModal'));
+const AddProjectModal = React.lazy(() => import('./modals/AddProjectModal'));
+const AddServiceModal = React.lazy(() => import('./modals/AddServiceModal'));
+const ClientDrawer = React.lazy(() => import('./drawers/ClientDrawer'));
+const ProjectDrawer = React.lazy(() => import('./drawers/ProjectDrawer'));
+const ServiceDrawer = React.lazy(() => import('./drawers/ServiceDrawer'));
+const DashDrilldownDrawer = React.lazy(() => import('./drawers/DashDrilldownDrawer'));
+const UnscheduledProjectsDrawer = React.lazy(() => import('./drawers/UnscheduledProjectsDrawer'));
 
 export default function GlobalOverlays() {
   return (
-    <>
+    <Suspense fallback={null}>
       {/* Modals */}
       <AddClientModal />
       <AddProjectModal />
@@ -21,6 +22,6 @@ export default function GlobalOverlays() {
       <ServiceDrawer />
       <DashDrilldownDrawer />
       <UnscheduledProjectsDrawer />
-    </>
+    </Suspense>
   );
 }

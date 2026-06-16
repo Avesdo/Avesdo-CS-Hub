@@ -12,34 +12,45 @@ const ToastContent = ({ title, message }: { title: string; message?: string }) =
 export const toast = {
   success: (title: string, message?: string) =>
     hotToast.success(<ToastContent title={title} message={message} />, {
-      icon: <Check className="w-5 h-5 text-green-600 shrink-0" />,
+      icon: <Check className="w-5 h-5 !text-green-600 shrink-0" />,
+      className:
+        '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+      style: { background: 'unset', color: 'unset' },
     }),
 
   error: (title: string, message?: string) =>
     hotToast.error(<ToastContent title={title} message={message} />, {
-      icon: <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />,
+      icon: <AlertCircle className="w-5 h-5 !text-red-600 shrink-0" />,
+      className: '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+      style: { background: 'unset', color: 'unset' },
     }),
 
   warning: (title: string, message?: string) =>
     hotToast(<ToastContent title={title} message={message} />, {
       duration: 5000,
-      icon: <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0" />,
-      className: 'bg-orange-50 text-orange-900 border-orange-200 border',
-      style: {},
+      icon: <AlertTriangle className="w-5 h-5 !text-orange-600 shrink-0" />,
+      className:
+        '!bg-orange-50 !text-orange-900 !border-orange-200 border shadow-xl rounded-lg font-medium',
+      style: { background: 'unset', color: 'unset' },
     }),
 
   info: (title: string, message?: string) =>
     hotToast(<ToastContent title={title} message={message} />, {
       duration: 4000,
-      icon: <Info className="w-5 h-5 text-blue-600 shrink-0" />,
-      className: 'bg-blue-50 text-blue-900 border-blue-200 border',
-      style: {},
+      icon: <Info className="w-5 h-5 !text-blue-600 shrink-0" />,
+      className:
+        '!bg-blue-50 !text-blue-900 !border-blue-200 border shadow-xl rounded-lg font-medium',
+      style: { background: 'unset', color: 'unset' },
     }),
 
   dismiss: (id?: string) => hotToast.dismiss(id),
 
   loading: (title: string, message?: string) =>
-    hotToast.loading(<ToastContent title={title} message={message} />),
+    hotToast.loading(<ToastContent title={title} message={message} />, {
+      className:
+        '!bg-cyan-50 !text-cyan-900 !border-cyan-200 border shadow-xl rounded-lg font-medium',
+      style: { background: 'unset', color: 'unset' },
+    }),
 
   promise: <T,>(
     promise: Promise<T>,
@@ -63,11 +74,22 @@ export const toast = {
         },
       },
       {
+        loading: {
+          className:
+            '!bg-cyan-50 !text-cyan-900 !border-cyan-200 border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
+        },
         success: {
-          icon: <Check className="w-5 h-5 text-green-600 shrink-0" />,
+          icon: <Check className="w-5 h-5 !text-green-600 shrink-0" />,
+          className:
+            '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
         },
         error: {
-          icon: <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />,
+          icon: <AlertCircle className="w-5 h-5 !text-red-600 shrink-0" />,
+          className:
+            '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
         },
       }
     );

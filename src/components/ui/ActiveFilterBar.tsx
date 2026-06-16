@@ -40,7 +40,7 @@ export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
       {activeItems.map((item, idx) => (
         <span
           key={`${item.groupLabel}-${item.value}-${idx}`}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-500/20 border border-slate-200"
         >
           {item.groupLabel}: <span className="text-foreground">{item.value}</span>
           <button

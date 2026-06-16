@@ -43,16 +43,18 @@ const mapServiceRow = (s: any) =>
     escapeCSV(s.projectName || s.project),
     escapeCSV(s.type),
     escapeCSV(s.clientName || s.clients || s.client),
-    escapeCSV(s.manager),
+    escapeCSV(s.managers && s.managers.length ? s.managers : s.manager),
     escapeCSV(s.price ?? 0),
     escapeCSV(s.outcome),
     escapeCSV(s.status),
     escapeCSV(s.dateStr || 'No Date'),
     escapeCSV(s.invoiceSent ? 'Yes' : 'No'),
+    escapeCSV(s.invoiceNum || ''),
     escapeCSV(s.invoicePaid ? 'Yes' : 'No'),
     escapeCSV(s.commission ?? 0),
-    escapeCSV(s.commissionPaid ? 'Yes' : 'No'),
-    escapeCSV(s.datePaidStr || 'No Date'),
+    escapeCSV(s.commPaid ? 'Yes' : 'No'),
+    escapeCSV(s.commDateStr || 'No Date'),
+    escapeCSV(s.contactName || ''),
   ].join(',');
 
 export const universalExportCSV = (
@@ -90,7 +92,7 @@ export const universalExportCSV = (
       'Manager',
       'Project Status',
       'Schedule Status',
-      'Implementation Milestone',
+      'Implementation Status',
       'Live Units',
       'Active Features',
       'Deliverables Checklist',
@@ -108,10 +110,12 @@ export const universalExportCSV = (
       'Fulfillment Status',
       'Date',
       'Invoice Sent',
+      'Invoice Number',
       'Invoice Paid',
       'Commission Value',
       'Commission Paid',
       'Date Paid',
+      'Client Contact Name',
     ];
     csvRows = data.map(mapServiceRow);
   }

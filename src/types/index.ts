@@ -14,6 +14,10 @@ export interface Project {
   assignee: string;
   clientIds: string[];
   clients?: string[];
+  developerIds?: string[];
+  developers?: string[];
+  salesMarketingIds?: string[];
+  salesMarketingClients?: string[];
   projectStatus: string;
   releaseDateStr: string;
   releaseDateVal: number;
@@ -23,8 +27,22 @@ export interface Project {
   features?: string[];
   units?: number | string;
   history?: any[];
+  invoiceStatus?: string;
+  daysOutstanding?: number;
+  totalOutstanding?: number;
+  outstandingInvoiceCount?: number;
   healthScore?: number | 'N/A';
   trendData?: any[];
+  onboardingCsat?: {
+    quality: string;
+    planning: string;
+    communication: string;
+    knowledge: string;
+    recommendation: string;
+    comments: string;
+    score: number;
+    submittedAt: string;
+  };
   [key: string]: any;
 }
 
@@ -32,8 +50,11 @@ export interface Service {
   id: string;
   name: string;
   type: string;
-  manager: string;
+  manager?: string;
+  managers?: string[];
   clientIds: string[];
+  projectId?: string;
+  projectIds?: string[];
   outcome: string;
   dateVal: number;
   isArchived?: boolean;
@@ -49,8 +70,13 @@ export interface Settings {
   timelines: { name: string; color: string; icon?: string }[];
   phases: { name: string; color: string; icon?: string }[];
   scoring: {
-    weights: { opActivity: number; featAdoption: number; userVol: number; csat: number };
-    clientWeights: { billing: number; engagement: number; utilization: number; experience: number };
+    weights: {
+      opActivity: number;
+      featAdoption: number;
+      userVol: number;
+      csat: number;
+      financial: number;
+    };
     thresholds: { healthy: number; warning: number };
   };
   [key: string]: any;
@@ -72,7 +98,6 @@ export interface AppState {
     clients: boolean;
     projects: boolean;
     services: boolean;
-    user: boolean;
     aliases: boolean;
   };
 }

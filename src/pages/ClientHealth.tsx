@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useAppState } from '../context/AppStateContext';
 import { useUI } from '../context/UIContext';
 import { useLocation } from 'react-router-dom';
-import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
+import { getHealthBadge, getSettingBadge, getSafeHex, hexToRgba } from '../utils/uiUtils';
 import { universalExportCSV } from '../utils/exportUtils';
 import { PageHeader } from '../components/PageHeader';
 import { TrendIndicator } from '../components/TrendIndicator';
@@ -23,20 +23,23 @@ import {
   Database,
   ChevronDown,
 } from 'lucide-react';
-import { getHealthHistory } from '../api/dbService';
+import { getHealthHistory, updateClientRecord } from '../api/dbService';
 import { ColumnFilter } from '../components/TableFilters';
 import { PageTabs } from '../components/ui/PageTabs';
 import { ActiveFilterBar } from '../components/ui/ActiveFilterBar';
 import { TableFooter } from '../components/ui/TableFooter';
+import { Select } from '../components/ui/Select';
+import { toast } from '../utils/toast';
 import EmptyState from '../components/EmptyState';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { TruncatedText } from '../components/ui/TruncatedText';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 // import { useVirtualizer } from '@tanstack/react-virtual';
 
 type SortCol = 'companyName' | 'type' | 'healthScore' | 'projectCount' | 'manager' | 'trend';
 
 // --- Sparkline Component ---
-const Sparkline = ({ data }: { data: number[] }) => {
+const Sparkline = React.memo(({ data }: { data: number[] }) => {
   if (!data || data.length < 2) return <div className="w-[60px] h-[24px]" />;
   const max = Math.max(...data, 100);
   const min = Math.min(...data, 0);
@@ -70,7 +73,7 @@ const Sparkline = ({ data }: { data: number[] }) => {
       />
     </svg>
   );
-};
+});
 
 export default function ClientHealth() {
   const { clients, projects, settings } = useAppState();
@@ -80,8 +83,19 @@ export default function ClientHealth() {
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
+  const [globalSearch, setGlobalSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setGlobalSearch(searchInput);
+    }, 300);
+    return () => clearTimeout(delay);
+  }, [searchInput]);
+
   const location = useLocation();
   const [healthHistory, setHealthHistory] = useState<any>({});
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Mapping routing state to local tabs
   const getInitialTab = () => {
@@ -105,7 +119,6 @@ export default function ClientHealth() {
   const [activeTab, setActiveTab] = useState<
     'All Clients' | 'Active' | 'Healthy' | 'Warning' | 'At Risk'
   >(getInitialTab());
-  const [globalSearch, setGlobalSearch] = useState('');
 
   // Column Filters
   const [nameFilter, setNameFilter] = useState<string[]>([]);
@@ -127,6 +140,20 @@ export default function ClientHealth() {
         console.error('Failed to load history', err);
       });
   }, []);
+
+  const handleUpdateManager = useCallback(
+    async (clientId: string, managerName: string) => {
+      const client = clients.find((c) => c.clientId === clientId);
+      if (!client) return;
+      try {
+        await updateClientRecord({ ...client, accountManager: managerName }, { silent: true });
+        toast.success(`Updated manager for ${client.companyName}`);
+      } catch (err) {
+        toast.error('Failed to update manager');
+      }
+    },
+    [clients]
+  );
 
   const activeFilterCount =
     nameFilter.length +
@@ -183,10 +210,17 @@ export default function ClientHealth() {
     });
   }, [clients, settings]);
 
-  const thirtyDaysAgo = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
+  const [displayLimit, setDisplayLimit] = useState(50);
+
+  const loadMoreCallback = React.useCallback(() => {
+    setDisplayLimit((prev) => prev + 50);
+  }, []);
+
+  const loadMoreRef = useIntersectionObserver(loadMoreCallback, '200px');
 
   // Calculate Client Enhancements
   const enhancedClients = useMemo(() => {
+    const thirtyDaysAgo = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
     return clients.map((c) => {
       const cProjects = projects.filter((p) => (p.clients || []).includes(c.companyName || ''));
       const activeProjectsCount = cProjects.filter(
@@ -222,7 +256,7 @@ export default function ClientHealth() {
         trendData,
       };
     });
-  }, [clients, projects, healthHistory, thirtyDaysAgo]);
+  }, [clients, projects, healthHistory]);
 
   // Calculate Top KPIs on Unfiltered array
   const kpis = useMemo(() => {
@@ -406,166 +440,193 @@ export default function ClientHealth() {
 
       if (valA < valB) return sortAsc ? -1 : 1;
       if (valA > valB) return sortAsc ? 1 : -1;
-      return 0;
+      // Secondary tie-breaker by companyName
+      const nameA = (a.companyName || '').toLowerCase();
+      const nameB = (b.companyName || '').toLowerCase();
+      return nameA.localeCompare(nameB);
     });
   }, [filteredClients, sortCol, sortAsc]);
 
-  const handleSort = (col: SortCol) => {
-    if (sortCol === col) setSortAsc(!sortAsc);
-    else {
-      setSortCol(col);
-      setSortAsc(true); // new column default is ascending
-    }
-  };
+  const handleSort = useCallback(
+    (col: SortCol) => {
+      if (sortCol === col) setSortAsc(!sortAsc);
+      else {
+        setSortCol(col);
+        setSortAsc(true); // new column default is ascending
+      }
+    },
+    [sortCol, sortAsc]
+  );
+
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+
+  const activeStatus = settings?.statuses?.find((s: any) => s.name === 'Active');
+  const onboardingStatus = settings?.statuses?.find((s: any) => s.name === 'Onboarding');
+  const closedStatus = settings?.statuses?.find((s: any) => s.name === 'Closed');
+
+  const activeHex = getSafeHex(activeStatus?.color, 'emerald');
+  const onboardingHex = getSafeHex(onboardingStatus?.color, 'blue');
+  const closedHex = getSafeHex(closedStatus?.color, 'slate');
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-            Client Health
-          </h1>
-          <p className="text-base text-muted-foreground mt-1">
-            Live overview of client sentiment, billing, and system usage.
-          </p>
-        </div>
+    <div
+      className="flex-1 flex flex-col h-full overflow-hidden bg-white"
+      onWheel={(e) => {
+        if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
+          tableScrollRef.current.scrollTop += e.deltaY;
+        }
+      }}
+    >
+      <div
+        className={`transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+      >
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+              Client Health
+            </h1>
+            <p className="text-base text-muted-foreground mt-1">
+              Live overview of client sentiment, billing, and system usage.
+            </p>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
-          <button
-            onClick={() => openModal('addClient')}
-            className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-          >
-            <Plus className="w-4 h-4 shrink-0" />
-            <span>Add Client</span>
-          </button>
-          <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
             <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              onClick={() => openModal('addClient')}
+              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Download className="w-4 h-4 shrink-0" />
-              <span>Export</span>
-              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              <Plus className="w-4 h-4 shrink-0" />
+              <span>Add Client</span>
             </button>
-            {showExportMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Clients', clients, 'All_Clients');
-                  }}
-                >
-                  <Database className="w-4 h-4 text-muted-foreground" /> Export All
+            <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              >
+                <Download className="w-4 h-4 shrink-0" />
+                <span>Export</span>
+                <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                  <div
+                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Clients', clients, 'All_Clients');
+                    }}
+                  >
+                    <Database className="w-4 h-4 text-muted-foreground" /> Export All
+                  </div>
+                  <div
+                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Clients', sortedClients, 'Filtered_Clients');
+                    }}
+                  >
+                    <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+                  </div>
                 </div>
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Clients', sortedClients, 'Filtered_Clients');
-                  }}
-                >
-                  <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+          <div
+            onClick={() => setActiveTab('At Risk')}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '50ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  At Risk
                 </div>
+                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                  Health score under {settings?.scoring?.thresholds?.warning || 50}
+                </span>
               </div>
-            )}
+              <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+            </div>
+            <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
-        <div
-          onClick={() => setActiveTab('At Risk')}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '50ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                At Risk
+          <div
+            onClick={() => setActiveTab('Warning')}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '150ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Warning
+                </div>
+                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                  Score between {settings?.scoring?.thresholds?.warning || 50} &{' '}
+                  {(settings?.scoring?.thresholds?.healthy || 80) - 1}
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Health score under {settings?.scoring?.thresholds?.warning || 50}
-              </span>
+              <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <AlertCircle className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
           </div>
-          <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
-        </div>
 
-        <div
-          onClick={() => setActiveTab('Warning')}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '150ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Warning
+          <div
+            onClick={() => setActiveTab('Healthy')}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '250ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Healthy
+                </div>
+                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                  Health score of {settings?.scoring?.thresholds?.healthy || 80} or above
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Score between {settings?.scoring?.thresholds?.warning || 50} &{' '}
-                {(settings?.scoring?.thresholds?.healthy || 80) - 1}
-              </span>
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
           </div>
-          <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
-        </div>
 
-        <div
-          onClick={() => setActiveTab('Healthy')}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '250ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Healthy
+          <div
+            onClick={() => setActiveTab('Active')}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '350ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Active Clients
+                </div>
+                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                  Clients with active projects
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Health score of {settings?.scoring?.thresholds?.healthy || 80} or above
-              </span>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-          </div>
-          <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
-        </div>
-
-        <div
-          onClick={() => setActiveTab('Active')}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '350ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Active Clients
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                <Activity className="w-5 h-5" />
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Clients with active projects
-              </span>
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <Activity className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
           </div>
-          <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
         </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
-        <div className="flex flex-col gap-3 pb-3 shrink-0 w-full">
+        <div className="flex flex-col gap-3 pb-3 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
             <PageTabs
               tabs={[
@@ -584,13 +645,13 @@ export default function ClientHealth() {
               <input
                 type="text"
                 placeholder="Search clients..."
-                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm"
-                value={globalSearch}
-                onChange={(e) => setGlobalSearch(e.target.value)}
+                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm h-9"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
-              {globalSearch && (
+              {searchInput && (
                 <button
-                  onClick={() => setGlobalSearch('')}
+                  onClick={() => setSearchInput('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -634,173 +695,309 @@ export default function ClientHealth() {
         </div>
 
         <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
-          <div className="flex-1 overflow-auto custom-thin-scroll w-full relative">
-            <table className="w-full text-left bg-white border-separate border-spacing-0">
-              <thead className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
-                <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                  <th className="sticky left-0 z-40 bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-3 border-r-0 group/th">
-                    <div className="flex items-center">
-                      <div
-                        className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                        onClick={() => handleSort('companyName')}
-                      >
-                        Client Name
-                      </div>
-                      <ColumnFilter
-                        options={allCompanyNames}
-                        selected={nameFilter}
-                        onChange={setNameFilter}
-                        searchable={true}
-                      />
-                    </div>
-                  </th>
-                  <th className="border-b border-border px-6 py-3 group/th">
-                    <div className="flex items-center">
-                      <div
-                        className="cursor-pointer hover:text-slate-800 transition-colors"
-                        onClick={() => handleSort('type')}
-                      >
-                        Type
-                      </div>
-                      <ColumnFilter
-                        options={allTypes}
-                        selected={typeFilter}
-                        onChange={setTypeFilter}
-                      />
-                    </div>
-                  </th>
-                  <th className="border-b border-border px-6 py-3 group/th">
-                    <div className="flex items-center">
-                      <div
-                        className="cursor-pointer hover:text-slate-800 transition-colors"
-                        onClick={() => handleSort('healthScore')}
-                      >
-                        Health
-                      </div>
-                      <ColumnFilter
-                        options={['Healthy', 'Warning', 'At Risk']}
-                        selected={healthFilter}
-                        onChange={setHealthFilter}
-                      />
-                    </div>
-                  </th>
-                  <th className="border-b border-border px-6 py-3 group/th">
-                    <div className="flex items-center">
-                      <div
-                        className="cursor-pointer hover:text-slate-800 transition-colors"
-                        onClick={() => handleSort('projectCount')}
-                      >
-                        Projects
-                        <span className="text-[9px] font-normal text-slate-400 normal-case tracking-normal ml-1">
-                          (Active/Onboarding/Closed)
-                        </span>
-                      </div>
-                      <ColumnFilter
-                        options={['Active', 'Onboarding', 'Closed']}
-                        selected={projectFilter}
-                        onChange={setProjectFilter}
-                      />
-                    </div>
-                  </th>
-                  <th className="border-b border-border px-6 py-3 group/th">
-                    <div className="flex items-center">
-                      <div
-                        className="cursor-pointer hover:text-slate-800 transition-colors"
-                        onClick={() => handleSort('manager')}
-                      >
-                        Manager
-                      </div>
-                      <ColumnFilter
-                        options={allManagers}
-                        selected={managerFilter}
-                        onChange={setManagerFilter}
-                      />
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border text-sm">
-                {sortedClients.map((c: any) => {
-                  return (
-                    <tr
-                      key={c.clientId}
-                      className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[60]"
-                      onClick={() => openDrawer('client', c.clientId)} // default to overview
-                    >
-                      <td className="sticky left-0 z-20 group-hover:z-[70] bg-white group-hover:bg-slate-50 transition-colors px-6 py-3 font-semibold text-slate-800 border-r-0">
-                        <TruncatedText
-                          text={c.companyName || 'Unnamed Client'}
-                          className="max-w-[200px] group-hover:text-primary transition-colors"
-                        />
-                      </td>
-                      <td className="px-6 py-3 text-muted-foreground border-l-0">
-                        {(c as any).clientType ? (
-                          getSettingBadge('clientTypes', (c as any).clientType, settings)
-                        ) : (
-                          <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
-                            Unassigned
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className="px-6 py-3"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDrawer('client', c.clientId, { targetTab: 'trends' });
-                        }}
-                      >
-                        <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
-                          {getHealthBadge(c.healthScore, settings)}
-                          <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
-                            <Sparkline data={c.trendData} />
+          <div
+            ref={tableScrollRef}
+            className="flex-1 overflow-auto custom-thin-scroll w-full relative"
+            onScroll={(e) => {
+              if (e.currentTarget.scrollTop > 40 && !isScrolled) setIsScrolled(true);
+              else if (e.currentTarget.scrollTop <= 10 && isScrolled) setIsScrolled(false);
+            }}
+          >
+            {useMemo(
+              () => (
+                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
+                  <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
+                    <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                      <th className="sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
+                        <div className="flex items-center">
+                          <div
+                            className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                            onClick={() => handleSort('companyName')}
+                          >
+                            Client Name
                           </div>
+                          <ColumnFilter
+                            options={allCompanyNames}
+                            selected={nameFilter}
+                            onChange={setNameFilter}
+                            searchable={true}
+                          />
                         </div>
-                      </td>
-                      <td
-                        className="px-6 py-3 relative group/projects"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDrawer('client', c.clientId, { targetTab: 'projects' });
-                        }}
-                      >
-                        <div className="flex items-center gap-1.5 text-sm font-bold text-slate-800 cursor-pointer p-1 -m-1 rounded hover:bg-slate-100 transition-colors w-fit">
-                          <span>{c.activeProjectsCount}</span>
-                          <span className="text-slate-300 font-normal">/</span>
-                          <span className="text-slate-500">{c.onboardingProjectsCount}</span>
-                          <span className="text-slate-300 font-normal">/</span>
-                          <span className="text-slate-500">{c.closedProjectsCount}</span>
+                      </th>
+                      <th className="border-b border-border px-6 py-2 group/th">
+                        <div className="flex items-center">
+                          <div
+                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            onClick={() => handleSort('type')}
+                          >
+                            Type
+                          </div>
+                          <ColumnFilter
+                            options={allTypes}
+                            selected={typeFilter}
+                            onChange={setTypeFilter}
+                          />
                         </div>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/projects:opacity-100 transition-opacity bg-white border border-slate-200 shadow-md text-slate-700 text-xs px-2.5 py-1.5 rounded whitespace-nowrap pointer-events-none z-50">
-                          Active: {c.activeProjectsCount} | Onboarding: {c.onboardingProjectsCount}{' '}
-                          | Closed: {c.closedProjectsCount}
+                      </th>
+                      <th className="border-b border-border px-6 py-2 group/th">
+                        <div className="flex items-center">
+                          <div
+                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            onClick={() => handleSort('healthScore')}
+                          >
+                            Health
+                          </div>
+                          <ColumnFilter
+                            options={['Healthy', 'Warning', 'At Risk']}
+                            selected={healthFilter}
+                            onChange={setHealthFilter}
+                          />
                         </div>
-                      </td>
-                      <td className="px-6 py-3 text-muted-foreground relative">
-                        <div className="flex items-center justify-between">
-                          {c.accountManager ? (
-                            getSettingBadge('managers', c.accountManager, settings)
-                          ) : (
-                            <span className="text-xs text-slate-400 font-medium">Unassigned</span>
-                          )}
+                      </th>
+                      <th className="border-b border-border px-6 py-2 group/th">
+                        <div className="flex items-center">
+                          <div
+                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            onClick={() => handleSort('projectCount')}
+                          >
+                            Projects
+                            <span className="text-[9px] font-normal text-slate-400 normal-case tracking-normal ml-1">
+                              (Active/Onboarding/Closed)
+                            </span>
+                          </div>
+                          <ColumnFilter
+                            options={['Active', 'Onboarding', 'Closed']}
+                            selected={projectFilter}
+                            onChange={setProjectFilter}
+                          />
                         </div>
-                      </td>
+                      </th>
+                      <th className="border-b border-border px-6 py-2 group/th">
+                        <div className="flex items-center">
+                          <div
+                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            onClick={() => handleSort('manager')}
+                          >
+                            Manager
+                          </div>
+                          <ColumnFilter
+                            options={allManagers}
+                            selected={managerFilter}
+                            onChange={setManagerFilter}
+                          />
+                        </div>
+                      </th>
                     </tr>
-                  );
-                })}
+                  </thead>
+                  <tbody className="divide-y divide-border text-sm">
+                    {sortedClients.slice(0, displayLimit).map((c: any) => {
+                      return (
+                        <tr
+                          key={c.clientId}
+                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
+                          onClick={() => openDrawer('client', c.clientId)} // default to overview
+                        >
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
+                            <TruncatedText
+                              text={c.companyName || 'Unnamed Client'}
+                              className="max-w-[200px] group-hover:text-primary transition-colors"
+                            />
+                          </td>
+                          <td className="px-6 py-2 text-muted-foreground border-l-0">
+                            {(c as any).clientType ? (
+                              getSettingBadge('clientTypes', (c as any).clientType, settings)
+                            ) : (
+                              <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
+                                Unassigned
+                              </span>
+                            )}
+                          </td>
+                          <td
+                            className="px-6 py-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDrawer('client', c.clientId, { targetTab: 'trends' });
+                            }}
+                          >
+                            <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
+                              {getHealthBadge(c.healthScore, settings)}
+                              <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
+                                <Sparkline data={c.trendData} />
+                              </div>
+                            </div>
+                          </td>
+                          <td
+                            className="px-6 py-2 relative group/projects"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDrawer('client', c.clientId, { targetTab: 'projects' });
+                            }}
+                          >
+                            <div className="flex items-center gap-2 p-1 -m-1 rounded hover:bg-slate-50 transition-colors w-fit cursor-pointer">
+                              <div
+                                style={
+                                  c.activeProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(activeHex, 0.1),
+                                        color: activeHex,
+                                        borderColor: hexToRgba(activeHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/active relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.activeProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.activeProjectsCount > 0
+                                      ? { backgroundColor: activeHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.activeProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.activeProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/active:opacity-100 transition-opacity">
+                                  Active Projects
+                                </div>
+                              </div>
 
-                {sortedClients.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-4">
-                      <EmptyState
-                        icon={Users}
-                        title="No clients found"
-                        subtitle="Try adjusting your filters or search term."
-                      />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                              <div
+                                style={
+                                  c.onboardingProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(onboardingHex, 0.1),
+                                        color: onboardingHex,
+                                        borderColor: hexToRgba(onboardingHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/onboarding relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.onboardingProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.onboardingProjectsCount > 0
+                                      ? { backgroundColor: onboardingHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.onboardingProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.onboardingProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/onboarding:opacity-100 transition-opacity">
+                                  Onboarding Projects
+                                </div>
+                              </div>
+
+                              <div
+                                style={
+                                  c.closedProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(closedHex, 0.1),
+                                        color: closedHex,
+                                        borderColor: hexToRgba(closedHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/closed relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.closedProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.closedProjectsCount > 0
+                                      ? { backgroundColor: closedHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.closedProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.closedProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/closed:opacity-100 transition-opacity">
+                                  Closed Projects
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td
+                            className="px-6 py-2 text-muted-foreground"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="inline-block relative">
+                              <Select
+                                value={c.accountManager || 'Unassigned'}
+                                options={(settings?.managers?.map((m: any) => m.name) || []).map(
+                                  (m: any) => ({
+                                    label: getSettingBadge('managers', m, settings),
+                                    value: m,
+                                  })
+                                )}
+                                onChange={(val) => handleUpdateManager(c.clientId, val)}
+                                hideCheckmark={true}
+                                trigger={
+                                  <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
+                                    {getSettingBadge('managers', c.accountManager, settings)}
+                                  </div>
+                                }
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {sortedClients.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-4">
+                          <EmptyState
+                            icon={Users}
+                            title="No clients found"
+                            subtitle="Try adjusting your filters or search term."
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              ),
+              [
+                sortedClients,
+                displayLimit,
+                nameFilter,
+                typeFilter,
+                healthFilter,
+                projectFilter,
+                managerFilter,
+                sortCol,
+                sortAsc,
+                settings,
+                openDrawer,
+                handleSort,
+                allCompanyNames,
+                allTypes,
+                allManagers,
+                activeHex,
+                onboardingHex,
+                closedHex,
+                handleUpdateManager,
+              ]
+            )}
+            {sortedClients.length > displayLimit && (
+              <div ref={loadMoreRef} className="flex justify-center p-4 h-24 items-center">
+                <button
+                  onClick={() => setDisplayLimit((prev) => prev + 50)}
+                  className="text-cyan-600 hover:text-cyan-700 font-medium text-sm hover:underline transition-colors"
+                >
+                  Load More ({sortedClients.length - displayLimit} remaining)
+                </button>
+              </div>
+            )}
           </div>
 
           <TableFooter totalItems={sortedClients.length} label="Total Clients Displayed" />

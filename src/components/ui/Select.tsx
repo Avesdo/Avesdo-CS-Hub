@@ -59,7 +59,7 @@ export function Select({
 
       {isOpen && (
         <div
-          className={`absolute ${positionClasses} bg-white border border-border rounded-xl shadow-xl z-[250] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${align === 'right' ? 'right-0' : 'left-0'} ${menuClassName}`}
+          className={`absolute ${positionClasses} bg-white border border-border rounded-xl shadow-xl z-[250] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in slide-in-from-top-1 duration-200 ${dropdownWidth} ${align === 'right' ? 'right-0' : 'left-0'} ${menuClassName}`}
         >
           <div className="overflow-y-auto p-1 custom-thin-scroll">
             {options.map((opt) => (

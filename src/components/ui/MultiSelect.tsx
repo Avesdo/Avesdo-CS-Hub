@@ -55,14 +55,25 @@ export function MultiSelect({
   }, [isOpen]);
 
   const filteredOptions = useMemo(() => {
-    if (!searchable || !searchTerm) return options;
-    return options.filter((opt) => {
-      // Basic text search. If label is complex, we just check value or try stringifying label.
-      const text =
-        typeof opt.label === 'string' ? opt.label.toLowerCase() : opt.value.toLowerCase();
-      return text.includes(searchTerm.toLowerCase());
+    let result = options;
+    if (searchable && searchTerm) {
+      result = options.filter((opt) => {
+        // Basic text search. If label is complex, we just check value or try stringifying label.
+        const text =
+          typeof opt.label === 'string' ? opt.label.toLowerCase() : opt.value.toLowerCase();
+        return text.includes(searchTerm.toLowerCase());
+      });
+    }
+
+    result = [...result].sort((a, b) => {
+      const aSelected = values.includes(a.value);
+      const bSelected = values.includes(b.value);
+      if (aSelected === bSelected) return 0;
+      return aSelected ? -1 : 1;
     });
-  }, [options, searchable, searchTerm]);
+
+    return result;
+  }, [options, searchable, searchTerm, values]);
 
   const toggleValue = (val: string) => {
     if (values.includes(val)) {

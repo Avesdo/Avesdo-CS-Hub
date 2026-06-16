@@ -141,6 +141,8 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+import { Tooltip } from '../components/ui/Tooltip';
+
 const COLOR_MAP: Record<string, string> = {
   amber: '#f59e0b',
   blue: '#3b82f6',
@@ -301,16 +303,11 @@ export default function SettingsDraft() {
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
 
   const [projectWeights, setProjectWeights] = useState({
-    opActivity: 40,
-    featAdoption: 30,
-    userVol: 20,
+    opActivity: 35,
+    featAdoption: 25,
+    userVol: 15,
+    financial: 15,
     csat: 10,
-  });
-  const [clientWeights, setClientWeights] = useState({
-    billing: 15,
-    engagement: 50,
-    utilization: 25,
-    experience: 10,
   });
   const [thresholds, setThresholds] = useState({ healthy: 80, warning: 50 });
 
@@ -319,14 +316,12 @@ export default function SettingsDraft() {
   useEffect(() => {
     if (settings?.scoring) {
       setProjectWeights(
-        settings.scoring.weights || { opActivity: 40, featAdoption: 30, userVol: 20, csat: 10 }
-      );
-      setClientWeights(
-        settings.scoring.clientWeights || {
-          billing: 15,
-          engagement: 50,
-          utilization: 25,
-          experience: 10,
+        settings.scoring.weights || {
+          opActivity: 35,
+          featAdoption: 25,
+          userVol: 15,
+          financial: 15,
+          csat: 10,
         }
       );
       setThresholds(settings.scoring.thresholds || { healthy: 80, warning: 50 });
@@ -344,11 +339,10 @@ export default function SettingsDraft() {
   }
 
   const totalProjectWeights = Object.values(projectWeights).reduce((a, b) => a + Number(b), 0);
-  const totalClientWeights = Object.values(clientWeights).reduce((a, b) => a + Number(b), 0);
 
   const fieldDisplayNames: Record<string, string> = {
     managers: 'Account manager',
-    phases: 'Implementation Milestone',
+    phases: 'Implementation Status',
     statuses: 'Status',
     timelines: 'Delivery Status',
     clientTypes: 'Client Type',
@@ -696,7 +690,7 @@ export default function SettingsDraft() {
   };
 
   const handleSaveScoring = async () => {
-    if (totalProjectWeights !== 100 || totalClientWeights !== 100) {
+    if (totalProjectWeights !== 100) {
       toast.error('Weights must equal exactly 100%');
       return;
     }
@@ -709,7 +703,6 @@ export default function SettingsDraft() {
       ...settings,
       scoring: {
         weights: projectWeights,
-        clientWeights: clientWeights,
         thresholds: thresholds,
       },
     };
@@ -939,49 +932,52 @@ export default function SettingsDraft() {
                     )}
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div
-                      className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      title="Drag to reorder"
-                    >
-                      <GripVertical className="w-4 h-4" />
-                    </div>
-                    <button
-                      onClick={() => moveItem(fieldName, i, -1, items)}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      title="Move Up"
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => moveItem(fieldName, i, 1, items)}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      title="Move Down"
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingItem({ field: fieldName, idx: i, globalIdx });
-                        setEditForm(
-                          isStringList
-                            ? { name }
-                            : isServices
-                              ? { name, price: item.price }
-                              : { name, color: item.color, icon: item.icon }
-                        );
-                      }}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      title="Edit"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeletingItem({ field: fieldName, idx: i, globalIdx })}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
-                      title="Archive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <Tooltip content="Drag to reorder">
+                      <div className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors">
+                        <GripVertical className="w-4 h-4" />
+                      </div>
+                    </Tooltip>
+                    <Tooltip content="Move Up">
+                      <button
+                        onClick={() => moveItem(fieldName, i, -1, items)}
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip content="Move Down">
+                      <button
+                        onClick={() => moveItem(fieldName, i, 1, items)}
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip content="Edit">
+                      <button
+                        onClick={() => {
+                          setEditingItem({ field: fieldName, idx: i, globalIdx });
+                          setEditForm(
+                            isStringList
+                              ? { name }
+                              : isServices
+                                ? { name, price: item.price }
+                                : { name, color: item.color, icon: item.icon }
+                          );
+                        }}
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip content="Archive">
+                      <button
+                        onClick={() => setDeletingItem({ field: fieldName, idx: i, globalIdx })}
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
                   </div>
                 </li>
               );
@@ -1035,12 +1031,12 @@ export default function SettingsDraft() {
           {activeTab === 'workflow' && (
             <div className="max-w-3xl animate-in fade-in duration-300">
               {renderList('Project Status', 'Workflow stages for projects.', 'statuses')}
-              {renderList('Delivery Statuses', 'Delivery statuses for projects.', 'timelines')}
               {renderList(
-                'Implementation Milestones',
-                'Milestones for project execution.',
-                'phases'
+                'Project Delivery Health',
+                'Delivery statuses for projects.',
+                'timelines'
               )}
+              {renderList('Implementation Pipeline', 'Milestones for project execution.', 'phases')}
               {renderList('Service Outcomes', 'Outcome statuses for services.', 'serviceOutcomes')}
               {renderList(
                 'Fulfillment Status',
@@ -1058,71 +1054,15 @@ export default function SettingsDraft() {
           )}
           {activeTab === 'scoring' && (
             <div className="max-w-4xl animate-in fade-in duration-300 space-y-8">
-              {/* Client Pillar Weights */}
+              {/* Unified Health Pillar Weights */}
               <div className="bg-white border border-border rounded-xl shadow-sm p-6">
                 <h3 className="text-base font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                  Client Pillar Weights (Total: {totalClientWeights}%)
+                  Health Score Weights (Total: {totalProjectWeights}%)
                 </h3>
                 <div className="space-y-6">
                   {[
-                    { label: 'Financial Standing', key: 'billing', val: clientWeights.billing },
                     {
                       label: 'Platform Engagement',
-                      key: 'engagement',
-                      val: clientWeights.engagement,
-                    },
-                    {
-                      label: 'Product Utilization',
-                      key: 'utilization',
-                      val: clientWeights.utilization,
-                    },
-                    {
-                      label: 'Client Experience',
-                      key: 'experience',
-                      val: clientWeights.experience,
-                    },
-                  ].map((item) => (
-                    <div key={item.key} className="flex items-center gap-4">
-                      <label className="text-sm font-semibold text-slate-600 w-48 shrink-0">
-                        {item.label}
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        className="flex-1 accent-cyan-500 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                        value={item.val}
-                        onChange={(e) =>
-                          setClientWeights({
-                            ...clientWeights,
-                            [item.key]: Number(e.target.value) || 0,
-                          })
-                        }
-                      />
-                      <span className="text-sm font-semibold text-slate-800 w-12 text-right">
-                        {item.val}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
-                  <span
-                    className={`text-sm font-bold ${totalClientWeights === 100 ? 'text-lime-600' : 'text-red-500'}`}
-                  >
-                    Total: {totalClientWeights}%
-                  </span>
-                </div>
-              </div>
-
-              {/* Project Pillar Weights */}
-              <div className="bg-white border border-border rounded-xl shadow-sm p-6">
-                <h3 className="text-base font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                  Project Pillar Weights (Total: {totalProjectWeights}%)
-                </h3>
-                <div className="space-y-6">
-                  {[
-                    {
-                      label: 'Operational Activity',
                       key: 'opActivity',
                       val: projectWeights.opActivity,
                     },
@@ -1131,8 +1071,13 @@ export default function SettingsDraft() {
                       key: 'featAdoption',
                       val: projectWeights.featAdoption,
                     },
-                    { label: 'Active User Volume', key: 'userVol', val: projectWeights.userVol },
-                    { label: 'Project CSAT', key: 'csat', val: projectWeights.csat },
+                    {
+                      label: 'Financial Standing',
+                      key: 'financial',
+                      val: projectWeights.financial || 0,
+                    },
+                    { label: 'Active Users', key: 'userVol', val: projectWeights.userVol },
+                    { label: 'Client Sentiment', key: 'csat', val: projectWeights.csat },
                   ].map((item) => (
                     <div key={item.key} className="flex items-center gap-4">
                       <label className="text-sm font-semibold text-slate-600 w-48 shrink-0">
@@ -1165,7 +1110,7 @@ export default function SettingsDraft() {
                   </span>
                   <button
                     onClick={handleSaveScoring}
-                    disabled={totalProjectWeights !== 100 || totalClientWeights !== 100}
+                    disabled={totalProjectWeights !== 100}
                     className="bg-[#00c2cb] text-white px-5 h-9 rounded text-sm font-bold hover:bg-[#00aeb6] flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Save Weights

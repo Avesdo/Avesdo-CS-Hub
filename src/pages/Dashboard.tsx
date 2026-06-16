@@ -75,7 +75,7 @@ export default function Dashboard() {
   const [showAmMenu, setShowAmMenu] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
-  const [actionTab, setActionTab] = useState<'risk' | 'sus'>('risk');
+  const [actionTab, setActionTab] = useState<'risk' | 'sus'>('sus');
   const [healthHistory, setHealthHistory] = useState<any>({});
   const [systemLogs, setSystemLogs] = useState<any[]>([]);
   const [isFetchingHistory, setIsFetchingHistory] = useState(true);
@@ -442,12 +442,32 @@ export default function Dashboard() {
     const currentQtr = Math.floor((new Date().getMonth() + 3) / 3);
     return [...filteredProjects]
       .filter((p) => {
-        if (p.timelineStatus !== 'Released' && p.onboardingPhase !== 'Released') return false;
-        if (!p.releaseDateVal) return false;
-        const d = new Date(p.releaseDateVal);
+        // Must be actually launched (not in Onboarding) OR explicitly marked as Released
+        if (
+          p.projectStatus === 'Onboarding' &&
+          p.timelineStatus !== 'Released' &&
+          p.onboardingPhase !== 'Released'
+        )
+          return false;
+
+        // Exclude cancelled/closed projects from being considered a recent launch
+        if (p.projectStatus === 'Cancelled' || p.projectStatus === 'Churned') return false;
+
+        let timestamp = p.releaseDateVal;
+        if (!timestamp && p.releaseDate) {
+          const parsed = new Date(p.releaseDate).getTime();
+          if (!isNaN(parsed)) timestamp = parsed;
+        }
+        if (!timestamp) return false;
+
+        const d = new Date(timestamp);
         return d.getFullYear() === currentYear && Math.floor((d.getMonth() + 3) / 3) === currentQtr;
       })
-      .sort((a, b) => (b.releaseDateVal || 0) - (a.releaseDateVal || 0));
+      .sort((a, b) => {
+        const valA = a.releaseDateVal || (a.releaseDate ? new Date(a.releaseDate).getTime() : 0);
+        const valB = b.releaseDateVal || (b.releaseDate ? new Date(b.releaseDate).getTime() : 0);
+        return valB - valA;
+      });
   }, [filteredProjects]);
 
   const formatCurrency = (val: number) =>
@@ -473,7 +493,7 @@ export default function Dashboard() {
       if (c.healthScore !== 'N/A' && typeof c.healthScore === 'number') {
         const rawHistory = healthHistory[c.clientId] || [];
         const history = rawHistory
-          .filter((h: any) => h.timeVal >= timeThresh)
+          .filter((h: any) => h.timeVal >= timeThresh && typeof h.score === 'number')
           .sort((a: any, b: any) => a.timeVal - b.timeVal);
 
         if (history.length > 0) {
@@ -952,16 +972,16 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-1.5 w-full">
                   <button
-                    onClick={() => setActionTab('risk')}
-                    className={`relative inline-flex flex-1 items-center justify-center rounded-full px-4 py-1.5 text-[11px] font-bold whitespace-nowrap transition-all duration-200 border ${actionTab === 'risk' ? 'bg-white text-red-600 shadow-sm border-red-200' : 'bg-red-50 text-red-600/70 border-transparent hover:bg-red-100 hover:text-red-600 hover:border-red-200'}`}
-                  >
-                    At Risk
-                  </button>
-                  <button
                     onClick={() => setActionTab('sus')}
                     className={`relative inline-flex flex-1 items-center justify-center rounded-full px-4 py-1.5 text-[11px] font-bold whitespace-nowrap transition-all duration-200 border ${actionTab === 'sus' ? 'bg-white text-red-600 shadow-sm border-red-200' : 'bg-red-50 text-red-600/70 border-transparent hover:bg-red-100 hover:text-red-600 hover:border-red-200'}`}
                   >
                     Suspended
+                  </button>
+                  <button
+                    onClick={() => setActionTab('risk')}
+                    className={`relative inline-flex flex-1 items-center justify-center rounded-full px-4 py-1.5 text-[11px] font-bold whitespace-nowrap transition-all duration-200 border ${actionTab === 'risk' ? 'bg-white text-red-600 shadow-sm border-red-200' : 'bg-red-50 text-red-600/70 border-transparent hover:bg-red-100 hover:text-red-600 hover:border-red-200'}`}
+                  >
+                    At Risk
                   </button>
                 </div>
               </div>
@@ -1036,7 +1056,7 @@ export default function Dashboard() {
         <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[400px] min-h-[280px] overflow-hidden lg:col-span-1">
           <div className="flex flex-col items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
             <div className="text-base font-semibold tracking-tight text-foreground">
-              Implementation Milestones
+              Implementation Pipeline
             </div>
             <p className="text-xs text-muted-foreground font-medium">
               Projects in each implementation stage
@@ -1109,7 +1129,7 @@ export default function Dashboard() {
         <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[400px] min-h-[280px] overflow-hidden lg:col-span-1">
           <div className="flex flex-col items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
             <div className="text-base font-semibold tracking-tight text-foreground">
-              Delivery Statuses
+              Project Delivery Health
             </div>
             <p className="text-xs text-muted-foreground font-medium">
               Breakdown of projects based on delivery status

@@ -5,20 +5,20 @@ export interface ProjectHealthResult {
   opActivity: number;
   featAdoption: number;
   userVol: number;
+  financial: number;
   csat: number | 'N/A';
 }
 
 export interface ClientHealthResult {
   totalScore: number | 'N/A';
+  opActivity: number;
+  featAdoption: number;
+  userVol: number;
   financial: number;
-  engagement: number;
-  utilization: number;
-  experience: number;
+  csat: number | 'N/A';
   hasSuspended: boolean;
   details: {
     invoiceStatus: string;
-    avgOpActivity: number;
-    avgUserVol: number;
     avgProjectCsat: number | 'N/A';
     supportCsat: number | 'N/A';
   };
@@ -33,6 +33,7 @@ export function calculateProjectHealth(
     opActivity: 0,
     featAdoption: 0,
     userVol: 0,
+    financial: 100,
     csat: 'N/A',
   };
 
@@ -59,20 +60,51 @@ export function calculateProjectHealth(
   const activeFeatures = Array.isArray(project.features) ? project.features.length : 0;
   const totalFeatures =
     Array.isArray(settings.features) && settings.features.length > 0 ? settings.features.length : 1;
-  const featAdoption = Math.round((activeFeatures / totalFeatures) * 100);
+  const calculatedFeatAdoption = Math.round(50 + (activeFeatures / totalFeatures) * 50);
+  const featAdoption = Math.min(calculatedFeatAdoption, 100);
 
   // CSAT
   let csat: number | 'N/A' = 'N/A';
-  if (project.csat === 'Satisfied') csat = 100;
-  else if (project.csat === 'Neutral') csat = 50;
-  else if (project.csat === 'Dissatisfied') csat = 0;
+  if (project.onboardingCsat && typeof project.onboardingCsat.score === 'number') {
+    csat = project.onboardingCsat.score;
+  } else if (project.csat === 'Satisfied') {
+    csat = 100;
+  } else if (project.csat === 'Neutral') {
+    csat = 50;
+  } else if (project.csat === 'Dissatisfied') {
+    csat = 0;
+  }
+
+  // Financial Standing
+  let financial = 100; // Default to Current
+  const invoiceStatus = project.invoiceStatus || '';
+  if (
+    project.projectStatus === 'Suspended' ||
+    invoiceStatus === 'Suspend' ||
+    invoiceStatus === 'Suspended'
+  ) {
+    financial = 0;
+  } else if (
+    project.daysOutstanding >= 60 ||
+    invoiceStatus === 'Overdue 60+ Days' ||
+    invoiceStatus === 'Overdue 60+'
+  ) {
+    financial = 0;
+  } else if (
+    project.daysOutstanding >= 30 ||
+    invoiceStatus === 'Overdue 30 Days' ||
+    invoiceStatus === 'Overdue 30'
+  ) {
+    financial = 50;
+  }
 
   // Math - Weights
-  const weights = settings.scoring?.weights || {
-    opActivity: 40,
-    featAdoption: 30,
-    userVol: 20,
-    csat: 10,
+  const weights = {
+    opActivity: settings.scoring?.weights?.opActivity ?? 35,
+    featAdoption: settings.scoring?.weights?.featAdoption ?? 25,
+    userVol: settings.scoring?.weights?.userVol ?? 15,
+    financial: settings.scoring?.weights?.financial ?? 15,
+    csat: settings.scoring?.weights?.csat ?? 10,
   };
 
   let totalScore: number | 'N/A' = 0;
@@ -87,6 +119,11 @@ export function calculateProjectHealth(
   totalScore += userVol * (weights.userVol / 100);
   totalWeight += weights.userVol;
 
+  if (weights.financial !== undefined) {
+    totalScore += financial * (weights.financial / 100);
+    totalWeight += weights.financial;
+  }
+
   if (csat !== 'N/A') {
     totalScore += csat * (weights.csat / 100);
     totalWeight += weights.csat;
@@ -99,7 +136,13 @@ export function calculateProjectHealth(
     totalScore = 'N/A';
   }
 
-  if (project.projectStatus === 'Onboarding' || project.projectStatus === 'Closed') {
+  if (
+    project.projectStatus === 'Onboarding' ||
+    project.projectStatus === 'Closed' ||
+    project.projectStatus === 'Completed' ||
+    project.projectStatus === 'Cancelled' ||
+    project.projectStatus === 'Churned'
+  ) {
     totalScore = 'N/A';
   }
 
@@ -108,6 +151,7 @@ export function calculateProjectHealth(
     opActivity,
     featAdoption,
     userVol,
+    financial,
     csat,
   };
 }
@@ -119,15 +163,14 @@ export function calculateClientHealth(
 ): ClientHealthResult {
   const defaultResult: ClientHealthResult = {
     totalScore: 'N/A',
-    financial: 0,
-    engagement: 0,
-    utilization: 0,
-    experience: 0,
+    opActivity: 0,
+    featAdoption: 0,
+    userVol: 0,
+    financial: 100,
+    csat: 'N/A',
     hasSuspended: false,
     details: {
       invoiceStatus: 'Current',
-      avgOpActivity: 0,
-      avgUserVol: 0,
       avgProjectCsat: 'N/A',
       supportCsat: 'N/A',
     },
@@ -141,23 +184,17 @@ export function calculateClientHealth(
       p.clients?.includes(client.companyName || client.name)
   );
   const activeProjects = clientProjects.filter(
-    (p) => p.projectStatus !== 'Onboarding' && p.projectStatus !== 'Closed'
+    (p) =>
+      p.projectStatus !== 'Onboarding' &&
+      p.projectStatus !== 'Closed' &&
+      p.projectStatus !== 'Completed' &&
+      p.projectStatus !== 'Cancelled' &&
+      p.projectStatus !== 'Churned'
   );
   const hasSuspended = clientProjects.some((p) => p.projectStatus === 'Suspended');
 
-  // Financial Standing
-  let financial = 100; // Default to Current
-  const invoiceStatus = client.invoiceStatus || '';
-  if (hasSuspended || invoiceStatus === 'Suspended') {
-    financial = 0;
-  } else if (invoiceStatus === 'Overdue 60+ Days' || invoiceStatus === 'Overdue 60+') {
-    financial = 0;
-  } else if (invoiceStatus === 'Overdue 30 Days' || invoiceStatus === 'Overdue 30') {
-    financial = 50;
-  }
-
   if (activeProjects.length === 0 && !hasSuspended) {
-    return { ...defaultResult, financial, hasSuspended };
+    return { ...defaultResult, hasSuspended };
   }
 
   // Gather project scores
@@ -165,6 +202,7 @@ export function calculateClientHealth(
   let totalUserVol = 0;
   let totalFeatAdoption = 0;
   let totalProjectCsat = 0;
+  let totalProjectFinancial = 0;
   let projectCsatCount = 0;
 
   activeProjects.forEach((p) => {
@@ -172,6 +210,7 @@ export function calculateClientHealth(
     totalOpActivity += pHealth.opActivity;
     totalUserVol += pHealth.userVol;
     totalFeatAdoption += pHealth.featAdoption;
+    totalProjectFinancial += pHealth.financial;
     if (typeof pHealth.csat === 'number') {
       totalProjectCsat += pHealth.csat;
       projectCsatCount++;
@@ -182,54 +221,51 @@ export function calculateClientHealth(
 
   const avgOpActivity = totalOpActivity / activeCount;
   const avgUserVol = totalUserVol / activeCount;
+  const avgFeatAdoption = totalFeatAdoption / activeCount;
+  let financial = Math.round(totalProjectFinancial / activeCount);
+  if (hasSuspended) financial = 0;
 
-  // Engagement
-  const engagement = Math.round((avgOpActivity + avgUserVol) / 2);
-
-  // Utilization
-  const utilization = Math.round(totalFeatAdoption / activeCount);
-
-  // Client Experience
   const avgProjectCsat = projectCsatCount > 0 ? totalProjectCsat / projectCsatCount : 'N/A';
   const supportCsat = typeof client.supportCsat === 'number' ? client.supportCsat : 'N/A';
 
-  let experience = 0;
-  let hasExperience = false;
-
+  let csat: number | 'N/A' = 'N/A';
   if (avgProjectCsat !== 'N/A' && supportCsat !== 'N/A') {
-    experience = Math.round(((avgProjectCsat as number) + (supportCsat as number)) / 2);
-    hasExperience = true;
+    csat = Math.round(((avgProjectCsat as number) + (supportCsat as number)) / 2);
   } else if (avgProjectCsat !== 'N/A') {
-    experience = Math.round(avgProjectCsat as number);
-    hasExperience = true;
+    csat = Math.round(avgProjectCsat as number);
   } else if (supportCsat !== 'N/A') {
-    experience = Math.round(supportCsat as number);
-    hasExperience = true;
+    csat = Math.round(supportCsat as number);
   }
 
-  // Total Score Calculation
-  const weights = settings.scoring?.clientWeights || {
-    billing: 15,
-    engagement: 50,
-    utilization: 25,
-    experience: 10,
+  // Total Score Calculation uses the EXACT SAME weights as Projects
+  const weights = {
+    opActivity: settings.scoring?.weights?.opActivity ?? 35,
+    featAdoption: settings.scoring?.weights?.featAdoption ?? 25,
+    userVol: settings.scoring?.weights?.userVol ?? 15,
+    financial: settings.scoring?.weights?.financial ?? 15,
+    csat: settings.scoring?.weights?.csat ?? 10,
   };
 
   let totalScore: number | 'N/A' = 0;
   let totalWeight = 0;
 
-  totalScore += financial * (weights.billing / 100);
-  totalWeight += weights.billing;
+  totalScore += avgOpActivity * (weights.opActivity / 100);
+  totalWeight += weights.opActivity;
 
-  totalScore += engagement * (weights.engagement / 100);
-  totalWeight += weights.engagement;
+  totalScore += avgFeatAdoption * (weights.featAdoption / 100);
+  totalWeight += weights.featAdoption;
 
-  totalScore += utilization * (weights.utilization / 100);
-  totalWeight += weights.utilization;
+  totalScore += avgUserVol * (weights.userVol / 100);
+  totalWeight += weights.userVol;
 
-  if (hasExperience) {
-    totalScore += experience * (weights.experience / 100);
-    totalWeight += weights.experience;
+  if (weights.financial !== undefined) {
+    totalScore += financial * (weights.financial / 100);
+    totalWeight += weights.financial;
+  }
+
+  if (csat !== 'N/A') {
+    totalScore += csat * (weights.csat / 100);
+    totalWeight += weights.csat;
   }
 
   if (totalWeight > 0) {
@@ -240,15 +276,14 @@ export function calculateClientHealth(
 
   return {
     totalScore,
+    opActivity: Math.round(avgOpActivity),
+    featAdoption: Math.round(avgFeatAdoption),
+    userVol: Math.round(avgUserVol),
     financial,
-    engagement,
-    utilization,
-    experience: hasExperience ? experience : 0, // Fallback purely for display
+    csat,
     hasSuspended,
     details: {
-      invoiceStatus,
-      avgOpActivity: Math.round(avgOpActivity),
-      avgUserVol: Math.round(avgUserVol),
+      invoiceStatus: client.invoiceStatus || 'Current',
       avgProjectCsat,
       supportCsat,
     },

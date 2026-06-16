@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import GlobalOverlays from './components/GlobalOverlays';
 import { GlobalToaster } from './components/GlobalToaster';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -36,7 +37,9 @@ function MainLayout() {
   return (
     <AppStateProvider>
       <UIProvider>
-        <GlobalOverlays />
+        <ErrorBoundary>
+          <GlobalOverlays />
+        </ErrorBoundary>
         <GlobalToaster />
         <div
           data-slot="sidebar-wrapper"
@@ -50,23 +53,25 @@ function MainLayout() {
             <main className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden">
               <Header />
               <div className="flex-grow flex-1 overflow-hidden relative flex flex-col w-full h-[calc(100vh-var(--header-height))]">
-                <React.Suspense
-                  fallback={
-                    <div className="flex items-center justify-center w-full h-full">
-                      <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    </div>
-                  }
-                >
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/clients" element={<ClientHealth />} />
-                    <Route path="/projects" element={<ProjectTracker />} />
-                    <Route path="/services" element={<ServiceHub />} />
-                    <Route path="/admin" element={<AdminHub />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </React.Suspense>
+                <ErrorBoundary>
+                  <React.Suspense
+                    fallback={
+                      <div className="flex items-center justify-center w-full h-full">
+                        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                      </div>
+                    }
+                  >
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/clients" element={<ClientHealth />} />
+                      <Route path="/projects" element={<ProjectTracker />} />
+                      <Route path="/services" element={<ServiceHub />} />
+                      <Route path="/admin" element={<AdminHub />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </React.Suspense>
+                </ErrorBoundary>
               </div>
             </main>
           </div>

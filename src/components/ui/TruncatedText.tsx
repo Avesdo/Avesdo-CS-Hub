@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface TruncatedTextProps {
   text: string;
@@ -9,16 +10,28 @@ interface TruncatedTextProps {
 export function TruncatedText({
   text,
   className = '',
-  tooltipClassName = 'absolute bottom-full left-4 mb-2 bg-white border border-slate-200 shadow-md text-slate-700 text-xs px-2.5 py-1.5 rounded whitespace-nowrap z-50 pointer-events-none',
+  tooltipClassName = 'bg-slate-100 text-slate-800 border border-slate-200 shadow-xl text-sm px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium',
 }: TruncatedTextProps) {
-  const textRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (textRef.current) {
-      setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth);
+    if (containerRef.current && textRef.current) {
+      // For line-clamp, compare scrollHeight against clientHeight to see if it overflowed vertically
+      const isActuallyTruncated =
+        containerRef.current.scrollHeight > containerRef.current.clientHeight;
+
+      setIsTruncated(isActuallyTruncated);
+
+      const rect = containerRef.current.getBoundingClientRect();
+      setCoords({
+        x: rect.left,
+        y: rect.top - 8,
+      });
     }
   };
 
@@ -32,10 +45,27 @@ export function TruncatedText({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div ref={textRef} className={`truncate w-full ${className}`}>
-        {text}
+      <div
+        ref={containerRef}
+        className={`min-w-0 line-clamp-2 whitespace-normal break-words w-full ${className}`}
+      >
+        <span ref={textRef}>{text}</span>
       </div>
-      {isHovered && isTruncated && <div className={tooltipClassName}>{text}</div>}
+      {isHovered &&
+        isTruncated &&
+        createPortal(
+          <div
+            className={`fixed ${tooltipClassName}`}
+            style={{
+              top: coords.y,
+              left: coords.x,
+              transform: 'translateY(-100%)',
+            }}
+          >
+            {text}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

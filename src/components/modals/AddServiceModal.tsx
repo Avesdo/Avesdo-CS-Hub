@@ -12,6 +12,7 @@ import { Service } from '../../types';
 import toast from 'react-hot-toast';
 
 import { Select } from '../ui/Select';
+import { MultiSelect } from '../ui/MultiSelect';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 
 import { CreatableSelect } from '../ui/CreatableSelect';
@@ -23,8 +24,8 @@ export default function AddServiceModal() {
   const [type, setType] = useState('');
   const [price, setPrice] = useState('');
   const [selectedClient, setSelectedClient] = useState('');
-  const [selectedProject, setSelectedProject] = useState('');
-  const [assignee, setAssignee] = useState('');
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+  const [assignees, setAssignees] = useState<string[]>([]);
   const [contactName, setContactName] = useState('');
   const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +48,7 @@ export default function AddServiceModal() {
         const cObj = clients.find((c) => c.companyName === pClientName || c.name === pClientName);
         if (cObj) {
           setSelectedClient(cObj.clientId || cObj.id);
-          setSelectedProject(pId);
+          setSelectedProjects([pId]);
         }
       }
     }
@@ -151,10 +152,8 @@ export default function AddServiceModal() {
     setIsSubmitting(true);
     try {
       const clientObj = clients.find((c) => (c.clientId || c.id) === selectedClient);
-      const projectObj =
-        selectedProject && selectedProject !== 'none'
-          ? projects.find((p) => p.id === selectedProject)
-          : null;
+      const actualProjectIds = selectedProjects.filter((id) => id !== 'none');
+      const projectObjs = projects.filter((p) => actualProjectIds.includes(p.id));
 
       const serviceId = crypto.randomUUID();
       const today = new Date();
@@ -168,10 +167,12 @@ export default function AddServiceModal() {
         clientName: clientObj?.companyName || clientObj?.name || 'Unknown',
         clientIds: clientObj ? [clientObj.clientId || clientObj.id] : [],
         clients: clientObj ? [clientObj.companyName || clientObj.name] : [],
-        projectName: projectObj ? projectObj.name : 'N/A',
-        projectId: projectObj ? projectObj.id : 'N/A',
-        assignee: assignee || 'Unassigned',
-        manager: assignee || 'Unassigned',
+        projectName: projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A',
+        projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A', // Legacy field
+        projectIds: actualProjectIds,
+        assignee: assignees.length > 0 ? assignees[0] : 'Unassigned', // Legacy field
+        manager: assignees.length > 0 ? assignees[0] : 'Unassigned', // Legacy field
+        managers: assignees.length > 0 ? assignees : ['Unassigned'],
         price: price ? parseFloat(price.replace(/,/g, '')) : 0,
         contactName,
         outcome: 'Proposal Sent',
@@ -201,10 +202,8 @@ export default function AddServiceModal() {
           addAutoLog(clientObj.clientId || clientObj.id, logMessage, user?.name || 'System', true)
         );
       }
-      if (projectObj) {
-        logPromises.push(
-          addProjectAutoLog(projectObj.id, logMessage, user?.name || 'System', true)
-        );
+      for (const p of projectObjs) {
+        logPromises.push(addProjectAutoLog(p.id, logMessage, user?.name || 'System', true));
       }
       await Promise.all(logPromises);
 
@@ -212,8 +211,8 @@ export default function AddServiceModal() {
       setType('');
       setPrice('');
       setSelectedClient('');
-      setSelectedProject('');
-      setAssignee('');
+      setSelectedProjects([]);
+      setAssignees([]);
       setContactName('');
       setNote('');
 
@@ -357,7 +356,7 @@ export default function AddServiceModal() {
                     options={clientOptions}
                     onChange={(val) => {
                       setSelectedClient(val);
-                      setSelectedProject('');
+                      setSelectedProjects([]);
                       setErrorMsg('');
                     }}
                     className="w-full block"
@@ -381,11 +380,20 @@ export default function AddServiceModal() {
                   <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                     Project Name
                   </label>
-                  <Select
-                    value={selectedProject}
+                  <MultiSelect
+                    values={selectedProjects}
                     options={availableProjects.map((p) => ({ value: p.id, label: p.name }))}
-                    onChange={setSelectedProject}
-                    className="w-full block"
+                    onChange={(vals) => {
+                      // If they just selected 'none', clear others. If they select a project, remove 'none'.
+                      if (vals.includes('none') && !selectedProjects.includes('none')) {
+                        setSelectedProjects(['none']);
+                      } else if (vals.includes('none') && vals.length > 1) {
+                        setSelectedProjects(vals.filter((v) => v !== 'none'));
+                      } else {
+                        setSelectedProjects(vals);
+                      }
+                    }}
+                    className="w-full"
                     trigger={
                       <button
                         type="button"
@@ -393,10 +401,13 @@ export default function AddServiceModal() {
                         className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm disabled:opacity-50 disabled:bg-slate-50 disabled:pointer-events-none"
                       >
                         <span
-                          className={`truncate ${selectedProject ? 'text-foreground' : 'text-muted-foreground'}`}
+                          className={`truncate ${selectedProjects.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
                         >
-                          {availableProjects.find((p) => p.id === selectedProject)?.name ||
-                            'Select Project'}
+                          {selectedProjects.length > 0
+                            ? selectedProjects
+                                .map((id) => availableProjects.find((p) => p.id === id)?.name)
+                                .join(', ')
+                            : 'Select Projects'}
                         </span>
                         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                       </button>
@@ -409,20 +420,20 @@ export default function AddServiceModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Manager
                 </label>
-                <Select
-                  value={assignee}
+                <MultiSelect
+                  values={assignees}
                   options={managerOptions}
-                  onChange={setAssignee}
-                  className="w-full block"
+                  onChange={setAssignees}
+                  className="w-full"
                   trigger={
                     <button
                       type="button"
                       className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
                     >
                       <span
-                        className={`truncate ${assignee ? 'text-foreground' : 'text-muted-foreground'}`}
+                        className={`truncate ${assignees.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
                       >
-                        {assignee || 'Select Manager'}
+                        {assignees.length > 0 ? assignees.join(', ') : 'Select Managers'}
                       </span>
                       <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                     </button>

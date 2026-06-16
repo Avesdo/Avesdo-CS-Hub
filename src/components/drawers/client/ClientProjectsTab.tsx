@@ -9,6 +9,7 @@ import {
   hexToRgba,
   renderIcon,
 } from '../../../utils/uiUtils';
+import { calculateProjectHealth } from '../../../utils/scoringUtils';
 
 interface ClientProjectsTabProps {
   client: any;
@@ -48,7 +49,13 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
 
   const closedProjects = useMemo(() => {
     return clientProjects
-      .filter((p) => p.projectStatus === 'Closed' || p.projectStatus === 'Completed')
+      .filter(
+        (p) =>
+          p.projectStatus === 'Closed' ||
+          p.projectStatus === 'Completed' ||
+          p.projectStatus === 'Cancelled' ||
+          p.projectStatus === 'Churned'
+      )
       .sort((a: any, b: any) => (b.releaseDateVal || 0) - (a.releaseDateVal || 0));
   }, [clientProjects]);
 
@@ -142,7 +149,9 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
 
                 <div className="flex flex-col items-end text-right">
                   {isActive && (
-                    <div className="mb-1">{getHealthBadge(p.healthScore, settings)}</div>
+                    <div className="mb-1">
+                      {getHealthBadge(calculateProjectHealth(p, settings).totalScore, settings)}
+                    </div>
                   )}
                   {isOnboarding && (
                     <div className="mb-1 flex items-center gap-1 scale-90 origin-right justify-end">

@@ -24,6 +24,8 @@
 - **Theme & Typography:** The brand font is `Inter`. NEVER use `uppercase` CSS properties; standard capitalization only. Reference `src/styles.css` for main Avesdo theme tokens.
 - **Dropdown Escape Safety:** When capturing the `Escape` key to close a dropdown/popover, you MUST call `e.stopPropagation()` so the event doesn't bubble up and close the parent Drawer/Modal.
 
-## 3. DATABASE INTEGRITY
+## 3. DATABASE INTEGRITY & DATA PIPELINE
 - **Global Search Dependencies:** We use dynamic native connections via UUIDs to power text searches. NEVER duplicate a Client's name inside `projects` or `services`. `AppStateContext` will automatically attach the `companyName` to the data object before broadcasting to the UI.
 - **Drawer Triggering:** Global Search NEVER renders a Drawer directly. It passes an ID to `openDrawer(type, id)` so `UIContext` mounts the overlay safely.
+- **Data Intake Queue:** The Apps Script compiler (`AppsScriptCompiler.js`) writes unmatched entities to the `aliases` collection with `status: 'pending_approval'` and a `contextName` (e.g. "Active Users"). The AdminHub resolves these via the `resolveAlias` function.
+- **Health Scoring Engine:** Health scores are NOT hardcoded. They are dynamically calculated in `src/utils/scoringUtils.ts` using weights pulled directly from the `settings` collection in Firestore. Changing settings immediately re-renders all scores.

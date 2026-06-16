@@ -2,7 +2,16 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Activity, ListTodo, Briefcase, Settings, Shield, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Activity,
+  ListTodo,
+  Briefcase,
+  Settings,
+  Shield,
+  LogOut,
+} from 'lucide-react';
+import { Tooltip } from './ui/Tooltip';
 
 export default function Sidebar() {
   const { pendingAliasesCount } = useAppState();
@@ -101,10 +110,14 @@ export default function Sidebar() {
           </NavLink>
         </div>
 
-        <div className="px-3 py-4 mt-auto shrink-0 border-t border-border/50">
+        <div className="px-3 py-4 mt-auto shrink-0">
           <div className="flex items-center gap-3 p-2 w-full text-left">
             {authUser?.photoURL ? (
-              <img src={authUser.photoURL} alt={authUser.displayName || 'User'} className="h-8 w-8 rounded-full object-cover shrink-0" />
+              <img
+                src={authUser.photoURL}
+                alt={authUser.displayName || 'User'}
+                className="h-8 w-8 rounded-full object-cover shrink-0"
+              />
             ) : (
               <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
                 {getInitials(authUser?.displayName, authUser?.email)}
@@ -114,13 +127,14 @@ export default function Sidebar() {
               <div className="font-medium text-sm truncate">{authUser?.displayName || 'User'}</div>
               <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
             </div>
-            <button
-              onClick={logout}
-              className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors rounded-md shrink-0"
-              title="Log Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <Tooltip content="Log Out" position="top">
+              <button
+                onClick={logout}
+                className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors rounded-md shrink-0"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </Tooltip>
           </div>
         </div>
       </aside>

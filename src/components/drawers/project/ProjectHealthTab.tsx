@@ -3,6 +3,7 @@ import { ChevronDown, Activity } from 'lucide-react';
 import { updateProjectRecord, addAutoLog, addProjectAutoLog } from '../../../api/dbService';
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
 import { useAppState } from '../../../context/AppStateContext';
+import OnboardingCsatModal from './OnboardingCsatModal';
 
 interface ProjectHealthTabProps {
   project: any;
@@ -21,6 +22,7 @@ const pt_features = [
 
 export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const [csatMenuOpen, setCsatMenuOpen] = useState(false);
+  const [showCsatModal, setShowCsatModal] = useState(false);
   const csatRef = useRef<HTMLDetailsElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
@@ -127,15 +129,16 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
 
   return (
     <div className="space-y-4">
-      {/* Expandable: Operational Activity */}
+      {/* 1. Expandable: Platform Engagement */}
       <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
         <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
           <div className="flex flex-col pr-4">
             <span className="mb-1 text-sm font-bold text-foreground tracking-tight">
-              Operational Activity
+              Platform Engagement
             </span>
             <span className="text-xs text-muted-foreground font-medium leading-snug">
-              Raw volume of events executed in this project.
+              Measures the frequency and volume of core workflows and events executed within this
+              specific project.
             </span>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -163,43 +166,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         </div>
       </details>
 
-      {/* Expandable: Active User Volume */}
-      <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
-        <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
-          <div className="flex flex-col pr-4">
-            <span className="mb-1 text-sm font-bold text-foreground tracking-tight">
-              Active User Volume
-            </span>
-            <span className="text-xs text-muted-foreground font-medium leading-snug">
-              Unique users successfully logging into this project.
-            </span>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden hidden sm:flex">
-              <div
-                className={`h-full transition-all ${getBarColor(usrVal)}`}
-                style={{ width: typeof usrVal === 'number' ? `${Math.min(usrVal, 100)}%` : '0%' }}
-              ></div>
-            </div>
-            <span
-              className={`w-8 text-right font-bold text-xl tabular-nums ${getScoreColor(usrVal)}`}
-            >
-              {usrVal}
-            </span>
-            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180" />
-          </div>
-        </summary>
-        <div className="px-5 pb-5 pt-4 border-t border-border text-sm text-muted-foreground space-y-3 bg-white">
-          <div className="flex justify-between items-center">
-            <span>Active Users</span>
-            <span className="font-semibold text-foreground">
-              {typeof usrVal === 'number' ? usrVal : 0}
-            </span>
-          </div>
-        </div>
-      </details>
-
-      {/* Expandable: Feature Adoption */}
+      {/* 2. Expandable: Feature Adoption */}
       <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
         <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
           <div className="flex flex-col pr-4">
@@ -207,7 +174,8 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               Feature Adoption
             </span>
             <span className="text-xs text-muted-foreground font-medium leading-snug">
-              Percentage of available platform features toggled on.
+              The percentage of available platform modules and features actively utilized during
+              this rollout.
             </span>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -245,7 +213,87 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         </div>
       </details>
 
-      {/* Expandable: Project CSAT */}
+      {/* 3. Expandable: Financial Standing */}
+      <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
+        <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
+          <div className="flex flex-col pr-4">
+            <span className="mb-1 text-sm font-bold text-foreground tracking-tight">
+              Financial Standing
+            </span>
+            <span className="text-xs text-muted-foreground font-medium leading-snug">
+              Evaluates payment consistency and outstanding invoice status for this specific
+              project.
+            </span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden hidden sm:flex">
+              <div
+                className={`h-full transition-all ${getBarColor(healthResult.financial)}`}
+                style={{
+                  width:
+                    typeof healthResult.financial === 'number'
+                      ? `${Math.min(healthResult.financial, 100)}%`
+                      : '0%',
+                }}
+              ></div>
+            </div>
+            <span
+              className={`w-8 text-right font-bold text-xl tabular-nums ${getScoreColor(healthResult.financial)}`}
+            >
+              {healthResult.financial}
+            </span>
+            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180" />
+          </div>
+        </summary>
+        <div className="px-5 pb-5 pt-4 border-t border-border text-sm text-muted-foreground space-y-3 bg-white">
+          <div className="flex justify-between items-center">
+            <span>Invoice Status</span>
+            <span
+              className={`font-semibold ${project?.invoiceStatus === 'Overdue 60+ Days' || project?.invoiceStatus === 'Suspended' ? 'text-destructive' : 'text-foreground'}`}
+            >
+              {project?.invoiceStatus || 'Current'}
+            </span>
+          </div>
+        </div>
+      </details>
+
+      {/* 4. Expandable: Active Users */}
+      <details className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group overflow-hidden">
+        <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
+          <div className="flex flex-col pr-4">
+            <span className="mb-1 text-sm font-bold text-foreground tracking-tight">
+              Active Users
+            </span>
+            <span className="text-xs text-muted-foreground font-medium leading-snug">
+              Tracks the volume of unique, authenticated users actively accessing this project.
+            </span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden hidden sm:flex">
+              <div
+                className={`h-full transition-all ${getBarColor(usrVal)}`}
+                style={{ width: typeof usrVal === 'number' ? `${Math.min(usrVal, 100)}%` : '0%' }}
+              ></div>
+            </div>
+            <span
+              className={`w-8 text-right font-bold text-xl tabular-nums ${getScoreColor(usrVal)}`}
+            >
+              {usrVal}
+            </span>
+            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180" />
+          </div>
+        </summary>
+        <div className="px-5 pb-5 pt-4 border-t border-border text-sm text-muted-foreground space-y-3 bg-white">
+          <div className="flex justify-between items-center">
+            <span>Active Users</span>
+            <span className="font-semibold text-foreground">
+              {typeof usrVal === 'number' ? usrVal : 0}
+            </span>
+          </div>
+        </div>
+      </details>
+
+      {/* 5. Expandable: Client Sentiment */}
       <details
         ref={csatRef}
         className="bg-white border border-border rounded-xl shadow-sm transition-all duration-300 hover:border-primary/40 group relative"
@@ -253,10 +301,10 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         <summary className="p-5 cursor-pointer outline-none hover:bg-slate-50 flex justify-between items-center list-none [&::-webkit-details-marker]:hidden">
           <div className="flex flex-col pr-4">
             <span className="mb-1 text-sm font-bold text-foreground tracking-tight">
-              Project CSAT
+              Client Sentiment
             </span>
             <span className="text-xs text-muted-foreground font-medium leading-snug">
-              Client satisfaction score for this specific rollout.
+              Direct client sentiment and satisfaction scoring for this specific implementation.
             </span>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -276,51 +324,26 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         </summary>
         <div className="px-5 pb-5 pt-4 text-sm text-muted-foreground space-y-3 border-t border-border bg-white">
           <div className="flex justify-between items-center">
-            <span className="font-medium text-foreground">Onboarding CSAT</span>
-            <div className="relative" ref={popRef}>
+            <span className="font-medium text-foreground">Onboarding Sentiment</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground">
+                {project?.onboardingCsat
+                  ? `${project.onboardingCsat.score}/100`
+                  : project?.csat || 'No Rating'}
+              </span>
               <button
-                onClick={() => setCsatMenuOpen(!csatMenuOpen)}
-                className="flex items-center justify-between rounded-md border border-input bg-white px-3 py-1.5 text-sm shadow-sm transition-all duration-200 active:scale-95 hover:-translate-y-0.5 hover:shadow-md hover:bg-slate-50 hover:border-primary/50 focus:outline-none min-w-[140px]"
+                onClick={() => setShowCsatModal(true)}
+                className="px-3 py-1 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
               >
-                <span className="text-foreground font-bold truncate">
-                  {project?.csat || 'No Rating'}
-                </span>
-                <ChevronDown className="w-4 h-4 opacity-50 shrink-0" />
+                {project?.onboardingCsat ? 'View / Edit' : 'Record Survey'}
               </button>
-              {csatMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-[140px] p-1 shadow-xl border border-border rounded-xl bg-white z-50">
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-slate-100 rounded-md cursor-pointer"
-                    onClick={() => handleCsatChange('Satisfied')}
-                  >
-                    Satisfied
-                  </button>
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-slate-100 rounded-md cursor-pointer"
-                    onClick={() => handleCsatChange('Neutral')}
-                  >
-                    Neutral
-                  </button>
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-slate-100 rounded-md cursor-pointer"
-                    onClick={() => handleCsatChange('Dissatisfied')}
-                  >
-                    Dissatisfied
-                  </button>
-                  <div className="border-t border-border mt-1 pt-1">
-                    <button
-                      className="w-full text-left px-3 py-2 text-sm font-semibold text-muted-foreground hover:bg-slate-100 rounded-md cursor-pointer"
-                      onClick={() => handleCsatChange('')}
-                    >
-                      Clear Rating
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </details>
+      {showCsatModal && (
+        <OnboardingCsatModal project={project} onClose={() => setShowCsatModal(false)} />
+      )}
     </div>
   );
 }

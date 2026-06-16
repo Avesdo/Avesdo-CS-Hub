@@ -39,7 +39,6 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
       clients: false,
       projects: false,
       services: false,
-      user: false,
       aliases: false,
     },
   };
@@ -50,7 +49,6 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
       state.ready.clients &&
       state.ready.projects &&
       state.ready.services &&
-      state.ready.user &&
       state.ready.aliases
     ) {
       state.timestamp = new Date().getTime().toString();
@@ -116,8 +114,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
           { name: 'Released', color: 'indigo', icon: 'Rocket' },
         ],
         scoring: {
-          weights: { opActivity: 40, featAdoption: 30, userVol: 20, csat: 10 },
-          clientWeights: { billing: 15, engagement: 50, utilization: 25, experience: 10 },
+          weights: { opActivity: 35, featAdoption: 25, userVol: 15, financial: 15, csat: 10 },
           thresholds: { healthy: 80, warning: 50 },
         },
       };
@@ -155,13 +152,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     checkReady();
   });
 
-  const unsubUser = onSnapshot(doc(db, 'settings', 'user_profile'), (snap) => {
-    state.user = snap.exists()
-      ? snap.data()
-      : { name: 'Corporate Hub User', email: 'corporate@avesdo.com', initials: 'CH' };
-    state.ready.user = true;
-    checkReady();
-  });
+  // Removed unsubUser block as AppStateContext now gets user from AuthContext
 
   const aliasesQuery = query(collection(db, 'aliases'), where('status', '==', 'pending_approval'));
   const unsubAliases = onSnapshot(aliasesQuery, (snap) => {
@@ -175,7 +166,6 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     unsubClients();
     unsubProjects();
     unsubServices();
-    unsubUser();
     unsubAliases();
   };
 }
@@ -290,6 +280,19 @@ export async function getSystemLogs() {
   } catch (err) {
     console.error('Failed to fetch system logs', err);
     return [];
+  }
+}
+
+export async function clearAuditTrail() {
+  try {
+    const snap = await getDocs(collection(db, 'system_logs'));
+    const batch = writeBatch(db);
+    snap.docs.forEach((d) => batch.delete(doc(db, 'system_logs', d.id)));
+    await batch.commit();
+    toast.success('Audit trail cleared.');
+  } catch (err: any) {
+    toast.error('Failed to clear audit trail');
+    console.error(err);
   }
 }
 
@@ -686,6 +689,35 @@ export async function resolveAlias(
       toast.success('Alias manually mapped and verified.');
     } else if (action === 'create_new') {
       const newId = customTargetId || `NEW-${new Date().getTime()}`;
+
+      const aliasDoc = await getDoc(doc(db, 'aliases', aliasId));
+      if (aliasDoc.exists()) {
+        const aliasData = aliasDoc.data();
+        if (aliasData.type === 'client') {
+          await setDoc(doc(db, 'clients', newId), {
+            id: newId,
+            clientId: newId,
+            companyName: aliasData.rawName,
+            status: 'Active',
+            healthScore: 100,
+            tier: 'Standard',
+          });
+        } else if (aliasData.type === 'project') {
+          await setDoc(doc(db, 'projects', newId), {
+            id: newId,
+            name: aliasData.rawName,
+            status: 'Active',
+            phase: 'Not Started',
+          });
+        } else if (aliasData.type === 'service') {
+          await setDoc(doc(db, 'services', newId), {
+            id: newId,
+            name: aliasData.rawName,
+            status: 'Active',
+          });
+        }
+      }
+
       await updateDoc(doc(db, 'aliases', aliasId), { status: 'verified', targetId: newId });
       toast.success('Alias mapped to a new entity.');
     } else if (action === 'reject') {
@@ -696,149 +728,6 @@ export async function resolveAlias(
   } catch (err) {
     console.error('Failed to resolve alias', err);
     toast.error('Failed to resolve alias.');
-    throw err;
-  }
-}
-
-export async function seedInitialImports(data: any[]) {
-  try {
-    const q = query(collection(db, 'initial_imports'));
-    const snap = await getDocs(q);
-    const existingMap = new Map();
-    snap.docs.forEach(d => existingMap.set(d.data().projectId, d));
-
-    const chunks = [];
-    for (let i = 0; i < data.length; i += 400) {
-      chunks.push(data.slice(i, i + 400));
-    }
-
-    for (const chunk of chunks) {
-      const batch = writeBatch(db);
-      for (const row of chunk) {
-        const existing = existingMap.get(row.projectId);
-        if (existing) {
-          const eData = existing.data();
-          if (eData.status === 'pending') {
-            batch.update(existing.ref, {
-              developers: row.developers,
-              marketingOrgs: row.marketingOrgs
-            });
-          }
-        } else {
-          const docRef = doc(collection(db, 'initial_imports'));
-          batch.set(docRef, { ...row, firestoreId: docRef.id });
-        }
-      }
-      await batch.commit();
-    }
-    toast.success('Synchronized initial imports successfully. Approved records were preserved.');
-  } catch (err) {
-    console.error('Failed to seed imports', err);
-    toast.error('Failed to seed imports.');
-  }
-}
-
-export async function getPendingInitialImports() {
-  try {
-    const q = query(collection(db, 'initial_imports'), where('status', '==', 'pending'));
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => d.data());
-  } catch (err) {
-    console.error('Failed to fetch pending imports', err);
-    return [];
-  }
-}
-
-export async function resolveInitialImport(
-  firestoreId: string,
-  action: 'approve' | 'ignore' | 'update',
-  updatedData?: any
-) {
-  try {
-    const docRef = doc(db, 'initial_imports', firestoreId);
-    if (action === 'approve') {
-      const rowData = updatedData;
-      const clientIds: string[] = [];
-
-      // Create Developer Client if needed
-      if (rowData.developers && Array.isArray(rowData.developers)) {
-        for (const devName of rowData.developers) {
-          const q = query(collection(db, 'clients'), where('companyName', '==', devName));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            clientIds.push(snap.docs[0].id);
-          } else {
-            const cId = `C-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
-            await setDoc(doc(db, 'clients', cId), {
-              clientId: cId,
-              companyName: devName,
-              clientType: 'Developer',
-              notes: []
-            });
-            clientIds.push(cId);
-          }
-        }
-      }
-
-      // Create Marketing Client if needed
-      if (rowData.marketingOrgs && Array.isArray(rowData.marketingOrgs)) {
-        for (const orgName of rowData.marketingOrgs) {
-          const q = query(collection(db, 'clients'), where('companyName', '==', orgName));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            clientIds.push(snap.docs[0].id);
-          } else {
-            const mId = `C-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
-            await setDoc(doc(db, 'clients', mId), {
-              clientId: mId,
-              companyName: orgName,
-              clientType: 'Sales & Marketing',
-              notes: []
-            });
-            clientIds.push(mId);
-          }
-        }
-      }
-
-      // Create Project
-      if (rowData.projectName) {
-        const q = query(collection(db, 'projects'), where('name', '==', rowData.projectName));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          const pId = `P-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`;
-          await setDoc(doc(db, 'projects', pId), {
-            id: pId,
-            name: rowData.projectName,
-            projectStatus: 'Onboarding',
-            phase: 'Not Started',
-            clientIds: clientIds,
-            units: 0,
-            notes: []
-          });
-        } else {
-          // Update existing project to include these clients
-          const existingProject = snap.docs[0];
-          const existingClientIds = existingProject.data().clientIds || [];
-          const newClientIds = Array.from(new Set([...existingClientIds, ...clientIds]));
-          await updateDoc(doc(db, 'projects', existingProject.id), {
-            clientIds: newClientIds
-          });
-        }
-      }
-
-      await updateDoc(docRef, { status: 'approved' });
-      toast.success('Row approved and processed.');
-    } else if (action === 'ignore') {
-      await updateDoc(docRef, { status: 'ignored' });
-      toast.success('Row ignored.');
-    } else if (action === 'update') {
-      await updateDoc(docRef, { ...updatedData });
-      toast.success('Row updated.');
-    }
-    return { success: true };
-  } catch (err) {
-    console.error('Failed to resolve initial import', err);
-    toast.error('Failed to process row.');
     throw err;
   }
 }

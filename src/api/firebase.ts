@@ -23,7 +23,7 @@ const app = initializeApp(firebaseConfig);
 if (typeof window !== 'undefined' && import.meta.env.VITE_FIREBASE_APP_CHECK_SITE_KEY) {
   initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_APP_CHECK_SITE_KEY),
-    isTokenAutoRefreshEnabled: true
+    isTokenAutoRefreshEnabled: true,
   });
 }
 

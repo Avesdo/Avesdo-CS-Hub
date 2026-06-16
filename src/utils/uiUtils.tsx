@@ -312,13 +312,13 @@ export const getHealthBadge = (score: number | string | undefined | null, settin
   }
   if (score >= warningThresh) {
     return (
-      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-100 text-orange-700 border border-orange-200 shadow-sm shrink-0 whitespace-nowrap">
+      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20 border border-orange-200 shadow-sm shrink-0 whitespace-nowrap">
         {score}
       </span>
     );
   }
   return (
-    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700 border border-red-200 shadow-sm shrink-0 whitespace-nowrap flex items-center gap-1">
+    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10 border border-red-200 shadow-sm shrink-0 whitespace-nowrap flex items-center gap-1">
       <LucideIcons.AlertCircle className="w-3.5 h-3.5" /> {score}
     </span>
   );

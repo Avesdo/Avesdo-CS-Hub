@@ -158,6 +158,10 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
     } else if (preset === 'Last Year') {
       start = formatMonth(y - 1, 0);
       end = formatMonth(y - 1, 11);
+    } else if (preset === 'No Date') {
+      setDateRange('no-date');
+      setIsOpen(false);
+      return;
     } else if (preset === 'All Time') {
       handleClear();
       return;
@@ -204,6 +208,7 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
               'Last 6 Months',
               'This Year',
               'Last Year',
+              'No Date',
               'All Time',
             ].map((preset) => (
               <button
@@ -333,7 +338,7 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
               </button>
               <button
                 onClick={handleApply}
-                className="h-9 text-sm font-bold bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+                className="h-9 text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors shadow-sm"
               >
                 Apply Filter
               </button>

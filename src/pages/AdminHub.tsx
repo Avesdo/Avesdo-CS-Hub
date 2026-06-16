@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppState } from '../context/AppStateContext';
+import { SearchableSelect } from '../components/ui/SearchableSelect';
 import {
   AlertCircle,
   ArchiveRestore,
@@ -32,12 +33,14 @@ import {
   getPendingAliases,
   resolveAlias,
   addGlobalLog,
+  clearAuditTrail,
 } from '../api/dbService';
+import { PageHeader } from '../components/PageHeader';
 import { toast } from '../utils/toast';
 import MultiSelectCombobox from '../components/MultiSelectCombobox';
 
 export default function AdminHub() {
-  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'intake' | 'initial_imports'>('audit');
+  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'intake'>('audit');
   const {
     settings,
     archivedClients,
@@ -71,43 +74,32 @@ export default function AdminHub() {
   const [correctingAliasId, setCorrectingAliasId] = useState<string | null>(null);
   const [correctionTargetId, setCorrectionTargetId] = useState<string>('');
 
-  // --- INITIAL IMPORT STATE ---
-  const [initialImports, setInitialImports] = useState<any[]>([]);
-  const [loadingImports, setLoadingImports] = useState(false);
-
-  useEffect(() => {
-    if (activeTab === 'audit') {
-      loadLogs();
-    } else if (activeTab === 'intake') {
-      loadAliases();
-    } else if (activeTab === 'initial_imports') {
-      loadInitialImports();
-    }
-  }, [activeTab]);
-
-  const loadInitialImports = async () => {
-    setLoadingImports(true);
-    const { getPendingInitialImports } = await import('../api/dbService');
-    const data = await getPendingInitialImports();
-    const formattedData = data.map(d => ({
-      ...d,
-      developers: Array.isArray(d.developers) ? d.developers : (d.developerName ? [d.developerName] : []),
-      marketingOrgs: Array.isArray(d.marketingOrgs) ? d.marketingOrgs : (d.marketingOrgName ? [d.marketingOrgName] : [])
-    }));
-    setInitialImports(formattedData);
-    setLoadingImports(false);
-  };
-
-  const handleUpdateImportRow = (id: string, updates: any) => {
-    setInitialImports(prev => prev.map(row => row.firestoreId === id ? { ...row, ...updates } : row));
-  };
-
+  // Move functions above useEffect to fix ReferenceError
   const loadAliases = async () => {
     setLoadingAliases(true);
     const data = await getPendingAliases();
     setPendingAliases(data);
     setLoadingAliases(false);
   };
+
+  const loadLogs = async () => {
+    setLoadingLogs(true);
+    const data = await getSystemLogs();
+    setLogs(data);
+    setLoadingLogs(false);
+  };
+
+  useEffect(() => {
+    loadAliases();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'audit') {
+      loadLogs();
+    } else if (activeTab === 'intake') {
+      loadAliases();
+    }
+  }, [activeTab]);
 
   const handleResolveAlias = async (
     id: string,
@@ -122,12 +114,7 @@ export default function AdminHub() {
     loadAliases();
   };
 
-  const loadLogs = async () => {
-    setLoadingLogs(true);
-    const data = await getSystemLogs();
-    setLogs(data);
-    setLoadingLogs(false);
-  };
+  // Functions moved up
 
   // --- ARCHIVES ACTIONS ---
   const handleRestoreRecordLocal = async (collectionName: string, item: any) => {
@@ -141,9 +128,16 @@ export default function AdminHub() {
                 await addAutoLog(cid, `Project "${item.name}" restored`, 'System', true);
               }
             }
-            const pServices = services?.filter((s: any) => s.projectId === item.id) || [];
+            const pServices =
+              services?.filter(
+                (s: any) =>
+                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+              ) || [];
             const pArchivedServices =
-              archivedServices?.filter((s: any) => s.projectId === item.id) || [];
+              archivedServices?.filter(
+                (s: any) =>
+                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+              ) || [];
             for (const svc of [...pServices, ...pArchivedServices]) {
               await addServiceAutoLog(
                 svc.id,
@@ -182,13 +176,11 @@ export default function AdminHub() {
               );
             }
           } else if (collectionName === 'services') {
-            if (item.projectId && item.projectId !== 'N/A') {
-              await addProjectAutoLog(
-                item.projectId,
-                `Service "${item.name}" restored`,
-                'System',
-                true
-              );
+            const pIds =
+              item.projectIds ||
+              (item.projectId && item.projectId !== 'N/A' ? [item.projectId] : []);
+            for (const pId of pIds) {
+              await addProjectAutoLog(pId, `Service "${item.name}" restored`, 'System', true);
             }
             if (item.clientIds) {
               for (const cid of item.clientIds) {
@@ -231,9 +223,16 @@ export default function AdminHub() {
                 await addAutoLog(cid, `Project "${item.name}" permanently deleted`, 'System', true);
               }
             }
-            const pServices = services?.filter((s: any) => s.projectId === item.id) || [];
+            const pServices =
+              services?.filter(
+                (s: any) =>
+                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+              ) || [];
             const pArchivedServices =
-              archivedServices?.filter((s: any) => s.projectId === item.id) || [];
+              archivedServices?.filter(
+                (s: any) =>
+                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+              ) || [];
             for (const svc of [...pServices, ...pArchivedServices]) {
               await addServiceAutoLog(
                 svc.id,
@@ -298,7 +297,7 @@ export default function AdminHub() {
 
   const fieldDisplayNames: Record<string, string> = {
     managers: 'Account manager',
-    phases: 'Implementation Milestone',
+    phases: 'Implementation Status',
     statuses: 'Status',
     timelines: 'Delivery Status',
     clientTypes: 'Client Type',
@@ -435,15 +434,29 @@ export default function AdminHub() {
               </button>
             ))}
           </div>
-          <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search logs..."
-              value={auditSearch}
-              onChange={(e) => setAuditSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search logs..."
+                value={auditSearch}
+                onChange={(e) => setAuditSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-white border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              />
+            </div>
+            <button
+              onClick={async () => {
+                if (confirm('Are you sure you want to permanently clear the entire audit trail?')) {
+                  await clearAuditTrail();
+                  loadLogs();
+                }
+              }}
+              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              title="Clear Log"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
@@ -755,37 +768,43 @@ export default function AdminHub() {
 
   const renderIntake = () => {
     return (
-      <div className="max-w-5xl mx-auto animate-in fade-in duration-300">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900">Pending Data Merges</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Review AI-suggested mappings from external spreadsheets before they merge into the Hub.
-          </p>
-        </div>
+      <div className="max-w-5xl mx-auto animate-in fade-in duration-300 space-y-8">
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Data Intake Pipeline</h3>
+              <p className="text-sm text-slate-500">
+                Review and approve AI-generated alignments for incoming data.
+              </p>
+            </div>
+          </div>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
-          {loadingAliases ? (
-            <div className="p-12 text-center text-sm font-medium text-slate-500 animate-pulse">
-              Loading pending intake...
-            </div>
-          ) : pendingAliases.length === 0 ? (
-            <div className="p-12 text-center flex flex-col items-center">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400 mb-3" />
-              <p className="text-sm font-medium text-slate-600">You're all caught up!</p>
-              <p className="text-xs text-slate-400 mt-1">No pending merges require approval.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border/50">
-              {pendingAliases.map((alias) => {
-                const isCorrecting = correctingAliasId === alias.id;
-                return (
-                  <div
-                    key={alias.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 
+          <div className="bg-white border rounded-xl overflow-visible shadow-sm">
+            {loadingAliases ? (
+              <div className="p-12 text-center text-sm font-medium text-slate-500 animate-pulse">
+                Loading pending merges...
+              </div>
+            ) : pendingAliases.length === 0 ? (
+              <div className="p-12 text-center flex flex-col items-center">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mb-3" />
+                <p className="text-sm font-medium text-slate-600">You're all caught up!</p>
+                <p className="text-xs text-slate-400 mt-1">No pending merges require approval.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border/50">
+                {pendingAliases.map((alias) => {
+                  const isCorrecting = correctingAliasId === alias.id;
+                  return (
+                    <div
+                      key={alias.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-slate-50 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 
                                             ${
                                               alias.type === 'client'
                                                 ? 'bg-blue-100 text-blue-600'
@@ -793,265 +812,151 @@ export default function AdminHub() {
                                                   ? 'bg-indigo-100 text-indigo-600'
                                                   : 'bg-emerald-100 text-emerald-600'
                                             }`}
-                      >
-                        {alias.type === 'client' ? (
-                          <Building2 className="w-4 h-4" />
-                        ) : alias.type === 'project' ? (
-                          <Home className="w-4 h-4" />
-                        ) : (
-                          <Briefcase className="w-4 h-4" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500 mb-1">
-                          Incoming Raw String:{' '}
-                          <span className="font-bold text-slate-900 px-1 py-0.5 bg-slate-100 rounded border">
-                            "{alias.rawName}"
-                          </span>
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-500">
-                            Gemini Suggests Merge With:
-                          </span>
-                          <span className="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
-                            {alias.targetId}
-                          </span>
+                        >
+                          {alias.type === 'client' ? (
+                            <Building2 className="w-4 h-4" />
+                          ) : alias.type === 'project' ? (
+                            <Home className="w-4 h-4" />
+                          ) : (
+                            <Briefcase className="w-4 h-4" />
+                          )}
                         </div>
-                        {isCorrecting && (
-                          <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                            <select
-                              value={correctionTargetId}
-                              onChange={(e) => setCorrectionTargetId(e.target.value)}
-                              className="flex-1 min-w-[200px] py-1.5 px-3 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                            >
-                              <option value="">Select correct {alias.type}...</option>
-                              {alias.type === 'client' &&
-                                clients.map((c) => (
-                                  <option
-                                    key={c.clientId || c.id}
-                                    value={c.clientId || (c.id as string)}
-                                  >
-                                    {c.companyName || c.name}
-                                  </option>
-                                ))}
-                              {alias.type === 'project' &&
-                                projects.map((p) => (
-                                  <option key={p.id} value={p.id}>
-                                    {p.name}
-                                  </option>
-                                ))}
-                              {alias.type === 'service' &&
-                                services.map((s) => (
-                                  <option key={s.id} value={s.id}>
-                                    {s.name}
-                                  </option>
-                                ))}
-                            </select>
-                            <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                              <button
-                                onClick={() => {
-                                  if (correctionTargetId)
-                                    handleResolveAlias(alias.id, 'correct', correctionTargetId);
-                                }}
-                                className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={!correctionTargetId}
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setCorrectingAliasId(null);
-                                  setCorrectionTargetId('');
-                                }}
-                                className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                        <div>
+                          <p className="text-sm text-slate-500 mb-1">
+                            Incoming Raw String:{' '}
+                            <span className="font-bold text-slate-900 px-1 py-0.5 bg-slate-100 rounded border">
+                              "{alias.rawName}"{' '}
+                              {alias.contextName && (
+                                <span className="text-slate-500 font-normal">
+                                  ({alias.contextName})
+                                </span>
+                              )}
+                            </span>
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-500">
+                              Gemini Suggests Merge With:
+                            </span>
+                            <span className="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+                              {(() => {
+                                if (alias.type === 'client') {
+                                  const match = clients.find(
+                                    (c) => c.clientId === alias.targetId || c.id === alias.targetId
+                                  );
+                                  return match ? match.companyName : '[Create New Entity]';
+                                }
+                                if (alias.type === 'project') {
+                                  const match = projects.find((p) => p.id === alias.targetId);
+                                  return match ? match.name : '[Create New Entity]';
+                                }
+                                if (alias.type === 'service') {
+                                  const match = services.find((s) => s.id === alias.targetId);
+                                  return match ? match.name : '[Create New Entity]';
+                                }
+                                return alias.targetId;
+                              })()}
+                            </span>
                           </div>
-                        )}
+                          {isCorrecting && (
+                            <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                              <SearchableSelect
+                                value={correctionTargetId}
+                                onChange={setCorrectionTargetId}
+                                options={
+                                  alias.type === 'client'
+                                    ? clients.map((c) => ({
+                                        label: c.companyName || c.name || '',
+                                        value: c.clientId || (c.id as string),
+                                      }))
+                                    : alias.type === 'project'
+                                      ? projects.map((p) => ({ label: p.name || '', value: p.id }))
+                                      : alias.type === 'service'
+                                        ? services.map((s) => ({
+                                            label: s.name || '',
+                                            value: s.id,
+                                          }))
+                                        : []
+                                }
+                                placeholder={`Select correct ${alias.type}...`}
+                                className="flex-1 min-w-[200px]"
+                              />
+                              <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                                <button
+                                  onClick={() => {
+                                    if (correctionTargetId)
+                                      handleResolveAlias(alias.id, 'correct', correctionTargetId);
+                                  }}
+                                  className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                  disabled={!correctionTargetId}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setCorrectingAliasId(null);
+                                    setCorrectionTargetId('');
+                                  }}
+                                  className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                      {!isCorrecting && (
+                        <div className="flex flex-wrap items-center gap-2 shrink-0 justify-end w-full sm:w-auto mt-3 sm:mt-0">
+                          <button
+                            onClick={() => setCorrectingAliasId(alias.id)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm"
+                          >
+                            <Edit className="w-3.5 h-3.5" /> Correct
+                          </button>
+                          <button
+                            onClick={() => {
+                              const prefix =
+                                alias.type === 'client'
+                                  ? 'C'
+                                  : alias.type === 'project'
+                                    ? 'P'
+                                    : 'S';
+                              handleResolveAlias(
+                                alias.id,
+                                'create_new',
+                                `${prefix}-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`
+                              );
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors shadow-sm"
+                          >
+                            <Plus className="w-3.5 h-3.5" /> Create New
+                          </button>
+                          <button
+                            onClick={() => handleResolveAlias(alias.id, 'reject')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors shadow-sm"
+                          >
+                            <XCircle className="w-3.5 h-3.5" /> Ignore
+                          </button>
+                          <button
+                            onClick={() => handleResolveAlias(alias.id, 'approve')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 border border-emerald-600 text-white hover:bg-emerald-600 transition-colors shadow-sm"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Approve
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {!isCorrecting && (
-                      <div className="flex flex-wrap items-center gap-2 shrink-0 justify-end w-full sm:w-auto mt-3 sm:mt-0">
-                        <button
-                          onClick={() => setCorrectingAliasId(alias.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-sm"
-                        >
-                          <Edit className="w-3.5 h-3.5" /> Correct
-                        </button>
-                        <button
-                          onClick={() => {
-                            const prefix =
-                              alias.type === 'client' ? 'C' : alias.type === 'project' ? 'P' : 'S';
-                            handleResolveAlias(
-                              alias.id,
-                              'create_new',
-                              `${prefix}-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`
-                            );
-                          }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors shadow-sm"
-                        >
-                          <Plus className="w-3.5 h-3.5" /> Create New
-                        </button>
-                        <button
-                          onClick={() => handleResolveAlias(alias.id, 'approve')}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 border border-emerald-600 text-white hover:bg-emerald-600 transition-colors shadow-sm"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Approve
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderInitialImports = () => {
-    const rawOptions = [
-      ...clients.map(c => c.companyName || c.name),
-      ...initialImports.flatMap(row => [...(row.developers || []), ...(row.marketingOrgs || [])])
-    ].filter(name => typeof name === 'string' && name.trim() !== '');
-    
-    const uniqueOptions = Array.from(new Set(rawOptions));
-    const clientOptions = uniqueOptions.map(name => ({ name }));
-
-    return (
-      <div className="max-w-5xl mx-auto animate-in fade-in duration-300">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">One-Time Data Import</h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Process the initial bulk load of Projects, Developers, and Marketing Orgs.
-            </p>
-          </div>
-          {initialImports.length === 0 && !loadingImports && (
-            <button
-              onClick={async () => {
-                const { seedInitialImports } = await import('../api/dbService');
-                const data = (await import('../data/initial_imports.json')).default;
-                await seedInitialImports(data);
-                loadInitialImports();
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
-            >
-              <Package className="w-5 h-5" /> Seed Data from Excel
-            </button>
-          )}
-          {initialImports.length > 0 && !loadingImports && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={async () => {
-                  const { seedInitialImports } = await import('../api/dbService');
-                  const data = (await import('../data/initial_imports.json')).default;
-                  await seedInitialImports(data);
-                  loadInitialImports();
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
-              >
-                <RotateCcw className="w-5 h-5" /> Sync Latest Excel Data (Safe)
-              </button>
-              <button
-                onClick={async () => {
-                  const { collection, getDocs, updateDoc, doc } = await import('firebase/firestore');
-                  const { db } = await import('../api/firebase');
-                  const snap = await getDocs(collection(db, 'clients'));
-                  let count = 0;
-                  for (const d of snap.docs) {
-                    const data = d.data();
-                    if ((data as any).type && !data.clientType) {
-                      await updateDoc(doc(db, 'clients', d.id), { clientType: (data as any).type });
-                      count++;
-                    }
-                  }
-                  toast.success(`Fixed ${count} client types!`);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors shadow-sm"
-              >
-                Fix Client Types
-              </button>
-            </div>
-          )}
-        </div>
-        
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
-          {loadingImports ? (
-            <div className="p-12 text-center text-sm font-medium text-slate-500 animate-pulse">
-              Loading initial imports...
-            </div>
-          ) : initialImports.length === 0 ? (
-            <div className="p-12 text-center flex flex-col items-center">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400 mb-3" />
-              <p className="text-sm font-medium text-slate-600">No pending imports!</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border/50 max-h-[70vh] overflow-y-auto custom-thin-scroll">
-              <div className="p-4 bg-blue-50 text-blue-800 text-sm font-medium border-b border-blue-100 flex justify-between items-center">
-                <span>Showing top 50 pending rows (Total remaining: {initialImports.length})</span>
+                  );
+                })}
               </div>
-              {initialImports.slice(0, 50).map(row => (
-                <div key={row.firestoreId} className="p-5 hover:bg-slate-50 transition-colors">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Project Name</label>
-                      <input 
-                        className="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all shadow-sm bg-white" 
-                        value={row.projectName || ''} 
-                        onChange={(e) => handleUpdateImportRow(row.firestoreId, { projectName: e.target.value })}
-                        placeholder="Enter project name..."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Developers (Client)</label>
-                      <MultiSelectCombobox
-                        options={clientOptions}
-                        selectedValues={row.developers || []}
-                        onChange={(vals) => handleUpdateImportRow(row.firestoreId, { developers: vals })}
-                        placeholder="Select or type developer..."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Marketing Orgs</label>
-                      <MultiSelectCombobox
-                        options={clientOptions}
-                        selectedValues={row.marketingOrgs || []}
-                        onChange={(vals) => handleUpdateImportRow(row.firestoreId, { marketingOrgs: vals })}
-                        placeholder="Select or type marketing org..."
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-end gap-2">
-                    <button onClick={async () => {
-                      const { resolveInitialImport } = await import('../api/dbService');
-                      await resolveInitialImport(row.firestoreId, 'ignore');
-                      loadInitialImports();
-                    }} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-600 rounded-md hover:bg-slate-200 transition-colors">Ignore</button>
-                    
-                    <button onClick={async () => {
-                      const { resolveInitialImport } = await import('../api/dbService');
-                      await resolveInitialImport(row.firestoreId, 'approve', row);
-                      loadInitialImports();
-                    }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 border border-emerald-600 text-white hover:bg-emerald-600 transition-colors shadow-sm">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Approve
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-
     <div className="flex flex-1 overflow-hidden flex-col bg-white pt-2 px-4 md:px-6 pb-0">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 shrink-0 relative z-30">
@@ -1066,9 +971,8 @@ export default function AdminHub() {
       </div>
 
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
-        <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
+        <div className="w-full md:w-72 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
-            { id: 'initial_imports', label: 'One-Time Excel Import', icon: Package },
             { id: 'intake', label: 'Data Intake & Approvals', icon: FolderOpen },
             { id: 'audit', label: 'Audit Trail', icon: History },
             { id: 'archives', label: 'Archives', icon: ArchiveRestore },
@@ -1076,15 +980,21 @@ export default function AdminHub() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95  w-full text-left outline-none ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'}`}
+              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95  w-full text-left outline-none ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'}`}
             >
-              <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
+              <div className="flex items-center gap-3">
+                <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
+              </div>
+              {tab.id === 'intake' && pendingAliases.length > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {pendingAliases.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         <div className="flex-1 p-6 md:p-10 overflow-y-auto bg-white custom-thin-scroll">
-          {activeTab === 'initial_imports' && renderInitialImports()}
           {activeTab === 'intake' && renderIntake()}
           {activeTab === 'audit' && renderAuditTrail()}
           {activeTab === 'archives' && renderArchives()}

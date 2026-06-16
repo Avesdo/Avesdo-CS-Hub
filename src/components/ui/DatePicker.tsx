@@ -8,7 +8,15 @@ interface DatePickerProps {
   label?: string;
   placeholder?: string;
   className?: string;
+  trigger?: React.ReactNode;
 }
+
+const parseLocalDate = (str: string) => {
+  if (!str) return null;
+  const d = new Date(str.replace(/-/g, '/'));
+  if (isNaN(d.getTime())) return null;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
 
 export function DatePicker({
   value,
@@ -16,12 +24,17 @@ export function DatePicker({
   label = 'Select Date',
   placeholder = 'Select Date',
   className = '',
+  trigger,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const dateStr = value
-    ? new Date(value - new Date(value).getTimezoneOffset() * 60000).toISOString().split('T')[0]
+    ? new Date(value).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
     : '';
   const [localDateStr, setLocalDateStr] = useState(dateStr);
 
@@ -45,10 +58,9 @@ export function DatePicker({
 
   useEffect(() => {
     if (isOpen && localDateStr) {
-      const d = new Date(localDateStr);
-      if (!isNaN(d.getTime())) {
-        const localDate = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
-        setCalMonth(new Date(localDate.getFullYear(), localDate.getMonth(), 1));
+      const d = parseLocalDate(localDateStr);
+      if (d) {
+        setCalMonth(new Date(d.getFullYear(), d.getMonth(), 1));
       }
     }
   }, [localDateStr, isOpen]);
@@ -57,9 +69,8 @@ export function DatePicker({
     if (!localDateStr) {
       onChange(null, '');
     } else {
-      const d = new Date(localDateStr);
-      if (!isNaN(d.getTime())) {
-        const localDate = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+      const localDate = parseLocalDate(localDateStr);
+      if (localDate) {
         const val = localDate.getTime();
         const str = localDate.toLocaleDateString('en-US', {
           month: 'short',
@@ -67,6 +78,8 @@ export function DatePicker({
           year: 'numeric',
         });
         onChange(val, str);
+      } else {
+        setLocalDateStr(dateStr);
       }
     }
   };
@@ -106,10 +119,8 @@ export function DatePicker({
 
     let activeDateVal = value;
     if (localDateStr) {
-      const d = new Date(localDateStr);
-      if (!isNaN(d.getTime())) {
-        activeDateVal = new Date(d.getTime() + d.getTimezoneOffset() * 60000).getTime();
-      }
+      const d = parseLocalDate(localDateStr);
+      if (d) activeDateVal = d.getTime();
     } else {
       activeDateVal = null;
     }
@@ -146,24 +157,37 @@ export function DatePicker({
 
   return (
     <div className={`relative block popover-container w-full ${className}`} ref={ref}>
-      <div
-        className="flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 cursor-pointer transition-all duration-200"
-        onClick={() => {
-          if (isOpen) applyLocalDate();
-          setIsOpen(!isOpen);
-        }}
-      >
-        <span className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
-          {displayStr}
-        </span>
-        <Calendar className="w-4 h-4 text-muted-foreground" />
-      </div>
+      {trigger ? (
+        <div
+          onClick={() => {
+            if (isOpen) applyLocalDate();
+            setIsOpen(!isOpen);
+          }}
+          className="w-fit"
+        >
+          {trigger}
+        </div>
+      ) : (
+        <div
+          className="flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 cursor-pointer transition-all duration-200"
+          onClick={() => {
+            if (isOpen) applyLocalDate();
+            setIsOpen(!isOpen);
+          }}
+        >
+          <span className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
+            {displayStr}
+          </span>
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+        </div>
+      )}
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-border rounded-xl shadow-xl z-[250] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="text-sm font-semibold text-muted-foreground mb-2">{label}</div>
           <input
-            type="date"
+            type="text"
+            placeholder="e.g. Dec 25, 2026 or 12/25/2026"
             className="w-full mb-4 px-3 py-2 border border-input rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-center"
             value={localDateStr}
             onChange={(e) => setLocalDateStr(e.target.value)}

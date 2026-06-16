@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
 import { Select } from '../ui/Select';
 import { getSettingBadge } from '../../utils/uiUtils';
@@ -7,7 +7,7 @@ interface BulkActionBarProps {
   selectedCount: number;
   settings: any;
   onClearSelection: () => void;
-  onBulkUpdate: (field: string, value: string) => void;
+  onBulkUpdate: (updates: Record<string, any>) => void;
 }
 
 export const BulkActionBar: React.FC<BulkActionBarProps> = ({
@@ -16,6 +16,20 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
   onClearSelection,
   onBulkUpdate,
 }) => {
+  const [pendingUpdates, setPendingUpdates] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    if (selectedCount === 0) {
+      setPendingUpdates({});
+    }
+  }, [selectedCount]);
+
+  const handleApply = () => {
+    onBulkUpdate(pendingUpdates);
+  };
+
+  const hasUpdates = Object.keys(pendingUpdates).length > 0;
+
   if (selectedCount === 0) return null;
 
   return (
@@ -36,17 +50,21 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {/* Manager Select */}
         <div className="relative">
           <Select
-            value=""
+            value={pendingUpdates.assignee || ''}
             options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
               label: getSettingBadge('managers', m, settings),
               value: m,
             }))}
-            onChange={(val) => onBulkUpdate('assignee', val)}
-            hideCheckmark={true}
+            onChange={(val) => setPendingUpdates({ ...pendingUpdates, assignee: val })}
+            hideCheckmark={false}
             position="top"
             trigger={
-              <button className="text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-md border border-slate-200 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                Update Manager...
+              <button
+                className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-md border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.assignee ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
+              >
+                {pendingUpdates.assignee
+                  ? `Manager: ${pendingUpdates.assignee}`
+                  : 'Update Manager...'}
               </button>
             }
           />
@@ -55,17 +73,21 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {/* Status Select */}
         <div className="relative">
           <Select
-            value=""
+            value={pendingUpdates.projectStatus || ''}
             options={(settings?.statuses?.map((s: any) => s.name) || []).map((s: any) => ({
               label: getSettingBadge('statuses', s, settings),
               value: s,
             }))}
-            onChange={(val) => onBulkUpdate('projectStatus', val)}
-            hideCheckmark={true}
+            onChange={(val) => setPendingUpdates({ ...pendingUpdates, projectStatus: val })}
+            hideCheckmark={false}
             position="top"
             trigger={
-              <button className="text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-md border border-slate-200 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                Update Status...
+              <button
+                className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-md border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.projectStatus ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
+              >
+                {pendingUpdates.projectStatus
+                  ? `Project Status: ${pendingUpdates.projectStatus}`
+                  : 'Update Project Status...'}
               </button>
             }
           />
@@ -74,17 +96,21 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {/* Delivery Status Select */}
         <div className="relative">
           <Select
-            value=""
+            value={pendingUpdates.timelineStatus || ''}
             options={(settings?.timelines?.map((t: any) => t.name) || []).map((t: any) => ({
               label: getSettingBadge('timelines', t, settings),
               value: t,
             }))}
-            onChange={(val) => onBulkUpdate('timelineStatus', val)}
-            hideCheckmark={true}
+            onChange={(val) => setPendingUpdates({ ...pendingUpdates, timelineStatus: val })}
+            hideCheckmark={false}
             position="top"
             trigger={
-              <button className="text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-md border border-slate-200 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                Update Delivery Status...
+              <button
+                className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-md border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.timelineStatus ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
+              >
+                {pendingUpdates.timelineStatus
+                  ? `Schedule Status: ${pendingUpdates.timelineStatus}`
+                  : 'Update Schedule Status...'}
               </button>
             }
           />
@@ -93,21 +119,34 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {/* Phase Select */}
         <div className="relative">
           <Select
-            value=""
+            value={pendingUpdates.onboardingPhase || ''}
             options={(settings?.phases?.map((p: any) => p.name) || []).map((p: any) => ({
               label: getSettingBadge('phases', p, settings),
               value: p,
             }))}
-            onChange={(val) => onBulkUpdate('onboardingPhase', val)}
-            hideCheckmark={true}
+            onChange={(val) => setPendingUpdates({ ...pendingUpdates, onboardingPhase: val })}
+            hideCheckmark={false}
             position="top"
             trigger={
-              <button className="text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-md border border-slate-200 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                Update Phase...
+              <button
+                className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-md border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.onboardingPhase ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
+              >
+                {pendingUpdates.onboardingPhase
+                  ? `Implementation Status: ${pendingUpdates.onboardingPhase}`
+                  : 'Update Implementation Status...'}
               </button>
             }
           />
         </div>
+
+        {hasUpdates && (
+          <button
+            onClick={handleApply}
+            className="ml-2 px-4 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded-md shadow-sm hover:bg-primary/90 transition-colors animate-in fade-in zoom-in"
+          >
+            Update
+          </button>
+        )}
       </div>
 
       <button

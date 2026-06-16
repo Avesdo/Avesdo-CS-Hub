@@ -10,13 +10,21 @@ export const GlobalToaster = () => {
         className: 'shadow-xl border rounded-lg max-w-sm',
         success: {
           duration: 4000,
-          className: 'bg-green-50 text-green-900 border-green-200',
-          style: {}, // clearing style as we use className
+          className:
+            '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
         },
         error: {
           duration: 8000,
-          className: 'bg-red-50 text-red-900 border-red-200',
-          style: {},
+          className:
+            '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
+        },
+        loading: {
+          duration: Infinity,
+          className:
+            '!bg-primary !text-primary-foreground !border-primary border shadow-xl rounded-lg font-medium',
+          style: { background: 'unset', color: 'unset' },
         },
       }}
     >

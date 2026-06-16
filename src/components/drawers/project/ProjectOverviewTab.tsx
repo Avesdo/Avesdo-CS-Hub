@@ -24,6 +24,8 @@ import {
   updateServiceRecord,
 } from '../../../api/dbService';
 import { useAppState } from '../../../context/AppStateContext';
+import { calculateProjectHealth } from '../../../utils/scoringUtils';
+import { Tooltip } from '../../ui/Tooltip';
 import { getSettingBadge } from '../../../utils/uiUtils';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import toast from 'react-hot-toast';
@@ -32,11 +34,11 @@ interface ProjectOverviewTabProps {
   project: any;
 }
 
-export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps) {
+export default React.memo(function ProjectOverviewTab({ project }: ProjectOverviewTabProps) {
   const { clients, settings, user, services } = useAppState();
 
   const [openPop, setOpenPop] = useState<
-    'clients' | 'manager' | 'status' | 'timeline' | 'phase' | null
+    'clients' | 'manager' | 'status' | 'timeline' | 'phase' | 'devClients' | 'smClients' | null
   >(null);
   const popRef = useRef<HTMLDivElement>(null);
   const openPopRef = useRef(openPop);
@@ -47,7 +49,7 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
   const [editingChecklist, setEditingChecklist] = useState(false);
 
   // KYC Accordion State
-  const [isKycOpen, setIsKycOpen] = useState(!!project?.kycDetails);
+  const [isKycOpen, setIsKycOpen] = useState(false);
   const [isKycEditing, setIsKycEditing] = useState(false);
   const [kycDraft, setKycDraft] = useState(project?.kycDetails || '');
 
@@ -90,14 +92,16 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
           updates.projectStatus = 'Active';
           updates.onboardingPhase = 'Released';
           const today = new Date();
-          updates.releaseDateVal = today.getTime();
-          updates.releaseDateStr = today.toLocaleDateString('en-US', {
-            month: 'long',
+          // Force local midnight to avoid timezone shifting
+          const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          updates.releaseDateVal = localMidnight.getTime();
+          updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+            month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
           actionLog = `Schedule Status set to Released. Project Status set to Active, Onboarding Phase set to Released.`;
-        } else if (value === 'Indefinitely Delayed' || value === 'Currently Delayed') {
+        } else if (value === 'Indefinitely Delayed') {
           updates.releaseDateVal = null;
           updates.releaseDateStr = '';
           actionLog = `Schedule Status set to ${value}. Release Date cleared.`;
@@ -108,27 +112,28 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
         updates.projectStatus = 'Active';
         updates.timelineStatus = 'Released';
         const today = new Date();
-        updates.releaseDateVal = today.getTime();
-        updates.releaseDateStr = today.toLocaleDateString('en-US', {
-          month: 'long',
+        const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        updates.releaseDateVal = localMidnight.getTime();
+        updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+          month: 'short',
           day: 'numeric',
           year: 'numeric',
         });
         actionLog = `Onboarding Phase set to Released. Project Status set to Active, Schedule Status set to Released.`;
-      } else if (
-        field === 'timelineStatus' &&
-        (value === 'Indefinitely Delayed' || value === 'Currently Delayed')
-      ) {
+      } else if (field === 'timelineStatus' && value === 'Indefinitely Delayed') {
         updates.releaseDateVal = null;
         updates.releaseDateStr = '';
         actionLog = `Schedule Status set to ${value}. Release Date cleared.`;
       } else if (field === 'releaseDateVal') {
         if (value) {
-          updates.releaseDateStr = new Date(value).toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          });
+          const parsed = new Date(value);
+          if (!isNaN(parsed.getTime())) {
+            updates.releaseDateStr = parsed.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+          }
         } else {
           updates.releaseDateStr = '';
         }
@@ -179,18 +184,39 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
       if (!projectLogMsg) {
         let displayField = field;
         if (field === 'projectStatus') displayField = 'Project Status';
-        if (field === 'timelineStatus') displayField = 'Schedule Status';
-        if (field === 'onboardingPhase') displayField = 'Implementation Milestone';
+        if (field === 'timelineStatus') displayField = 'Delivery Status';
+        if (field === 'onboardingPhase') displayField = 'Implementation Status';
         if (field === 'releaseDateStr' || field === 'releaseDateVal') displayField = 'Release Date';
-        if (field === 'manager' || field === 'assignee') displayField = 'Manager';
+        if (field === 'manager' || field === 'assignee') displayField = 'Account Manager';
         if (field === 'units') displayField = 'Live Units';
         if (field === 'checklistUrl') displayField = 'Deliverables Checklist';
         if (field === 'kycDetails') displayField = 'KYC Details';
+
+        if (displayField === field) {
+          displayField =
+            field.charAt(0).toUpperCase() +
+            field
+              .replace(/([A-Z])/g, ' $1')
+              .slice(1)
+              .trim();
+        }
 
         if (field === 'kycDetails') {
           projectLogMsg = `Updated KYC Details`;
         } else {
           projectLogMsg = `Changed ${displayField} from ${displayVal(oldVal)} to ${displayVal(value)}`;
+        }
+      }
+
+      if (field === 'releaseDateVal') {
+        if (value) {
+          updates.releaseDateStr = new Date(value).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else {
+          updates.releaseDateStr = '';
         }
       }
 
@@ -226,12 +252,43 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
     let newCIds = [...cIds];
     let newCNames = [...cNames];
 
+    const client = clients.find((c) => c.clientId === clientId || c.id === clientId);
+    const isDev = client?.clientType === 'Developer';
+    const isSM = client?.clientType === 'Sales & Marketing';
+
+    let newDevIds = project?.developerIds || [];
+    let newDevNames = project?.developers || [];
+    let newSMIds = project?.salesMarketingIds || [];
+    let newSMNames = project?.salesMarketingClients || [];
+
     if (isRemoving) {
       newCIds = newCIds.filter((id: string) => id !== clientId);
       newCNames = newCNames.filter((n: string) => n !== clientName);
+      if (isDev) {
+        newDevIds = newDevIds.filter((id: string) => id !== clientId);
+        newDevNames = newDevNames.filter((n: string) => n !== clientName);
+      } else if (isSM) {
+        newSMIds = newSMIds.filter((id: string) => id !== clientId);
+        newSMNames = newSMNames.filter((n: string) => n !== clientName);
+      } else {
+        // Fallback for untyped devs
+        newDevIds = newDevIds.filter((id: string) => id !== clientId);
+        newDevNames = newDevNames.filter((n: string) => n !== clientName);
+      }
     } else {
       newCIds.push(clientId);
       newCNames.push(clientName);
+      if (isDev) {
+        newDevIds.push(clientId);
+        newDevNames.push(clientName);
+      } else if (isSM) {
+        newSMIds.push(clientId);
+        newSMNames.push(clientName);
+      } else {
+        // Fallback
+        newDevIds.push(clientId);
+        newDevNames.push(clientName);
+      }
     }
 
     const logMsg = isRemoving
@@ -239,7 +296,15 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
       : `Project "${project.name}" attached to client ${clientName}`;
 
     await updateProjectRecord(
-      { ...project, clientIds: newCIds, clients: newCNames },
+      {
+        ...project,
+        clientIds: newCIds,
+        clients: newCNames,
+        developerIds: newDevIds,
+        developers: newDevNames,
+        salesMarketingIds: newSMIds,
+        salesMarketingClients: newSMNames,
+      },
       {
         successMsg: `Attached Clients successfully updated for '${project.name}'.`,
         errorMsg: `Failed to update Attached Clients for '${project.name}'.`,
@@ -249,7 +314,9 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
     );
 
     // Cascade update child services
-    const childServices = services.filter((s: any) => s.projectId === project.id);
+    const childServices = services.filter(
+      (s: any) => s.projectId === project.id || (s.projectIds && s.projectIds.includes(project.id))
+    );
     for (const svc of childServices) {
       const sCIds = svc.clientIds || [];
       const sCNames = svc.clients || [];
@@ -276,14 +343,23 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
   };
 
   const filteredClients = useMemo(() => {
-    const sorted = [...clients].sort((a, b) =>
-      (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
-    );
+    const cNames = project?.clients || [];
+    const sorted = [...clients].sort((a, b) => {
+      const aName = a.companyName || a.name || '';
+      const bName = b.companyName || b.name || '';
+      const aSelected = cNames.includes(aName);
+      const bSelected = cNames.includes(bName);
+
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return aName.localeCompare(bName);
+    });
+
     if (!clientSearch) return sorted;
     return sorted.filter((c: any) =>
       (c.companyName || c.name || '').toLowerCase().includes(clientSearch.toLowerCase())
     );
-  }, [clients, clientSearch]);
+  }, [clients, clientSearch, project?.clients]);
 
   return (
     <div className="flex flex-col space-y-6" ref={popRef}>
@@ -303,7 +379,7 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+          <label className="block text-[11px] font-semibold text-muted-foreground mb-1.5">
             Live Units
           </label>
           <input
@@ -318,57 +394,120 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
 
       {/* 2. Relationships & Core Details */}
       <div className="flex flex-col gap-6 pb-6 border-b border-border">
-        <div className="relative popover-container">
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Attached Clients
-          </label>
-          <div
-            className="min-h-[38px] bg-white border border-input rounded-md px-3 py-2 text-sm shadow-sm cursor-pointer hover:border-primary/50 transition-colors flex flex-wrap gap-2 items-center"
-            onClick={() => setOpenPop(openPop === 'clients' ? null : 'clients')}
-          >
-            {project?.clients?.length > 0 ? (
-              project.clients.map((cName: string, i: number) => (
-                <span
-                  key={i}
-                  className="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded border border-slate-200 font-medium"
-                >
-                  {cName}
-                </span>
-              ))
-            ) : (
-              <span className="italic text-muted-foreground">Select Clients...</span>
+        <div className="flex flex-col gap-6">
+          <div className="relative popover-container">
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+              Developer Client(s)
+            </label>
+            <div
+              className="min-h-[38px] bg-white border border-input rounded-md px-3 py-2 text-sm shadow-sm cursor-pointer hover:border-primary/50 transition-colors flex flex-wrap gap-2 items-center"
+              onClick={() => setOpenPop(openPop === 'devClients' ? null : 'devClients')}
+            >
+              {project?.developers?.length > 0 ? (
+                project.developers.map((cName: string, i: number) => (
+                  <span
+                    key={i}
+                    className="bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-500/20 px-2.5 py-0.5 rounded border border-slate-200 font-medium"
+                  >
+                    {cName}
+                  </span>
+                ))
+              ) : (
+                <span className="italic text-muted-foreground">Select Developers...</span>
+              )}
+            </div>
+            {openPop === 'devClients' && (
+              <div className="absolute top-full left-0 mt-2 w-[350px] bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col max-h-[300px]">
+                <div className="p-2 border-b border-border bg-slate-50 flex items-center gap-2">
+                  <Search className="w-4 h-4 text-muted-foreground ml-2" />
+                  <input
+                    type="text"
+                    placeholder="Search developers..."
+                    className="flex-1 bg-transparent border-none outline-none text-sm"
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                  {filteredClients
+                    .filter((c) => c.clientType === 'Developer' || !c.clientType)
+                    .map((c) => {
+                      const isSelected =
+                        project?.developerIds?.includes(c.clientId || c.id) ||
+                        project?.clientIds?.includes(c.clientId || c.id);
+                      return (
+                        <button
+                          key={c.clientId || c.id}
+                          onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName)}
+                          className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors"
+                        >
+                          <span className="font-medium">{c.companyName}</span>
+                          {isSelected && <Check className="w-4 h-4 text-primary" />}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
             )}
           </div>
-          {openPop === 'clients' && (
-            <div className="absolute top-full left-0 mt-2 w-[400px] bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col max-h-[300px]">
-              <div className="p-2 border-b border-border bg-slate-50 flex items-center gap-2">
-                <Search className="w-4 h-4 text-muted-foreground ml-2" />
-                <input
-                  type="text"
-                  placeholder="Search clients..."
-                  className="flex-1 bg-transparent border-none outline-none text-sm"
-                  value={clientSearch}
-                  onChange={(e) => setClientSearch(e.target.value)}
-                  autoFocus
-                />
-              </div>
-              <div className="overflow-y-auto p-1 custom-thin-scroll">
-                {filteredClients.map((c) => {
-                  const isSelected = project?.clientIds?.includes(c.clientId || c.id);
-                  return (
-                    <button
-                      key={c.clientId || c.id}
-                      onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName)}
-                      className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors"
-                    >
-                      <span className="font-medium">{c.companyName}</span>
-                      {isSelected && <Check className="w-4 h-4 text-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
+
+          <div className="relative popover-container">
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+              Sales & Marketing Client(s)
+            </label>
+            <div
+              className="min-h-[38px] bg-white border border-input rounded-md px-3 py-2 text-sm shadow-sm cursor-pointer hover:border-primary/50 transition-colors flex flex-wrap gap-2 items-center"
+              onClick={() => setOpenPop(openPop === 'smClients' ? null : 'smClients')}
+            >
+              {project?.salesMarketingClients?.length > 0 ? (
+                project.salesMarketingClients.map((cName: string, i: number) => (
+                  <span
+                    key={i}
+                    className="bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-500/20 px-2.5 py-0.5 rounded border border-slate-200 font-medium"
+                  >
+                    {cName}
+                  </span>
+                ))
+              ) : (
+                <span className="italic text-muted-foreground">Select Sales & Marketing...</span>
+              )}
             </div>
-          )}
+            {openPop === 'smClients' && (
+              <div className="absolute top-full left-0 mt-2 w-[350px] bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col max-h-[300px]">
+                <div className="p-2 border-b border-border bg-slate-50 flex items-center gap-2">
+                  <Search className="w-4 h-4 text-muted-foreground ml-2" />
+                  <input
+                    type="text"
+                    placeholder="Search sales & marketing clients..."
+                    className="flex-1 bg-transparent border-none outline-none text-sm"
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                  {filteredClients
+                    .filter((c) => c.clientType === 'Sales & Marketing')
+                    .map((c) => {
+                      const isSelected =
+                        project?.salesMarketingIds?.includes(c.clientId || c.id) ||
+                        project?.clientIds?.includes(c.clientId || c.id);
+                      return (
+                        <button
+                          key={c.clientId || c.id}
+                          onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName)}
+                          className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors"
+                        >
+                          <span className="font-medium">{c.companyName}</span>
+                          {isSelected && <Check className="w-4 h-4 text-primary" />}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -406,164 +545,180 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
       </div>
 
       {/* 3. Workflow States */}
-      <div className="flex flex-col gap-6 pb-6 border-b border-border">
-        <div className="w-full md:w-1/2 md:pr-3">
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-              Project Status
-            </label>
-            <div className="flex">
-              <button
-                onClick={() => setOpenPop(openPop === 'status' ? null : 'status')}
-                className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-full inline-flex"
-              >
-                {getSettingBadge('statuses', project?.projectStatus || 'Not Set', settings, true)}
-              </button>
-            </div>
-            {openPop === 'status' && (
-              <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-                {settings?.statuses?.map((s: any) => (
-                  <button
-                    key={s.name}
-                    onClick={() => {
-                      handleUpdate('projectStatus', s.name, project?.projectStatus);
-                      setOpenPop(null);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                  >
-                    {getSettingBadge('statuses', s.name, settings, true)}
-                  </button>
-                ))}
-              </div>
-            )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 border-b border-border">
+        <div className="relative popover-container">
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+            Project Status
+          </label>
+          <div className="flex">
+            <button
+              onClick={() => setOpenPop(openPop === 'status' ? null : 'status')}
+              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+            >
+              {getSettingBadge('statuses', project?.projectStatus || 'Not Set', settings, true)}
+            </button>
           </div>
+          {openPop === 'status' && (
+            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
+              {settings?.statuses?.map((s: any) => (
+                <button
+                  key={s.name}
+                  onClick={() => {
+                    handleUpdate('projectStatus', s.name, project?.projectStatus);
+                    setOpenPop(null);
+                  }}
+                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
+                >
+                  {getSettingBadge('statuses', s.name, settings, true)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-              Schedule Status
-            </label>
-            <div className="flex">
-              <button
-                onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
-                className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-full inline-flex"
-              >
-                {getSettingBadge('timelines', project?.timelineStatus || 'Not Set', settings)}
-              </button>
-            </div>
-            {openPop === 'timeline' && (
-              <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-                {settings?.timelines?.map((t: any) => (
-                  <button
-                    key={t.name}
-                    onClick={() => {
-                      handleUpdate('timelineStatus', t.name, project?.timelineStatus);
-                      setOpenPop(null);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                  >
-                    {getSettingBadge('timelines', t.name, settings)}
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="relative popover-container">
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+            Schedule Status
+          </label>
+          <div className="flex">
+            <button
+              onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
+              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+            >
+              {getSettingBadge('timelines', project?.timelineStatus || 'Not Set', settings, true)}
+            </button>
           </div>
+          {openPop === 'timeline' && (
+            <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
+              {settings?.timelines?.map((t: any) => (
+                <button
+                  key={t.name}
+                  onClick={() => {
+                    handleUpdate('timelineStatus', t.name, project?.timelineStatus);
+                    setOpenPop(null);
+                  }}
+                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
+                >
+                  {getSettingBadge('timelines', t.name, settings, true)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-              Implementation Milestone
-            </label>
-            <div className="flex">
-              <button
-                onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
-                className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-full inline-flex"
-              >
-                {getSettingBadge('phases', project?.onboardingPhase || 'Not Set', settings)}
-              </button>
-            </div>
-            {openPop === 'phase' && (
-              <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-                {settings?.phases?.map((p: any) => (
-                  <button
-                    key={p.name}
-                    onClick={() => {
-                      handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
-                      setOpenPop(null);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                  >
-                    {getSettingBadge('phases', p.name, settings)}
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="relative popover-container">
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+            Implementation Status
+          </label>
+          <div className="flex">
+            <button
+              onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
+              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+            >
+              {getSettingBadge('phases', project?.onboardingPhase || 'Not Set', settings, true)}
+            </button>
           </div>
+          {openPop === 'phase' && (
+            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
+              {settings?.phases?.map((p: any) => (
+                <button
+                  key={p.name}
+                  onClick={() => {
+                    handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
+                    setOpenPop(null);
+                  }}
+                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
+                >
+                  {getSettingBadge('phases', p.name, settings, true)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* 4. Resources */}
-      <div className="pb-2">
-        {editingChecklist ? (
+      <div className="flex flex-col gap-4 pb-2">
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5 mt-4">
+            Avesdo Development ID
+          </label>
           <input
-            type="url"
-            autoFocus
-            className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[38px] text-sm transition-all text-blue-600 hover:text-blue-800 underline"
-            defaultValue={project?.checklistUrl || ''}
-            onBlur={(e) => {
-              handleUpdate('checklistUrl', e.target.value, project?.checklistUrl);
-              setEditingChecklist(false);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleUpdate('checklistUrl', e.currentTarget.value, project?.checklistUrl);
-                setEditingChecklist(false);
-              }
-              if (e.key === 'Escape') setEditingChecklist(false);
-            }}
-            placeholder="https://"
+            type="text"
+            className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-1.5 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[38px] text-sm font-semibold transition-all"
+            defaultValue={project?.developmentId || ''}
+            onBlur={(e) => handleUpdate('developmentId', e.target.value, project?.developmentId)}
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+            placeholder="e.g. 123"
           />
-        ) : (
-          <div className="flex items-center gap-3 w-full min-h-[38px] rounded-md border border-input bg-white px-3 py-2 shadow-sm text-sm transition-all group">
-            <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0" />
-            {project?.checklistUrl ? (
-              <div className="flex-1 font-medium">Deliverables Checklist</div>
-            ) : (
-              <span className="flex-1 text-muted-foreground italic">None</span>
-            )}
-            <div className="flex items-center gap-2">
-              {project?.checklistUrl && (
-                <>
-                  <a
-                    href={
-                      project.checklistUrl.match(/^https?:\/\//)
-                        ? project.checklistUrl
-                        : `https://${project.checklistUrl}`
-                    }
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    Open Link <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                  <button
-                    onClick={copyChecklistUrl}
-                    className="p-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors shadow-sm"
-                    title="Copy URL"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
-                </>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+            Deliverables Checklist
+          </label>
+          {editingChecklist ? (
+            <input
+              type="url"
+              autoFocus
+              className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[38px] text-sm transition-all text-blue-600 hover:text-blue-800 underline"
+              defaultValue={project?.checklistUrl || ''}
+              onBlur={(e) => {
+                handleUpdate('checklistUrl', e.target.value, project?.checklistUrl);
+                setEditingChecklist(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleUpdate('checklistUrl', e.currentTarget.value, project?.checklistUrl);
+                  setEditingChecklist(false);
+                }
+                if (e.key === 'Escape') setEditingChecklist(false);
+              }}
+              placeholder="https://"
+            />
+          ) : (
+            <div className="flex items-center gap-3 w-full min-h-[38px] rounded-md border border-input bg-white px-3 py-2 shadow-sm text-sm transition-all group">
+              <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0" />
+              {project?.checklistUrl ? (
+                <div className="flex-1 font-medium">Deliverables Checklist</div>
+              ) : (
+                <span className="flex-1 text-muted-foreground italic">None</span>
               )}
-              <button
-                onClick={() => setEditingChecklist(true)}
-                className="p-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors shadow-sm"
-                title="Edit URL"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                {project?.checklistUrl && (
+                  <>
+                    <a
+                      href={
+                        project.checklistUrl.match(/^https?:\/\//)
+                          ? project.checklistUrl
+                          : `https://${project.checklistUrl}`
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3 py-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                    >
+                      Open Link <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <Tooltip content="Copy URL">
+                      <button
+                        onClick={copyChecklistUrl}
+                        className="p-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors shadow-sm"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
+                  </>
+                )}
+                <Tooltip content="Edit URL">
+                  <button
+                    onClick={() => setEditingChecklist(true)}
+                    className="p-1.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors shadow-sm"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                </Tooltip>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 5. KYC & Onboarding Details */}
@@ -652,4 +807,4 @@ export default function ProjectOverviewTab({ project }: ProjectOverviewTabProps)
       </div>
     </div>
   );
-}
+});

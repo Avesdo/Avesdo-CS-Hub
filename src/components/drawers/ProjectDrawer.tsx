@@ -30,6 +30,7 @@ import ProjectFeaturesTab from './project/ProjectFeaturesTab';
 import ProjectServicesTab from './project/ProjectServicesTab';
 import { NotesTab } from '../ui/NotesTab';
 import { Select } from '../ui/Select';
+import { Tooltip } from '../ui/Tooltip';
 
 export default function ProjectDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
@@ -102,7 +103,10 @@ export default function ProjectDrawer() {
       );
 
       // Cascade to services
-      const servicesToUpdate = services.filter((s: any) => s.projectId === project.id);
+      const servicesToUpdate = services.filter(
+        (s: any) =>
+          s.projectId === project.id || (s.projectIds && s.projectIds.includes(project.id))
+      );
       if (servicesToUpdate.length > 0) {
         const servicePromises = servicesToUpdate.map(async (s: any) => {
           await updateServiceRecord(
@@ -327,13 +331,14 @@ export default function ProjectDrawer() {
                   <h2 className="text-2xl font-semibold text-foreground tracking-tight leading-tight truncate">
                     {project?.name || 'Loading Project...'}
                   </h2>
-                  <button
-                    onClick={() => setIsEditingName(true)}
-                    className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
-                    title="Edit Name"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                  <Tooltip content="Edit Name" position="bottom">
+                    <button
+                      onClick={() => setIsEditingName(true)}
+                      className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all active:scale-95 shrink-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </Tooltip>
                 </>
               )}
             </div>
@@ -395,7 +400,11 @@ export default function ProjectDrawer() {
                           true
                         );
                     }
-                    const pServices = services.filter((s: any) => s.projectId === project.id);
+                    const pServices = services.filter(
+                      (s: any) =>
+                        s.projectId === project.id ||
+                        (s.projectIds && s.projectIds.includes(project.id))
+                    );
                     for (const svc of pServices)
                       await addServiceAutoLog(
                         svc.id,
@@ -411,21 +420,23 @@ export default function ProjectDrawer() {
                 <AlertTriangle className="w-4 h-4" /> Confirm Archive
               </button>
             ) : (
-              <button
-                onClick={() => setIsConfirmingDelete(true)}
-                className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                title="Archive Project"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <Tooltip content="Archive Project" position="bottom-right">
+                <button
+                  onClick={() => setIsConfirmingDelete(true)}
+                  className="p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </Tooltip>
             )}
-            <button
-              onClick={closeDrawer}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
-              title="Close Drawer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Tooltip content="Close Drawer" position="bottom-right">
+              <button
+                onClick={closeDrawer}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 duration-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </Tooltip>
           </div>
         </div>
 

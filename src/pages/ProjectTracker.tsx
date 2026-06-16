@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
 import { ColumnFilter, DateFilter, StatusDropdown } from '../components/TableFilters';
@@ -28,12 +28,14 @@ import {
   Search,
   PlayCircle,
   PauseCircle,
+  ListTodo,
 } from 'lucide-react';
 import { getHealthHistory } from '../api/dbService';
 import { ProjectTrackerTable } from '../components/ProjectTracker/ProjectTrackerTable';
 import { ProjectTrackerCalendar } from '../components/ProjectTracker/ProjectTrackerCalendar';
 import { BulkActionBar } from '../components/ProjectTracker/BulkActionBar';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { updateProjectRecord, addProjectAutoLog, addAutoLog } from '../api/dbService';
 import toast from 'react-hot-toast';
 
@@ -46,6 +48,7 @@ export default function ProjectTracker() {
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
   const [healthHistory, setHealthHistory] = useState<any>({});
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     getHealthHistory()
@@ -58,6 +61,15 @@ export default function ProjectTracker() {
   );
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(searchInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   // sorting
@@ -72,6 +84,12 @@ export default function ProjectTracker() {
     return true;
   });
   const [displayLimit, setDisplayLimit] = useState(50);
+
+  const loadMoreCallback = useCallback(() => {
+    setDisplayLimit((prev) => prev + 50);
+  }, []);
+
+  const loadMoreRef = useIntersectionObserver(loadMoreCallback, '200px');
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string[]>(
@@ -88,9 +106,9 @@ export default function ProjectTracker() {
   const [timelineFilter, setTimelineFilter] = useState<string[]>([]);
   const [phaseFilter, setPhaseFilter] = useState<string[]>([]);
   const [featuresFilter, setFeaturesFilter] = useState<string[]>([]);
-  const [releaseDateFilter, setReleaseDateFilter] = useState<{ start: string; end: string } | null>(
-    null
-  );
+  const [releaseDateFilter, setReleaseDateFilter] = useState<
+    { start: string; end: string } | 'no-date' | null
+  >(null);
 
   const removeFilterItem = (filterSetter: any, filterArray: string[], item: string) => {
     filterSetter(filterArray.filter((i: string) => i !== item));
@@ -113,7 +131,11 @@ export default function ProjectTracker() {
     setActiveTab(tabLabel);
     setDisplayLimit(50);
 
-    if (tabLabel === 'Actively Onboarding' || tabLabel === 'Upcoming (> 45 Days)') {
+    if (
+      tabLabel === 'Actively Onboarding' ||
+      tabLabel === 'Upcoming (> 45 Days)' ||
+      tabLabel === 'All Onboarding'
+    ) {
       setSortCol('releaseDateVal');
       setSortAsc(true);
     } else if (tabLabel === 'All Released' || tabLabel === 'All Projects') {
@@ -125,15 +147,37 @@ export default function ProjectTracker() {
     }
   };
 
-  const handleSort = (col: string) => {
-    if (sortCol === col) setSortAsc(!sortAsc);
-    else {
-      setSortCol(col);
-      setSortAsc(true);
-    }
-  };
+  const handleSort = useCallback(
+    (col: string) => {
+      if (sortCol === col) setSortAsc(!sortAsc);
+      else {
+        setSortCol(col);
+        setSortAsc(true);
+      }
+    },
+    [sortCol, sortAsc]
+  );
 
-  // 1. KPI Calculations (similar to Dashboard)
+  // 1. Pre-calculate Health Scores and Trend Data
+  const mappedProjects = useMemo(() => {
+    const today = new Date().getTime();
+    const thirtyDaysAgo = today - 30 * 24 * 60 * 60 * 1000;
+
+    return projects.map((p) => {
+      const healthCalc = calculateProjectHealth(p, settings);
+      const finalScore = healthCalc.totalScore;
+
+      const hist = healthHistory[p.id] || [];
+      const sortedHist = [...hist]
+        .filter((x: any) => x.timeVal >= thirtyDaysAgo)
+        .sort((a: any, b: any) => a.timeVal - b.timeVal);
+      const trendData = sortedHist.map((h: any) => h.score);
+      if (typeof finalScore === 'number') trendData.push(finalScore);
+      return { ...p, healthScore: finalScore, trendData };
+    });
+  }, [projects, settings, healthHistory]);
+
+  // 2. KPI Calculations
   const {
     onboardingCount,
     prevOnboardingCount,
@@ -157,9 +201,9 @@ export default function ProjectTracker() {
     const fortyFiveDays = new Date().getTime() + 45 * 86400000;
     const fifteenDays = new Date().getTime() + 15 * 86400000;
 
-    projects.forEach((p) => {
+    mappedProjects.forEach((p) => {
       const currentUnits = parseInt(p.units as any) || 0;
-      const finalScore = calculateProjectHealth(p, settings).totalScore;
+      const finalScore = p.healthScore;
 
       // Current State
       if (p.projectStatus === 'Onboarding') {
@@ -213,54 +257,43 @@ export default function ProjectTracker() {
       liveUnits: units,
       prevLiveUnits: prevU,
     };
-  }, [projects, settings]);
+  }, [mappedProjects]);
 
-  // 2. Tab filtering logic (`universalFilterAndSort`)
+  // 3. Tab filtering logic (`universalFilterAndSort`)
   const baseProjects = useMemo(() => {
     const today = new Date().getTime();
-    const thirtyDaysAgo = today - 30 * 24 * 60 * 60 * 1000;
     const fortyFiveDays = today + 45 * 86400000;
 
     // Tab Filter
-    return projects
-      .map((p) => {
-        const healthCalc = calculateProjectHealth(p, settings);
-        const finalScore = healthCalc.totalScore;
-
-        const hist = healthHistory[p.id] || [];
-        const sortedHist = [...hist]
-          .filter((x: any) => x.timeVal >= thirtyDaysAgo)
-          .sort((a: any, b: any) => a.timeVal - b.timeVal);
-        const trendData = sortedHist.map((h: any) => h.score);
-        if (typeof finalScore === 'number') trendData.push(finalScore);
-        return { ...p, healthScore: finalScore, trendData };
-      })
-      .filter((p) => {
-        if (activeTab === 'Actively Onboarding') {
-          return (
-            p.projectStatus === 'Onboarding' &&
-            !!p.releaseDateVal &&
-            p.releaseDateVal <= fortyFiveDays
-          );
-        }
-        if (activeTab === 'Upcoming (> 45 Days)') {
-          return (
-            p.projectStatus === 'Onboarding' && p.releaseDateVal && p.releaseDateVal > fortyFiveDays
-          );
-        }
-        if (activeTab === 'No Due Date') {
-          return p.projectStatus === 'Onboarding' && !p.releaseDateVal;
-        }
-        if (activeTab === 'All Released') {
-          return p.projectStatus === 'Active' || p.projectStatus === 'Closed';
-        }
-        if (activeTab === 'Suspended') {
-          return p.projectStatus === 'Suspended';
-        }
-        // All Projects
-        return true;
-      });
-  }, [projects, activeTab, settings, healthHistory]);
+    return mappedProjects.filter((p) => {
+      if (activeTab === 'Actively Onboarding') {
+        return (
+          p.projectStatus === 'Onboarding' &&
+          !!p.releaseDateVal &&
+          p.releaseDateVal <= fortyFiveDays
+        );
+      }
+      if (activeTab === 'Upcoming (> 45 Days)') {
+        return (
+          p.projectStatus === 'Onboarding' && p.releaseDateVal && p.releaseDateVal > fortyFiveDays
+        );
+      }
+      if (activeTab === 'No Due Date') {
+        return p.projectStatus === 'Onboarding' && !p.releaseDateVal;
+      }
+      if (activeTab === 'All Onboarding') {
+        return p.projectStatus === 'Onboarding';
+      }
+      if (activeTab === 'All Released') {
+        return p.projectStatus === 'Active' || p.projectStatus === 'Closed';
+      }
+      if (activeTab === 'Suspended') {
+        return p.projectStatus === 'Suspended';
+      }
+      // All Projects
+      return true;
+    });
+  }, [mappedProjects, activeTab]);
 
   const filteredProjects = useMemo(() => {
     let filtered = [...baseProjects];
@@ -309,27 +342,31 @@ export default function ProjectTracker() {
     }
 
     if (releaseDateFilter) {
-      const startStr = releaseDateFilter.start;
-      const endStr = releaseDateFilter.end;
+      if (releaseDateFilter === 'no-date') {
+        filtered = filtered.filter((p) => !p.releaseDateVal);
+      } else {
+        const startStr = releaseDateFilter.start;
+        const endStr = releaseDateFilter.end;
 
-      // To compare dates simply, since releaseDateVal is a timestamp and start/end are "YYYY-MM"
-      let startMs = 0;
-      let endMs = Infinity;
-      if (startStr) {
-        const d = new Date(startStr + '-01T00:00:00');
-        startMs = d.getTime();
-      }
-      if (endStr) {
-        // To get end of month, go to next month day 0
-        const [y, m] = endStr.split('-');
-        const d = new Date(Number(y), Number(m), 0, 23, 59, 59, 999);
-        endMs = d.getTime();
-      }
+        // To compare dates simply, since releaseDateVal is a timestamp and start/end are "YYYY-MM"
+        let startMs = 0;
+        let endMs = Infinity;
+        if (startStr) {
+          const d = new Date(startStr + '-01T00:00:00');
+          startMs = d.getTime();
+        }
+        if (endStr) {
+          // To get end of month, go to next month day 0
+          const [y, m] = endStr.split('-');
+          const d = new Date(Number(y), Number(m), 0, 23, 59, 59, 999);
+          endMs = d.getTime();
+        }
 
-      filtered = filtered.filter((p) => {
-        if (!p.releaseDateVal) return false;
-        return p.releaseDateVal >= startMs && p.releaseDateVal <= endMs;
-      });
+        filtered = filtered.filter((p) => {
+          if (!p.releaseDateVal) return false;
+          return p.releaseDateVal >= startMs && p.releaseDateVal <= endMs;
+        });
+      }
     }
 
     // Search Filter
@@ -352,10 +389,34 @@ export default function ProjectTracker() {
         valA = a.clients?.join(', ') || '';
         valB = b.clients?.join(', ') || '';
       }
+      if (sortCol === 'developers') {
+        valA = a.developers?.join(', ') || '';
+        valB = b.developers?.join(', ') || '';
+      }
+      if (sortCol === 'salesMarketingClients') {
+        valA = a.salesMarketingClients?.join(', ') || '';
+        valB = b.salesMarketingClients?.join(', ') || '';
+      }
 
-      if (valA === valB) return 0;
-      if (valA === null || valA === undefined) return 1;
-      if (valB === null || valB === undefined) return -1;
+      // Normalize missing dates to 0 for consistent falsy checks
+      if (sortCol === 'releaseDateVal') {
+        valA = valA || 0;
+        valB = valB || 0;
+      }
+
+      if (valA === valB) {
+        const nameA = (a.name || '').toLowerCase();
+        const nameB = (b.name || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      }
+
+      if (sortCol === 'releaseDateVal') {
+        if (!valA) return 1;
+        if (!valB) return -1;
+      } else {
+        if (valA === null || valA === undefined || valA === '') return 1;
+        if (valB === null || valB === undefined || valB === '') return -1;
+      }
 
       if (typeof valA === 'string') {
         return sortAsc ? valA.localeCompare(valB as string) : (valB as string).localeCompare(valA);
@@ -381,123 +442,86 @@ export default function ProjectTracker() {
   ]);
 
   // 4. Update Project (Inline)
-  const handleUpdateProject = async (id: string, field: string, value: any) => {
-    const p = projects.find((x) => x.id === id);
-    if (p) {
-      let fieldName = field;
-      if (field === 'projectStatus') fieldName = 'Status';
-      else if (field === 'assignee') fieldName = 'Account Manager';
-      else if (field === 'phase') fieldName = 'Implementation Milestone';
-      else if (field === 'timeline') fieldName = 'Delivery Status';
-
-      const updates: any = { [field]: value };
-
-      if (field === 'timelineStatus' && value === 'Released') {
-        updates.projectStatus = 'Active';
-        updates.onboardingPhase = 'Released';
-        updates.releaseDateVal = new Date().getTime();
-        updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-        });
-      } else if (field === 'onboardingPhase' && value === 'Released') {
-        updates.projectStatus = 'Active';
-        updates.timelineStatus = 'Released';
-        updates.releaseDateVal = new Date().getTime();
-        updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-        });
-      } else if (
-        field === 'timelineStatus' &&
-        (value === 'Indefinitely Delayed' || value === 'Currently Delayed')
-      ) {
-        updates.releaseDateVal = null;
-        updates.releaseDateStr = '';
-      }
-
-      const oldVal = p[field as keyof typeof p];
-      const displayOld = oldVal === undefined || oldVal === null || oldVal === '' ? 'None' : oldVal;
-      const displayNew = value === undefined || value === null || value === '' ? 'None' : value;
-      const logMsg = `Changed ${fieldName} from ${displayOld} to ${displayNew}`;
-
-      await updateProjectRecord(
-        { ...p, ...updates },
-        {
-          successMsg: `${fieldName} successfully updated for '${p.name}'.`,
-          errorMsg: `Failed to update ${fieldName} for '${p.name}'.`,
-        },
-        logMsg,
-        user?.name
-      );
-
-      if (p.clientIds && (field === 'projectStatus' || updates.projectStatus === 'Active')) {
-        const statusOld = p.projectStatus || 'Not Set';
-        const statusNew = updates.projectStatus || value;
-        if (statusOld !== statusNew) {
-          for (const cid of p.clientIds) {
-            await addAutoLog(
-              cid,
-              `Project "${p.name}" Status changed from ${statusOld} to ${statusNew}`,
-              user?.name || 'System',
-              true
-            );
-          }
+  const handleUpdateProject = useCallback(
+    async (id: string, field: string, value: any) => {
+      const p = projects.find((x) => x.id === id);
+      if (p) {
+        let fieldName = field;
+        if (field === 'projectStatus') fieldName = 'Status';
+        else if (field === 'assignee') fieldName = 'Account Manager';
+        else if (field === 'onboardingPhase') fieldName = 'Implementation Status';
+        else if (field === 'timelineStatus') fieldName = 'Delivery Status';
+        else if (field === 'releaseDateVal') fieldName = 'Release Date';
+        else {
+          fieldName =
+            field.charAt(0).toUpperCase() +
+            field
+              .replace(/([A-Z])/g, ' $1')
+              .slice(1)
+              .trim();
         }
-      }
-    }
-  };
 
-  const handleBulkUpdate = async (field: string, value: any) => {
-    const projs = projects.filter((p) => selectedRows.includes(p.id));
-
-    let fieldName = field;
-    if (field === 'projectStatus') fieldName = 'Status';
-    else if (field === 'assignee') fieldName = 'Manager';
-    else if (field === 'phase') fieldName = 'Implementation Milestone';
-    else if (field === 'timeline') fieldName = 'Delivery Status';
-
-    const loadingToast = toast.loading(`Updating ${projs.length} projects...`);
-
-    try {
-      for (const p of projs) {
         const updates: any = { [field]: value };
 
-        // Automation rule
-        if (field === 'timelineStatus' && value === 'Released') {
-          updates.projectStatus = 'Active';
-          updates.onboardingPhase = 'Released';
-          updates.releaseDateVal = new Date().getTime();
-          updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          });
+        if (field === 'releaseDateVal') {
+          if (value) {
+            updates.releaseDateStr = new Date(value).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+          } else {
+            updates.releaseDateStr = '';
+          }
+        }
+
+        // Automation Rules
+        if (field === 'timelineStatus') {
+          if (value === 'Released') {
+            updates.projectStatus = 'Active';
+            updates.onboardingPhase = 'Released';
+            const today = new Date();
+            const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            updates.releaseDateVal = localMidnight.getTime();
+            updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+          } else if (value === 'Indefinitely Delayed') {
+            updates.releaseDateVal = null;
+            updates.releaseDateStr = '';
+          }
         } else if (field === 'onboardingPhase' && value === 'Released') {
           updates.projectStatus = 'Active';
           updates.timelineStatus = 'Released';
-          updates.releaseDateVal = new Date().getTime();
-          updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
-            month: 'long',
+          const today = new Date();
+          const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          updates.releaseDateVal = localMidnight.getTime();
+          updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+            month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
-        } else if (
-          field === 'timelineStatus' &&
-          (value === 'Indefinitely Delayed' || value === 'Currently Delayed')
-        ) {
-          updates.releaseDateVal = null;
-          updates.releaseDateStr = '';
         }
 
-        await updateProjectRecord({ ...p, ...updates }, { silent: true });
-        const oldVal = p[field as keyof typeof p] || 'Unassigned/None';
-        await addProjectAutoLog(
-          p.id,
-          `${fieldName} bulk updated to ${value}`,
-          user?.name || 'System'
+        const oldVal = p[field as keyof typeof p];
+        const displayOld =
+          oldVal === undefined || oldVal === null || oldVal === '' ? 'None' : oldVal;
+        const displayNew = value === undefined || value === null || value === '' ? 'None' : value;
+        const logMsg =
+          field === 'releaseDateVal'
+            ? `Changed Release Date to ${updates.releaseDateStr || 'None'}`
+            : `Changed ${fieldName} from ${displayOld} to ${displayNew}`;
+
+        await updateProjectRecord(
+          { ...p, ...updates },
+          {
+            successMsg: `${fieldName} successfully updated for '${p.name}'.`,
+            errorMsg: `Failed to update ${fieldName} for '${p.name}'.`,
+          },
+          logMsg,
+          user?.name
         );
 
         if (p.clientIds && (field === 'projectStatus' || updates.projectStatus === 'Active')) {
@@ -505,191 +529,300 @@ export default function ProjectTracker() {
           const statusNew = updates.projectStatus || value;
           if (statusOld !== statusNew) {
             for (const cid of p.clientIds) {
-              await addAutoLog(
+              addAutoLog(
                 cid,
-                `Project "${p.name}" Status bulk updated from ${statusOld} to ${statusNew}`,
+                `Project "${p.name}" Status changed from ${statusOld} to ${statusNew}`,
                 user?.name || 'System',
                 true
-              );
+              ).catch(console.error);
             }
           }
         }
       }
+    },
+    [projects, user]
+  );
+
+  const handleBulkUpdate = async (updates: Record<string, any>) => {
+    const updateKeys = Object.keys(updates);
+    if (updateKeys.length === 0) return;
+
+    const projs = projects.filter((p) => selectedRows.includes(p.id));
+    if (projs.length === 0) return;
+
+    const loadingToast = toast.loading(`Updating ${projs.length} projects...`);
+
+    try {
+      const updatePromises = projs.map(async (p) => {
+        const pUpdates: any = { ...updates };
+
+        // Automation Rules
+        if (pUpdates.timelineStatus) {
+          if (pUpdates.timelineStatus === 'Released') {
+            pUpdates.projectStatus = 'Active';
+            pUpdates.onboardingPhase = 'Released';
+            const today = new Date();
+            const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            pUpdates.releaseDateVal = localMidnight.getTime();
+            pUpdates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+          } else if (pUpdates.timelineStatus === 'Indefinitely Delayed') {
+            pUpdates.releaseDateVal = null;
+            pUpdates.releaseDateStr = '';
+          }
+        } else if (pUpdates.onboardingPhase === 'Released') {
+          pUpdates.projectStatus = 'Active';
+          pUpdates.timelineStatus = 'Released';
+          const today = new Date();
+          const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          pUpdates.releaseDateVal = localMidnight.getTime();
+          pUpdates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        }
+
+        await updateProjectRecord({ ...p, ...pUpdates }, { silent: true });
+
+        const updatedFields = [];
+        for (const field of Object.keys(pUpdates)) {
+          let fieldName = field;
+          if (field === 'projectStatus') fieldName = 'Project Status';
+          else if (field === 'assignee') fieldName = 'Manager';
+          else if (field === 'onboardingPhase') fieldName = 'Implementation Status';
+          else if (field === 'timelineStatus') fieldName = 'Schedule Status';
+          updatedFields.push(`${fieldName} to ${pUpdates[field]}`);
+        }
+
+        if (updatedFields.length > 0) {
+          const logMsg = `Bulk updated: ${updatedFields.join(', ')}`;
+          // Fire and forget logging
+          addProjectAutoLog(p.id, logMsg, user?.name || 'System').catch(console.error);
+
+          const shouldLogClient =
+            p.clientIds && ('projectStatus' in pUpdates || p.projectStatus === 'Active');
+          if (shouldLogClient) {
+            for (const cid of p.clientIds) {
+              addAutoLog(
+                cid,
+                `Project "${p.name}": Bulk updated ${updatedFields.join(', ')}`,
+                user?.name || 'System',
+                true
+              ).catch(console.error);
+            }
+          }
+        }
+      });
+
+      await Promise.all(updatePromises);
+
       toast.dismiss(loadingToast);
-      toast.success(`${fieldName} successfully updated for ${projs.length} projects.`);
+      toast.success(`Successfully updated ${projs.length} projects.`, { duration: 5000 });
     } catch (err: any) {
       toast.dismiss(loadingToast);
-      toast.error(`Failed to update ${fieldName} for ${projs.length} projects: ${err.message}`);
+      toast.error(`Failed to update projects: ${err.message}`, { duration: 5000 });
     }
 
     setSelectedRows([]);
   };
 
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleOpenDrawer = useCallback(
+    (type: string, id: string, data?: any) => {
+      openDrawer(type as any, id, data);
+    },
+    [openDrawer]
+  );
+
+  const slicedProjects = useMemo(
+    () => filteredProjects.slice(0, displayLimit),
+    [filteredProjects, displayLimit]
+  );
+
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-            Project Tracker
-          </h1>
-          <p className="text-base text-muted-foreground mt-1">
-            Comprehensive tracker and reporting for all projects.
-          </p>
-        </div>
+    <div
+      className="flex-1 flex flex-col h-full overflow-hidden bg-white"
+      onWheel={(e) => {
+        if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
+          tableScrollRef.current.scrollTop += e.deltaY;
+        }
+      }}
+    >
+      <div
+        className={`transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+      >
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+              Project Tracker
+            </h1>
+            <p className="text-base text-muted-foreground mt-1">
+              Comprehensive tracker and reporting for all projects.
+            </p>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
-          <button
-            onClick={() => openModal('addProject')}
-            className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-          >
-            <Plus className="w-4 h-4 shrink-0" />
-            <span>Add Project</span>
-          </button>
-          <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
             <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              onClick={() => openModal('addProject')}
+              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Download className="w-4 h-4 shrink-0" />
-              <span>Export</span>
-              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              <Plus className="w-4 h-4 shrink-0" />
+              <span>Add Project</span>
             </button>
-            {showExportMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Projects', projects, 'All_Projects');
-                  }}
-                >
-                  <Database className="w-4 h-4 text-muted-foreground" /> Export All
+            <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              >
+                <Download className="w-4 h-4 shrink-0" />
+                <span>Export</span>
+                <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                  <div
+                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Projects', projects, 'All_Projects');
+                    }}
+                  >
+                    <Database className="w-4 h-4 text-muted-foreground" /> Export All
+                  </div>
+                  <div
+                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
+                    }}
+                  >
+                    <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+                  </div>
                 </div>
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
-                  }}
-                >
-                  <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
-                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+          <div
+            onClick={() => {
+              clearAllFilters();
+              setPtFilter('All Onboarding');
+            }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '50ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Onboarding
+                </span>
+                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  Projects currently in onboarding
+                </span>
               </div>
-            )}
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                <Target className="w-5 h-5" />
+              </div>
+            </div>
+            <TrendIndicator
+              current={onboardingCount}
+              previous={prevOnboardingCount}
+              neutral={true}
+            />
           </div>
-        </div>
-      </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
-        <div
-          onClick={() => {
-            clearAllFilters();
-            setPtFilter('All Projects');
-            setStatusFilter(['Onboarding']);
-          }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '50ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Onboarding
-              </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                Projects currently in onboarding
-              </span>
+          <div
+            onClick={() => {
+              clearAllFilters();
+              setPtFilter('Actively Onboarding');
+            }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '150ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Launch Pipeline
+                </span>
+                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  Target launch &le; 45 days
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                <Zap className="w-5 h-5" />
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-              <Target className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
           </div>
-          <TrendIndicator current={onboardingCount} previous={prevOnboardingCount} neutral={true} />
-        </div>
 
-        <div
-          onClick={() => {
-            clearAllFilters();
-            setPtFilter('Actively Onboarding');
-          }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '150ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Launch Pipeline
-              </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                Target launch &le; 45 days
-              </span>
+          <div
+            onClick={() => {
+              clearAllFilters();
+              setPtFilter('All Projects');
+              setHealthFilter(['At Risk']);
+            }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '250ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  At-Risk Projects
+                </span>
+                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  Live projects scoring under 50
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                <AlertOctagon className="w-5 h-5" />
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-              <Zap className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
           </div>
-          <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
-        </div>
 
-        <div
-          onClick={() => {
-            clearAllFilters();
-            setPtFilter('All Projects');
-            setHealthFilter(['At Risk']);
-          }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '250ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                At-Risk Projects
-              </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                Live projects scoring under 50
-              </span>
+          <div
+            onClick={() => {
+              clearAllFilters();
+              setPtFilter('All Released');
+              setStatusFilter(['Active', 'Suspended']);
+            }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            style={{ animationDelay: '350ms' }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="flex items-start justify-between mb-2 relative z-10">
+              <div className="flex flex-col pr-2">
+                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                  Total Live Units
+                </span>
+                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  Scale of actively supported product
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+                <Building className="w-5 h-5" />
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-              <AlertOctagon className="w-5 h-5" />
-            </div>
+            <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
           </div>
-          <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
-        </div>
-
-        <div
-          onClick={() => {
-            clearAllFilters();
-            setPtFilter('All Released');
-            setStatusFilter(['Active', 'Suspended']);
-          }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-          style={{ animationDelay: '350ms' }}
-        >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Total Live Units
-              </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                Scale of actively supported product
-              </span>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-              <Building className="w-5 h-5" />
-            </div>
-          </div>
-          <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
         </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
         {(() => {
           const toolbarContent = (
-            <div className="flex flex-col gap-1.5 pb-2 shrink-0 w-full">
+            <div className="flex flex-col gap-1.5 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
                   <div className="flex items-center bg-slate-100/80 border border-slate-200 rounded-lg p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] mr-2 shrink-0">
@@ -715,6 +848,7 @@ export default function ProjectTracker() {
                         { label: 'Actively Onboarding', icon: PlayCircle },
                         { label: 'Upcoming (> 45 Days)', icon: Calendar },
                         { label: 'No Due Date', icon: Clock },
+                        { label: 'All Onboarding', icon: ListTodo },
                         { label: 'All Released', icon: CheckCircle2 },
                         { label: 'All Projects', icon: Database },
                       ];
@@ -737,13 +871,13 @@ export default function ProjectTracker() {
                     <input
                       type="text"
                       placeholder="Search projects..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
                       className="w-full pl-9 pr-9 py-2 bg-white border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm h-9"
                     />
-                    {searchTerm && (
+                    {searchInput && (
                       <button
-                        onClick={() => setSearchTerm('')}
+                        onClick={() => setSearchInput('')}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -780,17 +914,17 @@ export default function ProjectTracker() {
                       onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
                     },
                     {
-                      label: 'Status',
+                      label: 'Project Status',
                       values: statusFilter,
                       onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v),
                     },
                     {
-                      label: 'Delivery Status',
+                      label: 'Schedule Status',
                       values: timelineFilter,
                       onRemove: (v) => removeFilterItem(setTimelineFilter, timelineFilter, v),
                     },
                     {
-                      label: 'Implementation Milestone',
+                      label: 'Implementation Status',
                       values: phaseFilter,
                       onRemove: (v) => removeFilterItem(setPhaseFilter, phaseFilter, v),
                     },
@@ -807,11 +941,13 @@ export default function ProjectTracker() {
                     {
                       label: 'Release',
                       values: releaseDateFilter
-                        ? [
-                            releaseDateFilter.start === releaseDateFilter.end
-                              ? releaseDateFilter.start
-                              : `${releaseDateFilter.start} to ${releaseDateFilter.end}`,
-                          ]
+                        ? releaseDateFilter === 'no-date'
+                          ? ['No Date']
+                          : [
+                              releaseDateFilter.start === releaseDateFilter.end
+                                ? releaseDateFilter.start
+                                : `${releaseDateFilter.start} to ${releaseDateFilter.end}`,
+                            ]
                         : [],
                       onRemove: () => setReleaseDateFilter(null),
                     },
@@ -844,9 +980,27 @@ export default function ProjectTracker() {
             <>
               {toolbarContent}
               <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
-                <div className="flex-1 overflow-auto custom-thin-scroll w-full relative">
+                <div
+                  ref={tableScrollRef}
+                  className="flex-1 overflow-auto custom-thin-scroll w-full relative"
+                  onWheel={(e) => {
+                    if (e.deltaY < -10 && isScrolled && e.currentTarget.scrollTop <= 10) {
+                      setIsScrolled(false);
+                    }
+                  }}
+                  onScroll={(e) => {
+                    const target = e.currentTarget;
+                    if (target.scrollTop > 40 && !isScrolled) {
+                      setIsScrolled(true);
+                    } else if (target.scrollTop <= 10 && isScrolled) {
+                      if (target.scrollHeight > target.clientHeight + 2) {
+                        setIsScrolled(false);
+                      }
+                    }
+                  }}
+                >
                   <ProjectTrackerTable
-                    projects={filteredProjects}
+                    projects={slicedProjects}
                     baseProjects={baseProjects}
                     activeTab={activeTab}
                     settings={settings}
@@ -856,7 +1010,7 @@ export default function ProjectTracker() {
                     sortAsc={sortAsc}
                     onSort={handleSort}
                     onUpdateProject={handleUpdateProject}
-                    openDrawer={(type, id, data) => openDrawer(type as any, id, data)}
+                    openDrawer={handleOpenDrawer}
                     statusFilter={statusFilter}
                     setStatusFilter={setStatusFilter}
                     healthFilter={healthFilter}
@@ -876,6 +1030,16 @@ export default function ProjectTracker() {
                     releaseDateFilter={releaseDateFilter}
                     setReleaseDateFilter={setReleaseDateFilter}
                   />
+                  {filteredProjects.length > displayLimit && (
+                    <div ref={loadMoreRef} className="flex justify-center p-4 h-24 items-center">
+                      <button
+                        onClick={() => setDisplayLimit((prev) => prev + 50)}
+                        className="text-cyan-600 hover:text-cyan-700 font-medium text-sm hover:underline transition-colors"
+                      >
+                        Load More ({filteredProjects.length - displayLimit} remaining)
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {footerContent}
               </div>
@@ -883,10 +1047,26 @@ export default function ProjectTracker() {
           ) : (
             <div className="flex-1 flex flex-col min-h-0 w-full relative">
               {toolbarContent}
-              <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
-                <ProjectTrackerCalendar
-                  openDrawer={(type, id, data) => openDrawer(type as any, id, data)}
-                />
+              <div
+                ref={tableScrollRef}
+                className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col"
+                onWheel={(e) => {
+                  if (e.deltaY < -10 && isScrolled && e.currentTarget.scrollTop <= 10) {
+                    setIsScrolled(false);
+                  }
+                }}
+                onScroll={(e) => {
+                  const target = e.currentTarget;
+                  if (target.scrollTop > 40 && !isScrolled) {
+                    setIsScrolled(true);
+                  } else if (target.scrollTop <= 10 && isScrolled) {
+                    if (target.scrollHeight > target.clientHeight + 2) {
+                      setIsScrolled(false);
+                    }
+                  }
+                }}
+              >
+                <ProjectTrackerCalendar openDrawer={handleOpenDrawer} />
               </div>
             </div>
           );

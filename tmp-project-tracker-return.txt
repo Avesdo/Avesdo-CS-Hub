@@ -1,0 +1,674 @@
+return (
+            p.projectStatus === 'Onboarding' &&
+            !!p.releaseDateVal &&
+            p.releaseDateVal <= fortyFiveDays
+          );
+        }
+        if (activeTab === 'Upcoming (> 45 Days)') {
+          return (
+            p.projectStatus === 'Onboarding' && p.releaseDateVal && p.releaseDateVal > fortyFiveDays
+          );
+        }
+        if (activeTab === 'No Due Date') {
+          return p.projectStatus === 'Onboarding' && !p.releaseDateVal;
+        }
+        if (activeTab === 'All Released') {
+          return p.projectStatus === 'Active' || p.projectStatus === 'Closed';
+        }
+        if (activeTab === 'Suspended') {
+          return p.projectStatus === 'Suspended';
+        }
+        // All Projects
+        return true;
+      });
+  }, [projects, activeTab, settings, healthHistory]);
+
+  const filteredProjects = useMemo(() => {
+    let filtered = [...baseProjects];
+
+    // Column Filters
+    if (statusFilter.length > 0) {
+      filtered = filtered.filter((p) => statusFilter.includes(p.projectStatus || 'Not Set'));
+    }
+    if (nameFilter.length > 0) {
+      filtered = filtered.filter((p) => nameFilter.includes(p.name || 'Unnamed Project'));
+    }
+    if (clientFilter.length > 0) {
+      filtered = filtered.filter((p) => p.clients?.some((c: string) => clientFilter.includes(c)));
+    }
+    if (managerFilter.length > 0) {
+      filtered = filtered.filter((p) => managerFilter.includes(p.assignee || 'Unassigned'));
+    }
+    if (timelineFilter.length > 0) {
+      filtered = filtered.filter((p) => timelineFilter.includes(p.timelineStatus || 'Not Set'));
+    }
+    if (phaseFilter.length > 0) {
+      filtered = filtered.filter((p) => phaseFilter.includes(p.onboardingPhase || 'Not Set'));
+    }
+
+    if (healthFilter.length > 0) {
+      const thresholds = settings?.scoring?.thresholds || { healthy: 80, warning: 50 };
+      filtered = filtered.filter((p) => {
+        const score = p.healthScore;
+        const isHealthy = typeof score === 'number' && score >= thresholds.healthy;
+        const isWarning =
+          typeof score === 'number' && score >= thresholds.warning && score < thresholds.healthy;
+        const isAtRisk = typeof score === 'number' && score < thresholds.warning;
+        return healthFilter.some((hf) => {
+          if (hf === 'Healthy') return isHealthy;
+          if (hf === 'Warning') return isWarning;
+          if (hf === 'At Risk') return isAtRisk;
+          return false;
+        });
+      });
+    }
+
+    if (featuresFilter.length > 0) {
+      filtered = filtered.filter(
+        (p) => p.features && p.features.some((f: string) => featuresFilter.includes(f))
+      );
+    }
+
+    if (releaseDateFilter) {
+      const startStr = releaseDateFilter.start;
+      const endStr = releaseDateFilter.end;
+
+      // To compare dates simply, since releaseDateVal is a timestamp and start/end are "YYYY-MM"
+      let startMs = 0;
+      let endMs = Infinity;
+      if (startStr) {
+        const d = new Date(startStr + '-01T00:00:00');
+        startMs = d.getTime();
+      }
+      if (endStr) {
+        // To get end of month, go to next month day 0
+        const [y, m] = endStr.split('-');
+        const d = new Date(Number(y), Number(m), 0, 23, 59, 59, 999);
+        endMs = d.getTime();
+      }
+
+      filtered = filtered.filter((p) => {
+        if (!p.releaseDateVal) return false;
+        return p.releaseDateVal >= startMs && p.releaseDateVal <= endMs;
+      });
+    }
+
+    // Search Filter
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          (p.name || '').toLowerCase().includes(lower) ||
+          (p.assignee || '').toLowerCase().includes(lower) ||
+          (p.clients?.join(', ') || '').toLowerCase().includes(lower)
+      );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let valA = a[sortCol as keyof typeof a];
+      let valB = b[sortCol as keyof typeof b];
+
+      if (sortCol === 'clients') {
+        valA = a.clients?.join(', ') || '';
+        valB = b.clients?.join(', ') || '';
+      }
+
+      if (valA === valB) return 0;
+      if (valA === null || valA === undefined) return 1;
+      if (valB === null || valB === undefined) return -1;
+
+      if (typeof valA === 'string') {
+        return sortAsc ? valA.localeCompare(valB as string) : (valB as string).localeCompare(valA);
+      }
+      return sortAsc ? (valA > valB ? 1 : -1) : valA < valB ? 1 : -1;
+    });
+
+    return filtered;
+  }, [
+    baseProjects,
+    searchTerm,
+    sortCol,
+    sortAsc,
+    statusFilter,
+    healthFilter,
+    nameFilter,
+    clientFilter,
+    managerFilter,
+    timelineFilter,
+    phaseFilter,
+    featuresFilter,
+    releaseDateFilter,
+  ]);
+
+  // 4. Update Project (Inline)
+  const handleUpdateProject = async (id: string, field: string, value: any) => {
+    const p = projects.find((x) => x.id === id);
+    if (p) {
+      let fieldName = field;
+      if (field === 'projectStatus') fieldName = 'Status';
+      else if (field === 'assignee') fieldName = 'Account Manager';
+      else if (field === 'phase') fieldName = 'Implementation Milestone';
+      else if (field === 'timeline') fieldName = 'Delivery Status';
+
+      const updates: any = { [field]: value };
+
+      if (field === 'timelineStatus' && value === 'Released') {
+        updates.projectStatus = 'Active';
+        updates.onboardingPhase = 'Released';
+        updates.releaseDateVal = new Date().getTime();
+        updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        });
+      } else if (field === 'onboardingPhase' && value === 'Released') {
+        updates.projectStatus = 'Active';
+        updates.timelineStatus = 'Released';
+        updates.releaseDateVal = new Date().getTime();
+        updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        });
+      } else if (
+        field === 'timelineStatus' &&
+        (value === 'Indefinitely Delayed' || value === 'Currently Delayed')
+      ) {
+        updates.releaseDateVal = null;
+        updates.releaseDateStr = '';
+      }
+
+      const oldVal = p[field as keyof typeof p];
+      const displayOld = oldVal === undefined || oldVal === null || oldVal === '' ? 'None' : oldVal;
+      const displayNew = value === undefined || value === null || value === '' ? 'None' : value;
+      const logMsg = `Changed ${fieldName} from ${displayOld} to ${displayNew}`;
+
+      await updateProjectRecord(
+        { ...p, ...updates },
+        {
+          successMsg: `${fieldName} successfully updated for '${p.name}'.`,
+          errorMsg: `Failed to update ${fieldName} for '${p.name}'.`,
+        },
+        logMsg,
+        user?.name
+      );
+
+      if (p.clientIds && (field === 'projectStatus' || updates.projectStatus === 'Active')) {
+        const statusOld = p.projectStatus || 'Not Set';
+        const statusNew = updates.projectStatus || value;
+        if (statusOld !== statusNew) {
+          for (const cid of p.clientIds) {
+            await addAutoLog(
+              cid,
+              `Project "${p.name}" Status changed from ${statusOld} to ${statusNew}`,
+              user?.name || 'System',
+              true
+            );
+          }
+        }
+      }
+    }
+  };
+
+  const handleBulkUpdate = async (field: string, value: any) => {
+    const projs = projects.filter((p) => selectedRows.includes(p.id));
+
+    let fieldName = field;
+    if (field === 'projectStatus') fieldName = 'Status';
+    else if (field === 'assignee') fieldName = 'Manager';
+    else if (field === 'phase') fieldName = 'Implementation Milestone';
+    else if (field === 'timeline') fieldName = 'Delivery Status';
+
+    const loadingToast = toast.loading(`Updating ${projs.length} projects...`);
+
+    try {
+      for (const p of projs) {
+        const updates: any = { [field]: value };
+
+        // Automation rule
+        if (field === 'timelineStatus' && value === 'Released') {
+          updates.projectStatus = 'Active';
+          updates.onboardingPhase = 'Released';
+          updates.releaseDateVal = new Date().getTime();
+          updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else if (field === 'onboardingPhase' && value === 'Released') {
+          updates.projectStatus = 'Active';
+          updates.timelineStatus = 'Released';
+          updates.releaseDateVal = new Date().getTime();
+          updates.releaseDateStr = new Date().toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else if (
+          field === 'timelineStatus' &&
+          (value === 'Indefinitely Delayed' || value === 'Currently Delayed')
+        ) {
+          updates.releaseDateVal = null;
+          updates.releaseDateStr = '';
+        }
+
+        await updateProjectRecord({ ...p, ...updates }, { silent: true });
+        const oldVal = p[field as keyof typeof p] || 'Unassigned/None';
+        await addProjectAutoLog(
+          p.id,
+          `${fieldName} bulk updated to ${value}`,
+          user?.name || 'System'
+        );
+
+        if (p.clientIds && (field === 'projectStatus' || updates.projectStatus === 'Active')) {
+          const statusOld = p.projectStatus || 'Not Set';
+          const statusNew = updates.projectStatus || value;
+          if (statusOld !== statusNew) {
+            for (const cid of p.clientIds) {
+              await addAutoLog(
+                cid,
+                `Project "${p.name}" Status bulk updated from ${statusOld} to ${statusNew}`,
+                user?.name || 'System',
+                true
+              );
+            }
+          }
+        }
+      }
+      toast.dismiss(loadingToast);
+      toast.success(`${fieldName} successfully updated for ${projs.length} projects.`);
+    } catch (err: any) {
+      toast.dismiss(loadingToast);
+      toast.error(`Failed to update ${fieldName} for ${projs.length} projects: ${err.message}`);
+    }
+
+    setSelectedRows([]);
+  };
+
+  return (
+    <div className="flex-1 flex flex-col min-h-full overflow-y-auto overflow-x-hidden bg-slate-50/50 custom-thin-scroll" onScroll={(e) => { const t = e.currentTarget; if(t.scrollHeight - t.scrollTop - t.clientHeight < 800) setDisplayLimit(p => p + 50); }}>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+            Project Tracker
+          </h1>
+          <p className="text-base text-muted-foreground mt-1">
+            Comprehensive tracker and reporting for all projects.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
+          <button
+            onClick={() => openModal('addProject')}
+            className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          >
+            <Plus className="w-4 h-4 shrink-0" />
+            <span>Add Project</span>
+          </button>
+          <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            >
+              <Download className="w-4 h-4 shrink-0" />
+              <span>Export</span>
+              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+            </button>
+            {showExportMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                <div
+                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    universalExportCSV('Projects', projects, 'All_Projects');
+                  }}
+                >
+                  <Database className="w-4 h-4 text-muted-foreground" /> Export All
+                </div>
+                <div
+                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
+                  }}
+                >
+                  <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div 
+        className="shrink-0 mb-4 opacity-100"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-6">
+        <div
+          onClick={() => {
+            clearAllFilters();
+            setPtFilter('All Projects');
+            setStatusFilter(['Onboarding']);
+          }}
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          style={{ animationDelay: '50ms' }}
+        >
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+          <div className="flex items-start justify-between mb-2 relative z-10">
+            <div className="flex flex-col pr-2">
+              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Onboarding
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                Projects currently in onboarding
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+              <Target className="w-5 h-5" />
+            </div>
+          </div>
+          <TrendIndicator current={onboardingCount} previous={prevOnboardingCount} neutral={true} />
+        </div>
+
+        <div
+          onClick={() => {
+            clearAllFilters();
+            setPtFilter('Actively Onboarding');
+          }}
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          style={{ animationDelay: '150ms' }}
+        >
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+          <div className="flex items-start justify-between mb-2 relative z-10">
+            <div className="flex flex-col pr-2">
+              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Launch Pipeline
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                Target launch &le; 45 days
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+              <Zap className="w-5 h-5" />
+            </div>
+          </div>
+          <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
+        </div>
+
+        <div
+          onClick={() => {
+            clearAllFilters();
+            setPtFilter('All Projects');
+            setHealthFilter(['At Risk']);
+          }}
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          style={{ animationDelay: '250ms' }}
+        >
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+          <div className="flex items-start justify-between mb-2 relative z-10">
+            <div className="flex flex-col pr-2">
+              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                At-Risk Projects
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                Live projects scoring under 50
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+              <AlertOctagon className="w-5 h-5" />
+            </div>
+          </div>
+          <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
+        </div>
+
+        <div
+          onClick={() => {
+            clearAllFilters();
+            setPtFilter('All Released');
+            setStatusFilter(['Active', 'Suspended']);
+          }}
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          style={{ animationDelay: '350ms' }}
+        >
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+          <div className="flex items-start justify-between mb-2 relative z-10">
+            <div className="flex flex-col pr-2">
+              <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Total Live Units
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                Scale of actively supported product
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
+              <Building className="w-5 h-5" />
+            </div>
+          </div>
+          <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
+        </div>
+      </div>
+      </div>
+
+      <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
+        {(() => {
+          const toolbarContent = (
+            <div className="flex flex-col gap-1.5 pb-2 shrink-0 w-full">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
+                <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
+                  <div className="flex items-center bg-slate-100/80 border border-slate-200 rounded-lg p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] mr-2 shrink-0">
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'list' ? 'bg-white text-foreground shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-foreground'}`}
+                    >
+                      List View
+                    </button>
+                    <button
+                      onClick={() => setViewMode('calendar')}
+                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'calendar' ? 'bg-white text-foreground shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-foreground'}`}
+                    >
+                      Calendar
+                    </button>
+                  </div>
+                  {viewMode === 'list' &&
+                    (() => {
+                      const hasSuspendedProjects = projects.some(
+                        (p) => p.projectStatus === 'Suspended'
+                      );
+                      const tabs = [
+                        { label: 'Actively Onboarding', icon: PlayCircle },
+                        { label: 'Upcoming (> 45 Days)', icon: Calendar },
+                        { label: 'No Due Date', icon: Clock },
+                        { label: 'All Released', icon: CheckCircle2 },
+                        { label: 'All Projects', icon: Database },
+                      ];
+                      if (hasSuspendedProjects) {
+                        tabs.push({ label: 'Suspended', icon: PauseCircle });
+                      }
+                      return (
+                        <PageTabs
+                          tabs={tabs}
+                          activeTab={activeTab}
+                          onTabChange={(t) => setPtFilter(t)}
+                        />
+                      );
+                    })()}
+                </div>
+
+                {viewMode === 'list' && (
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search projects..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-9 py-2 bg-white border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm h-9"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {(nameFilter.length > 0 ||
+                clientFilter.length > 0 ||
+                managerFilter.length > 0 ||
+                timelineFilter.length > 0 ||
+                phaseFilter.length > 0 ||
+                statusFilter.length > 0 ||
+                healthFilter.length > 0 ||
+                featuresFilter.length > 0 ||
+                releaseDateFilter !== null) && (
+                <ActiveFilterBar
+                  filters={[
+                    {
+                      label: 'Project Name',
+                      values: nameFilter,
+                      onRemove: (v) => removeFilterItem(setNameFilter, nameFilter, v),
+                    },
+                    {
+                      label: 'Client',
+                      values: clientFilter,
+                      onRemove: (v) => removeFilterItem(setClientFilter, clientFilter, v),
+                    },
+                    {
+                      label: 'Manager',
+                      values: managerFilter,
+                      onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
+                    },
+                    {
+                      label: 'Status',
+                      values: statusFilter,
+                      onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v),
+                    },
+                    {
+                      label: 'Delivery Status',
+                      values: timelineFilter,
+                      onRemove: (v) => removeFilterItem(setTimelineFilter, timelineFilter, v),
+                    },
+                    {
+                      label: 'Implementation Milestone',
+                      values: phaseFilter,
+                      onRemove: (v) => removeFilterItem(setPhaseFilter, phaseFilter, v),
+                    },
+                    {
+                      label: 'Health',
+                      values: healthFilter,
+                      onRemove: (v) => removeFilterItem(setHealthFilter, healthFilter, v),
+                    },
+                    {
+                      label: 'Feature',
+                      values: featuresFilter,
+                      onRemove: (v) => removeFilterItem(setFeaturesFilter, featuresFilter, v),
+                    },
+                    {
+                      label: 'Release',
+                      values: releaseDateFilter
+                        ? [
+                            releaseDateFilter.start === releaseDateFilter.end
+                              ? releaseDateFilter.start
+                              : `${releaseDateFilter.start} to ${releaseDateFilter.end}`,
+                          ]
+                        : [],
+                      onRemove: () => setReleaseDateFilter(null),
+                    },
+                  ]}
+                  onClearAll={clearAllFilters}
+                />
+              )}
+            </div>
+          );
+
+          const footerContent =
+            viewMode === 'list' ? (
+              <TableFooter
+                totalItems={filteredProjects.length}
+                label="Total Projects"
+                rightContent={
+                  <span className="text-[11px] capitalize tracking-wider text-muted-foreground font-bold">
+                    Total Units Displayed:{' '}
+                    <span className="text-foreground text-[13px] font-bold ml-1">
+                      {filteredProjects
+                        .reduce((sum, p) => sum + (Number(p.units) || 0), 0)
+                        .toLocaleString()}
+                    </span>
+                  </span>
+                }
+              />
+            ) : null;
+
+          return viewMode === 'list' ? (
+            <>
+              {toolbarContent}
+              <div className="flex-1 border border-border rounded-b-xl rounded-t-none shadow-sm bg-white relative flex flex-col mx-4 md:mx-6 lg:mx-8 border-t-0">
+          <div className="flex-1 w-full relative"
+                  
+                >
+                  <ProjectTrackerTable
+                    projects={filteredProjects.slice(0, displayLimit)}
+                    baseProjects={baseProjects}
+                    activeTab={activeTab}
+                    settings={settings}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
+                    sortCol={sortCol}
+                    sortAsc={sortAsc}
+                    onSort={handleSort}
+                    onUpdateProject={handleUpdateProject}
+                    openDrawer={(type, id, data) => openDrawer(type as any, id, data)}
+                    statusFilter={statusFilter}
+                    setStatusFilter={setStatusFilter}
+                    healthFilter={healthFilter}
+                    setHealthFilter={setHealthFilter}
+                    nameFilter={nameFilter}
+                    setNameFilter={setNameFilter}
+                    clientFilter={clientFilter}
+                    setClientFilter={setClientFilter}
+                    managerFilter={managerFilter}
+                    setManagerFilter={setManagerFilter}
+                    timelineFilter={timelineFilter}
+                    setTimelineFilter={setTimelineFilter}
+                    phaseFilter={phaseFilter}
+                    setPhaseFilter={setPhaseFilter}
+                    featuresFilter={featuresFilter}
+                    setFeaturesFilter={setFeaturesFilter}
+                    releaseDateFilter={releaseDateFilter}
+                    setReleaseDateFilter={setReleaseDateFilter}
+                  />
+                </div>
+                {footerContent}
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col min-h-0 w-full relative">
+              {toolbarContent}
+              <div 
+                className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col"
+                
+              >
+                <ProjectTrackerCalendar
+                  openDrawer={(type, id, data) => openDrawer(type as any, id, data)}
+                />
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+
+      <BulkActionBar
+        selectedCount={selectedRows.length}
+        settings={settings}
+        onClearSelection={() => setSelectedRows([])}
+        onBulkUpdate={handleBulkUpdate}
+      />
+    </div>
+  );
+}
