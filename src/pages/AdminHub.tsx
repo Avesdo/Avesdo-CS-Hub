@@ -21,6 +21,7 @@ import {
   XCircle,
   Edit,
   Plus,
+  Database
 } from 'lucide-react';
 import {
   getSystemLogs,
@@ -35,12 +36,13 @@ import {
   addGlobalLog,
   clearAuditTrail,
 } from '../api/dbService';
+import { DataUploader } from '../components/admin/DataUploader';
 import { PageHeader } from '../components/PageHeader';
 import { toast } from '../utils/toast';
 import MultiSelectCombobox from '../components/MultiSelectCombobox';
 
 export default function AdminHub() {
-  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'intake'>('audit');
+  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'pipeline'>('pipeline');
   const {
     settings,
     archivedClients,
@@ -96,7 +98,7 @@ export default function AdminHub() {
   useEffect(() => {
     if (activeTab === 'audit') {
       loadLogs();
-    } else if (activeTab === 'intake') {
+    } else if (activeTab === 'pipeline') {
       loadAliases();
     }
   }, [activeTab]);
@@ -973,7 +975,7 @@ export default function AdminHub() {
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
         <div className="w-full md:w-72 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
-            { id: 'intake', label: 'Data Intake & Approvals', icon: FolderOpen },
+            { id: 'pipeline', label: 'Data Pipeline', icon: Database },
             { id: 'audit', label: 'Audit Trail', icon: History },
             { id: 'archives', label: 'Archives', icon: ArchiveRestore },
           ].map((tab) => (
@@ -994,8 +996,15 @@ export default function AdminHub() {
           ))}
         </div>
 
-        <div className="flex-1 p-6 md:p-10 overflow-y-auto bg-white custom-thin-scroll">
-          {activeTab === 'intake' && renderIntake()}
+        <div className="flex-1 p-6 lg:p-8 bg-white min-w-0 overflow-y-auto custom-thin-scroll relative">
+          {activeTab === 'pipeline' && (
+            <div className="space-y-12">
+              <DataUploader />
+              <div className="border-t border-slate-100 pt-8 max-w-5xl mx-auto">
+                {renderIntake()}
+              </div>
+            </div>
+          )}
           {activeTab === 'audit' && renderAuditTrail()}
           {activeTab === 'archives' && renderArchives()}
         </div>
