@@ -127,7 +127,7 @@ export default function AddServiceModal() {
       (p) =>
         p.clientIds?.includes(client.clientId || client.id) ||
         p.clients?.includes(client.companyName || client.name)
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name));
     return [defaultOption, ...filtered];
   }, [watchSelectedClient, clients, projects]);
 
@@ -144,7 +144,7 @@ export default function AddServiceModal() {
     [settings?.serviceTypes]
   );
   const clientOptions = useMemo(
-    () => clients.map((c) => ({ value: c.clientId || c.id, label: c.companyName || c.name })),
+    () => clients.map((c) => ({ value: c.clientId || c.id, label: c.companyName || c.name })).sort((a, b) => a.label.localeCompare(b.label)),
     [clients]
   );
   const managerOptions = useMemo(
