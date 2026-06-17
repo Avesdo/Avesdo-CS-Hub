@@ -60,29 +60,41 @@ export function DatePicker({
   const applyLocalDate = () => {
     const d = parseLocalDate(localDateStr);
     if (d) {
-      onChange(d.getTime(), localDateStr);
+      if (d.getTime() !== value) {
+        onChange(d.getTime(), localDateStr);
+      }
     } else if (!localDateStr.trim()) {
-      onChange(null, '');
+      if (value !== null && value !== undefined) {
+        onChange(null, '');
+      }
     } else {
       setLocalDateStr(dateStr);
     }
   };
 
   const handleClear = () => {
-    onChange(null, '');
+    if (value !== null && value !== undefined) {
+      onChange(null, '');
+    }
     setIsOpen(false);
   };
 
   const handleToday = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    onChange(today.getTime(), today.toLocaleDateString());
+    const newVal = today.getTime();
+    if (newVal !== value) {
+      onChange(newVal, today.toLocaleDateString());
+    }
     setIsOpen(false);
   };
 
   const handleDayClick = (day: number) => {
     const selected = new Date(calMonth.getFullYear(), calMonth.getMonth(), day);
-    onChange(selected.getTime(), selected.toLocaleDateString());
+    const newVal = selected.getTime();
+    if (newVal !== value) {
+      onChange(newVal, selected.toLocaleDateString());
+    }
     setIsOpen(false);
   };
 
