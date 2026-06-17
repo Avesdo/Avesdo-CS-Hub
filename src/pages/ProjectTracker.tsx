@@ -60,27 +60,20 @@ export default function ProjectTracker() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchInput, setSearchInput] = useState(searchTerm);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const toolbarRef = useRef<HTMLDivElement>(null);
   
   const handleScroll = useCallback(() => {
     const scrollContainer = tableScrollRef.current;
-    const toolbar = toolbarRef.current;
-    if (!scrollContainer || !toolbar) return;
-
+    if (!scrollContainer) return;
     const scrollTop = scrollContainer.scrollTop;
-    // We use a custom attribute 'data-scrolled' to avoid querying classes repeatedly
-    const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
-
-    if (scrollTop > 40 && !isSticky) {
-      toolbar.setAttribute('data-scrolled', 'true');
-      toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-      toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-    } else if (scrollTop <= 10 && isSticky) {
-      toolbar.setAttribute('data-scrolled', 'false');
-      toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-      toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-    }
+    
+    setIsScrolled(prev => {
+      if (scrollTop > 40 && !prev) return true;
+      if (scrollTop <= 10 && prev) return false;
+      return prev;
+    });
   }, []);
 
   useEffect(() => {
@@ -665,8 +658,7 @@ export default function ProjectTracker() {
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       <div
-        ref={toolbarRef}
-        className="transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
+        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
       >
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
@@ -998,14 +990,9 @@ export default function ProjectTracker() {
                   onScroll={handleScroll}
                   onWheel={(e) => {
                     const target = e.currentTarget;
-                    const toolbar = toolbarRef.current;
-                    if (!toolbar) return;
-                    const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
-                    if (e.deltaY < -10 && isSticky && target.scrollTop <= 10) {
-                      toolbar.setAttribute('data-scrolled', 'false');
-                      toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-                      toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-                    }
+                    if (e.deltaY < -10 && target.scrollTop <= 10) {
+              setIsScrolled(false);
+            }
                   }}
                 >
                   <div className="w-full">
@@ -1055,14 +1042,9 @@ export default function ProjectTracker() {
                 onScroll={handleScroll}
                 onWheel={(e) => {
                   const target = e.currentTarget;
-                  const toolbar = toolbarRef.current;
-                  if (!toolbar) return;
-                  const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
-                  if (e.deltaY < -10 && isSticky && target.scrollTop <= 10) {
-                    toolbar.setAttribute('data-scrolled', 'false');
-                    toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-                    toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-                  }
+                  if (e.deltaY < -10 && target.scrollTop <= 10) {
+              setIsScrolled(false);
+            }
                 }}
               >
                 <ProjectTrackerCalendar openDrawer={handleOpenDrawer} />
