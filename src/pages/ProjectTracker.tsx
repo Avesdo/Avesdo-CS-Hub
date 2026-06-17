@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import React, { startTransition, useState, useMemo, useRef, useEffect, useCallback, useDeferredValue } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppState } from '../context/AppStateContext';
+import { useUrlState } from '../hooks/useUrlState';
+import { useAppStore } from '../store/useAppStore';
 import { ColumnFilter, DateFilter, StatusDropdown } from '../components/TableFilters';
 import { PageTabs } from '../components/ui/PageTabs';
 import { ActiveFilterBar } from '../components/ui/ActiveFilterBar';
@@ -41,14 +42,13 @@ import toast from 'react-hot-toast';
 
 export default function ProjectTracker() {
   const location = useLocation();
-  const { projects, settings, user } = useAppState();
+  const { projects, settings, user } = useAppStore();
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
   const [healthHistory, setHealthHistory] = useState<any>({});
-  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     getHealthHistory()
@@ -61,7 +61,29 @@ export default function ProjectTracker() {
   );
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(searchTerm);
+
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  
+  const handleScroll = useCallback(() => {
+    const scrollContainer = tableScrollRef.current;
+    const toolbar = toolbarRef.current;
+    if (!scrollContainer || !toolbar) return;
+
+    const scrollTop = scrollContainer.scrollTop;
+    // We use a custom attribute 'data-scrolled' to avoid querying classes repeatedly
+    const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
+
+    if (scrollTop > 40 && !isSticky) {
+      toolbar.setAttribute('data-scrolled', 'true');
+      toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+      toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+    } else if (scrollTop <= 10 && isSticky) {
+      toolbar.setAttribute('data-scrolled', 'false');
+      toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+      toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,23 +95,16 @@ export default function ProjectTracker() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   // sorting
-  const [sortCol, setSortCol] = useState(() => {
+  const [sortCol, setSortCol] = useState<string>(() => {
     if (location.state?.ptTab === 'No Due Date' || location.state?.ptTab === 'Suspended')
       return 'name';
     return 'releaseDateVal';
   });
-  const [sortAsc, setSortAsc] = useState(() => {
+  const [sortAsc, setSortAsc] = useState<boolean>(() => {
     if (location.state?.ptTab === 'All Released' || location.state?.ptTab === 'All Projects')
       return false;
     return true;
   });
-  const [displayLimit, setDisplayLimit] = useState(50);
-
-  const loadMoreCallback = useCallback(() => {
-    setDisplayLimit((prev) => prev + 50);
-  }, []);
-
-  const loadMoreRef = useIntersectionObserver(loadMoreCallback, '200px');
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string[]>(
@@ -128,8 +143,8 @@ export default function ProjectTracker() {
   };
 
   const setPtFilter = (tabLabel: string) => {
-    setActiveTab(tabLabel);
-    setDisplayLimit(50);
+    startTransition(() => { setActiveTab(tabLabel); });
+
 
     if (
       tabLabel === 'Actively Onboarding' ||
@@ -138,7 +153,10 @@ export default function ProjectTracker() {
     ) {
       setSortCol('releaseDateVal');
       setSortAsc(true);
-    } else if (tabLabel === 'All Released' || tabLabel === 'All Projects') {
+    } else if (tabLabel === 'All Released') {
+      setSortCol('releaseDateVal');
+      setSortAsc(false);
+    } else if (tabLabel === 'All Projects') {
       setSortCol('releaseDateVal');
       setSortAsc(false);
     } else if (tabLabel === 'No Due Date' || tabLabel === 'Suspended') {
@@ -259,7 +277,7 @@ export default function ProjectTracker() {
     };
   }, [mappedProjects]);
 
-  // 3. Tab filtering logic (`universalFilterAndSort`)
+  // 3. Tab filtering logic
   const baseProjects = useMemo(() => {
     const today = new Date().getTime();
     const fortyFiveDays = today + 45 * 86400000;
@@ -407,7 +425,7 @@ export default function ProjectTracker() {
       if (valA === valB) {
         const nameA = (a.name || '').toLowerCase();
         const nameB = (b.name || '').toLowerCase();
-        return nameA.localeCompare(nameB);
+        return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
       }
 
       if (sortCol === 'releaseDateVal') {
@@ -419,7 +437,11 @@ export default function ProjectTracker() {
       }
 
       if (typeof valA === 'string') {
-        return sortAsc ? valA.localeCompare(valB as string) : (valB as string).localeCompare(valA);
+        if (sortAsc) {
+          return valA > (valB as string) ? 1 : valA < (valB as string) ? -1 : 0;
+        } else {
+          return (valB as string) > valA ? 1 : (valB as string) < valA ? -1 : 0;
+        }
       }
       return sortAsc ? (valA > valB ? 1 : -1) : valA < valB ? 1 : -1;
     });
@@ -632,6 +654,8 @@ export default function ProjectTracker() {
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
+
+
   const handleOpenDrawer = useCallback(
     (type: string, id: string, data?: any) => {
       openDrawer(type as any, id, data);
@@ -639,22 +663,12 @@ export default function ProjectTracker() {
     [openDrawer]
   );
 
-  const slicedProjects = useMemo(
-    () => filteredProjects.slice(0, displayLimit),
-    [filteredProjects, displayLimit]
-  );
 
   return (
-    <div
-      className="flex-1 flex flex-col h-full overflow-hidden bg-white"
-      onWheel={(e) => {
-        if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
-          tableScrollRef.current.scrollTop += e.deltaY;
-        }
-      }}
-    >
+    <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       <div
-        className={`transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        ref={toolbarRef}
+        className="transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
       >
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
@@ -719,7 +733,7 @@ export default function ProjectTracker() {
             className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '50ms' }}
           >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
             <div className="flex items-start justify-between mb-2 relative z-10">
               <div className="flex flex-col pr-2">
                 <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -748,7 +762,7 @@ export default function ProjectTracker() {
             className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '150ms' }}
           >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-200"></div>
             <div className="flex items-start justify-between mb-2 relative z-10">
               <div className="flex flex-col pr-2">
                 <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -774,7 +788,7 @@ export default function ProjectTracker() {
             className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '250ms' }}
           >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-200"></div>
             <div className="flex items-start justify-between mb-2 relative z-10">
               <div className="flex flex-col pr-2">
                 <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -800,7 +814,7 @@ export default function ProjectTracker() {
             className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '350ms' }}
           >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
             <div className="flex items-start justify-between mb-2 relative z-10">
               <div className="flex flex-col pr-2">
                 <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -825,16 +839,16 @@ export default function ProjectTracker() {
             <div className="flex flex-col gap-1.5 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
-                  <div className="flex items-center bg-slate-100/80 border border-slate-200 rounded-lg p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] mr-2 shrink-0">
+                  <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] mr-2 shrink-0">
                     <button
                       onClick={() => setViewMode('list')}
-                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'list' ? 'bg-white text-foreground shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-foreground'}`}
+                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'list' ? 'bg-slate-100 text-foreground shadow-sm' : 'text-slate-500 hover:text-foreground hover:bg-slate-50'}`}
                     >
                       List View
                     </button>
                     <button
                       onClick={() => setViewMode('calendar')}
-                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'calendar' ? 'bg-white text-foreground shadow-sm border border-slate-200/50' : 'text-slate-500 hover:text-foreground'}`}
+                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'calendar' ? 'bg-slate-100 text-foreground shadow-sm' : 'text-slate-500 hover:text-foreground hover:bg-slate-50'}`}
                     >
                       Calendar
                     </button>
@@ -983,31 +997,30 @@ export default function ProjectTracker() {
                 <div
                   ref={tableScrollRef}
                   className="flex-1 overflow-auto custom-thin-scroll w-full relative"
+                  onScroll={handleScroll}
                   onWheel={(e) => {
-                    if (e.deltaY < -10 && isScrolled && e.currentTarget.scrollTop <= 10) {
-                      setIsScrolled(false);
-                    }
-                  }}
-                  onScroll={(e) => {
                     const target = e.currentTarget;
-                    if (target.scrollTop > 40 && !isScrolled) {
-                      setIsScrolled(true);
-                    } else if (target.scrollTop <= 10 && isScrolled) {
-                      if (target.scrollHeight > target.clientHeight + 2) {
-                        setIsScrolled(false);
-                      }
+                    const toolbar = toolbarRef.current;
+                    if (!toolbar) return;
+                    const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
+                    if (e.deltaY < -10 && isSticky && target.scrollTop <= 10) {
+                      toolbar.setAttribute('data-scrolled', 'false');
+                      toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+                      toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
                     }
                   }}
                 >
-                  <ProjectTrackerTable
-                    projects={slicedProjects}
-                    baseProjects={baseProjects}
-                    activeTab={activeTab}
-                    settings={settings}
-                    selectedRows={selectedRows}
-                    setSelectedRows={setSelectedRows}
-                    sortCol={sortCol}
-                    sortAsc={sortAsc}
+                  <div className="w-full">
+                    <ProjectTrackerTable
+                    parentRef={tableScrollRef}
+                      projects={filteredProjects}
+                      baseProjects={baseProjects}
+                      activeTab={activeTab}
+                      settings={settings}
+                      selectedRows={selectedRows}
+                      setSelectedRows={setSelectedRows}
+                      sortCol={sortCol}
+                      sortAsc={sortAsc}
                     onSort={handleSort}
                     onUpdateProject={handleUpdateProject}
                     openDrawer={handleOpenDrawer}
@@ -1030,16 +1043,7 @@ export default function ProjectTracker() {
                     releaseDateFilter={releaseDateFilter}
                     setReleaseDateFilter={setReleaseDateFilter}
                   />
-                  {filteredProjects.length > displayLimit && (
-                    <div ref={loadMoreRef} className="flex justify-center p-4 h-24 items-center">
-                      <button
-                        onClick={() => setDisplayLimit((prev) => prev + 50)}
-                        className="text-cyan-600 hover:text-cyan-700 font-medium text-sm hover:underline transition-colors"
-                      >
-                        Load More ({filteredProjects.length - displayLimit} remaining)
-                      </button>
-                    </div>
-                  )}
+                  </div>
                 </div>
                 {footerContent}
               </div>
@@ -1050,19 +1054,16 @@ export default function ProjectTracker() {
               <div
                 ref={tableScrollRef}
                 className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col"
+                onScroll={handleScroll}
                 onWheel={(e) => {
-                  if (e.deltaY < -10 && isScrolled && e.currentTarget.scrollTop <= 10) {
-                    setIsScrolled(false);
-                  }
-                }}
-                onScroll={(e) => {
                   const target = e.currentTarget;
-                  if (target.scrollTop > 40 && !isScrolled) {
-                    setIsScrolled(true);
-                  } else if (target.scrollTop <= 10 && isScrolled) {
-                    if (target.scrollHeight > target.clientHeight + 2) {
-                      setIsScrolled(false);
-                    }
+                  const toolbar = toolbarRef.current;
+                  if (!toolbar) return;
+                  const isSticky = toolbar.getAttribute('data-scrolled') === 'true';
+                  if (e.deltaY < -10 && isSticky && target.scrollTop <= 10) {
+                    toolbar.setAttribute('data-scrolled', 'false');
+                    toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+                    toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
                   }
                 }}
               >

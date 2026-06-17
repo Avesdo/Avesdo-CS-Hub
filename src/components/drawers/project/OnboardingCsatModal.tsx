@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { updateProjectRecord, addProjectAutoLog } from '../../../api/dbService';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import { Select } from '../../ui/Select';
 import toast from 'react-hot-toast';
 
@@ -36,7 +36,7 @@ const getScoreFromAnswer = (answer: string) => {
 };
 
 export default function OnboardingCsatModal({ project, onClose }: OnboardingCsatModalProps) {
-  const { user } = useAppState();
+  const { user } = useAppStore();
 
   const existing = project?.onboardingCsat || {};
 

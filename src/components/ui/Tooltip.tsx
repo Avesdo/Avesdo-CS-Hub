@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface TooltipProps {
   content: React.ReactNode;
@@ -15,35 +16,61 @@ export function Tooltip({
   className = '',
   containerClassName = 'inline-flex',
 }: TooltipProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [coords, setCoords] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setCoords({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   if (!content) return <>{children}</>;
 
-  let positionClasses = '';
+  let positionStyles: React.CSSProperties = {};
   switch (position) {
     case 'top':
-      positionClasses = 'bottom-full left-1/2 -translate-x-1/2 mb-2';
+      positionStyles = { top: coords.y - 8, left: coords.x + coords.width / 2, transform: 'translate(-50%, -100%)' };
       break;
     case 'bottom':
-      positionClasses = 'top-full left-1/2 -translate-x-1/2 mt-2';
+      positionStyles = { top: coords.y + coords.height + 8, left: coords.x + coords.width / 2, transform: 'translateX(-50%)' };
       break;
     case 'left':
-      positionClasses = 'right-full top-1/2 -translate-y-1/2 mr-2';
+      positionStyles = { top: coords.y + coords.height / 2, left: coords.x - 8, transform: 'translate(-100%, -50%)' };
       break;
     case 'right':
-      positionClasses = 'left-full top-1/2 -translate-y-1/2 ml-2';
+      positionStyles = { top: coords.y + coords.height / 2, left: coords.x + coords.width + 8, transform: 'translateY(-50%)' };
       break;
     case 'bottom-right':
-      positionClasses = 'top-full right-0 mt-2';
+      // Align the right edge of the tooltip with the right edge of the trigger
+      positionStyles = { top: coords.y + coords.height + 8, left: coords.x + coords.width, transform: 'translateX(-100%)' };
       break;
   }
 
   return (
-    <div className={`group/tooltip relative ${containerClassName}`}>
+    <div 
+      className={containerClassName} 
+      ref={triggerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children}
-      <div
-        className={`absolute ${positionClasses} bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[200] pointer-events-none font-medium opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 ${className}`}
-      >
-        {content}
-      </div>
+      {isHovered && createPortal(
+        <div
+          className={`fixed bg-slate-100 text-slate-800 border border-slate-200 shadow-xl text-sm px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium animate-in fade-in zoom-in-95 duration-150 ${className}`}
+          style={positionStyles}
+        >
+          {content}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

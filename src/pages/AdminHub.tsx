@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
 import { SearchableSelect } from '../components/ui/SearchableSelect';
 import {
   AlertCircle,
@@ -52,7 +52,7 @@ export default function AdminHub() {
     projects,
     clients,
     user,
-  } = useAppState();
+  } = useAppStore();
 
   // --- AUDIT TRAIL STATE ---
   const [logs, setLogs] = useState<any[]>([]);
@@ -959,19 +959,7 @@ export default function AdminHub() {
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden flex-col bg-white pt-2 px-4 md:px-6 pb-0">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 shrink-0 relative z-30">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-            Admin Hub
-          </h1>
-          <p className="text-base text-muted-foreground mt-1">
-            System audit logs and archived records.
-          </p>
-        </div>
-      </div>
-
+    <div className="flex flex-1 overflow-hidden flex-col bg-white p-6">
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
         <div className="w-full md:w-72 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[

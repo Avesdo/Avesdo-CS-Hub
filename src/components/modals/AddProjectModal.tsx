@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import {
   updateProjectRecord,
   updateClientRecord,
@@ -11,32 +11,82 @@ import {
 import { calculateProjectHealth, calculateClientHealth } from '../../utils/scoringUtils';
 import { Project } from '../../types';
 
-import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
 import { DatePicker } from '../ui/DatePicker';
+import { RichTextEditor } from '../ui/RichTextEditor';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const projectSchema = z
+  .object({
+    name: z.string().min(1, 'Project Name is required.'),
+    selectedDevelopers: z.array(z.string()),
+    selectedSalesMarketing: z.array(z.string()),
+    activeFeatures: z.array(z.string()),
+    releaseDateVal: z.number().nullable(),
+    units: z.string(),
+    assignee: z.string().optional(),
+    checklistUrl: z.string().optional(),
+    kycDetails: z.string().optional(),
+    note: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.selectedDevelopers.length === 0 && data.selectedSalesMarketing.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'At least one Attached Client (Developer or Sales & Marketing) is required.',
+        path: ['selectedDevelopers'], // Assign to selectedDevelopers to show under it or use globally
+      });
+    }
+    const unitsNum = parseInt(data.units, 10);
+    if (isNaN(unitsNum) || unitsNum <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Live Units must be greater than 0.',
+        path: ['units'],
+      });
+    }
+  });
+
+type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function AddProjectModal() {
   const { activeModal, isModalOpen, closeModal, openModal, openDrawer } = useUI();
-  const { clients, settings, projects, user } = useAppState();
+  const { clients, settings, projects, user } = useAppStore();
 
-  const [name, setName] = useState('');
-  const [selectedDevelopers, setSelectedDevelopers] = useState<string[]>([]);
-  const [selectedSalesMarketing, setSelectedSalesMarketing] = useState<string[]>([]);
-  const [activeFeatures, setActiveFeatures] = useState<string[]>([]);
-  const [releaseDateVal, setReleaseDateVal] = useState<number | null>(null);
-  const [units, setUnits] = useState('');
-  const [assignee, setAssignee] = useState('');
-  const [checklistUrl, setChecklistUrl] = useState('');
-  const [kycDetails, setKycDetails] = useState('');
-  const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [globalError, setGlobalError] = useState('');
 
   const [shouldRender, setShouldRender] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   const isOpen = isModalOpen('addProject');
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      name: '',
+      selectedDevelopers: [],
+      selectedSalesMarketing: [],
+      activeFeatures: [],
+      releaseDateVal: null,
+      units: '',
+      assignee: '',
+      checklistUrl: '',
+      kycDetails: '',
+      note: '',
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -56,59 +106,51 @@ export default function AddProjectModal() {
       const newClient = customEvent.detail;
       const newClientId = newClient.clientId || newClient.id;
       if (newClient.clientType === 'Developer') {
-        setSelectedDevelopers((prev) => Array.from(new Set([...prev, newClientId])));
+        const prev = getValues('selectedDevelopers') || [];
+        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
       } else if (newClient.clientType === 'Sales & Marketing') {
-        setSelectedSalesMarketing((prev) => Array.from(new Set([...prev, newClientId])));
+        const prev = getValues('selectedSalesMarketing') || [];
+        setValue('selectedSalesMarketing', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
       } else {
         // Fallback for uncategorized
-        setSelectedDevelopers((prev) => Array.from(new Set([...prev, newClientId])));
+        const prev = getValues('selectedDevelopers') || [];
+        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
       }
     };
     window.addEventListener('clientCreated', handleClientCreated);
     return () => window.removeEventListener('clientCreated', handleClientCreated);
-  }, []);
+  }, [getValues, setValue]);
 
   if (!shouldRender) return null;
 
   const handleClose = () => {
     closeModal();
+    reset();
+    setGlobalError('');
   };
 
-  const handleSubmit = async () => {
-    setErrorMsg('');
-    if (!name.trim()) {
-      setErrorMsg('Project Name is required.');
-      return;
-    }
-    if (selectedDevelopers.length === 0 && selectedSalesMarketing.length === 0) {
-      setErrorMsg('At least one Attached Client (Developer or Sales & Marketing) is required.');
-      return;
-    }
-    const unitsNum = parseInt(units, 10);
-    if (isNaN(unitsNum) || unitsNum <= 0) {
-      setErrorMsg('Live Units must be greater than 0.');
-      return;
-    }
+  const onSubmit = async (data: ProjectFormValues) => {
+    setGlobalError('');
 
     const nameExists = projects.some(
-      (p) => (p.name || '').toLowerCase() === name.trim().toLowerCase()
+      (p) => (p.name || '').toLowerCase() === data.name.trim().toLowerCase()
     );
     if (nameExists) {
-      setErrorMsg('A project with this exact name already exists.');
+      setGlobalError('A project with this exact name already exists.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const allSelectedIds = [...selectedDevelopers, ...selectedSalesMarketing];
+      const allSelectedIds = [...data.selectedDevelopers, ...data.selectedSalesMarketing];
       const matchedClients = clients.filter((c) => allSelectedIds.includes(c.clientId || c.id));
-      const matchedDevs = clients.filter((c) => selectedDevelopers.includes(c.clientId || c.id));
-      const matchedSMs = clients.filter((c) => selectedSalesMarketing.includes(c.clientId || c.id));
+      const matchedDevs = clients.filter((c) => data.selectedDevelopers.includes(c.clientId || c.id));
+      const matchedSMs = clients.filter((c) => data.selectedSalesMarketing.includes(c.clientId || c.id));
 
       let finalReleaseDateStr = '';
-      const finalReleaseDateVal = releaseDateVal || 0;
-      if (releaseDateVal) {
-        finalReleaseDateStr = new Date(releaseDateVal).toLocaleDateString('en-US', {
+      const finalReleaseDateVal = data.releaseDateVal || 0;
+      if (data.releaseDateVal) {
+        finalReleaseDateStr = new Date(data.releaseDateVal).toLocaleDateString('en-US', {
           month: 'long',
           day: 'numeric',
           year: 'numeric',
@@ -117,23 +159,23 @@ export default function AddProjectModal() {
 
       const newProject: Project = {
         id: `P-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`,
-        name: name.trim(),
+        name: data.name.trim(),
         developerIds: matchedDevs.map((c) => c.clientId || c.id),
         developers: matchedDevs.map((c) => c.companyName || c.name),
         salesMarketingIds: matchedSMs.map((c) => c.clientId || c.id),
         salesMarketingClients: matchedSMs.map((c) => c.companyName || c.name),
         clientIds: matchedClients.map((c) => c.clientId || c.id),
         clients: matchedClients.map((c) => c.companyName || c.name),
-        features: activeFeatures,
+        features: data.activeFeatures,
         projectStatus: 'Onboarding',
         timelineStatus: 'Not Started',
         onboardingMilestone: 'Not Started',
-        assignee: assignee || 'Unassigned',
-        units: units.toString(),
+        assignee: data.assignee || 'Unassigned',
+        units: data.units.toString(),
         releaseDateStr: finalReleaseDateStr,
         releaseDateVal: finalReleaseDateVal,
-        checklistUrl,
-        kycDetails,
+        checklistUrl: data.checklistUrl || '',
+        kycDetails: data.kycDetails || '',
         dateAdded: new Date().getTime(),
         lastUpdated: new Date().getTime(),
         healthScore: 'N/A',
@@ -181,17 +223,6 @@ export default function AddProjectModal() {
 
       await Promise.all(dbPromises);
 
-      // Reset Form
-      setName('');
-      setSelectedDevelopers([]);
-      setSelectedSalesMarketing([]);
-      setActiveFeatures([]);
-      setReleaseDateVal(null);
-      setUnits('');
-      setAssignee('');
-      setChecklistUrl('');
-      setKycDetails('');
-      setNote('');
       handleClose();
 
       // Seamless Routing Handoff (350ms delay to let Modal animate out)
@@ -200,7 +231,7 @@ export default function AddProjectModal() {
       }, 350);
     } catch (err) {
       console.error(err);
-      setErrorMsg('An error occurred while creating the project.');
+      setGlobalError('An error occurred while creating the project.');
     } finally {
       setIsSubmitting(false);
     }
@@ -234,12 +265,9 @@ export default function AddProjectModal() {
             </button>
           </div>
           <div className="p-6 flex-1">
-            {errorMsg && (
-              <div
-                id="ap-error"
-                className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"
-              >
-                {errorMsg}
+            {globalError && (
+              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+                {globalError}
               </div>
             )}
             {/* REQUIRED METADATA */}
@@ -248,16 +276,21 @@ export default function AddProjectModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Project Name <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    setErrorMsg('');
-                  }}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm"
-                  placeholder="Enter project name..."
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      className={`w-full min-w-0 rounded-md border ${errors.name ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 text-sm`}
+                      placeholder="Enter project name..."
+                    />
+                  )}
                 />
+                {errors.name && (
+                  <p className="text-destructive text-xs mt-1 font-medium">{errors.name.message}</p>
+                )}
               </div>
 
               <div>
@@ -273,85 +306,94 @@ export default function AddProjectModal() {
                     + Add Client
                   </button>
                 </div>
-                <MultiSelect
-                  values={selectedDevelopers}
-                  options={[...clients]
-                    .filter((c) => c.clientType === 'Developer' || !c.clientType)
-                    .sort((a, b) =>
-                      (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
-                    )
-                    .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
-                  onChange={(vals) => {
-                    setSelectedDevelopers(vals);
-                    setErrorMsg('');
-                  }}
-                  searchable={true}
-                  searchPlaceholder="Search developer clients..."
-                  className="w-full block mb-4"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${selectedDevelopers.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {selectedDevelopers.length
-                          ? selectedDevelopers
-                              .map(
-                                (id) =>
-                                  clients.find((c) => c.clientId === id || c.id === id)
-                                    ?.companyName || id
-                              )
-                              .join(', ')
-                          : 'Select Developer Clients...'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="selectedDevelopers"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      values={field.value}
+                      options={[...clients]
+                        .filter((c) => c.clientType === 'Developer' || !c.clientType)
+                        .sort((a, b) =>
+                          (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
+                        )
+                        .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                      onChange={field.onChange}
+                      searchable={true}
+                      searchPlaceholder="Search developer clients..."
+                      className="w-full block mb-1"
+                      trigger={
+                        <button
+                          type="button"
+                          className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.selectedDevelopers ? 'border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
+                        >
+                          <span
+                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value.length
+                              ? field.value
+                                  .map(
+                                    (id) =>
+                                      clients.find((c) => c.clientId === id || c.id === id)
+                                        ?.companyName || id
+                                  )
+                                  .join(', ')
+                              : 'Select Developer Clients...'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
+                {errors.selectedDevelopers && (
+                  <p className="text-destructive text-xs mt-1 font-medium mb-3">{errors.selectedDevelopers.message}</p>
+                )}
 
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center mb-2 mt-4">
                   <label className="block text-[11px] font-semibold text-muted-foreground">
                     Sales & Marketing Client(s)
                   </label>
                 </div>
-                <MultiSelect
-                  values={selectedSalesMarketing}
-                  options={[...clients]
-                    .filter((c) => c.clientType === 'Sales & Marketing')
-                    .sort((a, b) =>
-                      (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
-                    )
-                    .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
-                  onChange={(vals) => {
-                    setSelectedSalesMarketing(vals);
-                    setErrorMsg('');
-                  }}
-                  searchable={true}
-                  searchPlaceholder="Search sales & marketing clients..."
-                  className="w-full block"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${selectedSalesMarketing.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {selectedSalesMarketing.length
-                          ? selectedSalesMarketing
-                              .map(
-                                (id) =>
-                                  clients.find((c) => c.clientId === id || c.id === id)
-                                    ?.companyName || id
-                              )
-                              .join(', ')
-                          : 'Select Sales & Marketing Clients...'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="selectedSalesMarketing"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      values={field.value}
+                      options={[...clients]
+                        .filter((c) => c.clientType === 'Sales & Marketing')
+                        .sort((a, b) =>
+                          (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
+                        )
+                        .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                      onChange={field.onChange}
+                      searchable={true}
+                      searchPlaceholder="Search sales & marketing clients..."
+                      className="w-full block"
+                      trigger={
+                        <button
+                          type="button"
+                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                        >
+                          <span
+                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value.length
+                              ? field.value
+                                  .map(
+                                    (id) =>
+                                      clients.find((c) => c.clientId === id || c.id === id)
+                                        ?.companyName || id
+                                  )
+                                  .join(', ')
+                              : 'Select Sales & Marketing Clients...'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -362,27 +404,38 @@ export default function AddProjectModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Release Date
                 </label>
-                <DatePicker
-                  value={releaseDateVal}
-                  onChange={(val) => setReleaseDateVal(val)}
-                  placeholder="Select Date"
-                  label="Set Release Date"
+                <Controller
+                  name="releaseDateVal"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select Date"
+                      label="Set Release Date"
+                    />
+                  )}
                 />
               </div>
               <div className="mt-0 !space-y-0">
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Live Units <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="number"
-                  value={units}
-                  onChange={(e) => {
-                    setUnits(e.target.value);
-                    setErrorMsg('');
-                  }}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-[38px]"
-                  placeholder="0"
+                <Controller
+                  name="units"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className={`w-full min-w-0 rounded-md border ${errors.units ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 text-sm h-[38px]`}
+                      placeholder="0"
+                    />
+                  )}
                 />
+                {errors.units && (
+                  <p className="text-destructive text-xs mt-1 font-medium">{errors.units.message}</p>
+                )}
               </div>
             </div>
 
@@ -392,55 +445,67 @@ export default function AddProjectModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Manager
                 </label>
-                <Select
-                  value={assignee}
-                  options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
-                    label: m,
-                    value: m,
-                  }))}
-                  onChange={setAssignee}
-                  className="w-full block"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${assignee ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {assignee || 'Select Manager'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="assignee"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || ''}
+                      options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
+                        label: m,
+                        value: m,
+                      }))}
+                      onChange={field.onChange}
+                      className="w-full block"
+                      trigger={
+                        <button
+                          type="button"
+                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                        >
+                          <span
+                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value || 'Select Manager'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
               </div>
               <div className="mt-0">
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Active Features
                 </label>
-                <MultiSelect
-                  values={activeFeatures}
-                  options={settings?.features?.map((f) => ({ label: f, value: f })) || []}
-                  onChange={setActiveFeatures}
-                  searchable={true}
-                  searchPlaceholder="Search features..."
-                  className="w-full block"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${activeFeatures.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {activeFeatures.length
-                          ? `${activeFeatures.length} Selected`
-                          : 'Select Active Features...'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="activeFeatures"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      values={field.value}
+                      options={settings?.features?.map((f) => ({ label: f, value: f })) || []}
+                      onChange={field.onChange}
+                      searchable={true}
+                      searchPlaceholder="Search features..."
+                      className="w-full block"
+                      trigger={
+                        <button
+                          type="button"
+                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                        >
+                          <span
+                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value.length
+                              ? `${field.value.length} Selected`
+                              : 'Select Active Features...'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -454,12 +519,17 @@ export default function AddProjectModal() {
                 </label>
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="url"
-                    value={checklistUrl}
-                    onChange={(e) => setChecklistUrl(e.target.value)}
-                    className="w-full min-w-0 rounded-md border border-input bg-white pl-9 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm"
-                    placeholder="https://"
+                  <Controller
+                    name="checklistUrl"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="url"
+                        className="w-full min-w-0 rounded-md border border-input bg-white pl-9 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm"
+                        placeholder="https://"
+                      />
+                    )}
                   />
                 </div>
               </div>
@@ -467,25 +537,37 @@ export default function AddProjectModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   KYC Details <span className="text-muted-foreground font-normal">(Optional)</span>
                 </label>
-                <textarea
-                  rows={2}
-                  value={kycDetails}
-                  onChange={(e) => setKycDetails(e.target.value)}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-y custom-thin-scroll"
-                  placeholder="Enter KYC details here..."
-                ></textarea>
+                <Controller
+                  name="kycDetails"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                      <RichTextEditor
+                        content={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Enter KYC details here..."
+                      />
+                    </div>
+                  )}
+                />
               </div>
               <div className="pt-3 border-t border-border/50">
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
                 </label>
-                <textarea
-                  rows={2}
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll"
-                  placeholder="Enter an optional note..."
-                ></textarea>
+                <Controller
+                  name="note"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                      <RichTextEditor
+                        content={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Enter an optional note..."
+                      />
+                    </div>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -498,7 +580,7 @@ export default function AddProjectModal() {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
             >

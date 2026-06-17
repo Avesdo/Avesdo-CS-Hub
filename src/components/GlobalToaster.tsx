@@ -23,8 +23,12 @@ export const GlobalToaster = () => {
         loading: {
           duration: Infinity,
           className:
-            '!bg-primary !text-primary-foreground !border-primary border shadow-xl rounded-lg font-medium',
+            '!bg-white !text-foreground !border-primary border shadow-xl rounded-lg font-medium',
           style: { background: 'unset', color: 'unset' },
+          iconTheme: {
+            primary: '#00bdd9',
+            secondary: '#ffffff',
+          },
         },
       }}
     >

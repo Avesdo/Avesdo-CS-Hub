@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
 import { X, ChevronRight, User, Calendar, ClipboardCheck, Target } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { getSafeHex, hexToRgba, getSettingBadge, getHealthBadge } from '../../utils/uiUtils';
 
 export default function DashDrilldownDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, openDrawer, activeDrawers } = useUI();
-  const { clients, settings, projects: globalProjects } = useAppState();
+  const { clients, settings, projects: globalProjects } = useAppStore();
 
   const isOpen = isDrawerOpen('dashDrilldown');
   const drawerData = getDrawerData('dashDrilldown');

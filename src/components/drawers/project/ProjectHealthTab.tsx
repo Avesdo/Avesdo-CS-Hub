@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Activity } from 'lucide-react';
 import { updateProjectRecord, addAutoLog, addProjectAutoLog } from '../../../api/dbService';
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import OnboardingCsatModal from './OnboardingCsatModal';
 
 interface ProjectHealthTabProps {
@@ -26,7 +26,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const csatRef = useRef<HTMLDetailsElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
-  const { settings, user } = useAppState();
+  const { settings, user } = useAppStore();
 
   const fLen = Array.isArray(project?.features) ? project.features.length : 0;
   const fTotal =

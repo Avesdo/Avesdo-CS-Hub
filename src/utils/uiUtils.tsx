@@ -1,6 +1,8 @@
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
 import { CircleDashed } from 'lucide-react';
+import { TruncatedText } from '../components/ui/TruncatedText';
+import { Tooltip } from '../components/ui/Tooltip';
 
 export const ICONS = [
   'Activity',
@@ -226,17 +228,18 @@ export const getSettingBadge = (
     if (listName === 'managers' || listName === 'accountManager' || listName === 'assignee') {
       return (
         <span
-          className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
+          className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
-          <LucideIcons.User className={iconSize} /> {value}
+          <LucideIcons.User className={iconSize} /> 
+          <TruncatedText text={value} className="max-w-[180px]" />
         </span>
       );
     }
     return (
       <span
-        className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200`}
+        className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center shrink-0`}
       >
-        {value}
+        <TruncatedText text={value} className="max-w-[180px]" />
       </span>
     );
   }
@@ -245,11 +248,11 @@ export const getSettingBadge = (
 
   return (
     <span
-      className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
+      className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border inline-flex items-center gap-1.5 shrink-0`}
       style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
-      {item.name}
+      <TruncatedText text={item.name} className="max-w-[180px]" />
     </span>
   );
 };
@@ -257,9 +260,11 @@ export const getSettingBadge = (
 export const getTypeBadgeIconOnly = (value: string, settings: any) => {
   if (!value)
     return (
-      <span className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200">
-        <CircleDashed className="w-3.5 h-3.5" />
-      </span>
+      <Tooltip content={value}>
+        <span className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200">
+          <CircleDashed className="w-3.5 h-3.5" />
+        </span>
+      </Tooltip>
     );
 
   const list = settings?.serviceTypes || [];
@@ -270,24 +275,26 @@ export const getTypeBadgeIconOnly = (value: string, settings: any) => {
   }
   if (!item)
     return (
-      <span
-        className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200"
-        title={value}
-      >
-        <CircleDashed className="w-3.5 h-3.5" />
-      </span>
+      <Tooltip content={value}>
+        <span
+          className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200"
+        >
+          <CircleDashed className="w-3.5 h-3.5" />
+        </span>
+      </Tooltip>
     );
 
   const hex = COLOR_MAP[item.color] || COLOR_MAP.slate;
 
   return (
-    <span
-      className="w-7 h-7 rounded flex items-center justify-center border shadow-sm shrink-0 transition-colors"
-      style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
-      title={item.name}
-    >
-      {item.icon && renderIcon(item.icon, 'w-4 h-4')}
-    </span>
+    <Tooltip content={item.name}>
+      <span
+        className="w-7 h-7 rounded flex items-center justify-center border shadow-sm shrink-0 transition-colors cursor-default"
+        style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
+      >
+        {item.icon && renderIcon(item.icon, 'w-4 h-4')}
+      </span>
+    </Tooltip>
   );
 };
 

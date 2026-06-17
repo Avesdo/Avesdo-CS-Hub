@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Folder } from 'lucide-react';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import {
   getHealthBadge,
@@ -18,7 +18,7 @@ interface ClientProjectsTabProps {
 type FilterType = 'All' | 'Active' | 'Onboarding' | 'Closed';
 
 export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
-  const { projects, settings } = useAppState();
+  const { projects, settings } = useAppStore();
   const { openDrawer } = useUI();
 
   const [filter, setFilter] = useState<FilterType>('Active');

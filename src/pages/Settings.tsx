@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
 import {
   Building2,
   GitMerge,
@@ -279,7 +279,7 @@ function CustomPicker({
 }
 
 export default function SettingsDraft() {
-  const { settings, projects, clients, services, user } = useAppState();
+  const { settings, projects, clients, services, user } = useAppStore();
   const [activeTab, setActiveTab] = useState<'org' | 'workflow' | 'products' | 'scoring'>('org');
 
   const [editingItem, setEditingItem] = useState<{
@@ -330,7 +330,7 @@ export default function SettingsDraft() {
 
   if (!settings) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-slate-50">
+      <div className="flex flex-1 items-center justify-center bg-white">
         <div className="animate-pulse text-muted-foreground text-sm font-medium">
           Loading settings...
         </div>
@@ -732,7 +732,7 @@ export default function SettingsDraft() {
           <p className="text-sm text-muted-foreground mt-1">{desc}</p>
         </div>
         <div className="bg-white border border-border rounded-xl shadow-sm">
-          <div className="p-4 border-b border-border bg-slate-50 flex gap-3 flex-wrap sm:flex-nowrap items-center rounded-t-xl">
+          <div className="p-4 border-b border-border bg-white flex gap-3 flex-wrap sm:flex-nowrap items-center rounded-t-xl">
             <input
               type="text"
               className="flex-1 min-w-0 rounded-md border border-input bg-white px-3 h-9 text-sm outline-none focus:border-primary transition-all shadow-sm"
@@ -801,7 +801,7 @@ export default function SettingsDraft() {
                 return (
                   <li
                     key={i}
-                    className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50 border-l-4 border-l-primary relative z-10 shadow-sm"
+                    className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white border-l-4 border-l-primary relative z-10 shadow-sm"
                   >
                     <div className="flex items-center gap-3 w-full">
                       <input
@@ -983,7 +983,7 @@ export default function SettingsDraft() {
               );
             })}
             {items.length === 0 && (
-              <li className="text-sm text-muted-foreground font-medium text-center py-10 w-full block bg-slate-50/50">
+              <li className="text-sm text-muted-foreground font-medium text-center py-10 w-full block bg-white/50">
                 No items found. Add one above.
               </li>
             )}
@@ -994,7 +994,7 @@ export default function SettingsDraft() {
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden flex-col bg-slate-50/50 p-6">
+    <div className="flex flex-1 overflow-hidden flex-col bg-white p-6">
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
         <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[

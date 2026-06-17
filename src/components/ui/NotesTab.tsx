@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { Send, Activity, MessageSquare, User } from 'lucide-react';
+import { RichTextEditor } from './RichTextEditor';
 
 export interface Note {
   id: string;
@@ -21,7 +22,7 @@ export function NotesTab({
   onSaveNotes,
   emptyStateMessage = 'Be the first to add a note.',
 }: NotesTabProps) {
-  const { user } = useAppState();
+  const { user } = useAppStore();
   const [newNote, setNewNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [localNotes, setLocalNotes] = useState<Note[]>([]);
@@ -31,12 +32,13 @@ export function NotesTab({
   }, [notes]);
 
   const handleAddNote = async () => {
-    if (!newNote.trim()) return;
+    const plainText = newNote.replace(/<[^>]*>/g, '').trim();
+    if (!plainText) return;
 
     setIsSaving(true);
     const noteObj: Note = {
       id: crypto.randomUUID(),
-      text: newNote.trim(),
+      text: newNote,
       timestamp: new Date().getTime(),
       author: user?.name || 'Unknown User',
       isSystem: false,
@@ -58,20 +60,20 @@ export function NotesTab({
     }
   };
 
+  const hasContent = newNote.replace(/<[^>]*>/g, '').trim().length > 0;
+
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto w-full">
       <div className="bg-white rounded-2xl shadow-sm border border-border mb-6 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all duration-300 flex flex-col">
-        <textarea
-          id="newNoteText"
-          value={newNote}
-          onChange={(e) => setNewNote(e.target.value)}
-          className="w-full bg-transparent px-4 py-3 outline-none text-sm min-h-[80px] resize-none placeholder:text-muted-foreground/60 rounded-t-2xl"
-          placeholder="Write an internal note or update..."
-        ></textarea>
-        <div className="flex justify-end items-center px-3 py-2">
+        <RichTextEditor
+          content={newNote}
+          onChange={setNewNote}
+          disabled={isSaving}
+        />
+        <div className="flex justify-end items-center px-3 py-2 border-t border-border/50">
           <button
             onClick={handleAddNote}
-            disabled={isSaving || !newNote.trim()}
+            disabled={isSaving || !hasContent}
             className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md h-9 px-5 disabled:opacity-50 disabled:active:scale-100"
           >
             <Send className="w-4 h-4" />
@@ -107,11 +109,18 @@ export function NotesTab({
                     )}
                   </div>
                   <div className="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 hover:border-slate-300 transition-all">
-                    <div
-                      className={`whitespace-pre-wrap leading-relaxed text-sm mb-2.5 ${isSystem ? 'text-slate-600 font-medium' : 'text-slate-800'}`}
-                    >
-                      {note.text}
-                    </div>
+                    {note.text.includes('<p>') ? (
+                      <div
+                        className={`prose prose-sm prose-slate max-w-none mb-2.5 ${isSystem ? 'text-slate-600 font-medium' : 'text-slate-800'}`}
+                        dangerouslySetInnerHTML={{ __html: note.text }}
+                      />
+                    ) : (
+                      <div
+                        className={`whitespace-pre-wrap leading-relaxed text-sm mb-2.5 ${isSystem ? 'text-slate-600 font-medium' : 'text-slate-800'}`}
+                      >
+                        {note.text}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-[10px] font-medium text-muted-foreground">
                       <span className={isSystem ? 'text-slate-500' : 'text-primary font-bold'}>
                         {note.author}

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle } from 'lucide-react';
 import { updateProjectRecord, addProjectAutoLog } from '../../../api/dbService';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 
 interface ProjectFeaturesTabProps {
   project: any;
 }
 
 export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps) {
-  const { settings, projects, user } = useAppState();
+  const { settings, projects, user } = useAppStore();
 
   // Local state for optimistic UI feedback
   const [localFeatures, setLocalFeatures] = useState<string[]>(project?.features || []);

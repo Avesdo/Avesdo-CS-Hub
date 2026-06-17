@@ -1,0 +1,17 @@
+
+    const today = new Date().getTime();
+    const thirtyDaysAgo = today - 30 * 24 * 60 * 60 * 1000;
+
+    return projects.map((p) => {
+      const healthCalc = calculateProjectHealth(p, settings);
+      const finalScore = healthCalc.totalScore;
+
+      const hist = healthHistory[p.id] || [];
+      const sortedHist = [...hist]
+        .filter((x: any) => x.timeVal >= thirtyDaysAgo)
+        .sort((a: any, b: any) => a.timeVal - b.timeVal);
+      const trendData = sortedHist.map((h: any) => h.score);
+      if (typeof finalScore === 'number') trendData.push(finalScore);
+      return { ...p, healthScore: finalScore, trendData };
+    });
+  

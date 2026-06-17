@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
 import { Doughnut, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -68,7 +68,7 @@ import { TrendIndicator } from '../components/TrendIndicator';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 
 export default function Dashboard() {
-  const { clients, projects, services, settings } = useAppState();
+  const { clients, projects, services, settings } = useAppStore();
   const { openModal, openDrawer } = useUI();
   const navigate = useNavigate();
   const [managerFilter, setManagerFilter] = useState('All Managers');
@@ -888,7 +888,7 @@ export default function Dashboard() {
             {isFetchingHistory ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00bdd9]"></div>
                 </div>
                 <h4 className="text-sm font-bold text-foreground mb-1">Gathering Data...</h4>
               </div>

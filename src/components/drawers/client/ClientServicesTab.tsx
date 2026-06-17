@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Briefcase } from 'lucide-react';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import { getSafeHex, hexToRgba, renderIcon } from '../../../utils/uiUtils';
 
@@ -9,7 +9,7 @@ interface ClientServicesTabProps {
 }
 
 export default function ClientServicesTab({ client }: ClientServicesTabProps) {
-  const { services, settings } = useAppState();
+  const { services, settings } = useAppStore();
   const { openDrawer } = useUI();
   const [filter, setFilter] = useState<string>('All');
 

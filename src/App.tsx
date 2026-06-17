@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AppStateProvider } from './context/AppStateContext';
+import { useFirebaseSync } from './hooks/useFirebaseSync';
+import { useAppStore } from './store/useAppStore';
 import { UIProvider } from './context/UIContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -24,8 +25,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-screen bg-slate-50">
-        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center w-full h-screen bg-white">
+        <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -33,9 +34,29 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function SyncWrapper({ children }: { children: React.ReactNode }) {
+  useFirebaseSync();
+  const ready = useAppStore((state) => state.ready);
+  
+  if (!ready.settings || !ready.clients || !ready.projects || !ready.services || !ready.aliases) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+          <p className="text-sm font-semibold text-slate-600 animate-pulse">
+            Loading Application Data...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 function MainLayout() {
   return (
-    <AppStateProvider>
+    <SyncWrapper>
       <UIProvider>
         <ErrorBoundary>
           <GlobalOverlays />
@@ -57,7 +78,7 @@ function MainLayout() {
                   <React.Suspense
                     fallback={
                       <div className="flex items-center justify-center w-full h-full">
-                        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                        <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
                       </div>
                     }
                   >
@@ -77,7 +98,7 @@ function MainLayout() {
           </div>
         </div>
       </UIProvider>
-    </AppStateProvider>
+    </SyncWrapper>
   );
 }
 
@@ -92,8 +113,8 @@ export default function App() {
             element={
               <React.Suspense
                 fallback={
-                  <div className="flex items-center justify-center w-full h-screen bg-slate-50">
-                    <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                  <div className="flex items-center justify-center w-full h-screen bg-white">
+                    <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
                   </div>
                 }
               >

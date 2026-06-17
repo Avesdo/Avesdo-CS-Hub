@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
 import { useUI } from '../context/UIContext';
 import { useLocation } from 'react-router-dom';
 import { getHealthBadge, getSettingBadge, getSafeHex, hexToRgba } from '../utils/uiUtils';
@@ -34,7 +34,7 @@ import EmptyState from '../components/EmptyState';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-// import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 type SortCol = 'companyName' | 'type' | 'healthScore' | 'projectCount' | 'manager' | 'trend';
 
@@ -76,7 +76,7 @@ const Sparkline = React.memo(({ data }: { data: number[] }) => {
 });
 
 export default function ClientHealth() {
-  const { clients, projects, settings } = useAppState();
+  const { clients, projects, settings } = useAppStore();
   const { openDrawer, openModal } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
 
@@ -95,7 +95,196 @@ export default function ClientHealth() {
 
   const location = useLocation();
   const [healthHistory, setHealthHistory] = useState<any>({});
-  const [isScrolled, setIsScrolled] = useState(false);
+  
+  const toolbarRef = useRef<HTMLDivElement>(null);
+
+  
+const ClientRow = React.memo(({
+  c,
+  index,
+  openDrawer,
+  getSettingBadge,
+  settings,
+  getHealthBadge,
+  activeHex,
+  onboardingHex,
+  
+  hexToRgba,
+  StopProp,
+  Sparkline
+}: any) => {
+  return (
+    <tr
+                          key={c.clientId}
+                          data-index={index}
+                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
+                          onClick={() => openDrawer('client', c.clientId)} // default to overview
+                        >
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
+                            <TruncatedText
+                              text={c.companyName || 'Unnamed Client'}
+                              className="max-w-[200px] group-hover:text-primary transition-colors"
+                            />
+                          </td>
+                          <td className="px-6 py-2 text-muted-foreground border-l-0">
+                            {(c as any).clientType ? (
+                              getSettingBadge('clientTypes', (c as any).clientType, settings)
+                            ) : (
+                              <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
+                                Unassigned
+                              </span>
+                            )}
+                          </td>
+                          <td
+                            className="px-6 py-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDrawer('client', c.clientId, { targetTab: 'trends' });
+                            }}
+                          >
+                            <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
+                              {getHealthBadge(c.healthScore, settings)}
+                              <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
+                                <Sparkline data={c.trendData} />
+                              </div>
+                            </div>
+                          </td>
+                          <td
+                            className="px-6 py-2 relative group/projects"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDrawer('client', c.clientId, { targetTab: 'projects' });
+                            }}
+                          >
+                            <div className="flex items-center gap-2 p-1 -m-1 rounded hover:bg-slate-50 transition-colors w-fit cursor-pointer">
+                              <div
+                                style={
+                                  c.activeProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(activeHex, 0.1),
+                                        color: activeHex,
+                                        borderColor: hexToRgba(activeHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/active relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.activeProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.activeProjectsCount > 0
+                                      ? { backgroundColor: activeHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.activeProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.activeProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/active:opacity-100 transition-opacity">
+                                  Active Projects
+                                </div>
+                              </div>
+
+                              <div
+                                style={
+                                  c.onboardingProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(onboardingHex, 0.1),
+                                        color: onboardingHex,
+                                        borderColor: hexToRgba(onboardingHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/onboarding relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.onboardingProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.onboardingProjectsCount > 0
+                                      ? { backgroundColor: onboardingHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.onboardingProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.onboardingProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/onboarding:opacity-100 transition-opacity">
+                                  Onboarding Projects
+                                </div>
+                              </div>
+
+                              <div
+                                style={
+                                  c.closedProjectsCount > 0
+                                    ? {
+                                        backgroundColor: hexToRgba(closedHex, 0.1),
+                                        color: closedHex,
+                                        borderColor: hexToRgba(closedHex, 0.3),
+                                      }
+                                    : undefined
+                                }
+                                className={`group/closed relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                                  c.closedProjectsCount > 0
+                                    ? 'shadow-sm'
+                                    : 'bg-slate-50 text-slate-400 border-transparent'
+                                }`}
+                              >
+                                <div
+                                  style={
+                                    c.closedProjectsCount > 0
+                                      ? { backgroundColor: closedHex }
+                                      : undefined
+                                  }
+                                  className={`w-1.5 h-1.5 rounded-full ${c.closedProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                                />
+                                {c.closedProjectsCount}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/closed:opacity-100 transition-opacity">
+                                  Closed Projects
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td
+                            className="px-6 py-2 text-muted-foreground"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="inline-block relative">
+                              <Select
+                                value={c.accountManager || 'Unassigned'}
+                                options={(settings?.managers?.map((m: any) => m.name) || []).map(
+                                  (m: any) => ({
+                                    label: getSettingBadge('managers', m, settings),
+                                    value: m,
+                                  })
+                                )}
+                                onChange={(val) => handleUpdateManager(c.clientId, val)}
+                                hideCheckmark={true}
+                                trigger={
+                                  <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
+                                    {getSettingBadge('managers', c.accountManager, settings)}
+                                  </div>
+                                }
+                              />
+                            </div>
+                          </td>
+                        </tr>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.c === nextProps.c &&
+      prevProps.index === nextProps.index &&
+      prevProps.activeHex === nextProps.activeHex &&
+      prevProps.onboardingHex === nextProps.onboardingHex &&
+      prevProps.settings === nextProps.settings
+    );
+  }
+);
+
 
   // Mapping routing state to local tabs
   const getInitialTab = () => {
@@ -210,13 +399,7 @@ export default function ClientHealth() {
     });
   }, [clients, settings]);
 
-  const [displayLimit, setDisplayLimit] = useState(50);
 
-  const loadMoreCallback = React.useCallback(() => {
-    setDisplayLimit((prev) => prev + 50);
-  }, []);
-
-  const loadMoreRef = useIntersectionObserver(loadMoreCallback, '200px');
 
   // Calculate Client Enhancements
   const enhancedClients = useMemo(() => {
@@ -460,6 +643,39 @@ export default function ClientHealth() {
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const scrollContainer = tableScrollRef.current;
+    if (!scrollContainer || !toolbarRef.current) return;
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop;
+      const toolbar = toolbarRef.current;
+      if (!toolbar) return;
+
+      if (scrollTop > 40) {
+        toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+        toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+      } else if (scrollTop <= 10) {
+        toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+        toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const rowVirtualizer = useVirtualizer({
+    count: sortedClients.length,
+    getScrollElement: () => tableScrollRef.current,
+    estimateSize: () => 53,
+    overscan: 30,
+  });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom = virtualItems.length > 0 ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end : 0;
+
   const activeStatus = settings?.statuses?.find((s: any) => s.name === 'Active');
   const onboardingStatus = settings?.statuses?.find((s: any) => s.name === 'Onboarding');
   const closedStatus = settings?.statuses?.find((s: any) => s.name === 'Closed');
@@ -469,8 +685,7 @@ export default function ClientHealth() {
   const closedHex = getSafeHex(closedStatus?.color, 'slate');
 
   return (
-    <div
-      className="flex-1 flex flex-col h-full overflow-hidden bg-white"
+    <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden"
       onWheel={(e) => {
         if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
           tableScrollRef.current.scrollTop += e.deltaY;
@@ -478,7 +693,8 @@ export default function ClientHealth() {
       }}
     >
       <div
-        className={`transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        ref={toolbarRef}
+        className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
       >
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
@@ -698,13 +914,7 @@ export default function ClientHealth() {
           <div
             ref={tableScrollRef}
             className="flex-1 overflow-auto custom-thin-scroll w-full relative"
-            onScroll={(e) => {
-              if (e.currentTarget.scrollTop > 40 && !isScrolled) setIsScrolled(true);
-              else if (e.currentTarget.scrollTop <= 10 && isScrolled) setIsScrolled(false);
-            }}
           >
-            {useMemo(
-              () => (
                 <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
@@ -789,169 +999,38 @@ export default function ClientHealth() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border text-sm">
-                    {sortedClients.slice(0, displayLimit).map((c: any) => {
+                  <tbody className="divide-y divide-border text-sm relative">
+                    {paddingTop > 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ height: paddingTop, border: 0, padding: 0 }} />
+                      </tr>
+                    )}
+                    {virtualItems.map((virtualRow) => {
+                      const c = sortedClients[virtualRow.index] as any;
+                      if (!c) return null;
                       return (
-                        <tr
+                        <ClientRow
                           key={c.clientId}
-                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
-                          onClick={() => openDrawer('client', c.clientId)} // default to overview
-                        >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
-                            <TruncatedText
-                              text={c.companyName || 'Unnamed Client'}
-                              className="max-w-[200px] group-hover:text-primary transition-colors"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-muted-foreground border-l-0">
-                            {(c as any).clientType ? (
-                              getSettingBadge('clientTypes', (c as any).clientType, settings)
-                            ) : (
-                              <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
-                                Unassigned
-                              </span>
-                            )}
-                          </td>
-                          <td
-                            className="px-6 py-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openDrawer('client', c.clientId, { targetTab: 'trends' });
-                            }}
-                          >
-                            <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
-                              {getHealthBadge(c.healthScore, settings)}
-                              <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
-                                <Sparkline data={c.trendData} />
-                              </div>
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-2 relative group/projects"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openDrawer('client', c.clientId, { targetTab: 'projects' });
-                            }}
-                          >
-                            <div className="flex items-center gap-2 p-1 -m-1 rounded hover:bg-slate-50 transition-colors w-fit cursor-pointer">
-                              <div
-                                style={
-                                  c.activeProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(activeHex, 0.1),
-                                        color: activeHex,
-                                        borderColor: hexToRgba(activeHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/active relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.activeProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.activeProjectsCount > 0
-                                      ? { backgroundColor: activeHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.activeProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.activeProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/active:opacity-100 transition-opacity">
-                                  Active Projects
-                                </div>
-                              </div>
-
-                              <div
-                                style={
-                                  c.onboardingProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(onboardingHex, 0.1),
-                                        color: onboardingHex,
-                                        borderColor: hexToRgba(onboardingHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/onboarding relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.onboardingProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.onboardingProjectsCount > 0
-                                      ? { backgroundColor: onboardingHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.onboardingProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.onboardingProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/onboarding:opacity-100 transition-opacity">
-                                  Onboarding Projects
-                                </div>
-                              </div>
-
-                              <div
-                                style={
-                                  c.closedProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(closedHex, 0.1),
-                                        color: closedHex,
-                                        borderColor: hexToRgba(closedHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/closed relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.closedProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.closedProjectsCount > 0
-                                      ? { backgroundColor: closedHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.closedProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.closedProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/closed:opacity-100 transition-opacity">
-                                  Closed Projects
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-2 text-muted-foreground"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div className="inline-block relative">
-                              <Select
-                                value={c.accountManager || 'Unassigned'}
-                                options={(settings?.managers?.map((m: any) => m.name) || []).map(
-                                  (m: any) => ({
-                                    label: getSettingBadge('managers', m, settings),
-                                    value: m,
-                                  })
-                                )}
-                                onChange={(val) => handleUpdateManager(c.clientId, val)}
-                                hideCheckmark={true}
-                                trigger={
-                                  <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                                    {getSettingBadge('managers', c.accountManager, settings)}
-                                  </div>
-                                }
-                              />
-                            </div>
-                          </td>
-                        </tr>
+                          c={c}
+                          index={virtualRow.index}
+                          openDrawer={openDrawer}
+                          getSettingBadge={getSettingBadge}
+                          settings={settings}
+                          getHealthBadge={getHealthBadge}
+                          activeHex={activeHex}
+                          onboardingHex={onboardingHex}
+                          
+                          hexToRgba={hexToRgba}
+                          Sparkline={Sparkline}
+                        />
                       );
                     })}
 
+                    {paddingBottom > 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ height: paddingBottom, border: 0, padding: 0 }} />
+                      </tr>
+                    )}
                     {sortedClients.length === 0 && (
                       <tr>
                         <td colSpan={5} className="px-6 py-4">
@@ -965,39 +1044,6 @@ export default function ClientHealth() {
                     )}
                   </tbody>
                 </table>
-              ),
-              [
-                sortedClients,
-                displayLimit,
-                nameFilter,
-                typeFilter,
-                healthFilter,
-                projectFilter,
-                managerFilter,
-                sortCol,
-                sortAsc,
-                settings,
-                openDrawer,
-                handleSort,
-                allCompanyNames,
-                allTypes,
-                allManagers,
-                activeHex,
-                onboardingHex,
-                closedHex,
-                handleUpdateManager,
-              ]
-            )}
-            {sortedClients.length > displayLimit && (
-              <div ref={loadMoreRef} className="flex justify-center p-4 h-24 items-center">
-                <button
-                  onClick={() => setDisplayLimit((prev) => prev + 50)}
-                  className="text-cyan-600 hover:text-cyan-700 font-medium text-sm hover:underline transition-colors"
-                >
-                  Load More ({sortedClients.length - displayLimit} remaining)
-                </button>
-              </div>
-            )}
           </div>
 
           <TableFooter totalItems={sortedClients.length} label="Total Clients Displayed" />

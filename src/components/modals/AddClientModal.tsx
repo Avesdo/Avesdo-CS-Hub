@@ -1,24 +1,49 @@
 import React, { useState } from 'react';
-import { X, ChevronDown, Search } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { updateClientRecord, addAutoLog } from '../../api/dbService';
 import { Client } from '../../types';
 
 import { Select } from '../ui/Select';
+import { RichTextEditor } from '../ui/RichTextEditor';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const clientSchema = z.object({
+  companyName: z.string().min(1, 'Client Name is required.'),
+  clientType: z.string().min(1, 'Client Type is required.'),
+  accountManager: z.string().optional(),
+  note: z.string().optional(),
+});
+
+type ClientFormValues = z.infer<typeof clientSchema>;
 
 export default function AddClientModal() {
   const { isModalOpen, closeModal, openDrawer } = useUI();
-  const { settings, clients, user } = useAppState();
+  const { settings, clients, user } = useAppStore();
 
-  const [companyName, setCompanyName] = useState('');
-  const [clientType, setClientType] = useState('');
-  const [accountManager, setAccountManager] = useState('');
-  const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [globalError, setGlobalError] = useState('');
   const [shouldRender, setShouldRender] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ClientFormValues>({
+    resolver: zodResolver(clientSchema),
+    defaultValues: {
+      companyName: '',
+      clientType: '',
+      accountManager: '',
+      note: '',
+    },
+  });
 
   const isOpen = isModalOpen('addClient');
 
@@ -38,24 +63,18 @@ export default function AddClientModal() {
 
   const handleClose = () => {
     closeModal();
+    reset();
+    setGlobalError('');
   };
 
-  const handleSubmit = async () => {
-    setErrorMsg('');
-    if (!companyName.trim()) {
-      setErrorMsg('Client Name is required.');
-      return;
-    }
-    if (!clientType) {
-      setErrorMsg('Client Type is required.');
-      return;
-    }
+  const onSubmit = async (data: ClientFormValues) => {
+    setGlobalError('');
 
     const nameExists = clients.some(
-      (c) => c.companyName.toLowerCase() === companyName.trim().toLowerCase()
+      (c) => c.companyName.toLowerCase() === data.companyName.trim().toLowerCase()
     );
     if (nameExists) {
-      setErrorMsg('A client with this Client Name already exists.');
+      setGlobalError('A client with this Client Name already exists.');
       return;
     }
 
@@ -65,9 +84,9 @@ export default function AddClientModal() {
       const newClient: Client = {
         id: crypto.randomUUID(),
         clientId: newClientId,
-        companyName: companyName.trim(),
-        clientType,
-        accountManager: accountManager || 'Unassigned',
+        companyName: data.companyName.trim(),
+        clientType: data.clientType,
+        accountManager: data.accountManager || 'Unassigned',
         activeProjectCount: 0,
         healthScore: 'N/A',
         billing: 100,
@@ -77,20 +96,15 @@ export default function AddClientModal() {
       };
 
       await updateClientRecord(newClient, {
-        successMsg: `Client '${companyName.trim()}' successfully created.`,
-        errorMsg: `Failed to create client '${companyName.trim()}'.`,
+        successMsg: `Client '${data.companyName.trim()}' successfully created.`,
+        errorMsg: `Failed to create client '${data.companyName.trim()}'.`,
       });
 
-      const logMessage = note
-        ? `Client profile created. Initial Note: ${note}`
+      const logMessage = data.note
+        ? `Client profile created. Initial Note: ${data.note}`
         : `Client profile created.`;
       await addAutoLog(newClientId, logMessage, user?.name || 'System');
 
-      // Reset form
-      setCompanyName('');
-      setClientType('');
-      setAccountManager('');
-      setNote('');
       handleClose();
 
       // Seamless Routing Handoff
@@ -103,7 +117,7 @@ export default function AddClientModal() {
       }
     } catch (err) {
       console.error(err);
-      setErrorMsg('An error occurred while creating the client.');
+      setGlobalError('An error occurred while creating the client.');
     } finally {
       setIsSubmitting(false);
     }
@@ -136,12 +150,9 @@ export default function AddClientModal() {
             </button>
           </div>
           <div className="p-6 custom-thin-scroll overflow-visible">
-            {errorMsg && (
-              <div
-                id="ac-error"
-                className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"
-              >
-                {errorMsg}
+            {globalError && (
+              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+                {globalError}
               </div>
             )}
 
@@ -150,46 +161,57 @@ export default function AddClientModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Client Name <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="text"
-                  value={companyName}
-                  onChange={(e) => {
-                    setCompanyName(e.target.value);
-                    setErrorMsg('');
-                  }}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary hover:border-primary/50 h-[38px] placeholder:text-muted-foreground"
-                  placeholder="Enter client name..."
+                <Controller
+                  name="companyName"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      className={`w-full min-w-0 rounded-md border ${errors.companyName ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 hover:border-primary/50 h-[38px] placeholder:text-muted-foreground`}
+                      placeholder="Enter client name..."
+                    />
+                  )}
                 />
+                {errors.companyName && (
+                  <p className="text-destructive text-xs mt-1 font-medium">{errors.companyName.message}</p>
+                )}
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Client Type <span className="text-destructive">*</span>
                 </label>
-                <Select
-                  value={clientType}
-                  options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({
-                    label: t,
-                    value: t,
-                  }))}
-                  onChange={(val) => {
-                    setClientType(val);
-                    setErrorMsg('');
-                  }}
-                  className="w-full block"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${clientType ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {clientType || 'Select Type'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="clientType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({
+                        label: t,
+                        value: t,
+                      }))}
+                      onChange={field.onChange}
+                      className="w-full block"
+                      trigger={
+                        <button
+                          type="button"
+                          className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.clientType ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
+                        >
+                          <span
+                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value || 'Select Type'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
+                {errors.clientType && (
+                  <p className="text-destructive text-xs mt-1 font-medium">{errors.clientType.message}</p>
+                )}
               </div>
             </div>
 
@@ -198,40 +220,52 @@ export default function AddClientModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Manager
                 </label>
-                <Select
-                  value={accountManager}
-                  options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
-                    label: m,
-                    value: m,
-                  }))}
-                  onChange={setAccountManager}
-                  className="w-full block"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${accountManager ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {accountManager || 'Select Manager'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="accountManager"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || ''}
+                      options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
+                        label: m,
+                        value: m,
+                      }))}
+                      onChange={field.onChange}
+                      className="w-full block"
+                      trigger={
+                        <button
+                          type="button"
+                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                        >
+                          <span
+                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value || 'Select Manager'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
               </div>
               <div className="pt-3 border-t border-border/50">
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
                 </label>
-                <textarea
-                  rows={3}
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll"
-                  placeholder="Enter an optional note..."
-                ></textarea>
+                <Controller
+                  name="note"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                      <RichTextEditor
+                        content={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Enter an optional note..."
+                      />
+                    </div>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -245,7 +279,7 @@ export default function AddClientModal() {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
             >

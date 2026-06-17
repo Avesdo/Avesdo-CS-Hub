@@ -10,7 +10,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge } from '../../utils/uiUtils';
 import { calculateClientHealth } from '../../utils/scoringUtils';
 import {
@@ -33,7 +33,7 @@ import { Tooltip } from '../ui/Tooltip';
 
 export default function ClientDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const { clients, projects, settings, user, services } = useAppState();
+  const { clients, projects, settings, user, services } = useAppStore();
   const [activeTab, setActiveTab] = useState<
     'health' | 'trends' | 'projects' | 'services' | 'notes'
   >('health');

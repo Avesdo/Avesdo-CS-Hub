@@ -7,7 +7,7 @@ import {
   addProjectAutoLog,
   addServiceAutoLog,
 } from '../../../api/dbService';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import { getSettingBadge } from '../../../utils/uiUtils';
 
 interface ServiceDetailsTabProps {
@@ -15,7 +15,7 @@ interface ServiceDetailsTabProps {
 }
 
 export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
-  const { settings, user } = useAppState();
+  const { settings, user } = useAppStore();
 
   const serviceOutcomes = (settings?.settingsData || []).filter(
     (s: any) => s.category === 'ServiceOutcome'

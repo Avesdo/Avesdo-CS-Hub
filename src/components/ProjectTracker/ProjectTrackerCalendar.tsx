@@ -7,7 +7,7 @@ import {
   User,
   ChevronDown,
 } from 'lucide-react';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { getSafeHex, hexToRgba } from '../../utils/uiUtils';
 import { Select } from '../ui/Select';
 
@@ -17,7 +17,7 @@ interface ProjectTrackerCalendarProps {
 
 export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = React.memo(
   ({ openDrawer }) => {
-    const { projects, settings } = useAppState();
+    const { projects, settings } = useAppStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [activePopover, setActivePopover] = useState<string | null>(null);
 

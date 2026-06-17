@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard,
@@ -14,7 +14,7 @@ import {
 import { Tooltip } from './ui/Tooltip';
 
 export default function Sidebar() {
-  const { pendingAliasesCount } = useAppState();
+  const { pendingAliasesCount } = useAppStore();
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 

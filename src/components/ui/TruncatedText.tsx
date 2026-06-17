@@ -21,9 +21,9 @@ export function TruncatedText({
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (containerRef.current && textRef.current) {
-      // For line-clamp, compare scrollHeight against clientHeight to see if it overflowed vertically
+      // For truncate, compare scrollWidth against clientWidth to see if it overflowed horizontally
       const isActuallyTruncated =
-        containerRef.current.scrollHeight > containerRef.current.clientHeight;
+        containerRef.current.scrollWidth > containerRef.current.clientWidth;
 
       setIsTruncated(isActuallyTruncated);
 
@@ -47,7 +47,7 @@ export function TruncatedText({
     >
       <div
         ref={containerRef}
-        className={`min-w-0 line-clamp-2 whitespace-normal break-words w-full ${className}`}
+        className={`min-w-0 truncate w-full ${className}`}
       >
         <span ref={textRef}>{text}</span>
       </div>

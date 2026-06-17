@@ -11,7 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge, COLOR_MAP, hexToRgba, renderIcon } from '../../utils/uiUtils';
 import {
   updateServiceRecord,
@@ -28,7 +28,7 @@ import { Tooltip } from '../ui/Tooltip';
 
 export default function ServiceDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const { services, settings, user, clients, projects } = useAppState();
+  const { services, settings, user, clients, projects } = useAppStore();
   const [activeTab, setActiveTab] = useState<'details' | 'notes'>('details');
 
   const [isEditingName, setIsEditingName] = useState(false);

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Activity, ChevronDown } from 'lucide-react';
 import { calculateClientHealth } from '../../../utils/scoringUtils';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 
 interface ClientHealthTabProps {
   client: any;
 }
 
 export default React.memo(function ClientHealthTab({ client }: ClientHealthTabProps) {
-  const { projects, settings } = useAppState();
+  const { projects, settings } = useAppStore();
 
   const healthResult = calculateClientHealth(client, projects, settings);
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useState, useRef, useCallback , useMemo } from 'react';
 import {
   ArrowUpDown,
   Calendar,
@@ -87,296 +88,42 @@ interface ProjectTrackerTableProps {
     React.SetStateAction<{ start: string; end: string } | 'no-date' | null>
   >;
   footerContent?: React.ReactNode;
+  parentRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.memo(
-  ({
-    projects,
-    baseProjects,
-    activeTab,
-    settings,
-    selectedRows,
-    setSelectedRows,
-    sortCol,
-    sortAsc,
-    onSort,
-    onUpdateProject,
-    openDrawer,
-    statusFilter,
-    setStatusFilter,
-    healthFilter,
-    setHealthFilter,
-    nameFilter,
-    setNameFilter,
-    clientFilter,
-    setClientFilter,
-    managerFilter,
-    setManagerFilter,
-    timelineFilter,
-    setTimelineFilter,
-    phaseFilter,
-    setPhaseFilter,
-    featuresFilter,
-    setFeaturesFilter,
-    releaseDateFilter,
-    setReleaseDateFilter,
-    footerContent,
-  }) => {
-    const groupA = [
-      'Actively Onboarding',
-      'Upcoming (> 45 Days)',
-      'No Due Date',
-      'All Onboarding',
-    ].includes(activeTab);
-    const groupB = ['All Released', 'Suspended'].includes(activeTab);
-    const groupC = activeTab === 'All Projects';
 
-    const showTimeline = groupA;
-    const showPhase = groupA;
-    const showChecklist = groupA;
-    const showHealthScore = groupB || groupC;
-    const showFeatures = groupB || groupC;
+const arePropsEqual = (prevProps: any, nextProps: any) => {
+  return (
+    prevProps.p === nextProps.p &&
+    prevProps.showYearInDate === nextProps.showYearInDate &&
+    prevProps.selectedRows.includes(prevProps.p.id) === nextProps.selectedRows.includes(nextProps.p.id) &&
+    prevProps.settings === nextProps.settings
+  );
+};
 
-    const allNames = Array.from(new Set(baseProjects.map((p) => p.name || 'Not Set'))).sort();
-    const allClients = Array.from(new Set(baseProjects.flatMap((p) => p.clients || []))).sort();
-    const allManagers = Array.from(
-      new Set(baseProjects.map((p) => p.assignee || 'Unassigned'))
-    ).sort();
-    const allTimelines = Array.from(
-      new Set(baseProjects.map((p) => p.timelineStatus || 'Not Set'))
-    ).sort();
-    const allPhases = Array.from(
-      new Set(baseProjects.map((p) => p.onboardingPhase || 'Not Set'))
-    ).sort();
-
-    const pt_features_fallback = [
-      'Contracts',
-      'Inventory',
-      'Pricing',
-      'Deposits',
-      'Payments',
-      'Allocations',
-      'Workflows',
-      'Reporting',
-    ];
-    const allFeatures =
-      Array.isArray(settings?.features) && settings?.features.length > 0
-        ? settings.features
-        : pt_features_fallback;
-
-    const toggleAll = () => {
-      if (selectedRows.length === projects.length && projects.length > 0) {
-        setSelectedRows([]);
-      } else {
-        setSelectedRows(projects.map((p) => p.id));
-      }
-    };
-
-    const toggleRow = (id: string, e: React.MouseEvent) => {
-      e.stopPropagation();
-      setSelectedRows((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]));
-    };
-
-    const stopProp = (e: React.MouseEvent) => e.stopPropagation();
-
-    return (
-      <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-fixed">
-        <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
-          <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-12 group/th">
-              <input
-                type="checkbox"
-                checked={selectedRows.length === projects.length && projects.length > 0}
-                onChange={toggleAll}
-                className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
-              />
-            </th>
-            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('name')}
-                >
-                  Project Name
-                </div>
-                {setNameFilter && (
-                  <ColumnFilter
-                    options={allNames}
-                    selected={nameFilter || []}
-                    onChange={setNameFilter}
-                    searchable
-                  />
-                )}
-              </div>
-            </th>
-            <th className="border-b border-border px-4 py-2 w-[220px] max-w-[220px] group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('developers')}
-                >
-                  Developer(s)
-                </div>
-                {setClientFilter && (
-                  <ColumnFilter
-                    options={allClients}
-                    selected={clientFilter || []}
-                    onChange={setClientFilter}
-                    searchable
-                  />
-                )}
-              </div>
-            </th>
-            <th className="border-b border-border px-4 py-2 w-[220px] max-w-[220px] group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('salesMarketingClients')}
-                >
-                  Sales & Marketing
-                </div>
-              </div>
-            </th>
-            {showHealthScore && (
-              <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
-                <div className="flex items-center justify-center">
-                  <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                    onClick={() => onSort('healthScore')}
-                  >
-                    Health Score
-                  </div>
-                  {setHealthFilter && (
-                    <ColumnFilter
-                      options={['Healthy', 'Warning', 'At Risk']}
-                      selected={healthFilter || []}
-                      onChange={setHealthFilter}
-                    />
-                  )}
-                </div>
-              </th>
-            )}
-            <th className="border-b border-border px-4 py-2 min-w-[110px] group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('releaseDateVal')}
-                >
-                  Release Date
-                </div>
-                {setReleaseDateFilter && (
-                  <DateFilter dateRange={releaseDateFilter} setDateRange={setReleaseDateFilter} />
-                )}
-              </div>
-            </th>
-            <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('assignee')}
-                >
-                  Manager
-                </div>
-                {setManagerFilter && (
-                  <ColumnFilter
-                    options={allManagers}
-                    selected={managerFilter || []}
-                    onChange={setManagerFilter}
-                  />
-                )}
-              </div>
-            </th>
-            <th className="border-b border-border px-4 py-2 min-w-[130px] group/th">
-              <div className="flex items-center">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                  onClick={() => onSort('projectStatus')}
-                >
-                  Project Status
-                </div>
-                {setStatusFilter && (
-                  <ColumnFilter
-                    options={['Onboarding', 'Active', 'Suspended', 'Closed']}
-                    selected={statusFilter || []}
-                    onChange={setStatusFilter}
-                  />
-                )}
-              </div>
-            </th>
-            {showTimeline && (
-              <th className="border-b border-border px-4 py-2 min-w-[130px] group/th">
-                <div className="flex items-center">
-                  <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                    onClick={() => onSort('timelineStatus')}
-                  >
-                    Delivery Status
-                  </div>
-                  {setTimelineFilter && (
-                    <ColumnFilter
-                      options={allTimelines}
-                      selected={timelineFilter || []}
-                      onChange={setTimelineFilter}
-                    />
-                  )}
-                </div>
-              </th>
-            )}
-            {showPhase && (
-              <th className="border-b border-border px-4 py-2 min-w-[150px] group/th">
-                <div className="flex items-center">
-                  <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
-                    onClick={() => onSort('onboardingPhase')}
-                  >
-                    Implementation Status
-                  </div>
-                  {setPhaseFilter && (
-                    <ColumnFilter
-                      options={allPhases}
-                      selected={phaseFilter || []}
-                      onChange={setPhaseFilter}
-                    />
-                  )}
-                </div>
-              </th>
-            )}
-            <th className="border-b border-border px-4 py-2 w-[80px] group/th">
-              <div className="flex items-center justify-end">
-                <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap"
-                  onClick={() => onSort('units')}
-                >
-                  Live Units
-                </div>
-              </div>
-            </th>
-            {showChecklist && (
-              <th className="border-b border-border px-4 py-2 min-w-[100px] group/th">
-                <div className="flex items-center justify-center whitespace-nowrap">Checklist</div>
-              </th>
-            )}
-            {showFeatures && (
-              <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
-                <div className="flex items-center justify-center">
-                  <div className="whitespace-nowrap mr-2">Features</div>
-                  {setFeaturesFilter && (
-                    <ColumnFilter
-                      options={allFeatures}
-                      selected={featuresFilter || []}
-                      onChange={setFeaturesFilter}
-                      searchable
-                    />
-                  )}
-                </div>
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border text-sm">
-          {projects.map((p) => (
-            <tr
-              key={p.id}
+const ProjectRow = React.memo(({
+  p,
+  selectedRows,
+  toggleRow,
+  openDrawer,
+  stopProp,
+  settings,
+  showHealthScore,
+  getHealthBadge,
+  showYearInDate,
+  onUpdateProject,
+  getSettingBadge,
+  showTimeline,
+  showPhase,
+  showChecklist,
+  showFeatures,
+  getFeatureBadgeProps,
+  Sparkline,
+  virtualRow
+}: any) => {
+  return (
+    <tr
+              key={virtualRow.index}
               className={`hover:bg-slate-50 transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white'}`}
               onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
             >
@@ -399,14 +146,8 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </td>
               <td className="px-4 py-2 text-muted-foreground">
                 <TruncatedText
-                  text={p.developers?.join(', ') || 'None'}
-                  className="max-w-[150px]"
-                />
-              </td>
-              <td className="px-4 py-2 text-muted-foreground">
-                <TruncatedText
-                  text={p.salesMarketingClients?.join(', ') || 'None'}
-                  className="max-w-[150px]"
+                  text={p.clients?.join(', ') || 'None'}
+                  className="max-w-[200px]"
                 />
               </td>
               {showHealthScore && (
@@ -448,7 +189,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                           ? new Date(p.releaseDateVal).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
-                              ...(groupA && activeTab !== 'All Onboarding'
+                              ...(!showYearInDate
                                 ? {}
                                 : { year: 'numeric' }),
                             })
@@ -610,7 +351,364 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 </td>
               )}
             </tr>
-          ))}
+  );
+}, arePropsEqual);
+
+export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.memo(
+  ({
+    projects,
+    baseProjects,
+    activeTab,
+    settings,
+    selectedRows,
+    setSelectedRows,
+    sortCol,
+    sortAsc,
+    onSort,
+    onUpdateProject,
+    openDrawer,
+    statusFilter,
+    setStatusFilter,
+    healthFilter,
+    setHealthFilter,
+    nameFilter,
+    setNameFilter,
+    clientFilter,
+    setClientFilter,
+    managerFilter,
+    setManagerFilter,
+    timelineFilter,
+    setTimelineFilter,
+    phaseFilter,
+    setPhaseFilter,
+    featuresFilter,
+    setFeaturesFilter,
+    releaseDateFilter,
+    setReleaseDateFilter,
+    footerContent,
+    parentRef,
+  }) => {
+    const groupA = [
+      'Actively Onboarding',
+      'Upcoming (> 45 Days)',
+      'No Due Date',
+      'All Onboarding',
+    ].includes(activeTab);
+    const groupB = ['All Released', 'Suspended'].includes(activeTab);
+    const groupC = activeTab === 'All Projects';
+
+    const showTimeline = groupA;
+    const showPhase = groupA;
+    const showChecklist = groupA;
+    const showHealthScore = groupB || groupC;
+    const showFeatures = groupB || groupC;
+
+    const columnCount =
+        4 + // Checkbox, Name, Client, Release Date
+        (showHealthScore ? 1 : 0) +
+        2 + // Manager, Status
+        (showTimeline ? 1 : 0) +
+        (showPhase ? 1 : 0) +
+        1 + // Live Units
+        (showChecklist ? 1 : 0) +
+        (showFeatures ? 1 : 0);
+
+
+
+    const { allNames, allClients, allManagers, allTimelines, allPhases, allFeatures } = useMemo(() => {
+      const names = Array.from(new Set(baseProjects.map((p) => p.name || 'Not Set'))).sort();
+      const clients = Array.from(new Set(baseProjects.flatMap((p) => p.clients || []))).sort();
+      const managers = Array.from(new Set(baseProjects.map((p) => p.assignee || 'Unassigned'))).sort();
+      const timelines = Array.from(new Set(baseProjects.map((p) => p.timelineStatus || 'Not Set'))).sort();
+      const phases = Array.from(new Set(baseProjects.map((p) => p.onboardingPhase || 'Not Set'))).sort();
+      
+      const pt_features_fallback = [
+        'Contracts', 'Inventory', 'Pricing', 'Deposits', 'Payments', 'Allocations', 'Workflows', 'Reporting'
+      ];
+      const features = Array.isArray(settings?.features) && settings?.features.length > 0
+        ? settings.features
+        : pt_features_fallback;
+        
+      return {
+        allNames: names,
+        allClients: clients,
+        allManagers: managers,
+        allTimelines: timelines,
+        allPhases: phases,
+        allFeatures: features
+      };
+    }, [baseProjects, settings]);
+
+
+    const toggleAll = useCallback(() => {
+      if (selectedRows.length === projects.length && projects.length > 0) {
+        setSelectedRows([]);
+      } else {
+        setSelectedRows(projects.map((p) => p.id));
+      }
+    }, [selectedRows.length, projects, setSelectedRows]);
+
+    
+  const virtualizer = useVirtualizer({
+    count: projects.length,
+    getScrollElement: () => parentRef?.current || null,
+    estimateSize: () => 55,
+    overscan: 35,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom = virtualItems.length > 0 
+    ? virtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end 
+    : 0;
+
+  const toggleRow = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedRows((prev: any) =>
+      prev.includes(id) ? prev.filter((rId: any) => rId !== id) : [...prev, id]
+    );
+  }, [setSelectedRows]);
+
+    const stopProp = (e: React.MouseEvent) => e.stopPropagation();
+
+    return (
+      <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-fixed">
+
+        {useMemo(() => (
+        <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
+          <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-12 group/th">
+              <input
+                type="checkbox"
+                checked={selectedRows.length === projects.length && projects.length > 0}
+                onChange={toggleAll}
+                className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
+              />
+            </th>
+            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 group/th">
+              <div className="flex items-center">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  onClick={() => onSort('name')}
+                >
+                  Project Name
+                </div>
+                {setNameFilter && (
+                  <ColumnFilter
+                    options={allNames}
+                    selected={nameFilter || []}
+                    onChange={setNameFilter}
+                    searchable
+                  />
+                )}
+              </div>
+            </th>
+            <th className="border-b border-border px-4 py-2 w-[250px] max-w-[250px] group/th">
+              <div className="flex items-center">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  onClick={() => onSort('clients')}
+                >
+                  Client(s)
+                </div>
+                {setClientFilter && (
+                  <ColumnFilter
+                    options={allClients}
+                    selected={clientFilter || []}
+                    onChange={setClientFilter}
+                    searchable
+                  />
+                )}
+              </div>
+            </th>
+            {showHealthScore && (
+              <th className="border-b border-border px-4 py-2 min-w-[160px] group/th">
+                <div className="flex items-center justify-center">
+                  <div
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    onClick={() => onSort('healthScore')}
+                  >
+                    Health Score
+                  </div>
+                  {setHealthFilter && (
+                    <ColumnFilter
+                      options={['Healthy', 'Warning', 'At Risk']}
+                      selected={healthFilter || []}
+                      onChange={setHealthFilter}
+                    />
+                  )}
+                </div>
+              </th>
+            )}
+            <th className="border-b border-border px-4 py-2 min-w-[110px] group/th">
+              <div className="flex items-center">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  onClick={() => onSort('releaseDateVal')}
+                >
+                  Release Date
+                </div>
+                {setReleaseDateFilter && (
+                  <DateFilter dateRange={releaseDateFilter} setDateRange={setReleaseDateFilter} />
+                )}
+              </div>
+            </th>
+            <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
+              <div className="flex items-center">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  onClick={() => onSort('assignee')}
+                >
+                  Manager
+                </div>
+                {setManagerFilter && (
+                  <ColumnFilter
+                    options={allManagers}
+                    selected={managerFilter || []}
+                    onChange={setManagerFilter}
+                  />
+                )}
+              </div>
+            </th>
+            <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
+              <div className="flex items-center">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  onClick={() => onSort('projectStatus')}
+                >
+                  Project Status
+                </div>
+                {setStatusFilter && (
+                  <ColumnFilter
+                    options={['Onboarding', 'Active', 'Suspended', 'Closed']}
+                    selected={statusFilter || []}
+                    onChange={setStatusFilter}
+                  />
+                )}
+              </div>
+            </th>
+            {showTimeline && (
+              <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
+                <div className="flex items-center">
+                  <div
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    onClick={() => onSort('timelineStatus')}
+                  >
+                    Delivery Status
+                  </div>
+                  {setTimelineFilter && (
+                    <ColumnFilter
+                      options={allTimelines}
+                      selected={timelineFilter || []}
+                      onChange={setTimelineFilter}
+                    />
+                  )}
+                </div>
+              </th>
+            )}
+            {showPhase && (
+              <th className="border-b border-border px-4 py-2 min-w-[190px] group/th">
+                <div className="flex items-center">
+                  <div
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    onClick={() => onSort('onboardingPhase')}
+                  >
+                    Implementation Status
+                  </div>
+                  {setPhaseFilter && (
+                    <ColumnFilter
+                      options={allPhases}
+                      selected={phaseFilter || []}
+                      onChange={setPhaseFilter}
+                    />
+                  )}
+                </div>
+              </th>
+            )}
+            <th className="border-b border-border px-4 py-2 w-[80px] group/th">
+              <div className="flex items-center justify-end">
+                <div
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap"
+                  onClick={() => onSort('units')}
+                >
+                  Live Units
+                </div>
+              </div>
+            </th>
+            {showChecklist && (
+              <th className="border-b border-border px-4 py-2 min-w-[130px] group/th">
+                <div className="flex items-center justify-center whitespace-nowrap">Checklist</div>
+              </th>
+            )}
+            {showFeatures && (
+              <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
+                <div className="flex items-center justify-center">
+                  <div className="whitespace-nowrap mr-2">Features</div>
+                  {setFeaturesFilter && (
+                    <ColumnFilter
+                      options={allFeatures}
+                      selected={featuresFilter || []}
+                      onChange={setFeaturesFilter}
+                      searchable
+                    />
+                  )}
+                </div>
+              </th>
+            )}
+          </tr>
+        </thead>
+        ), [
+          selectedRows.length, projects.length, toggleAll,
+          onSort, setNameFilter, nameFilter, allNames,
+          setClientFilter, clientFilter, allClients,
+          showHealthScore, setHealthFilter, healthFilter,
+          setReleaseDateFilter, releaseDateFilter,
+          setManagerFilter, managerFilter, allManagers,
+          setStatusFilter, statusFilter,
+          showTimeline, setTimelineFilter, timelineFilter, allTimelines,
+          showPhase, setPhaseFilter, phaseFilter, allPhases,
+          showChecklist,
+          showFeatures, setFeaturesFilter, featuresFilter, allFeatures
+        ])}
+
+        <tbody className="divide-y divide-border text-sm">
+          {paddingTop > 0 && (
+            <tr>
+              <td colSpan={columnCount} style={{ height: paddingTop, border: 0, padding: 0 }} />
+            </tr>
+          )}
+          {virtualItems.map((virtualRow) => {
+            const p = projects[virtualRow.index];
+            if (!p) return null;
+            return (
+              <ProjectRow
+                key={virtualRow.index}
+                p={p}
+                virtualRow={virtualRow}
+                selectedRows={selectedRows}
+                toggleRow={toggleRow}
+                openDrawer={openDrawer}
+                stopProp={stopProp}
+                settings={settings}
+                showHealthScore={showHealthScore}
+                getHealthBadge={getHealthBadge}
+                showYearInDate={!(groupA && activeTab !== 'All Onboarding')}
+                onUpdateProject={onUpdateProject}
+                getSettingBadge={getSettingBadge}
+                showTimeline={showTimeline}
+                showPhase={showPhase}
+                showChecklist={showChecklist}
+                showFeatures={showFeatures}
+                getFeatureBadgeProps={getFeatureBadgeProps}
+                Sparkline={Sparkline}
+              />
+            );
+          })}
+          {paddingBottom > 0 && (
+            <tr>
+              <td colSpan={columnCount} style={{ height: paddingBottom, border: 0, padding: 0 }} />
+            </tr>
+          )}
           {projects.length === 0 && (
             <tr>
               <td colSpan={12} className="px-6 py-12">

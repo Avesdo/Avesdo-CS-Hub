@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
 import { UploadCloud, CheckCircle2, AlertCircle, Play, FileText, Database } from 'lucide-react';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { doc, updateDoc, collection, writeBatch, getDocs } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { toast } from '../../utils/toast';
@@ -13,7 +13,7 @@ type FileState = {
 };
 
 export function DataUploader() {
-  const { projects, clients } = useAppState();
+  const { projects, clients } = useAppStore();
 
   const [satisfactionFile, setSatisfactionFile] = useState<FileState>({ file: null, parsedData: null, error: null });
   const [sessionsFile, setSessionsFile] = useState<FileState>({ file: null, parsedData: null, error: null });
@@ -306,7 +306,7 @@ export function DataUploader() {
         >
           {isCompiling ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white/30 border-t-[#00bdd9] rounded-full animate-spin" />
               Compiling Data...
             </>
           ) : (

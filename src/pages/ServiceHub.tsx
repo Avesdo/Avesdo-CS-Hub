@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppState } from '../context/AppStateContext';
+import { useAppStore } from '../store/useAppStore';
+
 import {
   ArrowUpDown,
   Briefcase,
@@ -47,9 +48,90 @@ import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 // --- Column Filter Popover Component ---
 
+const ServiceRow = React.memo(({
+  s,
+  openDrawer,
+  getSettingBadge,
+  settings,
+  activeTab,
+  getTypeBadgeIconOnly,
+  allStatuses,
+  handleStatusChange,
+  formatCurrency,
+  StatusDropdown,
+  TruncatedText
+}: any) => {
+  const sDate = s.dateVal
+    ? new Date(s.dateVal).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'No Date';
+
+  return (
+                        <tr
+                          key={s.id}
+                          className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
+                          onClick={() => openDrawer('service', s.id)}
+                        >
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
+                            <TruncatedText
+                              text={s.name || 'Unnamed Service'}
+                              className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
+                            />
+                          </td>
+                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
+                            <TruncatedText
+                              text={s.projectName || 'No Project'}
+                              className="max-w-[150px]"
+                            />
+                          </td>
+                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
+                            <TruncatedText
+                              text={s.clientName || s.clients?.join(', ') || 'No Client'}
+                              className="max-w-[150px]"
+                            />
+                          </td>
+                          <td className="px-6 py-2">{getTypeBadgeIconOnly(s.type, settings)}</td>
+                          <td className="px-6 py-2">
+                            <div className="flex gap-1 flex-wrap">
+                              {s.managers && s.managers.length > 0 ? (
+                                s.managers.map((m: string, idx: number) => (
+                                  <div key={idx}>{getSettingBadge('managers', m, settings)}</div>
+                                ))
+                              ) : s.manager ? (
+                                getSettingBadge('managers', s.manager, settings)
+                              ) : (
+                                <span className="text-xs text-muted-foreground">Unassigned</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-2">
+                            <StatusDropdown
+                              value={s.status || ''}
+                              options={allStatuses}
+                              onChange={(newStatus: string) => handleStatusChange(s, newStatus)}
+                              settings={settings}
+                            />
+                          </td>
+                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium whitespace-nowrap">
+                            {sDate}
+                          </td>
+                          {activeTab !== 'Included' && (
+                            <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+                              {formatCurrency(Number(s.price) || 0)}
+                            </td>
+                          )}
+                        </tr>
+  );
+}, (prevProps, nextProps) => {
+  return prevProps.s === nextProps.s && prevProps.activeTab === nextProps.activeTab && prevProps.settings === nextProps.settings;
+});
+
 export default function ServiceHub() {
   const location = useLocation();
-  const { services, settings, user } = useAppState();
+  const { services, settings, user } = useAppStore();
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -784,68 +866,21 @@ export default function ServiceHub() {
                   </thead>
                   <tbody className="divide-y divide-border text-sm">
                     {tableData.map((s: any) => {
-                      const sDate = s.dateVal
-                        ? new Date(s.dateVal).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : 'No Date';
                       return (
-                        <tr
+                        <ServiceRow
                           key={s.id}
-                          className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
-                          onClick={() => openDrawer('service', s.id)}
-                        >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
-                            <TruncatedText
-                              text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
-                            <TruncatedText
-                              text={s.projectName || 'No Project'}
-                              className="max-w-[150px]"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
-                            <TruncatedText
-                              text={s.clientName || s.clients?.join(', ') || 'No Client'}
-                              className="max-w-[150px]"
-                            />
-                          </td>
-                          <td className="px-6 py-2">{getTypeBadgeIconOnly(s.type, settings)}</td>
-                          <td className="px-6 py-2">
-                            <div className="flex gap-1 flex-wrap">
-                              {s.managers && s.managers.length > 0 ? (
-                                s.managers.map((m: string, idx: number) => (
-                                  <div key={idx}>{getSettingBadge('managers', m, settings)}</div>
-                                ))
-                              ) : s.manager ? (
-                                getSettingBadge('managers', s.manager, settings)
-                              ) : (
-                                <span className="text-xs text-muted-foreground">Unassigned</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-2">
-                            <StatusDropdown
-                              value={s.status || ''}
-                              options={allStatuses}
-                              onChange={(newStatus: string) => handleStatusChange(s, newStatus)}
-                              settings={settings}
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium whitespace-nowrap">
-                            {sDate}
-                          </td>
-                          {activeTab !== 'Included' && (
-                            <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
-                              {formatCurrency(Number(s.price) || 0)}
-                            </td>
-                          )}
-                        </tr>
+                          s={s}
+                          openDrawer={openDrawer}
+                          getSettingBadge={getSettingBadge}
+                          settings={settings}
+                          activeTab={activeTab}
+                          getTypeBadgeIconOnly={getTypeBadgeIconOnly}
+                          allStatuses={allStatuses}
+                          handleStatusChange={handleStatusChange}
+                          formatCurrency={formatCurrency}
+                          StatusDropdown={StatusDropdown}
+                          TruncatedText={TruncatedText}
+                        />
                       );
                     })}
 

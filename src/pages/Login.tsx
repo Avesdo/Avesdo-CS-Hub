@@ -9,7 +9,7 @@ export default function Login() {
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#F8FAFC]">
-        <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
       </div>
     );
   }

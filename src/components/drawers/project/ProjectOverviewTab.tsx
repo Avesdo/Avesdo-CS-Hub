@@ -23,11 +23,12 @@ import {
   addProjectAutoLog,
   updateServiceRecord,
 } from '../../../api/dbService';
-import { useAppState } from '../../../context/AppStateContext';
+import { useAppStore } from '../../../store/useAppStore';
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
 import { Tooltip } from '../../ui/Tooltip';
 import { getSettingBadge } from '../../../utils/uiUtils';
 import { DatePicker } from '../../../components/ui/DatePicker';
+import { RichTextEditor } from '../../ui/RichTextEditor';
 import toast from 'react-hot-toast';
 
 interface ProjectOverviewTabProps {
@@ -35,7 +36,7 @@ interface ProjectOverviewTabProps {
 }
 
 export default React.memo(function ProjectOverviewTab({ project }: ProjectOverviewTabProps) {
-  const { clients, settings, user, services } = useAppState();
+  const { clients, settings, user, services } = useAppStore();
 
   const [openPop, setOpenPop] = useState<
     'clients' | 'manager' | 'status' | 'timeline' | 'phase' | 'devClients' | 'smClients' | null
@@ -776,18 +777,26 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
         {isKycOpen && (
           <div className="p-0 border-t border-slate-200 bg-white">
             {isKycEditing ? (
-              <textarea
-                className="w-full min-h-[400px] bg-slate-50 border-0 p-5 outline-none text-sm resize-y focus:ring-inset focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-400 font-mono text-slate-700 leading-relaxed"
-                placeholder="Paste KYC data here..."
-                value={kycDraft}
-                onChange={(e) => setKycDraft(e.target.value)}
-              ></textarea>
+              <div className="bg-slate-50 min-h-[400px]">
+                <RichTextEditor
+                  content={kycDraft}
+                  onChange={setKycDraft}
+                  placeholder="Paste KYC data here..."
+                />
+              </div>
             ) : (
               <div className="p-5 max-h-[500px] overflow-y-auto custom-thin-scroll bg-white">
                 {project?.kycDetails ? (
-                  <div className="whitespace-pre-wrap text-sm text-slate-700 leading-relaxed font-medium">
-                    {project.kycDetails}
-                  </div>
+                  project.kycDetails.includes('<p>') ? (
+                    <div
+                      className="prose prose-sm prose-slate max-w-none text-slate-700 leading-relaxed font-medium"
+                      dangerouslySetInnerHTML={{ __html: project.kycDetails }}
+                    />
+                  ) : (
+                    <div className="whitespace-pre-wrap text-sm text-slate-700 leading-relaxed font-medium">
+                      {project.kycDetails}
+                    </div>
+                  )
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400">
                     <FileText className="w-8 h-8 mb-2 opacity-20" />

@@ -10,7 +10,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge } from '../../utils/uiUtils';
 import {
   updateProjectRecord,
@@ -34,7 +34,7 @@ import { Tooltip } from '../ui/Tooltip';
 
 export default function ProjectDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const { projects, settings, clients, user, services } = useAppState();
+  const { projects, settings, clients, user, services } = useAppStore();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'health' | 'trends' | 'features' | 'services' | 'notes'
   >('overview');

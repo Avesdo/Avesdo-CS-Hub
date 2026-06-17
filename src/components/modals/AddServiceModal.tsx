@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
-import { useAppState } from '../../context/AppStateContext';
+import { useAppStore } from '../../store/useAppStore';
 import {
   updateServiceRecord,
   addAutoLog,
@@ -9,50 +9,105 @@ import {
   addServiceAutoLog,
 } from '../../api/dbService';
 import { Service } from '../../types';
-import toast from 'react-hot-toast';
 
 import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
-import { useOnClickOutside } from '../../hooks/useOnClickOutside';
-
+import { RichTextEditor } from '../ui/RichTextEditor';
 import { CreatableSelect } from '../ui/CreatableSelect';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const serviceSchema = z
+  .object({
+    serviceName: z.string().min(1, 'Service Name is required.'),
+    type: z.string().min(1, 'Service Type is required.'),
+    price: z.string().optional(),
+    selectedClient: z.string().min(1, 'Client is required.'),
+    selectedProjects: z.array(z.string()),
+    assignees: z.array(z.string()),
+    contactName: z.string().optional(),
+    note: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type !== 'Included') {
+      if (!data.price || !data.price.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Price is required.',
+          path: ['price'],
+        });
+      } else {
+        const num = parseFloat(data.price.replace(/,/g, ''));
+        if (isNaN(num)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Price must be a valid number.',
+            path: ['price'],
+          });
+        }
+      }
+    }
+  });
+
+type ServiceFormValues = z.infer<typeof serviceSchema>;
+
 export default function AddServiceModal() {
   const { isModalOpen, closeModal, activeDrawer, openDrawer } = useUI();
-  const { clients, projects, settings, user } = useAppState();
+  const { clients, projects, settings, user } = useAppStore();
 
-  const [serviceName, setServiceName] = useState('');
-  const [type, setType] = useState('');
-  const [price, setPrice] = useState('');
-  const [selectedClient, setSelectedClient] = useState('');
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-  const [assignees, setAssignees] = useState<string[]>([]);
-  const [contactName, setContactName] = useState('');
-  const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [globalError, setGlobalError] = useState('');
 
   const [shouldRender, setShouldRender] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   const isOpen = isModalOpen('addService');
 
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<ServiceFormValues>({
+    resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      serviceName: '',
+      type: '',
+      price: '',
+      selectedClient: '',
+      selectedProjects: [],
+      assignees: [],
+      contactName: '',
+      note: '',
+    },
+  });
+
+  const watchType = watch('type');
+  const watchServiceName = watch('serviceName');
+  const watchSelectedClient = watch('selectedClient');
+  const watchSelectedProjects = watch('selectedProjects');
+
   // Pre-fill context if opened from a specific drawer
   useEffect(() => {
     if (isOpen) {
       if (activeDrawer && activeDrawer.type === 'client' && activeDrawer.data) {
         const cId = activeDrawer.data.clientId || activeDrawer.data.id;
-        if (cId) setSelectedClient(cId);
+        if (cId) setValue('selectedClient', cId);
       } else if (activeDrawer && activeDrawer.type === 'project' && activeDrawer.data) {
         const pId = activeDrawer.data.id;
         const pClientName = activeDrawer.data.clients?.[0];
         const cObj = clients.find((c) => c.companyName === pClientName || c.name === pClientName);
         if (cObj) {
-          setSelectedClient(cObj.clientId || cObj.id);
-          setSelectedProjects([pId]);
+          setValue('selectedClient', cObj.clientId || cObj.id);
+          setValue('selectedProjects', [pId]);
         }
       }
     }
-  }, [isOpen, activeDrawer, clients]);
+  }, [isOpen, activeDrawer, clients, setValue]);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,25 +122,27 @@ export default function AddServiceModal() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (type === 'Included') {
-      setPrice('0');
-    } else if (type === 'Additional') {
-      const predefinedService = settings?.services?.find((s: any) => s.name === serviceName);
+    if (watchType === 'Included') {
+      setValue('price', '0', { shouldValidate: true });
+    } else if (watchType === 'Additional') {
+      const predefinedService = settings?.services?.find((s: any) => s.name === watchServiceName);
       if (predefinedService) {
-        setPrice(
+        setValue(
+          'price',
           new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
-          }).format(predefinedService.price)
+          }).format(predefinedService.price),
+          { shouldValidate: true }
         );
       }
     }
-  }, [type, serviceName, settings]);
+  }, [watchType, watchServiceName, settings, setValue]);
 
   const availableProjects = useMemo(() => {
     const defaultOption = { id: 'none', name: 'None (Client Level)' };
-    if (!selectedClient) return [defaultOption];
-    const client = clients.find((c) => (c.clientId || c.id) === selectedClient);
+    if (!watchSelectedClient) return [defaultOption];
+    const client = clients.find((c) => (c.clientId || c.id) === watchSelectedClient);
     if (!client) return [defaultOption];
     const filtered = projects.filter(
       (p) =>
@@ -93,7 +150,7 @@ export default function AddServiceModal() {
         p.clients?.includes(client.companyName || client.name)
     );
     return [defaultOption, ...filtered];
-  }, [selectedClient, clients, projects]);
+  }, [watchSelectedClient, clients, projects]);
 
   const serviceOptions = useMemo(
     () => settings?.services?.map((s: any) => s.name) || [],
@@ -121,38 +178,16 @@ export default function AddServiceModal() {
 
   const handleClose = () => {
     closeModal();
+    reset();
+    setGlobalError('');
   };
 
-  const handleSubmit = async () => {
-    setErrorMsg('');
-    if (!serviceName.trim()) {
-      setErrorMsg('Service Name is required.');
-      return;
-    }
-    if (!type) {
-      setErrorMsg('Service Type is required.');
-      return;
-    }
-    if (!selectedClient) {
-      setErrorMsg('Client is required.');
-      return;
-    }
-    if (type !== 'Included') {
-      if (!price.trim()) {
-        setErrorMsg('Price is required.');
-        return;
-      }
-      const num = parseFloat(price.replace(/,/g, ''));
-      if (isNaN(num)) {
-        setErrorMsg('Price must be a valid number.');
-        return;
-      }
-    }
-
+  const onSubmit = async (data: ServiceFormValues) => {
+    setGlobalError('');
     setIsSubmitting(true);
     try {
-      const clientObj = clients.find((c) => (c.clientId || c.id) === selectedClient);
-      const actualProjectIds = selectedProjects.filter((id) => id !== 'none');
+      const clientObj = clients.find((c) => (c.clientId || c.id) === data.selectedClient);
+      const actualProjectIds = data.selectedProjects.filter((id) => id !== 'none');
       const projectObjs = projects.filter((p) => actualProjectIds.includes(p.id));
 
       const serviceId = crypto.randomUUID();
@@ -160,9 +195,9 @@ export default function AddServiceModal() {
       const newService: Service = {
         id: serviceId,
         serviceId: serviceId.substring(0, 8).toLowerCase(),
-        serviceName: serviceName.trim(),
-        name: serviceName.trim(),
-        type: type,
+        serviceName: data.serviceName.trim(),
+        name: data.serviceName.trim(),
+        type: data.type,
         status: 'Proposal Sent',
         clientName: clientObj?.companyName || clientObj?.name || 'Unknown',
         clientIds: clientObj ? [clientObj.clientId || clientObj.id] : [],
@@ -170,11 +205,11 @@ export default function AddServiceModal() {
         projectName: projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A',
         projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A', // Legacy field
         projectIds: actualProjectIds,
-        assignee: assignees.length > 0 ? assignees[0] : 'Unassigned', // Legacy field
-        manager: assignees.length > 0 ? assignees[0] : 'Unassigned', // Legacy field
-        managers: assignees.length > 0 ? assignees : ['Unassigned'],
-        price: price ? parseFloat(price.replace(/,/g, '')) : 0,
-        contactName,
+        assignee: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
+        manager: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
+        managers: data.assignees.length > 0 ? data.assignees : ['Unassigned'],
+        price: data.price ? parseFloat(data.price.replace(/,/g, '')) : 0,
+        contactName: data.contactName || '',
         outcome: 'Proposal Sent',
         invoiceSent: false,
         commissionPaid: false,
@@ -189,12 +224,12 @@ export default function AddServiceModal() {
       };
 
       await updateServiceRecord(newService, {
-        successMsg: `Service '${serviceName.trim()}' successfully added.`,
-        errorMsg: `Failed to add service '${serviceName.trim()}'.`,
+        successMsg: `Service '${data.serviceName.trim()}' successfully added.`,
+        errorMsg: `Failed to add service '${data.serviceName.trim()}'.`,
       });
 
-      const baseLogMsg = `New service added: ${serviceName.trim()}`;
-      const logMessage = note ? `${baseLogMsg}. Initial Note: ${note}` : baseLogMsg;
+      const baseLogMsg = `New service added: ${data.serviceName.trim()}`;
+      const logMessage = data.note ? `${baseLogMsg}. Initial Note: ${data.note}` : baseLogMsg;
 
       const logPromises = [addServiceAutoLog(serviceId, logMessage, user?.name || 'System')];
       if (clientObj) {
@@ -207,15 +242,6 @@ export default function AddServiceModal() {
       }
       await Promise.all(logPromises);
 
-      setServiceName('');
-      setType('');
-      setPrice('');
-      setSelectedClient('');
-      setSelectedProjects([]);
-      setAssignees([]);
-      setContactName('');
-      setNote('');
-
       setTimeout(() => {
         openDrawer('service', serviceId);
       }, 350);
@@ -223,7 +249,7 @@ export default function AddServiceModal() {
       handleClose();
     } catch (err) {
       console.error(err);
-      setErrorMsg('Failed to create service.');
+      setGlobalError('Failed to create service.');
     } finally {
       setIsSubmitting(false);
     }
@@ -256,12 +282,9 @@ export default function AddServiceModal() {
           </div>
 
           <div className="p-6 flex-1">
-            {errorMsg && (
-              <div
-                id="as-error"
-                className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"
-              >
-                {errorMsg}
+            {globalError && (
+              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+                {globalError}
               </div>
             )}
 
@@ -270,46 +293,58 @@ export default function AddServiceModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Service Name <span className="text-destructive">*</span>
                 </label>
-                <CreatableSelect
-                  value={serviceName}
-                  options={serviceOptions}
-                  onChange={(val) => {
-                    setServiceName(val);
-                    setErrorMsg('');
-                  }}
-                  placeholder="Select or enter a service name..."
+                <Controller
+                  name="serviceName"
+                  control={control}
+                  render={({ field }) => (
+                    <CreatableSelect
+                      value={field.value}
+                      options={serviceOptions}
+                      onChange={field.onChange}
+                      placeholder="Select or enter a service name..."
+                    />
+                  )}
                 />
+                {errors.serviceName && (
+                  <p className="text-destructive text-xs mt-1 font-medium">{errors.serviceName.message}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-5 pt-2">
-                <div className={type === 'Included' ? 'col-span-2' : ''}>
+                <div className={watchType === 'Included' ? 'col-span-2' : ''}>
                   <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                     Service Type <span className="text-destructive">*</span>
                   </label>
-                  <Select
-                    value={type}
-                    options={typeOptions}
-                    onChange={(val) => {
-                      setType(val);
-                      setErrorMsg('');
-                    }}
-                    className="w-full block"
-                    trigger={
-                      <button
-                        type="button"
-                        className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                      >
-                        <span
-                          className={`truncate ${type ? 'text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {type || 'Select Service Type'}
-                        </span>
-                        <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                      </button>
-                    }
+                  <Controller
+                    name="type"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        options={typeOptions}
+                        onChange={field.onChange}
+                        className="w-full block"
+                        trigger={
+                          <button
+                            type="button"
+                            className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.type ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
+                          >
+                            <span
+                              className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
+                            >
+                              {field.value || 'Select Service Type'}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </button>
+                        }
+                      />
+                    )}
                   />
+                  {errors.type && (
+                    <p className="text-destructive text-xs mt-1 font-medium">{errors.type.message}</p>
+                  )}
                 </div>
-                {type !== 'Included' && (
+                {watchType !== 'Included' && (
                   <div>
                     <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                       Service Value <span className="text-destructive">*</span>
@@ -318,28 +353,33 @@ export default function AddServiceModal() {
                       <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
                         $
                       </span>
-                      <input
-                        type="text"
-                        value={price}
-                        onChange={(e) => {
-                          setPrice(e.target.value);
-                          setErrorMsg('');
-                        }}
-                        onBlur={() => {
-                          const num = parseFloat(price.replace(/,/g, ''));
-                          if (!isNaN(num)) {
-                            setPrice(
-                              new Intl.NumberFormat('en-US', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }).format(num)
-                            );
-                          }
-                        }}
-                        className="w-full min-w-0 rounded-md border border-input bg-white pl-7 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 h-[38px] text-sm"
-                        placeholder="0.00"
+                      <Controller
+                        name="price"
+                        control={control}
+                        render={({ field }) => (
+                          <input
+                            {...field}
+                            type="text"
+                            onBlur={() => {
+                              const num = parseFloat((field.value || '').replace(/,/g, ''));
+                              if (!isNaN(num)) {
+                                field.onChange(
+                                  new Intl.NumberFormat('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }).format(num)
+                                );
+                              }
+                            }}
+                            className={`w-full min-w-0 rounded-md border ${errors.price ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
+                            placeholder="0.00"
+                          />
+                        )}
                       />
                     </div>
+                    {errors.price && (
+                      <p className="text-destructive text-xs mt-1 font-medium">{errors.price.message}</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -351,67 +391,80 @@ export default function AddServiceModal() {
                   <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                     Client Name <span className="text-destructive">*</span>
                   </label>
-                  <Select
-                    value={selectedClient}
-                    options={clientOptions}
-                    onChange={(val) => {
-                      setSelectedClient(val);
-                      setSelectedProjects([]);
-                      setErrorMsg('');
-                    }}
-                    className="w-full block"
-                    trigger={
-                      <button
-                        type="button"
-                        className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                      >
-                        <span
-                          className={`truncate ${selectedClient ? 'text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {clientOptions.find((c) => c.value === selectedClient)?.label ||
-                            'Select Client'}
-                        </span>
-                        <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                      </button>
-                    }
+                  <Controller
+                    name="selectedClient"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        options={clientOptions}
+                        onChange={(val) => {
+                          field.onChange(val);
+                          setValue('selectedProjects', []);
+                        }}
+                        className="w-full block"
+                        trigger={
+                          <button
+                            type="button"
+                            className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.selectedClient ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
+                          >
+                            <span
+                              className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
+                            >
+                              {clientOptions.find((c) => c.value === field.value)?.label ||
+                                'Select Client'}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </button>
+                        }
+                      />
+                    )}
                   />
+                  {errors.selectedClient && (
+                    <p className="text-destructive text-xs mt-1 font-medium">{errors.selectedClient.message}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                     Project Name
                   </label>
-                  <MultiSelect
-                    values={selectedProjects}
-                    options={availableProjects.map((p) => ({ value: p.id, label: p.name }))}
-                    onChange={(vals) => {
-                      // If they just selected 'none', clear others. If they select a project, remove 'none'.
-                      if (vals.includes('none') && !selectedProjects.includes('none')) {
-                        setSelectedProjects(['none']);
-                      } else if (vals.includes('none') && vals.length > 1) {
-                        setSelectedProjects(vals.filter((v) => v !== 'none'));
-                      } else {
-                        setSelectedProjects(vals);
-                      }
-                    }}
-                    className="w-full"
-                    trigger={
-                      <button
-                        type="button"
-                        disabled={!selectedClient}
-                        className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm disabled:opacity-50 disabled:bg-slate-50 disabled:pointer-events-none"
-                      >
-                        <span
-                          className={`truncate ${selectedProjects.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {selectedProjects.length > 0
-                            ? selectedProjects
-                                .map((id) => availableProjects.find((p) => p.id === id)?.name)
-                                .join(', ')
-                            : 'Select Projects'}
-                        </span>
-                        <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                      </button>
-                    }
+                  <Controller
+                    name="selectedProjects"
+                    control={control}
+                    render={({ field }) => (
+                      <MultiSelect
+                        values={field.value}
+                        options={availableProjects.map((p) => ({ value: p.id, label: p.name }))}
+                        onChange={(vals) => {
+                          if (vals.includes('none') && !field.value.includes('none')) {
+                            field.onChange(['none']);
+                          } else if (vals.includes('none') && vals.length > 1) {
+                            field.onChange(vals.filter((v) => v !== 'none'));
+                          } else {
+                            field.onChange(vals);
+                          }
+                        }}
+                        className="w-full"
+                        trigger={
+                          <button
+                            type="button"
+                            disabled={!watchSelectedClient}
+                            className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm disabled:opacity-50 disabled:bg-slate-50 disabled:pointer-events-none"
+                          >
+                            <span
+                              className={`truncate ${field.value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
+                            >
+                              {field.value.length > 0
+                                ? field.value
+                                    .map((id) => availableProjects.find((p) => p.id === id)?.name)
+                                    .join(', ')
+                                : 'Select Projects'}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </button>
+                        }
+                      />
+                    )}
                   />
                 </div>
               </div>
@@ -420,24 +473,30 @@ export default function AddServiceModal() {
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Manager
                 </label>
-                <MultiSelect
-                  values={assignees}
-                  options={managerOptions}
-                  onChange={setAssignees}
-                  className="w-full"
-                  trigger={
-                    <button
-                      type="button"
-                      className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                    >
-                      <span
-                        className={`truncate ${assignees.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
-                      >
-                        {assignees.length > 0 ? assignees.join(', ') : 'Select Managers'}
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                    </button>
-                  }
+                <Controller
+                  name="assignees"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      values={field.value}
+                      options={managerOptions}
+                      onChange={field.onChange}
+                      className="w-full"
+                      trigger={
+                        <button
+                          type="button"
+                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
+                        >
+                          <span
+                            className={`truncate ${field.value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {field.value.length > 0 ? field.value.join(', ') : 'Select Managers'}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                        </button>
+                      }
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -448,25 +507,36 @@ export default function AddServiceModal() {
                   Client Contact Name{' '}
                   <span className="text-muted-foreground font-normal">(Optional)</span>
                 </label>
-                <input
-                  type="text"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-[38px]"
-                  placeholder="Enter primary contact name..."
+                <Controller
+                  name="contactName"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-[38px]"
+                      placeholder="Enter primary contact name..."
+                    />
+                  )}
                 />
               </div>
               <div className="pt-3 border-t border-border/50">
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
                 </label>
-                <textarea
-                  rows={2}
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-auto resize-none custom-thin-scroll"
-                  placeholder="Enter an optional note..."
-                ></textarea>
+                <Controller
+                  name="note"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                      <RichTextEditor
+                        content={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Enter an optional note..."
+                      />
+                    </div>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -479,7 +549,7 @@ export default function AddServiceModal() {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
             >
