@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { Check, Search } from 'lucide-react';
 import { SelectOption } from './Select';
+import { useCloseOnScroll } from '../../hooks/useCloseOnScroll';
 
 interface MultiSelectProps {
   options: SelectOption[];
@@ -29,6 +30,8 @@ export function MultiSelect({
   searchPlaceholder = 'Search...',
 }: MultiSelectProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [open, setOpen] = useState(false);
+  useCloseOnScroll(open, setOpen);
 
   const radixAlign = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center';
 
@@ -61,7 +64,7 @@ export function MultiSelect({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <Popover.Root modal={true} onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
+      <Popover.Root modal={true} open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) setSearchTerm(''); }}>
         <Popover.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}

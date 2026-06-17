@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
+import { useCloseOnScroll } from '../../hooks/useCloseOnScroll';
 
 interface DatePickerProps {
   value: number | null | undefined;
@@ -28,6 +29,7 @@ export function DatePicker({
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  useCloseOnScroll(isOpen, setIsOpen, ref);
 
   const dateStr = value
     ? new Date(value).toLocaleDateString('en-US', {

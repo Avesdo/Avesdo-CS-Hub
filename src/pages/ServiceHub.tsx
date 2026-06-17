@@ -72,10 +72,10 @@ const ServiceRow = React.memo(({
   return (
                         <tr
                           key={s.id}
-                          className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
+                          className={`hover:bg-slate-50 transition-colors group cursor-pointer hover:relative hover:z-[100] bg-white`}
                           onClick={() => openDrawer('service', s.id)}
                         >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 px-6 py-2">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
                               className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"

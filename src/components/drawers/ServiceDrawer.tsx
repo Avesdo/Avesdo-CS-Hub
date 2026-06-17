@@ -227,7 +227,7 @@ export default function ServiceDrawer() {
 
   const tabs = [
     { id: 'details', label: 'Overview' },
-    { id: 'notes', label: 'Notes & Logs' },
+    { id: 'notes', label: 'Activity Logs' },
   ] as const;
 
   const drawerIndex = activeDrawers.findIndex((d) => d.type === 'service');

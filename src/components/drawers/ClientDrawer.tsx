@@ -174,11 +174,10 @@ export default function ClientDrawer() {
   };
 
   const tabs = [
-    { id: 'health', label: 'Health' },
-    { id: 'trends', label: 'Trends' },
+    { id: 'health', label: 'Health & Trends' },
     { id: 'projects', label: 'Projects' },
     { id: 'services', label: 'Services' },
-    { id: 'notes', label: 'Notes & Logs' },
+    { id: 'notes', label: 'Activity Logs' },
   ] as const;
 
   const healthResult = calculateClientHealth(client, projects, settings);

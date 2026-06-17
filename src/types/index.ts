@@ -8,6 +8,13 @@ export interface Client {
   [key: string]: any; // Allow other properties while migrating
 }
 
+export interface OnboardingData {
+  kyc?: any;
+  primaryQA?: any;
+  secondaryQA?: any;
+  [key: string]: any;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -43,6 +50,7 @@ export interface Project {
     score: number;
     submittedAt: string;
   };
+  onboarding?: OnboardingData;
   [key: string]: any;
 }
 

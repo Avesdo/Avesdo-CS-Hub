@@ -24,9 +24,8 @@ import { calculateProjectHealth } from '../../utils/scoringUtils';
 
 // Tabs
 import ProjectOverviewTab from './project/ProjectOverviewTab';
+import ProjectOnboardingTab from './project/ProjectOnboardingTab';
 import ProjectHealthTab from './project/ProjectHealthTab';
-import ProjectTrendsTab from './project/ProjectTrendsTab';
-import ProjectFeaturesTab from './project/ProjectFeaturesTab';
 import ProjectServicesTab from './project/ProjectServicesTab';
 import { NotesTab } from '../ui/NotesTab';
 import { Select } from '../ui/Select';
@@ -40,19 +39,12 @@ export default function ProjectDrawer() {
   const user = useAppStore(state => state.user);
   const services = useAppStore(state => state.services);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'health' | 'trends' | 'features' | 'services' | 'notes'
+    'overview' | 'onboarding' | 'health' | 'services' | 'notes'
   >('overview');
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-
-  useEffect(() => {
-    if (isConfirmingDelete) {
-      const timer = setTimeout(() => setIsConfirmingDelete(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isConfirmingDelete]);
 
   const isOpen = isDrawerOpen('project');
   const drawerData = getDrawerData('project');
@@ -75,9 +67,15 @@ export default function ProjectDrawer() {
 
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(drawerData?.data?.targetTab || 'overview');
+      if (drawerData?.data?.targetTab) {
+        setActiveTab(drawerData.data.targetTab as any);
+      } else if (project?.projectStatus === 'Onboarding') {
+        setActiveTab('onboarding');
+      } else {
+        setActiveTab('overview');
+      }
     }
-  }, [isOpen, drawerData?.entityId, drawerData?.data?.targetTab]);
+  }, [isOpen, drawerData?.entityId, drawerData?.data?.targetTab, project?.projectStatus]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -214,11 +212,10 @@ export default function ProjectDrawer() {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'health', label: 'Health' },
-    { id: 'trends', label: 'Trends' },
-    { id: 'features', label: 'Features' },
+    { id: 'onboarding', label: 'Onboarding' },
+    { id: 'health', label: 'Health & Trends' },
     { id: 'services', label: 'Services' },
-    { id: 'notes', label: 'Notes & Logs' },
+    { id: 'notes', label: 'Activity Logs' },
   ] as const;
 
   const healthData = project ? calculateProjectHealth(project, settings) : null;
@@ -461,9 +458,8 @@ export default function ProjectDrawer() {
 
         <div className="flex-1 overflow-y-auto p-6 bg-white custom-thin-scroll">
           {activeTab === 'overview' && <ProjectOverviewTab project={project} />}
+          {activeTab === 'onboarding' && <ProjectOnboardingTab project={project} />}
           {activeTab === 'health' && <ProjectHealthTab project={project} />}
-          {activeTab === 'trends' && <ProjectTrendsTab project={project} />}
-          {activeTab === 'features' && <ProjectFeaturesTab project={project} />}
           {activeTab === 'services' && <ProjectServicesTab project={project} />}
           {activeTab === 'notes' && (
             <NotesTab

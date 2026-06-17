@@ -119,10 +119,10 @@ const ClientRow = React.memo(({
     <tr
                           key={c.clientId}
                           data-index={index}
-                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
+                          className={`hover:bg-slate-50 transition-colors cursor-pointer group hover:relative hover:z-[100] bg-white`}
                           onClick={() => openDrawer('client', c.clientId)} // default to overview
                         >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit px-6 py-2 font-semibold text-slate-800 border-r-0">
                             <TruncatedText
                               text={c.companyName || 'Unnamed Client'}
                               className="max-w-[200px] group-hover:text-primary transition-colors"
