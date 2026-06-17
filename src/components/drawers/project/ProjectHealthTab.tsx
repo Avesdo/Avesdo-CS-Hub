@@ -4,6 +4,7 @@ import { updateProjectRecord, addAutoLog, addProjectAutoLog } from '../../../api
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
 import { useAppStore } from '../../../store/useAppStore';
 import OnboardingCsatModal from './OnboardingCsatModal';
+import ProjectTrendsTab from './ProjectTrendsTab';
 
 interface ProjectHealthTabProps {
   project: any;
@@ -345,6 +346,11 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
       {showCsatModal && (
         <OnboardingCsatModal project={project} onClose={() => setShowCsatModal(false)} />
       )}
+      
+      <div className="mt-8 border-t border-border pt-8">
+        <h3 className="px-4 text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Health Trends</h3>
+        <ProjectTrendsTab project={project} />
+      </div>
     </div>
   );
 }

@@ -119,10 +119,10 @@ const ClientRow = React.memo(({
     <tr
                           key={c.clientId}
                           data-index={index}
-                          className={`hover:bg-slate-50 transition-colors cursor-pointer group hover:relative hover:z-[100] bg-white`}
+                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
                           onClick={() => openDrawer('client', c.clientId)} // default to overview
                         >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit px-6 py-2 font-semibold text-slate-800 border-r-0">
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
                             <TruncatedText
                               text={c.companyName || 'Unnamed Client'}
                               className="max-w-[200px] group-hover:text-primary transition-colors"
@@ -655,8 +655,12 @@ const ClientRow = React.memo(({
       if (!toolbar) return;
 
       if (scrollTop > 40) {
-        toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-        toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+        if (!toolbar.classList.contains('max-h-0')) {
+          if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+            toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+            toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+          }
+        }
       } else if (scrollTop <= 10) {
         toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
         toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');

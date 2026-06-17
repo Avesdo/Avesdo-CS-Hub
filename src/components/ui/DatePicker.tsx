@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
-import { useOnClickOutside } from '../../hooks/useOnClickOutside';
-import { useCloseOnScroll } from '../../hooks/useCloseOnScroll';
+import * as Popover from '@radix-ui/react-popover';
 
 interface DatePickerProps {
   value: number | null | undefined;
@@ -28,8 +27,6 @@ export function DatePicker({
   trigger,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useCloseOnScroll(isOpen, setIsOpen, ref);
 
   const dateStr = value
     ? new Date(value).toLocaleDateString('en-US', {
@@ -54,54 +51,21 @@ export function DatePicker({
       if (value) {
         const d = new Date(value);
         setCalMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+      } else {
+        setCalMonth(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
       }
     }
-  }, [isOpen, value, dateStr]);
-
-  useEffect(() => {
-    if (isOpen && localDateStr) {
-      const d = parseLocalDate(localDateStr);
-      if (d) {
-        setCalMonth(new Date(d.getFullYear(), d.getMonth(), 1));
-      }
-    }
-  }, [localDateStr, isOpen]);
+  }, [isOpen, dateStr, value]);
 
   const applyLocalDate = () => {
-    if (!localDateStr) {
+    const d = parseLocalDate(localDateStr);
+    if (d) {
+      onChange(d.getTime(), localDateStr);
+    } else if (!localDateStr.trim()) {
       onChange(null, '');
     } else {
-      const localDate = parseLocalDate(localDateStr);
-      if (localDate) {
-        const val = localDate.getTime();
-        const str = localDate.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-        onChange(val, str);
-      } else {
-        setLocalDateStr(dateStr);
-      }
+      setLocalDateStr(dateStr);
     }
-  };
-
-  useOnClickOutside(
-    ref,
-    () => {
-      if (isOpen) {
-        applyLocalDate();
-        setIsOpen(false);
-      }
-    },
-    isOpen
-  );
-
-  const handleDateSelect = (d: Date) => {
-    const val = d.getTime();
-    const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    onChange(val, str);
-    setIsOpen(false);
   };
 
   const handleClear = () => {
@@ -111,41 +75,61 @@ export function DatePicker({
 
   const handleToday = () => {
     const today = new Date();
-    handleDateSelect(today);
+    today.setHours(0, 0, 0, 0);
+    onChange(today.getTime(), today.toLocaleDateString());
+    setIsOpen(false);
+  };
+
+  const handleDayClick = (day: number) => {
+    const selected = new Date(calMonth.getFullYear(), calMonth.getMonth(), day);
+    onChange(selected.getTime(), selected.toLocaleDateString());
+    setIsOpen(false);
   };
 
   const renderCalendarDays = () => {
-    const daysInMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 0).getDate();
-    const firstDay = new Date(calMonth.getFullYear(), calMonth.getMonth(), 1).getDay();
+    const year = calMonth.getFullYear();
+    const month = calMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const currentSelectedDay = value ? new Date(value).getDate() : null;
+    const currentSelectedMonth = value ? new Date(value).getMonth() : null;
+    const currentSelectedYear = value ? new Date(value).getFullYear() : null;
+
     const days = [];
-
-    let activeDateVal = value;
-    if (localDateStr) {
-      const d = parseLocalDate(localDateStr);
-      if (d) activeDateVal = d.getTime();
-    } else {
-      activeDateVal = null;
-    }
-
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} />);
+      days.push(<div key={`empty-${i}`} className="p-2"></div>);
     }
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      const d = new Date(calMonth.getFullYear(), calMonth.getMonth(), i);
-      const isSelected = activeDateVal === d.getTime();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isSelected =
+        currentSelectedDay === day &&
+        currentSelectedMonth === month &&
+        currentSelectedYear === year;
+
+      const isToday =
+        new Date().getDate() === day &&
+        new Date().getMonth() === month &&
+        new Date().getFullYear() === year;
 
       days.push(
         <button
-          key={i}
+          key={day}
           type="button"
-          onClick={() => handleDateSelect(d)}
-          className={`p-1.5 rounded-full text-sm hover:bg-slate-100 font-medium ${isSelected ? 'bg-primary text-white hover:bg-primary' : 'text-foreground'}`}
+          onClick={() => handleDayClick(day)}
+          className={`p-1.5 text-sm rounded-md transition-colors hover:bg-slate-100 ${
+            isSelected
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-sm'
+              : isToday
+              ? 'font-bold text-primary bg-primary/5'
+              : 'text-foreground'
+          }`}
         >
-          {i}
+          {day}
         </button>
       );
     }
+
     return days;
   };
 
@@ -158,34 +142,33 @@ export function DatePicker({
     : placeholder;
 
   return (
-    <div className={`relative block popover-container w-full ${className}`} ref={ref}>
-      {trigger ? (
-        <div
-          onClick={() => {
-            if (isOpen) applyLocalDate();
-            setIsOpen(!isOpen);
-          }}
-          className="w-fit"
-        >
-          {trigger}
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && isOpen) applyLocalDate();
+        setIsOpen(open);
+      }}
+    >
+      <Popover.Trigger asChild>
+        <div className={`relative block popover-container w-full ${className}`}>
+          {trigger ? (
+            <div className="w-fit">{trigger}</div>
+          ) : (
+            <div className="flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 cursor-pointer transition-all duration-200">
+              <span className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {displayStr}
+              </span>
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+            </div>
+          )}
         </div>
-      ) : (
-        <div
-          className="flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 cursor-pointer transition-all duration-200"
-          onClick={() => {
-            if (isOpen) applyLocalDate();
-            setIsOpen(!isOpen);
-          }}
-        >
-          <span className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
-            {displayStr}
-          </span>
-          <Calendar className="w-4 h-4 text-muted-foreground" />
-        </div>
-      )}
+      </Popover.Trigger>
 
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-border rounded-xl shadow-xl z-[99999] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+      <Popover.Portal>
+        <Popover.Content
+          sideOffset={5}
+          className="w-72 bg-white border border-border rounded-xl shadow-xl z-[99999] p-4 animate-in fade-in zoom-in-95 duration-200"
+        >
           <div className="text-sm font-semibold text-muted-foreground mb-2">{label}</div>
           <input
             type="text"
@@ -249,8 +232,8 @@ export function DatePicker({
               Select Today
             </button>
           </div>
-        </div>
-      )}
-    </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

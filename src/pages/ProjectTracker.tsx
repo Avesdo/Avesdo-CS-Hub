@@ -72,7 +72,11 @@ export default function ProjectTracker() {
     const scrollTop = scrollContainer.scrollTop;
     
     setIsScrolled(prev => {
-      if (scrollTop > 40 && !prev) return true;
+      if (scrollTop > 40 && !prev) {
+        if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+          return true;
+        }
+      }
       if (scrollTop <= 10 && prev) return false;
       return prev;
     });

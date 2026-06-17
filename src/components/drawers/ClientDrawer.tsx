@@ -407,8 +407,15 @@ export default function ClientDrawer() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 bg-white custom-thin-scroll">
-          {activeTab === 'health' && <ClientHealthTab client={client} />}
-          {activeTab === 'trends' && <ClientTrendsTab client={client} />}
+          {activeTab === 'health' && (
+            <>
+              <ClientHealthTab client={client} />
+              <div className="mt-8 border-t border-border pt-8">
+                <h3 className="px-4 text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Health Trends</h3>
+                <ClientTrendsTab client={client} />
+              </div>
+            </>
+          )}
           {activeTab === 'projects' && <ClientProjectsTab client={client} />}
           {activeTab === 'services' && <ClientServicesTab client={client} />}
           {activeTab === 'notes' && (

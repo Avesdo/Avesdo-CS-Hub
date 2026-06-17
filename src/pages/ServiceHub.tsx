@@ -72,10 +72,10 @@ const ServiceRow = React.memo(({
   return (
                         <tr
                           key={s.id}
-                          className={`hover:bg-slate-50 transition-colors group cursor-pointer hover:relative hover:z-[100] bg-white`}
+                          className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
                           onClick={() => openDrawer('service', s.id)}
                         >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 px-6 py-2">
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
                               className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
@@ -759,7 +759,11 @@ export default function ServiceHub() {
             ref={tableScrollRef}
             className="flex-1 overflow-auto custom-thin-scroll w-full relative"
             onScroll={(e) => {
-              if (e.currentTarget.scrollTop > 40 && !isScrolled) setIsScrolled(true);
+              if (e.currentTarget.scrollTop > 40 && !isScrolled) {
+                if (e.currentTarget.scrollHeight - e.currentTarget.clientHeight > 250) {
+                  setIsScrolled(true);
+                }
+              }
               else if (e.currentTarget.scrollTop <= 10 && isScrolled) setIsScrolled(false);
             }}
           >

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Check } from 'lucide-react';
-import { useCloseOnScroll } from '../../hooks/useCloseOnScroll';
 
 export interface SelectOption {
   label: React.ReactNode;
@@ -34,12 +33,10 @@ export function Select({
   position = 'bottom',
 }: SelectProps) {
   const radixAlign = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center';
-  const [open, setOpen] = useState(false);
-  useCloseOnScroll(open, setOpen);
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+      <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}

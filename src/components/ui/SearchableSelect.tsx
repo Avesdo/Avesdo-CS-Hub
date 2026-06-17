@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useCloseOnScroll } from '../../hooks/useCloseOnScroll';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 
 interface SearchableSelectProps {
@@ -21,7 +20,6 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const ref = useRef<HTMLDivElement>(null);
-  useCloseOnScroll(isOpen, setIsOpen, ref);
 
   useOnClickOutside(
     ref,

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { Tooltip } from './ui/Tooltip';
-import { useCloseOnScroll } from '../hooks/useCloseOnScroll';
 
 export default function MultiSelectCombobox({
   options,
@@ -17,7 +16,6 @@ export default function MultiSelectCombobox({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  useCloseOnScroll(isOpen, setIsOpen, containerRef);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
