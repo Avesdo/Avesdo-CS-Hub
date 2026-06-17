@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { AppState, Client, Project, Service, Settings } from '../types';
+import { ClientSchema, ProjectSchema, ServiceSchema, SettingsSchema } from '../types/schemas';
 import { toast } from '../utils/toast';
 
 export type ToastConfig = {
@@ -58,7 +59,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
   };
 
   const unsubSettings = onSnapshot(doc(db, 'settings', 'global_config'), async (snap) => {
-    state.settings = snap.exists() ? (snap.data() as Settings) : null;
+    state.settings = snap.exists() ? (SettingsSchema.parse(snap.data()) as Settings) : null;
     if (!state.settings) {
       state.settings = {
         managers: [
@@ -128,7 +129,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
   // Added a generous limit(1000) safety cap to prevent browser lockup on massive datasets
   const clientsQuery = query(collection(db, 'clients'), limit(1000));
   const unsubClients = onSnapshot(clientsQuery, (snap) => {
-    const all = snap.docs.map((d) => d.data() as Client);
+    const all = snap.docs.map((d) => ClientSchema.parse(d.data()) as Client);
     state.clients = all.filter((c) => !c.isArchived);
     state.archivedClients = all.filter((c) => c.isArchived);
     state.ready.clients = true;
@@ -137,7 +138,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
 
   const projectsQuery = query(collection(db, 'projects'), limit(1000));
   const unsubProjects = onSnapshot(projectsQuery, (snap) => {
-    const all = snap.docs.map((d) => d.data() as Project);
+    const all = snap.docs.map((d) => ProjectSchema.parse(d.data()) as Project);
     state.projects = all.filter((p) => !p.isArchived);
     state.archivedProjects = all.filter((p) => p.isArchived);
     state.ready.projects = true;
@@ -146,7 +147,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
 
   const servicesQuery = query(collection(db, 'services'), limit(1000));
   const unsubServices = onSnapshot(servicesQuery, (snap) => {
-    const all = snap.docs.map((d) => d.data() as Service);
+    const all = snap.docs.map((d) => ServiceSchema.parse(d.data()) as Service);
     state.services = all.filter((s) => !s.isArchived);
     state.archivedServices = all.filter((s) => s.isArchived);
     state.ready.services = true;
