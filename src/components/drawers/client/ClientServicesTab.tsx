@@ -9,7 +9,8 @@ interface ClientServicesTabProps {
 }
 
 export default function ClientServicesTab({ client }: ClientServicesTabProps) {
-  const { services, settings } = useAppStore();
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
   const { openDrawer } = useUI();
   const [filter, setFilter] = useState<string>('All');
 

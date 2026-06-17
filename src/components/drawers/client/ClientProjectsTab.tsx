@@ -18,7 +18,8 @@ interface ClientProjectsTabProps {
 type FilterType = 'All' | 'Active' | 'Onboarding' | 'Closed';
 
 export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
-  const { projects, settings } = useAppStore();
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
   const { openDrawer } = useUI();
 
   const [filter, setFilter] = useState<FilterType>('Active');

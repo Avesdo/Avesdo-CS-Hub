@@ -6,7 +6,8 @@ import { getSettingBadge } from '../../utils/uiUtils';
 
 export default function UnscheduledProjectsDrawer() {
   const { isDrawerOpen, closeDrawer, openDrawer, activeDrawers } = useUI();
-  const { projects, settings } = useAppStore();
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
 
   const isOpen = isDrawerOpen('unscheduledProjects');
 

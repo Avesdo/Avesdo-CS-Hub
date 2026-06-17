@@ -23,7 +23,9 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 
 export default function AddClientModal() {
   const { isModalOpen, closeModal, openDrawer } = useUI();
-  const { settings, clients, user } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const clients = useAppStore(state => state.clients);
+  const user = useAppStore(state => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');

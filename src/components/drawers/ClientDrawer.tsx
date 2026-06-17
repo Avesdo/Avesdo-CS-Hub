@@ -33,7 +33,11 @@ import { Tooltip } from '../ui/Tooltip';
 
 export default function ClientDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const { clients, projects, settings, user, services } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
+  const services = useAppStore(state => state.services);
   const [activeTab, setActiveTab] = useState<
     'health' | 'trends' | 'projects' | 'services' | 'notes'
   >('health');

@@ -43,16 +43,14 @@ import MultiSelectCombobox from '../components/MultiSelectCombobox';
 
 export default function AdminHub() {
   const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'pipeline'>('pipeline');
-  const {
-    settings,
-    archivedClients,
-    archivedProjects,
-    archivedServices,
-    services,
-    projects,
-    clients,
-    user,
-  } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const archivedClients = useAppStore(state => state.archivedClients);
+  const archivedProjects = useAppStore(state => state.archivedProjects);
+  const archivedServices = useAppStore(state => state.archivedServices);
+  const services = useAppStore(state => state.services);
+  const projects = useAppStore(state => state.projects);
+  const clients = useAppStore(state => state.clients);
+  const user = useAppStore(state => state.user);
 
   // --- AUDIT TRAIL STATE ---
   const [logs, setLogs] = useState<any[]>([]);

@@ -136,7 +136,9 @@ const ServiceRow = React.memo(({
 
 export default function ServiceHub() {
   const location = useLocation();
-  const { services, settings, user } = useAppStore();
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);

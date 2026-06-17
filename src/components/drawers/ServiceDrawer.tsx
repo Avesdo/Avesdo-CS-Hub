@@ -28,7 +28,11 @@ import { Tooltip } from '../ui/Tooltip';
 
 export default function ServiceDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const { services, settings, user, clients, projects } = useAppStore();
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
   const [activeTab, setActiveTab] = useState<'details' | 'notes'>('details');
 
   const [isEditingName, setIsEditingName] = useState(false);

@@ -14,7 +14,7 @@ import {
 import { Tooltip } from './ui/Tooltip';
 
 export default function Sidebar() {
-  const { pendingAliasesCount } = useAppStore();
+  const pendingAliasesCount = useAppStore(state => state.pendingAliasesCount);
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 

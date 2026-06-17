@@ -55,7 +55,10 @@ type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function AddProjectModal() {
   const { activeModal, isModalOpen, closeModal, openModal, openDrawer } = useUI();
-  const { clients, settings, projects, user } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const settings = useAppStore(state => state.settings);
+  const projects = useAppStore(state => state.projects);
+  const user = useAppStore(state => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');

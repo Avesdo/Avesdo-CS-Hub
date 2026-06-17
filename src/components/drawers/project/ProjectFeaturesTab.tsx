@@ -8,7 +8,9 @@ interface ProjectFeaturesTabProps {
 }
 
 export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps) {
-  const { settings, projects, user } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const projects = useAppStore(state => state.projects);
+  const user = useAppStore(state => state.user);
 
   // Local state for optimistic UI feedback
   const [localFeatures, setLocalFeatures] = useState<string[]>(project?.features || []);

@@ -36,7 +36,7 @@ const getScoreFromAnswer = (answer: string) => {
 };
 
 export default function OnboardingCsatModal({ project, onClose }: OnboardingCsatModalProps) {
-  const { user } = useAppStore();
+  const user = useAppStore(state => state.user);
 
   const existing = project?.onboardingCsat || {};
 

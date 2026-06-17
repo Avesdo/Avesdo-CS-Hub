@@ -15,7 +15,8 @@ interface ServiceDetailsTabProps {
 }
 
 export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
-  const { settings, user } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
 
   const serviceOutcomes = (settings?.settingsData || []).filter(
     (s: any) => s.category === 'ServiceOutcome'

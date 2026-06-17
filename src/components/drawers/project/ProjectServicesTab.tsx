@@ -9,7 +9,8 @@ interface ProjectServicesTabProps {
 }
 
 export default function ProjectServicesTab({ project }: ProjectServicesTabProps) {
-  const { services, settings } = useAppStore();
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
   const { openDrawer, openModal } = useUI();
   const [filter, setFilter] = useState<string>('All');
 

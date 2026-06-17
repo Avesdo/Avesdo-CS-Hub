@@ -43,7 +43,9 @@ import toast from 'react-hot-toast';
 
 export default function ProjectTracker() {
   const location = useLocation();
-  const { projects, settings, user } = useAppStore();
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);

@@ -279,7 +279,11 @@ function CustomPicker({
 }
 
 export default function SettingsDraft() {
-  const { settings, projects, clients, services, user } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const projects = useAppStore(state => state.projects);
+  const clients = useAppStore(state => state.clients);
+  const services = useAppStore(state => state.services);
+  const user = useAppStore(state => state.user);
   const [activeTab, setActiveTab] = useState<'org' | 'workflow' | 'products' | 'scoring'>('org');
 
   const [editingItem, setEditingItem] = useState<{

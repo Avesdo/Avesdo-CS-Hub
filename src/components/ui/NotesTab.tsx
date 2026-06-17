@@ -22,7 +22,7 @@ export function NotesTab({
   onSaveNotes,
   emptyStateMessage = 'Be the first to add a note.',
 }: NotesTabProps) {
-  const { user } = useAppStore();
+  const user = useAppStore(state => state.user);
   const [newNote, setNewNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [localNotes, setLocalNotes] = useState<Note[]>([]);

@@ -76,7 +76,9 @@ const Sparkline = React.memo(({ data }: { data: number[] }) => {
 });
 
 export default function ClientHealth() {
-  const { clients, projects, settings } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
   const { openDrawer, openModal } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
 

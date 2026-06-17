@@ -6,7 +6,9 @@ import { getSafeHex, hexToRgba, getSettingBadge, getHealthBadge } from '../../ut
 
 export default function DashDrilldownDrawer() {
   const { isDrawerOpen, getDrawerData, closeDrawer, openDrawer, activeDrawers } = useUI();
-  const { clients, settings, projects: globalProjects } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const settings = useAppStore(state => state.settings);
+  const globalProjects = useAppStore(state => state.projects);
 
   const isOpen = isDrawerOpen('dashDrilldown');
   const drawerData = getDrawerData('dashDrilldown');

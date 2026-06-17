@@ -6,7 +6,10 @@ import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 
 export default function GlobalSearch() {
-  const { clients, projects, services, settings } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
   const { openDrawer, closeDrawer, closeModal, activeDrawers, activeModal } = useUI();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');

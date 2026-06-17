@@ -36,7 +36,10 @@ interface ProjectOverviewTabProps {
 }
 
 export default React.memo(function ProjectOverviewTab({ project }: ProjectOverviewTabProps) {
-  const { clients, settings, user, services } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
+  const services = useAppStore(state => state.services);
 
   const [openPop, setOpenPop] = useState<
     'clients' | 'manager' | 'status' | 'timeline' | 'phase' | 'devClients' | 'smClients' | null

@@ -68,7 +68,10 @@ import { TrendIndicator } from '../components/TrendIndicator';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 
 export default function Dashboard() {
-  const { clients, projects, services, settings } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
+  const services = useAppStore(state => state.services);
+  const settings = useAppStore(state => state.settings);
   const { openModal, openDrawer } = useUI();
   const navigate = useNavigate();
   const [managerFilter, setManagerFilter] = useState('All Managers');

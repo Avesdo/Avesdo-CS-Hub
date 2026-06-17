@@ -26,7 +26,8 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const csatRef = useRef<HTMLDetailsElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
-  const { settings, user } = useAppStore();
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
 
   const fLen = Array.isArray(project?.features) ? project.features.length : 0;
   const fTotal =

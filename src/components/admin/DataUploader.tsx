@@ -13,7 +13,8 @@ type FileState = {
 };
 
 export function DataUploader() {
-  const { projects, clients } = useAppStore();
+  const projects = useAppStore(state => state.projects);
+  const clients = useAppStore(state => state.clients);
 
   const [satisfactionFile, setSatisfactionFile] = useState<FileState>({ file: null, parsedData: null, error: null });
   const [sessionsFile, setSessionsFile] = useState<FileState>({ file: null, parsedData: null, error: null });

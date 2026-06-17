@@ -17,7 +17,8 @@ interface ProjectTrackerCalendarProps {
 
 export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = React.memo(
   ({ openDrawer }) => {
-    const { projects, settings } = useAppStore();
+    const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [activePopover, setActivePopover] = useState<string | null>(null);
 

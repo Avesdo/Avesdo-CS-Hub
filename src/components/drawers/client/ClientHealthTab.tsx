@@ -8,7 +8,8 @@ interface ClientHealthTabProps {
 }
 
 export default React.memo(function ClientHealthTab({ client }: ClientHealthTabProps) {
-  const { projects, settings } = useAppStore();
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
 
   const healthResult = calculateClientHealth(client, projects, settings);
 

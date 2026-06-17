@@ -56,7 +56,10 @@ type ServiceFormValues = z.infer<typeof serviceSchema>;
 
 export default function AddServiceModal() {
   const { isModalOpen, closeModal, activeDrawer, openDrawer } = useUI();
-  const { clients, projects, settings, user } = useAppStore();
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
+  const settings = useAppStore(state => state.settings);
+  const user = useAppStore(state => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
