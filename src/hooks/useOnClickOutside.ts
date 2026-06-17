@@ -1,12 +1,12 @@
 import { useEffect, RefObject } from 'react';
 
-type Handler = (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
+type Handler = (event: any) => void;
 
 export function useOnClickOutside(ref: any, handler: Handler, active: boolean = true) {
   useEffect(() => {
     if (!active) return;
 
-    const listener = (event: MouseEvent | TouchEvent) => {
+    const listener = (event: any) => {
       // Do nothing if clicking ref's element or descendent elements
       if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
@@ -25,14 +25,12 @@ export function useOnClickOutside(ref: any, handler: Handler, active: boolean = 
       }
     };
 
-    document.addEventListener('mousedown', listener, true);
-    document.addEventListener('touchstart', listener, true);
-    document.addEventListener('keydown', keyListener, true);
+    window.addEventListener('pointerdown', listener, true);
+    window.addEventListener('keydown', keyListener, true);
 
     return () => {
-      document.removeEventListener('mousedown', listener, true);
-      document.removeEventListener('touchstart', listener, true);
-      document.removeEventListener('keydown', keyListener, true);
+      window.removeEventListener('pointerdown', listener, true);
+      window.removeEventListener('keydown', keyListener, true);
     };
   }, [ref, handler, active]);
 }

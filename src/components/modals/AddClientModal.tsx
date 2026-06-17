@@ -126,7 +126,7 @@ export default function AddClientModal() {
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="p-6 custom-thin-scroll overflow-visible">
+          <div className="p-6 custom-thin-scroll overflow-y-auto">
             {globalError && (
               <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
                 {globalError}

@@ -250,7 +250,7 @@ export default function AddServiceModal() {
             </button>
           </div>
 
-          <div className="p-6 flex-1">
+          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll">
             {globalError && (
               <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
                 {globalError}

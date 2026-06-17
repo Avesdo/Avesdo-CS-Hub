@@ -61,7 +61,7 @@ export function MultiSelect({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <Popover.Root onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
+      <Popover.Root modal={true} onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
         <Popover.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}
