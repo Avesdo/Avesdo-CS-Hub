@@ -15,6 +15,7 @@ import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
 import { RichTextEditor } from '../ui/RichTextEditor';
 import { CreatableSelect } from '../ui/CreatableSelect';
+import { SearchableSelect } from '../ui/SearchableSelect';
 
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -237,7 +238,7 @@ export default function AddServiceModal() {
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
           <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
             <h3 className="font-semibold text-lg tracking-tight text-foreground">
               Add New Service
@@ -250,7 +251,7 @@ export default function AddServiceModal() {
             </button>
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll">
+          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll min-h-0">
             {globalError && (
               <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
                 {globalError}
@@ -400,28 +401,14 @@ export default function AddServiceModal() {
                     name="selectedClient"
                     control={control}
                     render={({ field }) => (
-                      <Select
+                      <SearchableSelect
                         value={field.value}
                         options={clientOptions}
                         onChange={(val) => {
                           field.onChange(val);
                           setValue('selectedProjects', []);
                         }}
-                        className="w-full block"
-                        trigger={
-                          <button
-                            type="button"
-                            className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.selectedClient ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
-                          >
-                            <span
-                              className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
-                            >
-                              {clientOptions.find((c) => c.value === field.value)?.label ||
-                                'Select Client'}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </button>
-                        }
+                        placeholder="Select Client..."
                       />
                     )}
                   />
@@ -437,37 +424,13 @@ export default function AddServiceModal() {
                     name="selectedProjects"
                     control={control}
                     render={({ field }) => (
-                      <MultiSelect
-                        values={field.value}
+                      <SearchableSelect
+                        value={field.value[0] || ''}
                         options={availableProjects.map((p) => ({ value: p.id, label: p.name }))}
-                        onChange={(vals) => {
-                          if (vals.includes('none') && !field.value.includes('none')) {
-                            field.onChange(['none']);
-                          } else if (vals.includes('none') && vals.length > 1) {
-                            field.onChange(vals.filter((v) => v !== 'none'));
-                          } else {
-                            field.onChange(vals);
-                          }
+                        onChange={(val) => {
+                          field.onChange([val]);
                         }}
-                        className="w-full"
-                        trigger={
-                          <button
-                            type="button"
-                            disabled={!watchSelectedClient}
-                            className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm disabled:opacity-50 disabled:bg-slate-50 disabled:pointer-events-none"
-                          >
-                            <span
-                              className={`truncate ${field.value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
-                            >
-                              {field.value.length > 0
-                                ? field.value
-                                    .map((id) => availableProjects.find((p) => p.id === id)?.name)
-                                    .join(', ')
-                                : 'Select Projects'}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </button>
-                        }
+                        placeholder="Select Project..."
                       />
                     )}
                   />
