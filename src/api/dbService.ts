@@ -1,3 +1,4 @@
+import { useAppStore } from '../store/useAppStore';
 import {
   collection,
   onSnapshot,
@@ -415,6 +416,10 @@ export async function updateProjectRecord(
       ? config.errorMsg
       : `Failed to save updates to '${project.name}'.`;
 
+  let prevProjects: any[] = [];
+  let prevArchivedProjects: any[] = [];
+  let prevClients: any[] = [];
+  let prevArchivedClients: any[] = [];
   try {
     const timeVal = new Date().getTime();
     const snapshot = {
@@ -460,10 +465,38 @@ export async function updateProjectRecord(
     }
 
     delete (finalProject as any).clients;
+
+    // --- OPTIMISTIC UPDATE ---
+    const store = useAppStore.getState();
+    prevProjects = [...store.projects];
+    prevArchivedProjects = [...store.archivedProjects];
+    const exists = store.projects.some(p => p.id === finalProject.id) || store.archivedProjects.some(p => p.id === finalProject.id);
+    
+    if (finalProject.isArchived) {
+      store.setAppState({
+        ...store,
+        projects: store.projects.filter(p => p.id !== finalProject.id),
+        archivedProjects: exists 
+          ? store.archivedProjects.map(p => p.id === finalProject.id ? finalProject : p)
+          : [...store.archivedProjects, finalProject]
+      });
+    } else {
+      store.setAppState({
+        ...store,
+        projects: exists 
+          ? store.projects.map(p => p.id === finalProject.id ? finalProject : p).concat(store.projects.some(p => p.id === finalProject.id) ? [] : [finalProject])
+          : [...store.projects, finalProject],
+        archivedProjects: store.archivedProjects.filter(p => p.id !== finalProject.id)
+      });
+    }
+    // -------------------------
     await setDoc(doc(db, 'projects', finalProject.id), finalProject);
     if (!silent) toast.success(successMsg);
     return { success: true, id: finalProject.id };
   } catch (err: any) {
+      // Rollback on error
+      useAppStore.getState().setAppState({ ...useAppStore.getState(), projects: prevProjects, archivedProjects: prevArchivedProjects });
+
     if (!silent) toast.error(errorMsg);
     throw err;
   }

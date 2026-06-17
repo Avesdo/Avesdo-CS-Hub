@@ -11,6 +11,16 @@ import Header from './components/Header';
 import GlobalOverlays from './components/GlobalOverlays';
 import { GlobalToaster } from './components/GlobalToaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Pages
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -104,8 +114,9 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
         <GlobalToaster />
         <Routes>
           <Route
@@ -133,5 +144,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </QueryClientProvider>
   );
 }

@@ -31,6 +31,7 @@ import {
   PauseCircle,
   ListTodo,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { getHealthHistory } from '../api/dbService';
 import { ProjectTrackerTable } from '../components/ProjectTracker/ProjectTrackerTable';
 import { ProjectTrackerCalendar } from '../components/ProjectTracker/ProjectTrackerCalendar';
@@ -48,13 +49,10 @@ export default function ProjectTracker() {
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
-  const [healthHistory, setHealthHistory] = useState<any>({});
-
-  useEffect(() => {
-    getHealthHistory()
-      .then((data) => setHealthHistory(data))
-      .catch((err) => console.error('Failed to load history', err));
-  }, []);
+  const { data: healthHistory = {} } = useQuery({
+    queryKey: ['healthHistory'],
+    queryFn: () => getHealthHistory(),
+  });
 
   const [activeTab, setActiveTab] = useState<string>(
     location.state?.ptTab || 'Actively Onboarding'
