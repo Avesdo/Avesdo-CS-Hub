@@ -228,7 +228,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
   const handlePriceBlur = () => {
     if (priceDraft.trim() === '') {
-      handleUpdate('price', null, service?.price, 'Service Value');
+      handleUpdate('price', null, service?.price, 'Invoice Value');
       setPriceDraft('');
       return;
     }
@@ -245,8 +245,56 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
       );
       return;
     }
-    handleUpdate('price', num, service?.price, 'Service Value');
+    handleUpdate('price', num, service?.price, 'Invoice Value');
     setPriceDraft(
+      new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
+        num
+      )
+    );
+  };
+
+  // Service Value Draft
+  const [serviceValueDraft, setServiceValueDraft] = useState(
+    service?.serviceValue != null
+      ? new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Number(service.serviceValue))
+      : ''
+  );
+
+  useEffect(() => {
+    setServiceValueDraft(
+      service?.serviceValue != null
+        ? new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(Number(service.serviceValue))
+        : ''
+    );
+  }, [service?.serviceValue]);
+
+  const handleServiceValueBlur = () => {
+    if (serviceValueDraft.trim() === '') {
+      handleUpdate('serviceValue', null, service?.serviceValue, 'Service Value');
+      setServiceValueDraft('');
+      return;
+    }
+    const raw = serviceValueDraft.replace(/,/g, '');
+    const num = parseFloat(raw);
+    if (isNaN(num)) {
+      setServiceValueDraft(
+        service?.serviceValue != null
+          ? new Intl.NumberFormat('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(Number(service.serviceValue))
+          : ''
+      );
+      return;
+    }
+    handleUpdate('serviceValue', num, service?.serviceValue, 'Service Value');
+    setServiceValueDraft(
       new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
         num
       )
@@ -370,7 +418,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
       )}
 
       {/* Row 1: Service Classification */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-border items-start">
         <div id="popover-type" className="relative popover-container">
           <label className="block text-sm font-medium text-muted-foreground mb-1.5">
             Service Type
@@ -400,28 +448,45 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
         </div>
 
         {!isIncluded && (
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-              Service Value
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
-                $
-              </span>
-              <input
-                type="text"
-                className="w-full pl-8 pr-3 py-2 border border-input rounded-md text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
-                value={priceDraft}
-                onChange={(e) => setPriceDraft(e.target.value)}
-                onBlur={handlePriceBlur}
-              />
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+                Invoice Value
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                  $
+                </span>
+                <input
+                  type="text"
+                  className="w-full pl-8 pr-3 py-2 border border-input rounded-md text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
+                  value={priceDraft}
+                  onChange={(e) => setPriceDraft(e.target.value)}
+                  onBlur={handlePriceBlur}
+                />
+              </div>
             </div>
-          </div>
         )}
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+                Service Value
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                  $
+                </span>
+                <input
+                  type="text"
+                  className="w-full pl-8 pr-3 py-2 border border-input rounded-md text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
+                  value={serviceValueDraft}
+                  onChange={(e) => setServiceValueDraft(e.target.value)}
+                  onBlur={handleServiceValueBlur}
+                />
+              </div>
+            </div>
       </div>
 
       {/* Row 2: Personnel & Routing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-border items-start">
         <div id="popover-manager" className="relative popover-container">
           <label className="block text-sm font-medium text-muted-foreground mb-1.5">Manager</label>
           <button
@@ -486,7 +551,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
       </div>
 
       {/* Row 3: Lifecycle & Scheduling */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-border items-start">
         <div className="flex flex-col space-y-6">
           <div id="popover-outcome" className="relative popover-container">
             <label className="block text-sm font-medium text-muted-foreground mb-1.5">

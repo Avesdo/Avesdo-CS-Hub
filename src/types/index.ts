@@ -58,6 +58,7 @@ export interface Service {
   outcome: string;
   dateVal: number;
   isArchived?: boolean;
+  serviceValue?: number;
   [key: string]: any;
 }
 

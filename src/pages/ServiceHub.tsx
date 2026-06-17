@@ -119,9 +119,14 @@ const ServiceRow = React.memo(({
                             {sDate}
                           </td>
                           {activeTab !== 'Included' && (
-                            <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
-                              {formatCurrency(Number(s.price) || 0)}
-                            </td>
+                            <>
+                              <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+                                {formatCurrency(Number(s.price) || 0)}
+                              </td>
+                              <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+                                {formatCurrency(Number(s.serviceValue) || 0)}
+                              </td>
+                            </>
                           )}
                         </tr>
   );
@@ -139,14 +144,25 @@ export default function ServiceHub() {
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
-  // One-time migration for Pending outcome
-  // One-time migration for Pending/Unknown outcome
+    // One-time migrations
   useEffect(() => {
     services.forEach((s) => {
+      let needsUpdate = false;
+      let updates: any = { ...s };
+
       if (s.outcome === 'Pending' || s.outcome === 'Unknown' || s.outcome === 'Unknow') {
-        updateServiceRecord({ ...s, outcome: '', status: 'Proposal Sent' }, { silent: true }).catch(
-          console.error
-        );
+        updates.outcome = '';
+        updates.status = 'Proposal Sent';
+        needsUpdate = true;
+      }
+
+      if (s.price != null && s.serviceValue == null) {
+        updates.serviceValue = Number(s.price) || 0;
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        updateServiceRecord(updates, { silent: true }).catch(console.error);
       }
     });
   }, [services]);
@@ -855,12 +871,20 @@ export default function ServiceHub() {
                         </div>
                       </th>
                       {activeTab !== 'Included' && (
-                        <th
-                          className="px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
-                          onClick={() => handleSort('price')}
-                        >
-                          <div className="flex items-center justify-end gap-1.5">Service Value</div>
-                        </th>
+                        <>
+                          <th
+                            className="px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                            onClick={() => handleSort('price')}
+                          >
+                            <div className="flex items-center justify-end gap-1.5">Invoice Value</div>
+                          </th>
+                          <th
+                            className="px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                            onClick={() => handleSort('serviceValue')}
+                          >
+                            <div className="flex items-center justify-end gap-1.5">Service Value</div>
+                          </th>
+                        </>
                       )}
                     </tr>
                   </thead>

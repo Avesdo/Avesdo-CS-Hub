@@ -24,6 +24,7 @@ const serviceSchema = z
     serviceName: z.string().min(1, 'Service Name is required.'),
     type: z.string().min(1, 'Service Type is required.'),
     price: z.string().optional(),
+    serviceValue: z.string().optional(),
     selectedClient: z.string().min(1, 'Client is required.'),
     selectedProjects: z.array(z.string()),
     assignees: z.array(z.string()),
@@ -78,6 +79,7 @@ export default function AddServiceModal() {
       serviceName: '',
       type: '',
       price: '',
+      serviceValue: '',
       selectedClient: '',
       selectedProjects: [],
       assignees: [],
@@ -121,23 +123,25 @@ export default function AddServiceModal() {
     }
   }, [isOpen]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (watchType === 'Included') {
       setValue('price', '0', { shouldValidate: true });
-    } else if (watchType === 'Additional') {
-      const predefinedService = settings?.services?.find((s: any) => s.name === watchServiceName);
-      if (predefinedService) {
-        setValue(
-          'price',
-          new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(predefinedService.price),
-          { shouldValidate: true }
-        );
-      }
     }
-  }, [watchType, watchServiceName, settings, setValue]);
+  }, [watchType, setValue]);
+
+  useEffect(() => {
+    const predefinedService = settings?.services?.find((s: any) => s.name === watchServiceName);
+    if (predefinedService) {
+      setValue(
+        'serviceValue',
+        new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(predefinedService.price),
+        { shouldValidate: true }
+      );
+    }
+  }, [watchServiceName, settings, setValue]);
 
   const availableProjects = useMemo(() => {
     const defaultOption = { id: 'none', name: 'None (Client Level)' };
@@ -209,6 +213,7 @@ export default function AddServiceModal() {
         manager: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
         managers: data.assignees.length > 0 ? data.assignees : ['Unassigned'],
         price: data.price ? parseFloat(data.price.replace(/,/g, '')) : 0,
+        serviceValue: data.serviceValue ? parseFloat(data.serviceValue.replace(/,/g, '')) : 0,
         contactName: data.contactName || '',
         outcome: 'Proposal Sent',
         invoiceSent: false,
@@ -310,8 +315,8 @@ export default function AddServiceModal() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-5 pt-2">
-                <div className={watchType === 'Included' ? 'col-span-2' : ''}>
+              <div className={`grid gap-5 pt-2 ${watchType === 'Included' ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                <div>
                   <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                     Service Type <span className="text-destructive">*</span>
                   </label>
@@ -345,43 +350,79 @@ export default function AddServiceModal() {
                   )}
                 </div>
                 {watchType !== 'Included' && (
-                  <div>
-                    <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                      Service Value <span className="text-destructive">*</span>
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
-                        $
-                      </span>
-                      <Controller
-                        name="price"
-                        control={control}
-                        render={({ field }) => (
-                          <input
-                            {...field}
-                            type="text"
-                            onBlur={() => {
-                              const num = parseFloat((field.value || '').replace(/,/g, ''));
-                              if (!isNaN(num)) {
-                                field.onChange(
-                                  new Intl.NumberFormat('en-US', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  }).format(num)
-                                );
-                              }
-                            }}
-                            className={`w-full min-w-0 rounded-md border ${errors.price ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
-                            placeholder="0.00"
-                          />
-                        )}
-                      />
+                    <div>
+                      <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
+                        Invoice Value <span className="text-destructive">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
+                          $
+                        </span>
+                        <Controller
+                          name="price"
+                          control={control}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              type="text"
+                              onBlur={() => {
+                                const num = parseFloat((field.value || '').replace(/,/g, ''));
+                                if (!isNaN(num)) {
+                                  field.onChange(
+                                    new Intl.NumberFormat('en-US', {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    }).format(num)
+                                  );
+                                }
+                              }}
+                              className={`w-full min-w-0 rounded-md border ${errors.price ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
+                              placeholder="0.00"
+                            />
+                          )}
+                        />
+                      </div>
+                      {errors.price && (
+                        <p className="text-destructive text-xs mt-1 font-medium">{errors.price.message}</p>
+                      )}
                     </div>
-                    {errors.price && (
-                      <p className="text-destructive text-xs mt-1 font-medium">{errors.price.message}</p>
-                    )}
-                  </div>
-                )}
+                  )}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
+                        Service Value
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
+                          $
+                        </span>
+                        <Controller
+                          name="serviceValue"
+                          control={control}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              type="text"
+                              onBlur={() => {
+                                const num = parseFloat((field.value || '').replace(/,/g, ''));
+                                if (!isNaN(num)) {
+                                  field.onChange(
+                                    new Intl.NumberFormat('en-US', {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    }).format(num)
+                                  );
+                                }
+                              }}
+                              className={`w-full min-w-0 rounded-md border ${errors.serviceValue ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
+                              placeholder="0.00"
+                            />
+                          )}
+                        />
+                      </div>
+                      {errors.serviceValue && (
+                        <p className="text-destructive text-xs mt-1 font-medium">{errors.serviceValue.message}</p>
+                      )}
+                    </div>
               </div>
             </div>
 
