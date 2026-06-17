@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useOnClickOutside } from '../../hooks/useOnClickOutside';
+import React from 'react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Check } from 'lucide-react';
 
 export interface SelectOption {
@@ -12,8 +12,9 @@ interface SelectProps {
   value: string;
   onChange: (val: string) => void;
   trigger: React.ReactNode;
-  align?: 'left' | 'right';
+  align?: 'left' | 'right' | 'center';
   className?: string;
+  menuClassName?: string;
   dropdownWidth?: string;
   hideCheckmark?: boolean;
   position?: 'top' | 'bottom';
@@ -30,57 +31,48 @@ export function Select({
   dropdownWidth = 'min-w-[240px]',
   hideCheckmark = false,
   position = 'bottom',
-}: SelectProps & { menuClassName?: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useOnClickOutside(ref, () => setIsOpen(false), isOpen);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        e.stopPropagation();
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown, true);
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen]);
-
-  const positionClasses = position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2';
+}: SelectProps) {
+  const radixAlign = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center';
 
   return (
-    <div className={`relative inline-block ${className}`} ref={ref}>
-      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
-        {trigger}
-      </div>
-
-      {isOpen && (
-        <div
-          className={`absolute ${positionClasses} bg-white border border-border rounded-xl shadow-xl z-[250] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in slide-in-from-top-1 duration-200 ${dropdownWidth} ${align === 'right' ? 'right-0' : 'left-0'} ${menuClassName}`}
-        >
-          <div className="overflow-y-auto p-1 custom-thin-scroll">
-            {options.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors ${value === opt.value ? 'bg-primary/5 text-primary' : 'text-foreground'}`}
-                onClick={() => {
-                  onChange(opt.value);
-                  setIsOpen(false);
-                }}
-              >
-                <span className="font-medium">{opt.label}</span>
-                {!hideCheckmark && value === opt.value && (
-                  <Check className="w-4 h-4 text-primary" />
-                )}
-              </button>
-            ))}
+    <div className={`relative inline-block ${className}`}>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <div className="cursor-pointer outline-none">
+            {trigger}
           </div>
-        </div>
-      )}
+        </DropdownMenu.Trigger>
+
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            align={radixAlign}
+            side={position}
+            sideOffset={8}
+            className={`bg-white border border-border rounded-xl shadow-xl z-[9999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
+          >
+            <div className="overflow-y-auto p-1 custom-thin-scroll">
+              <DropdownMenu.RadioGroup value={value} onValueChange={onChange}>
+                {options.map((opt) => (
+                  <DropdownMenu.RadioItem
+                    key={opt.value}
+                    value={opt.value}
+                    className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors cursor-pointer outline-none focus:bg-slate-50 ${
+                      value === opt.value ? 'bg-primary/5 text-primary' : 'text-foreground'
+                    }`}
+                  >
+                    <span className="font-medium">{opt.label}</span>
+                    {!hideCheckmark && value === opt.value && (
+                      <DropdownMenu.ItemIndicator>
+                        <Check className="w-4 h-4 text-primary" />
+                      </DropdownMenu.ItemIndicator>
+                    )}
+                  </DropdownMenu.RadioItem>
+                ))}
+              </DropdownMenu.RadioGroup>
+            </div>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </div>
   );
 }

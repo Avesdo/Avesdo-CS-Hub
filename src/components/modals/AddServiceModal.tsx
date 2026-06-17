@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
 import { X, ChevronDown } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -64,9 +65,7 @@ export default function AddServiceModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
 
-  const [shouldRender, setShouldRender] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
+    
   const isOpen = isModalOpen('addService');
 
   const {
@@ -97,35 +96,7 @@ export default function AddServiceModal() {
   const watchSelectedProjects = watch('selectedProjects');
 
   // Pre-fill context if opened from a specific drawer
-  useEffect(() => {
-    if (isOpen) {
-      if (activeDrawer && activeDrawer.type === 'client' && activeDrawer.data) {
-        const cId = activeDrawer.data.clientId || activeDrawer.data.id;
-        if (cId) setValue('selectedClient', cId);
-      } else if (activeDrawer && activeDrawer.type === 'project' && activeDrawer.data) {
-        const pId = activeDrawer.data.id;
-        const pClientName = activeDrawer.data.clients?.[0];
-        const cObj = clients.find((c) => c.companyName === pClientName || c.name === pClientName);
-        if (cObj) {
-          setValue('selectedClient', cObj.clientId || cObj.id);
-          setValue('selectedProjects', [pId]);
-        }
-      }
-    }
-  }, [isOpen, activeDrawer, clients, setValue]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setShouldRender(true);
-      const t = setTimeout(() => setIsVisible(true), 50);
-      return () => clearTimeout(t);
-    } else {
-      setIsVisible(false);
-      const t = setTimeout(() => setShouldRender(false), 200);
-      return () => clearTimeout(t);
-    }
-  }, [isOpen]);
-
+  
     useEffect(() => {
     if (watchType === 'Included') {
       setValue('price', '0', { shouldValidate: true });
@@ -181,8 +152,7 @@ export default function AddServiceModal() {
     [settings?.managers]
   );
 
-  if (!shouldRender) return null;
-
+  
   const handleClose = () => {
     closeModal();
     reset();
@@ -264,19 +234,10 @@ export default function AddServiceModal() {
   };
 
   return (
-    <>
-      <div
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[120] transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-      ></div>
-      <div
-        className={`fixed inset-0 z-[130] overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:py-12 flex items-start justify-center custom-thin-scroll transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) handleClose();
-        }}
-      >
-        <div
-          className={`relative w-full max-w-lg bg-white border border-border rounded-xl shadow-2xl flex flex-col my-auto text-card-foreground transition-all duration-200 ease-out transform ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}
-        >
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
           <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
             <h3 className="font-semibold text-lg tracking-tight text-foreground">
               Add New Service
@@ -600,8 +561,8 @@ export default function AddServiceModal() {
               {isSubmitting ? 'Creating...' : 'Create Service'}
             </button>
           </div>
-        </div>
-      </div>
-    </>
+                </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
