@@ -43,6 +43,50 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeModals, setActiveModals] = useState<ModalType[]>([]);
   const [activeDrawers, setActiveDrawers] = useState<DrawerState[]>([]);
 
+  // URL Sync Listener
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const drawer = params.get('drawer') as DrawerType;
+      const drawerId = params.get('drawerId');
+      
+      if (drawer) {
+        setActiveDrawers((prev) => {
+          if (prev.some(d => d.type === drawer && d.entityId === drawerId)) return prev;
+          return [...prev, { type: drawer, entityId: drawerId || undefined }];
+        });
+      } else {
+        setActiveDrawers((prev) => {
+           if (prev.length === 0) return prev;
+           return [];
+        });
+      }
+    };
+
+    window.addEventListener('popstate', syncFromUrl);
+    syncFromUrl(); // initial load
+
+    return () => window.removeEventListener('popstate', syncFromUrl);
+  }, []);
+
+  const updateUrl = (drawers: DrawerState[]) => {
+    const newUrl = new URL(window.location.href);
+    const visibleDrawers = drawers.filter(d => !d.isClosing);
+    
+    if (visibleDrawers.length === 0) {
+      newUrl.searchParams.delete('drawer');
+      newUrl.searchParams.delete('drawerId');
+    } else {
+      const top = visibleDrawers[visibleDrawers.length - 1];
+      if (top && top.type) {
+        newUrl.searchParams.set('drawer', top.type);
+        if (top.entityId) newUrl.searchParams.set('drawerId', top.entityId);
+        else newUrl.searchParams.delete('drawerId');
+      }
+    }
+    window.history.pushState({}, '', newUrl.toString());
+  };
+
   // ESC Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -87,11 +131,13 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const openDrawer = useCallback((type: DrawerType, entityId?: string, data?: any) => {
     if (type === null) {
       setActiveDrawers([]);
+      updateUrl([]);
     } else {
-      // If this drawer type is already open, replace it to prevent duplicates of the same type
       setActiveDrawers((prev) => {
         const filtered = prev.filter((d) => d.type !== type);
-        return [...filtered, { type, entityId, data }];
+        const next = [...filtered, { type, entityId, data }];
+        updateUrl(next);
+        return next;
       });
     }
   }, []);
@@ -102,13 +148,16 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       if (prev[prev.length - 1].isClosing) return prev; // Already closing
       const copy = [...prev];
       copy[copy.length - 1] = { ...copy[copy.length - 1], isClosing: true };
+      
+      // Update URL immediately to reflect the drawer that WILL be visible
+      const visible = copy.filter((d) => !d.isClosing);
+      updateUrl(visible);
+      
       return copy;
     });
 
     setTimeout(() => {
       setActiveDrawers((prev) => {
-        // Only remove the one that was marked as closing if it's at the top
-        // Actually, just filter out all that are isClosing
         return prev.filter((d) => !d.isClosing);
       });
     }, 300);

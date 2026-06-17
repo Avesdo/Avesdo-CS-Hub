@@ -17,6 +17,18 @@ export default function GlobalSearch() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [viewAll, setViewAll] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -149,12 +161,13 @@ export default function GlobalSearch() {
         className={`w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 transition-colors ${isOpen && query.length > 0 ? 'text-primary' : 'text-muted-foreground'}`}
       />
       <input
+        ref={inputRef}
         type="text"
         role="combobox"
         aria-expanded={isOpen}
         aria-controls="global-search-listbox"
         aria-autocomplete="list"
-        placeholder="Search clients, projects, or services..."
+        placeholder="Search clients, projects, or services... (Cmd+K)"
         className={`w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-all outline-none placeholder:text-muted-foreground pl-8 pr-8 h-9 focus:border-primary focus:ring-2 focus:ring-primary/20 ${isOpen && query.length > 0 ? 'border-primary' : 'border-input'}`}
         value={query}
         onChange={(e) => {
