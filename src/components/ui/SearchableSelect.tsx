@@ -73,7 +73,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
         />
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-white border border-border rounded-lg shadow-lg z-[250] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="absolute top-full left-0 mt-1 w-full bg-white border border-border rounded-lg shadow-lg z-[99999] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll animate-in fade-in slide-in-from-top-1 duration-200">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((opt) => (
               <div

@@ -100,7 +100,7 @@ export default function MultiSelectCombobox({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200 custom-thin-scroll">
+        <div className="absolute z-[99999] w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200 custom-thin-scroll">
           {filteredOptions.length === 0 ? (
             <div className="p-2 text-sm text-slate-500 text-center">
               {query ? `Press Enter to add "${query}"` : 'No options left.'}

@@ -72,7 +72,7 @@ export function MultiSelect({
           <Popover.Content
             align={radixAlign}
             sideOffset={8}
-            className={`bg-white border border-border rounded-xl shadow-xl z-[9999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
+            className={`bg-white border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
           >
             {searchable && (
               <div className="p-2 border-b border-border bg-slate-50 flex items-center gap-2">

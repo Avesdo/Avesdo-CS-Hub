@@ -48,7 +48,7 @@ export function Select({
             align={radixAlign}
             side={position}
             sideOffset={8}
-            className={`bg-white border border-border rounded-xl shadow-xl z-[9999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
+            className={`bg-white border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
           >
             <div className="overflow-y-auto p-1 custom-thin-scroll">
               <DropdownMenu.RadioGroup value={value} onValueChange={onChange}>

@@ -183,7 +183,7 @@ export function DatePicker({
       )}
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-border rounded-xl shadow-xl z-[250] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-border rounded-xl shadow-xl z-[99999] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="text-sm font-semibold text-muted-foreground mb-2">{label}</div>
           <input
             type="text"
