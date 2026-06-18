@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useForm, useWatch, Controller } from 'react-hook-form';
 import { FormField, Template } from '../admin/TemplateDesigner';
 import { Select } from './Select';
@@ -82,6 +82,10 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
       conditionMet = dependentValue !== undefined && dependentValue !== null && dependentValue !== '' && (!Array.isArray(dependentValue) || dependentValue.length > 0);
     } else if (condition === 'is_not_answered') {
       conditionMet = dependentValue === undefined || dependentValue === null || dependentValue === '' || (Array.isArray(dependentValue) && dependentValue.length === 0);
+    } else if (condition === 'less_than_or_equals') {
+      conditionMet = typeof dependentValue === 'number' && dependentValue <= Number(value);
+    } else if (condition === 'greater_than_or_equals') {
+      conditionMet = typeof dependentValue === 'number' && dependentValue >= Number(value);
     }
 
     return action === 'show' ? conditionMet : !conditionMet;
@@ -99,6 +103,14 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
     }
   }, [visiblePages.length, currentPage]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage]);
+
   const safeCurrentPage = Math.min(currentPage, visiblePages.length - 1);
   const currentFields = visiblePages[safeCurrentPage]?.fields || [];
 
@@ -111,26 +123,28 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
       if (value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)) {
         if (Array.isArray(value)) {
           displayValue = (
-            <ul className="list-disc list-inside space-y-1">
+            <ul className="list-disc list-inside space-y-1 mt-1.5">
               {value.map(v => (
-                <li key={v} className="text-slate-800 text-sm">
+                <li key={v} className="text-slate-900 text-[15px]">
                   {v === '__other__' ? `Other: ${otherValue || ''}` : v}
                 </li>
               ))}
             </ul>
           );
         } else if (field.type === 'date') {
-          displayValue = <span className="text-slate-800 text-sm">{new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
+          displayValue = <span className="text-slate-900 text-[15px]">{new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
         } else if (value === '__other__') {
-          displayValue = <span className="text-slate-800 text-sm">Other: {otherValue || ''}</span>;
+          displayValue = <span className="text-slate-900 text-[15px]">Other: {otherValue || ''}</span>;
         } else {
-          displayValue = <span className="text-slate-800 text-sm break-words whitespace-pre-wrap">{value}</span>;
+          displayValue = <span className="text-slate-900 text-[15px] break-words whitespace-pre-wrap">{value}</span>;
         }
       }
 
       return (
-        <div className="bg-slate-50/80 rounded-lg p-3.5 border border-slate-100 mt-2">
-          {displayValue}
+        <div className="mt-1.5 pl-1 border-l-2 border-primary/20">
+          <div className="pl-3">
+            {displayValue}
+          </div>
         </div>
       );
     }
@@ -263,6 +277,34 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
             )}
           </div>
         );
+      case 'nps':
+        return (
+          <div className="flex flex-wrap gap-2 mt-2">
+            <Controller
+              name={field.id}
+              control={control}
+              rules={{ required: field.required }}
+              render={({ field: { onChange, value } }) => (
+                <>
+                  {[0,1,2,3,4,5,6,7,8,9,10].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => onChange(num)}
+                      className={`w-10 h-10 rounded-md border-2 text-[15px] font-bold transition-all ${
+                        value === num 
+                          ? 'border-primary bg-primary/10 text-primary scale-105 shadow-sm' 
+                          : 'border-slate-200 text-slate-500 hover:border-primary/40 hover:bg-slate-50'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </>
+              )}
+            />
+          </div>
+        );
       case 'date':
         return (
           <Controller
@@ -322,7 +364,7 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full bg-white relative">
-      <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-8 custom-thin-scroll space-y-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 sm:px-8 custom-thin-scroll space-y-6">
       {visiblePages.length > 1 && (
         <div className="flex items-center gap-2 mb-6">
           {visiblePages.map((_, idx) => (

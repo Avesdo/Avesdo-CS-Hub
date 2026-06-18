@@ -1020,6 +1020,7 @@ export default function AdminHub() {
                   { title: 'Client QA', key: 'clientQA', isDeliverables: false, desc: 'Client QA review feedback' },
                   { title: 'Secondary QA', key: 'secondaryQA', isDeliverables: false, desc: 'Internal Secondary QA sign-offs' },
                   { title: 'Project Certification', key: 'certification', isDeliverables: false, desc: 'Final Project Certification responses' },
+                  { title: 'Onboarding CSAT', key: 'onboardingCsat', isDeliverables: false, desc: 'Client Onboarding CSAT Responses' },
                 ].map(form => (
                   <div key={form.key} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col hover:border-slate-300 hover:shadow-sm transition-all">
                     <div className="flex-1">

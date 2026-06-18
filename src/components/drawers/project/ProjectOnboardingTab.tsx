@@ -8,6 +8,7 @@ import DeliverablesModal from '../../modals/DeliverablesModal';
 import OnboardingSurveyModal from '../../modals/OnboardingSurveyModal';
 import ClientQAModal from '../../modals/ClientQAModal';
 import ProjectCertificationModal from '../../modals/ProjectCertificationModal';
+import OnboardingCsatFormModal from '../../modals/OnboardingCsatFormModal';
 import { RichTextEditor } from '../../ui/RichTextEditor';
 import { updateProjectRecord } from '../../../api/dbService';
 import { useAppStore } from '../../../store/useAppStore';
@@ -162,10 +163,21 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
         : 'bg-amber-100 text-amber-700',
       dataRef: project?.onboarding?.certification
     },
+    {
+      id: 'hasOnboardingCsat',
+      modalId: 'onboardingCsat',
+      title: 'Onboarding CSAT',
+      icon: CheckCircle2,
+      status: project?.health?.onboardingCsat ? 'Completed' : 'Pending',
+      statusColor: project?.health?.onboardingCsat
+        ? 'bg-emerald-100 text-emerald-700'
+        : 'bg-amber-100 text-amber-700',
+      dataRef: project?.health?.onboardingCsat
+    },
   ];
 
-  const activeCards = allActionCards.filter(card => project?.[card.id]);
-  const availableToAdd = allActionCards.filter(card => !project?.[card.id]);
+  const activeCards = allActionCards.filter(card => project?.[card.id === 'hasOnboardingCsat' ? 'health' : 'onboarding'] || project?.health?.onboardingCsat || project?.[card.id]);
+  const availableToAdd = allActionCards.filter(card => !(project?.[card.id === 'hasOnboardingCsat' ? 'health' : 'onboarding'] || project?.health?.onboardingCsat || project?.[card.id]));
 
   return (
     <div className="space-y-8 pb-10" ref={popRef}>
@@ -523,6 +535,13 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
       {activeModal === 'certification' && (
         <ProjectCertificationModal
+          project={project}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
+
+      {activeModal === 'onboardingCsat' && (
+        <OnboardingCsatFormModal
           project={project}
           onClose={() => setActiveModal(null)}
         />

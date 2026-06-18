@@ -47,7 +47,7 @@ import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
 import { RichTextEditor } from '../ui/RichTextEditor';
 
-export type FieldType = 'text' | 'long_text' | 'select' | 'radio' | 'checkbox' | 'date' | 'number' | 'header' | 'page_break';
+export type FieldType = 'text' | 'long_text' | 'select' | 'radio' | 'checkbox' | 'date' | 'number' | 'header' | 'page_break' | 'nps';
 
 export interface FormField {
   id: string;
@@ -60,7 +60,7 @@ export interface FormField {
   logicEnabled?: boolean;
   dependsOn?: {
     fieldId: string;
-    condition: 'equals' | 'not_equals' | 'is_any_of' | 'is_not_any_of' | 'is_answered' | 'is_not_answered';
+    condition: 'equals' | 'not_equals' | 'is_any_of' | 'is_not_any_of' | 'is_answered' | 'is_not_answered' | 'less_than_or_equals' | 'greater_than_or_equals';
     value: any;
     action?: 'show' | 'hide';
   } | null;
@@ -109,6 +109,7 @@ export const FIELD_PALETTE_CATEGORIES = [
       { type: 'radio', label: 'Multiple choice', icon: List },
       { type: 'date', label: 'Date', icon: Calendar },
       { type: 'number', label: 'Number', icon: Hash },
+      { type: 'nps', label: 'NPS Scale (0-10)', icon: Hash },
     ]
   }
 ];
@@ -149,6 +150,8 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                    { label: 'is not any of', value: 'is_not_any_of' },
                    { label: 'is answered', value: 'is_answered' },
                    { label: 'is not answered', value: 'is_not_answered' },
+                   { label: 'is less than or equals (<=)', value: 'less_than_or_equals' },
+                   { label: 'is greater than or equals (>=)', value: 'greater_than_or_equals' },
                  ]}
                  trigger={
                    <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[120px]">
@@ -158,6 +161,8 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                         field.dependsOn?.condition === 'is_not_any_of' ? 'is not any of' :
                         field.dependsOn?.condition === 'is_answered' ? 'is answered' :
                         field.dependsOn?.condition === 'is_not_answered' ? 'is not answered' :
+                        field.dependsOn?.condition === 'less_than_or_equals' ? 'is <= ' :
+                        field.dependsOn?.condition === 'greater_than_or_equals' ? 'is >= ' :
                         'is exactly'}
                      </span>
                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
@@ -207,7 +212,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                    );
                  }
                  return (
-                   <input type="text" value={typeof field.dependsOn?.value === 'string' ? field.dependsOn.value : ''} onChange={(e) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: e.target.value }})} className="h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 outline-none focus:border-primary shadow-sm flex-1 min-w-[120px] placeholder:text-slate-400 placeholder:font-normal" placeholder="Answer..." />
+                    <input type="text" value={field.dependsOn?.value !== undefined ? field.dependsOn.value : ''} onChange={(e) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: ['less_than_or_equals', 'greater_than_or_equals'].includes(field.dependsOn!.condition) ? Number(e.target.value) : e.target.value }})} className="h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 outline-none focus:border-primary shadow-sm flex-1 min-w-[120px] placeholder:text-slate-400 placeholder:font-normal" placeholder="Answer..." />
                  );
                })()}
                
@@ -679,10 +684,11 @@ export default function TemplateDesigner() {
     clientQA: { id: 'clientQA', name: 'Client QA', type: 'form', fields: [] },
     secondaryQA: { id: 'secondaryQA', name: 'Secondary QA', type: 'form', fields: [] },
     certification: { id: 'certification', name: 'Project Certification', type: 'form', fields: [] },
+    onboardingCsat: { id: 'onboardingCsat', name: 'Onboarding CSAT', type: 'form', fields: [] },
   };
 
   const templates: Record<string, Template> = settings?.templates || defaultTemplates;
-  const templateOrder = ['deliverables', 'onboardingSurvey', 'primaryQA', 'clientQA', 'secondaryQA', 'certification'];
+  const templateOrder = ['deliverables', 'onboardingSurvey', 'primaryQA', 'clientQA', 'secondaryQA', 'certification', 'onboardingCsat'];
   const sortedTemplates = templateOrder.map(id => templates[id] || defaultTemplates[id]).filter(Boolean);
 
   const activeTemplate = templates[activeTemplateId] || defaultTemplates[activeTemplateId];

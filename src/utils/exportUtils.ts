@@ -254,7 +254,7 @@ export const exportAllFormResponsesToCSV = (formName: string, formKey: string, p
   const submissions: { projectName: string; data: any }[] = [];
   projects.forEach(p => {
     const flag = 'has' + formKey.charAt(0).toUpperCase() + formKey.slice(1);
-    const data = isDeliverables ? p.deliverables : p.onboarding?.[formKey];
+    const data = isDeliverables ? p.deliverables : (formKey === 'onboardingCsat' ? p.health?.onboardingCsat : p.onboarding?.[formKey]);
     
     if (p[flag] || (data && Object.keys(data).length > 0)) {
       submissions.push({ projectName: p.name, data: data || {} });
