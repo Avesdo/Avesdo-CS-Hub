@@ -4,7 +4,7 @@ import {
   Copy,
   ExternalLink,
   Globe,
-  Layout,
+  Users,
   Building2,
   MapPin,
   Search,
@@ -14,6 +14,7 @@ import {
   Edit2,
   ChevronDown,
   Check,
+  CheckSquare,
   X,
   Pencil,
 } from 'lucide-react';
@@ -369,43 +370,67 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
   return (
     <div className="flex flex-col space-y-6" ref={popRef}>
       {/* 1. Logistics & Sizing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border items-start">
-        <div className="popover-container">
-          <label className="block text-[11px] font-semibold text-muted-foreground mb-1.5">
-            Release Date
-          </label>
-          <DatePicker
-            value={project?.releaseDateVal}
-            onChange={(val, str) => {
-              handleUpdate('releaseDateVal', val, project?.releaseDateVal);
-            }}
-            label="Set Release Date"
-            placeholder="No Date"
-          />
-        </div>
-        <div>
-          <label className="block text-[11px] font-semibold text-muted-foreground mb-1.5">
-            Live Units
-          </label>
-          <input
-            type="number"
-            className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-1.5 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[38px] text-sm font-semibold transition-all"
-            defaultValue={project?.units || 0}
-            onBlur={(e) => handleUpdate('units', parseInt(e.target.value) || 0, project?.units)}
-            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-          />
+      <div className="bg-gradient-to-br from-white to-slate-50/80 border border-slate-200/80 rounded-3xl shadow-sm p-6 relative overflow-hidden group hover:shadow-md transition-all duration-500 hover:border-blue-200/60">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all duration-500 group-hover:bg-blue-500/10 group-hover:scale-110"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100/80 text-blue-600 flex items-center justify-center shadow-inner">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800 tracking-tight">Timeline & Scale</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="popover-container group/input">
+              <label className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground mb-1.5">
+                Release Date
+              </label>
+              <div className="transition-transform duration-200 group-hover/input:translate-x-1">
+                <DatePicker
+                  value={project?.releaseDateVal}
+                  onChange={(val, str) => {
+                    handleUpdate('releaseDateVal', val, project?.releaseDateVal);
+                  }}
+                  label="Set Release Date"
+                  placeholder="No Date"
+                />
+              </div>
+            </div>
+            <div className="group/input">
+              <label className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground mb-1.5">
+                Live Units
+              </label>
+              <div className="relative transition-transform duration-200 group-hover/input:translate-x-1">
+                <input
+                  type="number"
+                  className="w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-bold text-slate-700 transition-all"
+                  defaultValue={project?.units || 0}
+                  onBlur={(e) => handleUpdate('units', parseInt(e.target.value) || 0, project?.units)}
+                  onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                />
+                <Building2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 2. Relationships & Core Details */}
-      <div className="flex flex-col gap-6 pb-6 border-b border-border">
-        <div className="flex flex-col gap-6">
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+      <div className="bg-gradient-to-br from-white to-slate-50/80 border border-slate-200/80 rounded-3xl shadow-sm p-6 relative overflow-hidden group hover:shadow-md transition-all duration-500 hover:border-indigo-200/60">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all duration-500 group-hover:bg-indigo-500/10 group-hover:scale-110"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100/80 text-indigo-600 flex items-center justify-center shadow-inner">
+              <Users className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800 tracking-tight">Project Entities</h3>
+          </div>
+        <div className="flex flex-col gap-8">
+          <div className="relative popover-container group/input">
+            <label className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground mb-1.5">
               Developer Client(s)
             </label>
             <div
-              className="min-h-[38px] bg-white border border-input rounded-md px-3 py-2 text-sm shadow-sm cursor-pointer hover:border-primary/50 transition-colors flex flex-wrap gap-2 items-center"
+              className="min-h-[46px] bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm shadow-sm cursor-pointer hover:border-indigo-400 hover:ring-4 hover:ring-indigo-500/10 transition-all flex flex-wrap gap-2 items-center"
               onClick={() => setOpenPop(openPop === 'devClients' ? null : 'devClients')}
             >
               {project?.developers?.length > 0 ? (
@@ -457,12 +482,12 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
             )}
           </div>
 
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+          <div className="relative popover-container group/input">
+            <label className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground mb-1.5">
               Sales & Marketing Client(s)
             </label>
             <div
-              className="min-h-[38px] bg-white border border-input rounded-md px-3 py-2 text-sm shadow-sm cursor-pointer hover:border-primary/50 transition-colors flex flex-wrap gap-2 items-center"
+              className="min-h-[46px] bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm shadow-sm cursor-pointer hover:border-indigo-400 hover:ring-4 hover:ring-indigo-500/10 transition-all flex flex-wrap gap-2 items-center"
               onClick={() => setOpenPop(openPop === 'smClients' ? null : 'smClients')}
             >
               {project?.salesMarketingClients?.length > 0 ? (
@@ -515,149 +540,39 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="relative popover-container">
-            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-              Manager
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-slate-100">
+          <div className="group/input">
+            <label className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground mb-1.5">
+              Avesdo Development ID
             </label>
-            <button
-              onClick={() => setOpenPop(openPop === 'manager' ? null : 'manager')}
-              className="w-full flex items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:border-primary/50 focus:outline-none min-h-[38px]"
-            >
-              <span className="truncate font-semibold text-foreground">
-                {project?.assignee || 'Unassigned'}
-              </span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-            </button>
-            {openPop === 'manager' && (
-              <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-                {settings?.managers?.map((m: any) => (
-                  <button
-                    key={m.name}
-                    onClick={() => {
-                      handleUpdate('assignee', m.name, project?.assignee);
-                      setOpenPop(null);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                  >
-                    {m.name}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="relative transition-transform duration-200 group-hover/input:translate-x-1">
+              <input
+                type="text"
+                className="w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 text-sm font-bold text-slate-700 transition-all"
+                defaultValue={project?.developmentId || ''}
+                onBlur={(e) => handleUpdate('developmentId', e.target.value, project?.developmentId)}
+                onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                placeholder="e.g. 123"
+              />
+              <LinkIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+            </div>
           </div>
+        </div>
         </div>
       </div>
-
-      {/* 3. Workflow States */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 border-b border-border">
-        <div className="relative popover-container">
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Project Status
-          </label>
-          <div className="flex">
-            <button
-              onClick={() => setOpenPop(openPop === 'status' ? null : 'status')}
-              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
-            >
-              {getSettingBadge('statuses', project?.projectStatus || 'Not Set', settings, true)}
-            </button>
-          </div>
-          {openPop === 'status' && (
-            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-              {settings?.statuses?.map((s: any) => (
-                <button
-                  key={s.name}
-                  onClick={() => {
-                    handleUpdate('projectStatus', s.name, project?.projectStatus);
-                    setOpenPop(null);
-                  }}
-                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                >
-                  {getSettingBadge('statuses', s.name, settings, true)}
-                </button>
-              ))}
+      
+      <div className="bg-gradient-to-br from-white to-slate-50/80 border border-slate-200/80 rounded-3xl shadow-sm p-6 relative overflow-hidden group hover:shadow-md transition-all duration-500 hover:border-emerald-200/60">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all duration-500 group-hover:bg-emerald-500/10 group-hover:scale-110"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100/80 text-emerald-600 flex items-center justify-center shadow-inner">
+              <CheckSquare className="w-5 h-5" />
             </div>
-          )}
-        </div>
-        <div className="relative popover-container">
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Schedule Status
-          </label>
-          <div className="flex">
-            <button
-              onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
-              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
-            >
-              {getSettingBadge('timelines', project?.timelineStatus || 'Not Set', settings, true)}
-            </button>
+            <h3 className="text-base font-bold text-slate-800 tracking-tight">Features</h3>
           </div>
-          {openPop === 'timeline' && (
-            <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-              {settings?.timelines?.map((t: any) => (
-                <button
-                  key={t.name}
-                  onClick={() => {
-                    handleUpdate('timelineStatus', t.name, project?.timelineStatus);
-                    setOpenPop(null);
-                  }}
-                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                >
-                  {getSettingBadge('timelines', t.name, settings, true)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="relative popover-container">
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Implementation Status
-          </label>
-          <div className="flex">
-            <button
-              onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
-              className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
-            >
-              {getSettingBadge('phases', project?.onboardingPhase || 'Not Set', settings, true)}
-            </button>
-          </div>
-          {openPop === 'phase' && (
-            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1">
-              {settings?.phases?.map((p: any) => (
-                <button
-                  key={p.name}
-                  onClick={() => {
-                    handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
-                    setOpenPop(null);
-                  }}
-                  className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 whitespace-nowrap"
-                >
-                  {getSettingBadge('phases', p.name, settings, true)}
-                </button>
-              ))}
-            </div>
-          )}
+          <ProjectFeaturesTab project={project} />
         </div>
       </div>
-
-      {/* 4. Resources */}
-      <div className="flex flex-col gap-4 pb-2">
-        <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5 mt-4">
-            Avesdo Development ID
-          </label>
-          <input
-            type="text"
-            className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-1.5 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[38px] text-sm font-semibold transition-all"
-            defaultValue={project?.developmentId || ''}
-            onBlur={(e) => handleUpdate('developmentId', e.target.value, project?.developmentId)}
-            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-            placeholder="e.g. 123"
-          />
-        </div>
-      </div>
-      <ProjectFeaturesTab project={project} />
     </div>
   );
 });

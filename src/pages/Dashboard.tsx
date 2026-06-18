@@ -912,7 +912,7 @@ export default function Dashboard() {
                     {movers.improvers.map((m: any) => (
                       <div
                         key={m.id}
-                        onClick={() => openDrawer('client', m.id, { targetTab: 'trends' })}
+                        onClick={() => openDrawer('client', m.id, { targetTab: 'health' })}
                         className="flex items-center justify-between p-3.5 rounded-xl border border-border border-l-4 border-l-lime-500 bg-white shadow-sm cursor-pointer hover:border-lime-500/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
                       >
                         <div className="flex flex-col min-w-0 pr-3 justify-center">
@@ -940,7 +940,7 @@ export default function Dashboard() {
                     {movers.droppers.map((m: any) => (
                       <div
                         key={m.id}
-                        onClick={() => openDrawer('client', m.id, { targetTab: 'trends' })}
+                        onClick={() => openDrawer('client', m.id, { targetTab: 'health' })}
                         className="flex items-center justify-between p-3.5 rounded-xl border border-border border-l-4 border-l-red-500 bg-white shadow-sm cursor-pointer hover:border-red-500/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
                       >
                         <div className="flex flex-col min-w-0 pr-3 justify-center">

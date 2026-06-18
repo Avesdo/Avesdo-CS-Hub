@@ -410,8 +410,7 @@ export default function ClientDrawer() {
           {activeTab === 'health' && (
             <>
               <ClientHealthTab client={client} />
-              <div className="mt-8 border-t border-border pt-8">
-                <h3 className="px-4 text-sm font-bold text-foreground mb-4 uppercase tracking-wider">Health Trends</h3>
+              <div className="mt-8 border-t border-border pt-6">
                 <ClientTrendsTab client={client} />
               </div>
             </>

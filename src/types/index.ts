@@ -31,6 +31,7 @@ export interface Project {
   isArchived?: boolean;
   timelineStatus?: string;
   onboardingPhase?: string;
+  teamworkLink?: string;
   features?: string[];
   units?: number | string;
   history?: any[];

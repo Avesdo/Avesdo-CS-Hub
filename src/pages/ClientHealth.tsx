@@ -22,6 +22,7 @@ import {
   X,
   Database,
   ChevronDown,
+  ArrowUpDown,
 } from 'lucide-react';
 import { getHealthHistory, updateClientRecord } from '../api/dbService';
 import { ColumnFilter } from '../components/TableFilters';
@@ -141,7 +142,7 @@ const ClientRow = React.memo(({
                             className="px-6 py-2"
                             onClick={(e) => {
                               e.stopPropagation();
-                              openDrawer('client', c.clientId, { targetTab: 'trends' });
+                              openDrawer('client', c.clientId, { targetTab: 'health' });
                             }}
                           >
                             <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
@@ -927,10 +928,11 @@ const ClientRow = React.memo(({
                       <th className="sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
                         <div className="flex items-center">
                           <div
-                            className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"
                             onClick={() => handleSort('companyName')}
                           >
                             Client Name
+                            {sortCol === 'companyName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </div>
                           <ColumnFilter
                             options={allCompanyNames}
@@ -943,10 +945,11 @@ const ClientRow = React.memo(({
                       <th className="border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
-                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('type')}
                           >
                             Type
+                            {sortCol === 'type' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </div>
                           <ColumnFilter
                             options={allTypes}
@@ -958,10 +961,11 @@ const ClientRow = React.memo(({
                       <th className="border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
-                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('healthScore')}
                           >
                             Health
+                            {sortCol === 'healthScore' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </div>
                           <ColumnFilter
                             options={['Healthy', 'Warning', 'At Risk']}
@@ -973,10 +977,11 @@ const ClientRow = React.memo(({
                       <th className="border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
-                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('projectCount')}
                           >
                             Projects
+                            {sortCol === 'projectCount' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                             <span className="text-[9px] font-normal text-slate-400 normal-case tracking-normal ml-1">
                               (Active/Onboarding/Closed)
                             </span>
@@ -991,10 +996,11 @@ const ClientRow = React.memo(({
                       <th className="border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
-                            className="cursor-pointer hover:text-slate-800 transition-colors"
+                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('manager')}
                           >
                             Manager
+                            {sortCol === 'manager' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </div>
                           <ColumnFilter
                             options={allManagers}

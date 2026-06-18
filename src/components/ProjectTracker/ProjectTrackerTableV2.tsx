@@ -165,7 +165,7 @@ const ProjectRow = React.memo(({
                         className="opacity-80 group-hover/trend:opacity-100 transition-opacity hidden xl:block cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          openDrawer('project', p.id, { targetTab: 'trends' });
+                          openDrawer('project', p.id, { targetTab: 'health' });
                         }}
                       >
                         <Sparkline data={p.trendData} />

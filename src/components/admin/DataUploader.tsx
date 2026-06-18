@@ -299,7 +299,27 @@ export function DataUploader() {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center mt-8 pt-8 border-t border-slate-200">
+        <button
+          onClick={async () => {
+            try {
+              setIsCompiling(true);
+              const { generateDailyHealthSnapshots } = await import('../../api/snapshotService');
+              await generateDailyHealthSnapshots();
+              toast.success('Snapshots generated successfully!');
+            } catch (err: any) {
+              toast.error('Failed to generate snapshots: ' + err.message);
+            } finally {
+              setIsCompiling(false);
+            }
+          }}
+          disabled={isCompiling}
+          className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200 disabled:opacity-50 transition-colors"
+        >
+          <Database className="w-4 h-4" />
+          Force Generate Daily Snapshots
+        </button>
+
         <button
           disabled={!isReadyToCompile || isCompiling}
           onClick={runCompiler}

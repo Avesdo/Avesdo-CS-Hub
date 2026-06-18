@@ -5,6 +5,7 @@ export const GlobalToaster = () => {
   return (
     <Toaster
       position="bottom-right"
+      containerStyle={{ zIndex: 99999 }}
       toastOptions={{
         duration: 4000,
         className: 'shadow-xl border rounded-lg max-w-sm',

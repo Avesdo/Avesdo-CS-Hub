@@ -44,7 +44,7 @@ import EmptyState from '../components/EmptyState';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-// import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 // --- Column Filter Popover Component ---
 
@@ -59,7 +59,8 @@ const ServiceRow = React.memo(({
   handleStatusChange,
   formatCurrency,
   StatusDropdown,
-  TruncatedText
+  TruncatedText,
+  virtualRow
 }: any) => {
   const sDate = s.dateVal
     ? new Date(s.dateVal).toLocaleDateString('en-US', {
@@ -71,7 +72,7 @@ const ServiceRow = React.memo(({
 
   return (
                         <tr
-                          key={s.id}
+                          key={virtualRow?.index || s.id}
                           className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
                           onClick={() => openDrawer('service', s.id)}
                         >
@@ -131,7 +132,10 @@ const ServiceRow = React.memo(({
                         </tr>
   );
 }, (prevProps, nextProps) => {
-  return prevProps.s === nextProps.s && prevProps.activeTab === nextProps.activeTab && prevProps.settings === nextProps.settings;
+  return prevProps.s === nextProps.s && 
+         prevProps.activeTab === nextProps.activeTab && 
+         prevProps.settings === nextProps.settings &&
+         prevProps.virtualRow?.index === nextProps.virtualRow?.index;
 });
 
 export default function ServiceHub() {
@@ -504,6 +508,17 @@ export default function ServiceHub() {
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
+  const rowVirtualizer = useVirtualizer({
+    count: tableData.length,
+    getScrollElement: () => tableScrollRef.current,
+    estimateSize: () => 53,
+    overscan: 30,
+  });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom = virtualItems.length > 0 ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end : 0;
+
   return (
     <div
       className="flex-1 flex flex-col h-full overflow-hidden bg-white"
@@ -770,7 +785,7 @@ export default function ServiceHub() {
             {useMemo(
               () => (
                 <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1200px]">
-                  <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md">
+                  <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
                       <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
@@ -779,6 +794,7 @@ export default function ServiceHub() {
                             onClick={() => handleSort('name')}
                           >
                             Service Name
+                            {sortCol === 'name' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </span>
                           <ColumnFilter
                             options={allNames}
@@ -795,6 +811,7 @@ export default function ServiceHub() {
                             onClick={() => handleSort('projectName')}
                           >
                             Project Name
+                            {sortCol === 'projectName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </span>
                           <ColumnFilter
                             options={allProjects}
@@ -811,6 +828,7 @@ export default function ServiceHub() {
                             onClick={() => handleSort('clientName')}
                           >
                             Client
+                            {sortCol === 'clientName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </span>
                           <ColumnFilter
                             options={allClients}
@@ -827,6 +845,7 @@ export default function ServiceHub() {
                             onClick={() => handleSort('type')}
                           >
                             Service Type
+                            {sortCol === 'type' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </span>
                           <ColumnFilter
                             options={allTypes}
@@ -842,6 +861,7 @@ export default function ServiceHub() {
                             onClick={() => handleSort('manager')}
                           >
                             Manager
+                            {sortCol === 'manager' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
                           </span>
                           <ColumnFilter
                             options={allManagers}
@@ -894,8 +914,15 @@ export default function ServiceHub() {
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border text-sm">
-                    {tableData.map((s: any) => {
+                  <tbody className="divide-y divide-border text-sm relative">
+                    {paddingTop > 0 && (
+                      <tr>
+                        <td colSpan={activeTab === 'Included' ? 7 : 8} style={{ height: paddingTop, border: 0, padding: 0 }} />
+                      </tr>
+                    )}
+                    {virtualItems.map((virtualRow) => {
+                      const s = tableData[virtualRow.index];
+                      if (!s) return null;
                       return (
                         <ServiceRow
                           key={s.id}
@@ -910,10 +937,16 @@ export default function ServiceHub() {
                           formatCurrency={formatCurrency}
                           StatusDropdown={StatusDropdown}
                           TruncatedText={TruncatedText}
+                          virtualRow={virtualRow}
                         />
                       );
                     })}
 
+                    {paddingBottom > 0 && (
+                      <tr>
+                        <td colSpan={activeTab === 'Included' ? 7 : 8} style={{ height: paddingBottom, border: 0, padding: 0 }} />
+                      </tr>
+                    )}
                     {tableData.length === 0 && (
                       <tr>
                         <td colSpan={activeTab === 'Included' ? 7 : 8} className="px-6 py-4">
@@ -930,6 +963,9 @@ export default function ServiceHub() {
               ),
               [
                 tableData,
+                virtualItems,
+                paddingTop,
+                paddingBottom,
                 activeTab,
                 displayLimit,
                 nameFilter,

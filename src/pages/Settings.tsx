@@ -17,6 +17,9 @@ import {
   User,
   Target,
   AlertCircle,
+  Palette,
+  LayoutTemplate,
+  FileText
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import {
@@ -27,6 +30,7 @@ import {
   addGlobalLog,
 } from '../api/dbService';
 import { toast } from '../utils/toast';
+import TemplateDesigner from '../components/admin/TemplateDesigner';
 
 const ICONS = [
   'Activity',
@@ -88,7 +92,6 @@ const ICONS = [
   'Settings',
   'Shield',
   'ShieldCheck',
-  'Smartphone',
   'Star',
   'StopCircle',
   'Target',
@@ -96,6 +99,7 @@ const ICONS = [
   'TrendingUp',
   'Trophy',
   'User',
+  'UserCheck',
   'Users',
   'Wrench',
   'Zap',
@@ -284,7 +288,7 @@ export default function SettingsDraft() {
   const clients = useAppStore(state => state.clients);
   const services = useAppStore(state => state.services);
   const user = useAppStore(state => state.user);
-  const [activeTab, setActiveTab] = useState<'org' | 'workflow' | 'products' | 'scoring'>('org');
+  const [activeTab, setActiveTab] = useState<'org' | 'workflow' | 'products' | 'scoring' | 'templates'>('org');
 
   const [editingItem, setEditingItem] = useState<{
     field: string;
@@ -1006,6 +1010,7 @@ export default function SettingsDraft() {
             { id: 'workflow', label: 'Workflow & Status', icon: GitMerge },
             { id: 'products', label: 'Features & Services', icon: Package },
             { id: 'scoring', label: 'Scoring Engine', icon: Calculator },
+            { id: 'templates', label: 'Templates', icon: FileText },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1166,6 +1171,11 @@ export default function SettingsDraft() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+          {activeTab === 'templates' && (
+            <div className="h-full animate-in fade-in duration-300">
+              <TemplateDesigner />
             </div>
           )}
         </div>

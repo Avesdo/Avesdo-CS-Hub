@@ -47,7 +47,21 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function SyncWrapper({ children }: { children: React.ReactNode }) {
   useFirebaseSync();
   const ready = useAppStore((state) => state.ready);
+  const settings = useAppStore((state) => state.settings);
   
+  React.useEffect(() => {
+    // Frontend Cron: Check if snapshot needs to run today
+    if (ready.settings && ready.clients && ready.projects && settings) {
+      const todayStr = new Date().toDateString();
+      if (settings.lastSnapshotDate !== todayStr) {
+        // Trigger background snapshot generation
+        import('./api/snapshotService').then(({ generateDailyHealthSnapshots }) => {
+          generateDailyHealthSnapshots().catch(console.error);
+        });
+      }
+    }
+  }, [ready, settings]);
+
   if (!ready.settings || !ready.clients || !ready.projects || !ready.services || !ready.aliases) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-white">

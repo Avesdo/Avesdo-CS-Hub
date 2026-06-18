@@ -167,7 +167,7 @@ export default function GlobalSearch() {
         aria-expanded={isOpen}
         aria-controls="global-search-listbox"
         aria-autocomplete="list"
-        placeholder="Search clients, projects, or services... (Cmd+K)"
+        placeholder="Search clients, projects, or services..."
         className={`w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-all outline-none placeholder:text-muted-foreground pl-8 pr-8 h-9 focus:border-primary focus:ring-2 focus:ring-primary/20 ${isOpen && query.length > 0 ? 'border-primary' : 'border-input'}`}
         value={query}
         onChange={(e) => {

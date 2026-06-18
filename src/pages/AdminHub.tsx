@@ -40,9 +40,11 @@ import { DataUploader } from '../components/admin/DataUploader';
 import { PageHeader } from '../components/PageHeader';
 import { toast } from '../utils/toast';
 import MultiSelectCombobox from '../components/MultiSelectCombobox';
+import { exportAllFormResponsesToCSV } from '../utils/exportUtils';
+import { FileDown } from 'lucide-react';
 
 export default function AdminHub() {
-  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'pipeline'>('pipeline');
+  const [activeTab, setActiveTab] = useState<'audit' | 'archives' | 'pipeline' | 'exports'>('pipeline');
   const settings = useAppStore(state => state.settings);
   const archivedClients = useAppStore(state => state.archivedClients);
   const archivedProjects = useAppStore(state => state.archivedProjects);
@@ -51,6 +53,14 @@ export default function AdminHub() {
   const projects = useAppStore(state => state.projects);
   const clients = useAppStore(state => state.clients);
   const user = useAppStore(state => state.user);
+
+  const getTemplate = (formName: string) => {
+    let templateId = Object.keys(settings?.templates || {}).find(k => settings.templates[k].name === formName);
+    if (!templateId) {
+       templateId = Object.keys(settings?.templates || {}).find(k => settings.templates[k].type === 'form');
+    }
+    return templateId ? settings.templates[templateId] : null;
+  };
 
   // --- AUDIT TRAIL STATE ---
   const [logs, setLogs] = useState<any[]>([]);
@@ -962,6 +972,7 @@ export default function AdminHub() {
         <div className="w-full md:w-72 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
             { id: 'pipeline', label: 'Data Pipeline', icon: Database },
+            { id: 'exports', label: 'Data Exports', icon: FileDown },
             { id: 'audit', label: 'Audit Trail', icon: History },
             { id: 'archives', label: 'Archives', icon: ArchiveRestore },
           ].map((tab) => (
@@ -973,7 +984,7 @@ export default function AdminHub() {
               <div className="flex items-center gap-3">
                 <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
               </div>
-              {tab.id === 'intake' && pendingAliases.length > 0 && (
+              {tab.id === 'pipeline' && pendingAliases.length > 0 && (
                 <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                   {pendingAliases.length}
                 </span>
@@ -993,6 +1004,40 @@ export default function AdminHub() {
           )}
           {activeTab === 'audit' && renderAuditTrail()}
           {activeTab === 'archives' && renderArchives()}
+          {activeTab === 'exports' && (
+            <div className="max-w-5xl mx-auto space-y-6">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800 tracking-tight">Data Exports</h2>
+                <p className="text-slate-500 text-sm mt-1 mb-8">
+                  Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { title: 'Onboarding Survey', key: 'survey', isDeliverables: false, desc: 'Client survey responses during onboarding' },
+                  { title: 'Primary QA', key: 'primaryQA', isDeliverables: false, desc: 'Internal Primary QA form responses' },
+                  { title: 'Client QA', key: 'clientQA', isDeliverables: false, desc: 'Client QA review feedback' },
+                  { title: 'Secondary QA', key: 'secondaryQA', isDeliverables: false, desc: 'Internal Secondary QA sign-offs' },
+                  { title: 'Project Certification', key: 'certification', isDeliverables: false, desc: 'Final Project Certification responses' },
+                ].map(form => (
+                  <div key={form.key} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col hover:border-slate-300 hover:shadow-sm transition-all">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-slate-800 text-sm">{form.title}</h3>
+                      <p className="text-xs text-slate-500 mt-1">{form.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => exportAllFormResponsesToCSV(form.title, form.key, projects, form.isDeliverables, getTemplate(form.title))}
+                      className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors"
+                    >
+                      <FileDown className="w-4 h-4" />
+                      Download CSV
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
