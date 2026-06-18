@@ -30,6 +30,7 @@ const ServiceHub = React.lazy(() => import('./pages/ServiceHub'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 const AdminHub = React.lazy(() => import('./pages/AdminHub'));
 const Login = React.lazy(() => import('./pages/Login'));
+const ClientPortal = React.lazy(() => import('./pages/ClientPortal'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -144,6 +145,20 @@ export default function App() {
                 }
               >
                 <Login />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="/portal/:projectId"
+            element={
+              <React.Suspense
+                fallback={
+                  <div className="flex items-center justify-center w-full h-screen bg-slate-50">
+                    <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+                  </div>
+                }
+              >
+                <ClientPortal />
               </React.Suspense>
             }
           />

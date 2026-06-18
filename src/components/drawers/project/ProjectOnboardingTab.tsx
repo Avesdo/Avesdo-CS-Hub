@@ -324,6 +324,38 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
           </div>
         )}
         </div>
+
+        {/* Client Portal Link */}
+        <div className="relative">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground mb-1.5">
+            <ExternalLink className="w-3.5 h-3.5" />
+            Client Portal Link
+          </label>
+          <div className="flex items-center gap-3 w-full min-h-[38px] rounded-md border border-input bg-white px-3 py-2 shadow-sm text-sm transition-all group">
+            <div className="flex-1 font-medium truncate text-slate-500">
+              {window.location.origin}/portal/{project?.id}
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={`${window.location.origin}/portal/${project?.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 border border-slate-200 text-[#00bdd9] hover:bg-slate-50 rounded-md font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+              >
+                Preview <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/portal/${project?.id}`);
+                  toast.success('Portal Link copied to clipboard');
+                }}
+                className="px-3 py-1.5 bg-[#00bdd9] text-white hover:bg-[#009bc2] rounded-md font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+              >
+                <Copy className="w-3.5 h-3.5" /> Copy Link
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Action Card Grid */}
