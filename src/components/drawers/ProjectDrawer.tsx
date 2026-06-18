@@ -210,13 +210,23 @@ export default function ProjectDrawer() {
     );
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'onboarding', label: 'Onboarding' },
-    { id: 'health', label: 'Health & Trends' },
-    { id: 'services', label: 'Services' },
-    { id: 'notes', label: 'Activity Logs' },
-  ] as const;
+  const isReleased = project?.timelineStatus === 'Released' || project?.onboardingPhase === 'Released';
+
+  const tabs = isReleased
+    ? [
+        { id: 'overview', label: 'Overview' },
+        { id: 'health', label: 'Health & Trends' },
+        { id: 'services', label: 'Services' },
+        { id: 'notes', label: 'Activity Logs' },
+        { id: 'onboarding', label: 'Onboarding' },
+      ] as const
+    : [
+        { id: 'overview', label: 'Overview' },
+        { id: 'onboarding', label: 'Onboarding' },
+        { id: 'health', label: 'Health & Trends' },
+        { id: 'services', label: 'Services' },
+        { id: 'notes', label: 'Activity Logs' },
+      ] as const;
 
   const healthData = project ? calculateProjectHealth(project, settings) : null;
   const healthScore = healthData?.totalScore ?? 'N/A';
