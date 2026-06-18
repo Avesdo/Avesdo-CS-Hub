@@ -30,7 +30,6 @@ const projectSchema = z
     releaseDateVal: z.number().nullable(),
     units: z.string(),
     assignee: z.string().optional(),
-    checklistUrl: z.string().optional(),
     kycDetails: z.string().optional(),
     note: z.string().optional(),
   })
@@ -40,14 +39,6 @@ const projectSchema = z
         code: z.ZodIssueCode.custom,
         message: 'At least one Attached Client (Developer or Sales & Marketing) is required.',
         path: ['selectedDevelopers'], // Assign to selectedDevelopers to show under it or use globally
-      });
-    }
-    const unitsNum = parseInt(data.units, 10);
-    if (isNaN(unitsNum) || unitsNum <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Live Units must be greater than 0.',
-        path: ['units'],
       });
     }
   });
@@ -84,7 +75,6 @@ export default function AddProjectModal() {
       releaseDateVal: null,
       units: '',
       assignee: '',
-      checklistUrl: '',
       kycDetails: '',
       note: '',
     },
@@ -164,7 +154,6 @@ export default function AddProjectModal() {
         units: data.units.toString(),
         releaseDateStr: finalReleaseDateStr,
         releaseDateVal: finalReleaseDateVal,
-        checklistUrl: data.checklistUrl || '',
         kycDetails: data.kycDetails || '',
         dateAdded: new Date().getTime(),
         lastUpdated: new Date().getTime(),
@@ -491,27 +480,6 @@ export default function AddProjectModal() {
 
             {/* CONTEXT */}
             <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Deliverables Checklist URL{' '}
-                  <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <div className="relative">
-                  <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Controller
-                    name="checklistUrl"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="url"
-                        className="w-full min-w-0 rounded-md border border-input bg-white pl-9 pr-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm"
-                        placeholder="https://"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
               <div>
                 <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
                   KYC Details <span className="text-muted-foreground font-normal">(Optional)</span>

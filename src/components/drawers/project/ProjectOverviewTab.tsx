@@ -59,6 +59,10 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
   const [isKycEditing, setIsKycEditing] = useState(false);
   const [kycDraft, setKycDraft] = useState(project?.kycDetails || '');
 
+  useEffect(() => {
+    setKycDraft(project?.kycDetails || '');
+  }, [project?.kycDetails]);
+
   const handleSaveKyc = async () => {
     setIsKycEditing(false);
     handleUpdate('kycDetails', kycDraft, project?.kycDetails);

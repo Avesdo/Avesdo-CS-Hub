@@ -88,6 +88,10 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   const [isKycEditing, setIsKycEditing] = useState(false);
   const [kycDraft, setKycDraft] = useState(project?.kycDetails || '');
 
+  useEffect(() => {
+    setKycDraft(project?.kycDetails || '');
+  }, [project?.kycDetails]);
+
   const handleSaveKyc = async () => {
     setIsKycEditing(false);
     await updateProjectRecord({ ...project, kycDetails: kycDraft }, {
