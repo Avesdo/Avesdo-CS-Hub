@@ -87,37 +87,7 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     window.history.pushState({}, '', newUrl.toString());
   };
 
-  // ESC Listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        // If there's an active modal, close the top one
-        if (activeModals.length > 0) {
-          setActiveModals((prev) => prev.slice(0, -1));
-        }
-        // Else if there's an active drawer, close the top one
-        else if (activeDrawers.length > 0) {
-          setActiveDrawers((prev) => {
-            if (prev.length === 0) return prev;
-            if (prev[prev.length - 1].isClosing) return prev;
-            const copy = [...prev];
-            copy[copy.length - 1] = { ...copy[copy.length - 1], isClosing: true };
-            return copy;
-          });
-          setTimeout(() => {
-            setActiveDrawers((prev) => prev.filter((d) => !d.isClosing));
-          }, 300);
-        }
-      }
-    };
 
-    // Add event listener with capture phase so it runs before popover listeners
-    // Wait, popovers stop propagation, so we shouldn't capture. If we use capture, we override them.
-    // We want popovers to close FIRST. So we use bubble phase.
-    // If popovers call e.stopPropagation(), this won't trigger. Perfect!
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeModals, activeDrawers]);
 
   const openModal = useCallback((modal: ModalType) => {
     if (modal === null) setActiveModals([]);
@@ -162,6 +132,26 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
     }, 300);
   }, []);
+
+
+  // ESC Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // If there's an active modal, close the top one
+        if (activeModals.length > 0) {
+          closeModal();
+        }
+        // Else if there's an active drawer, close the top one
+        else if (activeDrawers.length > 0) {
+          closeDrawer();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModals, activeDrawers, closeModal, closeDrawer]);
 
   const isDrawerOpen = (type: DrawerType) => activeDrawers.some((d) => d.type === type);
   const getDrawerData = (type: DrawerType) => activeDrawers.find((d) => d.type === type);

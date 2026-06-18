@@ -115,7 +115,6 @@ const ProjectRow = React.memo(({
   getSettingBadge,
   showTimeline,
   showPhase,
-  showChecklist,
   showFeatures,
   getFeatureBadgeProps,
   Sparkline,
@@ -282,30 +281,6 @@ const ProjectRow = React.memo(({
               <td className="px-4 py-2 text-right font-medium text-foreground">
                 {p.units ? parseInt(p.units).toLocaleString() : '0'}
               </td>
-              {showChecklist && (
-                <td
-                  className="px-4 py-2 text-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (p.checklistUrl) {
-                      const url = p.checklistUrl.match(/^https?:\/\//)
-                        ? p.checklistUrl
-                        : `https://${p.checklistUrl}`;
-                      window.open(url, '_blank');
-                    } else openDrawer('project', p.id, { targetTab: 'overview' });
-                  }}
-                >
-                  {p.checklistUrl ? (
-                    <button className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-input shadow-sm text-xs font-medium hover:bg-slate-50 text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                      <ExternalLink className="w-3.5 h-3.5" /> Link
-                    </button>
-                  ) : (
-                    <button className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-transparent text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors hover:bg-slate-50">
-                      <Plus className="w-3.5 h-3.5" /> Add
-                    </button>
-                  )}
-                </td>
-              )}
               {showFeatures && (
                 <td
                   className="px-4 py-2"
@@ -399,7 +374,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
 
     const showTimeline = groupA;
     const showPhase = groupA;
-    const showChecklist = groupA;
     const showHealthScore = groupB || groupC;
     const showFeatures = groupB || groupC;
 
@@ -410,7 +384,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
         (showTimeline ? 1 : 0) +
         (showPhase ? 1 : 0) +
         1 + // Live Units
-        (showChecklist ? 1 : 0) +
         (showFeatures ? 1 : 0);
 
 
@@ -635,11 +608,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 </div>
               </div>
             </th>
-            {showChecklist && (
-              <th className="border-b border-border px-4 py-2 min-w-[130px] group/th">
-                <div className="flex items-center justify-center whitespace-nowrap">Checklist</div>
-              </th>
-            )}
             {showFeatures && (
               <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
                 <div className="flex items-center justify-center">
@@ -667,7 +635,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
           setStatusFilter, statusFilter,
           showTimeline, setTimelineFilter, timelineFilter, allTimelines,
           showPhase, setPhaseFilter, phaseFilter, allPhases,
-          showChecklist,
           showFeatures, setFeaturesFilter, featuresFilter, allFeatures
         ])}
 
@@ -697,7 +664,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 getSettingBadge={getSettingBadge}
                 showTimeline={showTimeline}
                 showPhase={showPhase}
-                showChecklist={showChecklist}
                 showFeatures={showFeatures}
                 getFeatureBadgeProps={getFeatureBadgeProps}
                 Sparkline={Sparkline}
