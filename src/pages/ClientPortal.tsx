@@ -427,6 +427,7 @@ function DeliverablesPortalView({ project, template, initialData, onSave, onCanc
           project={project} 
           values={localData} 
           onChange={handleChange} 
+          isClientPortal={true}
         />
       </div>
       <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 items-center">
