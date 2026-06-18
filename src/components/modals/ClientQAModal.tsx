@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, FileText , Edit2 } from 'lucide-react';
+import { X, FileText , Edit2, Copy, Check } from 'lucide-react';
 import { updateProjectRecord } from '../../api/dbService';
 import { useAppStore } from '../../store/useAppStore';
 import { DynamicForm } from '../ui/DynamicForm';
@@ -18,6 +18,14 @@ export default function ClientQAModal({ project, onClose }: ClientQAModalProps) 
 
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    const portalUrl = `${window.location.origin}/portal/${project.id}?form=clientQA`;
+    navigator.clipboard.writeText(portalUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleSave = async (data: Record<string, any>) => {
     setIsSaving(true);
@@ -98,13 +106,20 @@ export default function ClientQAModal({ project, onClose }: ClientQAModalProps) 
                 onClick={() => exportFormToCSV('Client QA', project, project.onboarding.clientQA, template)}
                 className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 bg-white shadow-sm mr-2"
               >
-                <FileText className="w-4 h-4" />
-                Download CSV
-              </button>
+                  <FileText className="w-4 h-4" />
+                  Download CSV
+                </button>
             )}
             <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-semibold text-slate-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors border border-slate-200 bg-white shadow-sm"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied!' : 'Copy Client Link'}
+            </button>
+            <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

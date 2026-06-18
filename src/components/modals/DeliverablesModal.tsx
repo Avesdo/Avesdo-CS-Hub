@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Save, FileText, Edit2 } from 'lucide-react';
+import { X, Save, FileText, Copy, Check } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import DeliverablesGrid from '../ui/DeliverablesGrid';
 import { updateProjectRecord } from '../../api/dbService';
@@ -16,6 +16,14 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
     project?.deliverables || {}
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    const portalUrl = `${window.location.origin}/portal/${project.id}?form=deliverables`;
+    navigator.clipboard.writeText(portalUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleFieldChange = (itemId: string, field: string, value: any) => {
     if (field === 'replace') {
@@ -94,6 +102,13 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
             >
               <FileText className="w-4 h-4" />
               Download CSV
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-semibold text-slate-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors border border-slate-200 bg-white shadow-sm"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied!' : 'Copy Client Link'}
             </button>
             <button
               onClick={onClose}

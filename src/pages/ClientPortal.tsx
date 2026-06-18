@@ -193,8 +193,7 @@ export default function ClientPortal() {
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'onboardingCsat') {
-      const tId = Object.keys(settings.templates).find(k => settings.templates[k].type === 'onboarding');
-      return tId ? settings.templates[tId] : null;
+      return settings.templates['onboardingCsat'] || null;
     }
     return null;
   };
@@ -214,18 +213,26 @@ export default function ClientPortal() {
       : project.onboarding?.[activeFormType as keyof typeof project.onboarding];
 
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
         <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => { setViewState('dashboard'); setActiveFormType(null); }}
-              className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800">{template?.name || activeFormType}</h1>
-              <p className="text-sm text-slate-500 font-medium">Project: <span className="text-slate-800">{project.name}</span></p>
+          <div className="flex items-center gap-6">
+            <img
+              alt="Avesdo"
+              className="h-8 w-auto object-contain"
+              src="https://lh3.googleusercontent.com/d/1HgOfOymPbhh2hjSxeqiZmbe20o6uDlVk"
+            />
+            <div className="w-px h-6 bg-slate-200"></div>
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => { setViewState('dashboard'); setActiveFormType(null); }}
+                className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-slate-800">{template?.name || activeFormType}</h1>
+                <p className="text-sm text-slate-500 font-medium">Project: <span className="text-slate-800">{project.name}</span></p>
+              </div>
             </div>
           </div>
         </header>
@@ -321,25 +328,40 @@ export default function ClientPortal() {
   // Dashboard View
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      <div className="bg-white border-b border-slate-200 text-slate-900 pb-20 pt-10 px-6 relative overflow-hidden">
-        {/* Subtle background decoration */}
+      <div className="relative overflow-hidden bg-white border-b border-slate-200">
+        {/* Modern SaaS Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-60"></div>
+        
+        {/* Subtle Brand Gradients */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-40">
-          <div className="absolute -top-[100%] -left-[10%] w-[50%] h-[200%] bg-gradient-to-r from-[#00bdd9]/10 to-transparent transform rotate-12 blur-3xl"></div>
-          <div className="absolute top-[20%] right-[0%] w-[30%] h-[100%] bg-gradient-to-l from-blue-500/5 to-transparent transform -rotate-12 blur-3xl"></div>
+          <div className="absolute -top-[100%] -left-[10%] w-[50%] h-[200%] bg-gradient-to-r from-[#00bdd9]/20 to-transparent transform rotate-12 blur-3xl"></div>
+          <div className="absolute top-[20%] right-[0%] w-[30%] h-[100%] bg-gradient-to-l from-blue-500/10 to-transparent transform -rotate-12 blur-3xl"></div>
+        </div>
+
+        {/* Header Bar */}
+        <div className="relative z-20 max-w-5xl mx-auto px-6 pt-6 flex items-center justify-between">
+          <img
+            alt="Avesdo"
+            className="h-10 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/d/1HgOfOymPbhh2hjSxeqiZmbe20o6uDlVk"
+          />
+          <div className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-semibold border border-slate-200 shadow-sm flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Client Portal
+          </div>
         </div>
         
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wider border border-slate-200 shadow-sm">
-              Client Portal
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-900 tracking-tight">{project.name}</h1>
-          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl">Manage your project onboarding requirements and track certification progress securely.</p>
+        <div className="max-w-5xl mx-auto px-6 relative z-10 pb-20 pt-14">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-900 tracking-tight leading-tight">
+            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009bc2] to-[#00bdd9]">{project.name}</span>
+          </h1>
+          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+            Manage your project onboarding requirements and track certification progress securely in one place.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 -mt-12 relative z-20 pb-24">
+      <div className="max-w-5xl mx-auto px-6 -mt-10 relative z-20 pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {forms.map(form => {
             // Check if the form is assigned/active
@@ -366,11 +388,11 @@ export default function ClientPortal() {
                 className="flex items-center text-left p-6 bg-white border border-slate-200 rounded-2xl hover:border-[#00bdd9]/40 hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
               >
                 {isCompleted && (
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#00bdd9]/10 to-transparent pointer-events-none rounded-tr-2xl"></div>
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/10 to-transparent pointer-events-none rounded-tr-2xl"></div>
                 )}
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 mr-6 transition-all duration-300 ${
                   isCompleted 
-                    ? 'bg-[#00bdd9]/10 text-[#00bdd9] shadow-inner border border-[#00bdd9]/20' 
+                    ? 'bg-emerald-500/10 text-emerald-500 shadow-inner border border-emerald-500/20' 
                     : 'bg-slate-50 text-slate-400 group-hover:bg-[#00bdd9]/10 group-hover:text-[#00bdd9]'
                 }`}>
                   {isCompleted ? <CheckCircle2 className="w-7 h-7" /> : <Icon className="w-7 h-7" />}
@@ -383,7 +405,7 @@ export default function ClientPortal() {
                 </div>
                 <div className="shrink-0 flex items-center gap-4 ml-2">
                   {isCompleted ? (
-                    <span className="text-xs font-bold px-3 py-1.5 bg-[#00bdd9]/10 text-[#009bc2] rounded-lg border border-[#00bdd9]/20 shadow-sm">
+                    <span className="text-xs font-bold px-3 py-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg border border-emerald-500/20 shadow-sm">
                       Completed
                     </span>
                   ) : (
