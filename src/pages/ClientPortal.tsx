@@ -396,7 +396,7 @@ export default function ClientPortal() {
                 className="flex items-center text-left p-6 bg-white border border-slate-200 rounded-2xl hover:border-[#00bdd9]/40 hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
               >
                 {isCompleted && (
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/20 via-emerald-500/5 to-transparent pointer-events-none rounded-tr-2xl"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-500/20 via-emerald-500/5 to-emerald-500/0 pointer-events-none rounded-tr-2xl"></div>
                 )}
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 mr-6 transition-all duration-300 ${
                   isCompleted 
