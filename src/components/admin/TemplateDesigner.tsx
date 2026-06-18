@@ -181,7 +181,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                        <MultiSelect
                          values={valuesArray}
                          onChange={(vals) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: vals }})}
-                         options={(depField.options || []).map((opt: string) => ({ label: opt, value: opt }))}
+                         options={(depField.options || []).map((opt: string, optIdx: number) => ({ label: opt, value: opt }))}
                          trigger={
                            <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[140px] max-w-[300px]">
                              <span className="truncate">{valuesArray.length > 0 ? valuesArray.join(', ') : <span className="text-slate-400 font-normal">Select values...</span>}</span>
@@ -196,7 +196,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                      <Select
                        value={typeof currentVal === 'string' ? currentVal : ''}
                        onChange={(val) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: val }})}
-                       options={(depField.options || []).map((opt: string) => ({ label: opt, value: opt }))}
+                       options={(depField.options || []).map((opt: string, optIdx: number) => ({ label: opt, value: opt }))}
                        trigger={
                          <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[140px]">
                            <span className="truncate">{typeof currentVal === 'string' && currentVal ? currentVal : <span className="text-slate-400 font-normal">Value...</span>}</span>
@@ -423,7 +423,7 @@ function SortableFieldItem({ field, index, fields, handleUpdateField, handleRemo
         {/* Options for select/radio/checkbox */}
         {['select', 'radio', 'checkbox'].includes(field.type) && (
            <div className="mt-4 space-y-3 pl-1">
-             {(field.options || []).map((opt, optIdx) => (
+             {(field.options || []).map((opt: string, optIdx: number) => (
                <div 
                  key={optIdx} 
                  className={`flex items-center gap-3 transition-opacity ${draggedOptionIdx === optIdx ? 'opacity-40' : ''}`}
@@ -728,7 +728,7 @@ export default function TemplateDesigner() {
   const handleSave = async () => {
     try {
       await saveSettings(
-        { ...settings, templates: { ...templates, [activeTemplateId]: { ...activeTemplate, fields, sections } } },
+        { ...settings, templates: { ...templates, [activeTemplateId]: { ...activeTemplate, fields, sections } } } as any,
         { silent: true }
       );
       toast.success(`${activeTemplate.name} template saved successfully!`);

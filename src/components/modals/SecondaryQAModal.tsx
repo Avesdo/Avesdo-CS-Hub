@@ -126,7 +126,7 @@ export default function SecondaryQAModal({ project, onClose }: SecondaryQAModalP
                   onSubmit={handleSave} 
                   onCancel={onClose}
                   projectFeatures={project.features || []}
-                  submitText={project?.onboarding?.secondaryQA && Object.keys(project.onboarding.secondaryQA).length > 0 ? "Update Response" : "Submit"}
+                  submitLabel={project?.onboarding?.secondaryQA && Object.keys(project.onboarding.secondaryQA).length > 0 ? "Update Response" : "Submit"}
                 />
               ) : (
                 <div className="text-center text-slate-500 py-12">

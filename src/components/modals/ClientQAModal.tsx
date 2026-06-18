@@ -123,7 +123,7 @@ export default function ClientQAModal({ project, onClose }: ClientQAModalProps) 
                   onSubmit={handleSave} 
                   onCancel={onClose}
                   projectFeatures={project.features || []}
-                  submitText={project?.onboarding?.clientQA && Object.keys(project.onboarding.clientQA).length > 0 ? "Update Response" : "Submit"}
+                  submitLabel={project?.onboarding?.clientQA && Object.keys(project.onboarding.clientQA).length > 0 ? "Update Response" : "Submit"}
                 />
               ) : (
                 <div className="text-center text-slate-500 py-12">

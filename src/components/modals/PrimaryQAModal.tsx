@@ -130,7 +130,7 @@ export default function PrimaryQAModal({ project, onClose }: PrimaryQAModalProps
                   onSubmit={handleSave} 
                   onCancel={onClose}
                   projectFeatures={project.features || []}
-                  submitText={project?.onboarding?.primaryQA && Object.keys(project.onboarding.primaryQA).length > 0 ? "Update Response" : "Submit"}
+                  submitLabel={project?.onboarding?.primaryQA && Object.keys(project.onboarding.primaryQA).length > 0 ? "Update Response" : "Submit"}
                 />
               ) : (
                 <div className="text-center text-slate-500 py-12">

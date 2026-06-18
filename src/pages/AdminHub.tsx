@@ -55,11 +55,11 @@ export default function AdminHub() {
   const user = useAppStore(state => state.user);
 
   const getTemplate = (formName: string) => {
-    let templateId = Object.keys(settings?.templates || {}).find(k => settings.templates[k].name === formName);
+    let templateId = Object.keys(settings?.templates || {}).find(k => settings?.templates?.[k]?.name === formName);
     if (!templateId) {
-       templateId = Object.keys(settings?.templates || {}).find(k => settings.templates[k].type === 'form');
+       templateId = Object.keys(settings?.templates || {}).find(k => settings?.templates?.[k]?.type === 'form');
     }
-    return templateId ? settings.templates[templateId] : null;
+    return templateId ? settings?.templates?.[templateId] : null;
   };
 
   // --- AUDIT TRAIL STATE ---

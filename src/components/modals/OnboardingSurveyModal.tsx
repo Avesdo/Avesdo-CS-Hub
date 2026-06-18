@@ -123,7 +123,7 @@ export default function OnboardingSurveyModal({ project, onClose }: OnboardingSu
                   onSubmit={handleSave} 
                   onCancel={onClose}
                   projectFeatures={project.features || []}
-                  submitText={project?.onboarding?.survey && Object.keys(project.onboarding.survey).length > 0 ? "Update Response" : "Submit Survey"}
+                  submitLabel={project?.onboarding?.survey && Object.keys(project.onboarding.survey).length > 0 ? "Update Response" : "Submit Survey"}
                 />
               ) : (
                 <div className="text-center text-slate-500 py-12">
