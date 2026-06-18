@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import { Project, Settings } from '../types';
 import { DynamicForm } from '../components/ui/DynamicForm';
+import DeliverablesGrid from '../components/ui/DeliverablesGrid';
 import { createNotification, sendEmailAlert } from '../utils/notificationUtils';
 import { ClipboardList, CheckCircle2, ShieldCheck, FileText, ChevronRight, Award, ChevronLeft } from 'lucide-react';
 
-type PortalState = 'dashboard' | 'form' | 'csat_intercept' | 'csat_form' | 'success';
+type PortalState = 'dashboard' | 'form' | 'csat_intercept' | 'success';
 
 export default function ClientPortal() {
   const { projectId } = useParams<{ projectId: string }>();
+  const [searchParams] = useSearchParams();
   const [project, setProject] = useState<Project | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,15 @@ export default function ClientPortal() {
     loadData();
   }, [projectId]);
 
+  // Support direct form linking via URL param ?form=survey
+  useEffect(() => {
+    const formParam = searchParams.get('form');
+    if (formParam && ['deliverables', 'survey', 'clientQA', 'certification'].includes(formParam)) {
+      setActiveFormType(formParam);
+      setViewState('form');
+    }
+  }, [searchParams]);
+
   if (loading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
@@ -63,7 +74,7 @@ export default function ClientPortal() {
   if (error || !project) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
-        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4 border border-slate-200">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-red-500 text-2xl font-bold">!</span>
           </div>
@@ -99,7 +110,7 @@ export default function ClientPortal() {
         payload.submittedAt = new Date().toISOString();
       }
 
-      // Update project record securely without full context (since we just need to update one field)
+      // Update project record securely without full context
       const projectRef = doc(db, 'projects', project.id);
       
       let updateObj: any = {};
@@ -121,12 +132,12 @@ export default function ClientPortal() {
 
       // Trigger notifications
       const actionType = isFirstSubmission ? 'submission' : 'update';
-      const prettyFormName = activeFormType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      const prettyFormName = activeFormType === 'onboardingCsat' ? 'Onboarding CSAT' : activeFormType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
       
       await createNotification(project.id, project.name, actionType, prettyFormName);
 
       // Send email if first submission
-      if (isFirstSubmission && ['onboardingSurvey', 'clientQA', 'certification'].includes(activeFormType)) {
+      if (isFirstSubmission && ['survey', 'clientQA', 'certification'].includes(activeFormType)) {
         await sendEmailAlert(project.name, prettyFormName, 'submitted');
       }
 
@@ -146,6 +157,8 @@ export default function ClientPortal() {
       // Routing logic after submission
       if (activeFormType === 'certification' && isFirstSubmission) {
         setViewState('csat_intercept');
+      } else if (activeFormType === 'onboardingCsat') {
+        setViewState('success');
       } else {
         setViewState('dashboard');
         setActiveFormType(null);
@@ -159,15 +172,38 @@ export default function ClientPortal() {
     }
   };
 
-  const getTemplate = (type: string) => {
-    return settings?.templates?.find((t: any) => t.id === type && t.type === 'onboarding');
+  const getTemplate = (formId: string) => {
+    if (!settings?.templates) return null;
+    
+    // Find by Name based on the formId
+    if (formId === 'deliverables') {
+      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Deliverables Checklist') || Object.keys(settings.templates).find(k => settings.templates[k].type === 'checklist');
+      return tId ? settings.templates[tId] : null;
+    }
+    if (formId === 'survey') {
+      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Onboarding Survey');
+      return tId ? settings.templates[tId] : null;
+    }
+    if (formId === 'clientQA') {
+      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Client QA');
+      return tId ? settings.templates[tId] : null;
+    }
+    if (formId === 'certification') {
+      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Project Certification');
+      return tId ? settings.templates[tId] : null;
+    }
+    if (formId === 'onboardingCsat') {
+      const tId = Object.keys(settings.templates).find(k => settings.templates[k].type === 'onboarding');
+      return tId ? settings.templates[tId] : null;
+    }
+    return null;
   };
 
   const forms = [
-    { id: 'deliverables', title: 'Deliverables Checklist', icon: ClipboardList, desc: 'Provide requested project deliverables' },
-    { id: 'onboardingSurvey', title: 'Onboarding Survey', icon: FileText, desc: 'Initial onboarding requirements' },
-    { id: 'clientQA', title: 'Client QA', icon: ShieldCheck, desc: 'Sign off on client QA review' },
-    { id: 'certification', title: 'Project Certification', icon: Award, desc: 'Final project completion sign-off' },
+    { id: 'deliverables', flag: 'hasDeliverables', title: 'Deliverables Checklist', icon: ClipboardList, desc: 'Provide requested project deliverables' },
+    { id: 'survey', flag: 'hasSurvey', title: 'Onboarding Survey', icon: FileText, desc: 'Initial onboarding requirements' },
+    { id: 'clientQA', flag: 'hasPrimaryQA', title: 'Client QA', icon: ShieldCheck, desc: 'Sign off on client QA review' },
+    { id: 'certification', flag: 'hasCertification', title: 'Project Certification', icon: Award, desc: 'Final project completion sign-off' },
   ];
 
   // If viewing a specific form
@@ -189,14 +225,23 @@ export default function ClientPortal() {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-800">{template?.name || activeFormType}</h1>
-              <p className="text-sm text-slate-500">Project: {project.name}</p>
+              <p className="text-sm text-slate-500 font-medium">Project: <span className="text-slate-800">{project.name}</span></p>
             </div>
           </div>
         </header>
         <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
             {!template ? (
               <div className="p-12 text-center text-slate-500">Form template not found.</div>
+            ) : activeFormType === 'deliverables' ? (
+              <DeliverablesPortalView 
+                project={project} 
+                template={template} 
+                initialData={existingData || {}} 
+                onSave={handleSaveForm} 
+                onCancel={() => { setViewState('dashboard'); setActiveFormType(null); }} 
+                isSubmitting={isSubmitting} 
+              />
             ) : (
               <DynamicForm
                 template={template}
@@ -214,74 +259,60 @@ export default function ClientPortal() {
     );
   }
 
-  // CSAT Intercept
+  // CSAT Intercept - Directly rendering the CSAT questions under congratulations
   if (viewState === 'csat_intercept') {
+    const template = getTemplate('onboardingCsat');
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 max-w-md w-full text-center animate-in zoom-in-95 duration-500">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-4">Project Certified!</h2>
-          <p className="text-slate-600 mb-8 leading-relaxed">
-            Congratulations on successfully completing your Project Certification! We have a small favor to ask—could you leave us some quick feedback regarding your onboarding experience?
-          </p>
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => {
-                setActiveFormType('onboardingCsat');
-                setViewState('csat_form');
-              }}
-              className="w-full bg-[#00bdd9] text-white font-semibold py-3 px-6 rounded-xl hover:bg-[#009bc2] transition-colors shadow-md"
-            >
-              Provide Feedback
-            </button>
-            <button
-              onClick={() => { setViewState('dashboard'); setActiveFormType(null); }}
-              className="w-full text-slate-500 font-medium py-3 px-6 hover:bg-slate-100 rounded-xl transition-colors"
-            >
-              Maybe Later
-            </button>
+      <div className="min-h-screen bg-slate-50 py-12 px-4 flex flex-col">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-500">
+            <div className="bg-gradient-to-r from-[#009bc2] to-[#00bdd9] p-10 text-center text-white">
+              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 shadow-inner">
+                <CheckCircle2 className="w-10 h-10 text-white drop-shadow-md" />
+              </div>
+              <h2 className="text-3xl font-extrabold mb-3 drop-shadow-sm">Project Certified!</h2>
+              <p className="text-white/90 max-w-xl mx-auto text-lg opacity-90">
+                Congratulations on successfully completing your Project Certification. Please take a moment to provide feedback on your onboarding experience.
+              </p>
+            </div>
+            
+            <div className="p-2 md:p-8">
+              {!template ? (
+                <div className="p-12 text-center text-slate-500">CSAT form not configured.</div>
+              ) : (
+                <DynamicForm
+                  template={template}
+                  initialValues={project.health?.onboardingCsat || {}}
+                  onSubmit={(data) => {
+                    setActiveFormType('onboardingCsat');
+                    handleSaveForm(data);
+                  }}
+                  submitLabel={isSubmitting ? "Submitting Feedback..." : "Submit Feedback"}
+                  readOnly={false}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // CSAT Form
-  if (viewState === 'csat_form') {
-    const template = getTemplate('onboardingCsat');
+  if (viewState === 'success') {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => { setViewState('dashboard'); setActiveFormType(null); }}
-              className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800">Onboarding Feedback</h1>
-              <p className="text-sm text-slate-500">Project: {project.name}</p>
-            </div>
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
+        <div className="bg-white p-10 rounded-3xl shadow-xl text-center max-w-md w-full mx-4 border border-slate-200">
+          <div className="w-20 h-20 bg-[#00bdd9]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-10 h-10 text-[#00bdd9]" />
           </div>
-        </header>
-        <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            {!template ? (
-              <div className="p-12 text-center text-slate-500">CSAT template not found.</div>
-            ) : (
-              <DynamicForm
-                template={template}
-                initialValues={project.health?.onboardingCsat || {}}
-                onSubmit={handleSaveForm}
-                onCancel={() => { setViewState('dashboard'); setActiveFormType(null); }}
-                submitLabel={isSubmitting ? "Submitting..." : "Submit Feedback"}
-                readOnly={false}
-              />
-            )}
-          </div>
+          <h2 className="text-2xl font-bold text-slate-800 mb-3">Thank You!</h2>
+          <p className="text-slate-600 mb-8">Your feedback has been successfully submitted. We appreciate your partnership!</p>
+          <button
+            onClick={() => setViewState('dashboard')}
+            className="w-full bg-slate-100 text-slate-700 font-bold py-3 px-6 hover:bg-slate-200 rounded-xl transition-colors"
+          >
+            Return to Dashboard
+          </button>
         </div>
       </div>
     );
@@ -290,25 +321,39 @@ export default function ClientPortal() {
   // Dashboard View
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      <div className="bg-slate-900 text-white pb-24">
-        <div className="max-w-5xl mx-auto px-6 pt-12 pb-8">
-          <div className="flex items-center gap-4 mb-4 opacity-80 text-sm font-medium">
-            <span className="px-3 py-1 bg-white/10 rounded-full">Client Portal</span>
+      <div className="bg-white border-b border-slate-200 text-slate-900 pb-20 pt-10 px-6 relative overflow-hidden">
+        {/* Subtle background decoration */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none opacity-40">
+          <div className="absolute -top-[100%] -left-[10%] w-[50%] h-[200%] bg-gradient-to-r from-[#00bdd9]/10 to-transparent transform rotate-12 blur-3xl"></div>
+          <div className="absolute top-[20%] right-[0%] w-[30%] h-[100%] bg-gradient-to-l from-blue-500/5 to-transparent transform -rotate-12 blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wider border border-slate-200 shadow-sm">
+              Client Portal
+            </span>
           </div>
-          <h1 className="text-4xl font-bold mb-3">{project.name}</h1>
-          <p className="text-slate-400 text-lg">Onboarding & Certification Hub</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-900 tracking-tight">{project.name}</h1>
+          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl">Manage your project onboarding requirements and track certification progress securely.</p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 -mt-16">
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="max-w-5xl mx-auto px-6 -mt-12 relative z-20 pb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {forms.map(form => {
-            const Icon = form.icon;
-            // Determine status
+            // Check if the form is assigned/active
+            // Using the flags from project, or fallback to data presence
             const dataNode = form.id === 'deliverables' 
               ? project.deliverables 
               : project.onboarding?.[form.id as keyof typeof project.onboarding];
             
+            // Render only if the project flag is true OR if it already has submitted data
+            const isAssigned = project[form.flag as keyof Project] === true || (dataNode && Object.keys(dataNode).length > 0);
+            
+            if (!isAssigned) return null;
+
+            const Icon = form.icon;
             const isCompleted = !!dataNode?.submittedAt;
 
             return (
@@ -318,43 +363,88 @@ export default function ClientPortal() {
                   setActiveFormType(form.id);
                   setViewState('form');
                 }}
-                className="flex items-center text-left p-5 bg-white border border-transparent rounded-xl hover:bg-slate-50 hover:border-slate-200 transition-all group"
+                className="flex items-center text-left p-6 bg-white border border-slate-200 rounded-2xl hover:border-[#00bdd9]/40 hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
               >
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 mr-4 transition-colors ${
-                  isCompleted ? 'bg-green-100 text-green-600' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100'
+                {isCompleted && (
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#00bdd9]/10 to-transparent pointer-events-none rounded-tr-2xl"></div>
+                )}
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 mr-6 transition-all duration-300 ${
+                  isCompleted 
+                    ? 'bg-[#00bdd9]/10 text-[#00bdd9] shadow-inner border border-[#00bdd9]/20' 
+                    : 'bg-slate-50 text-slate-400 group-hover:bg-[#00bdd9]/10 group-hover:text-[#00bdd9]'
                 }`}>
-                  {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Icon className="w-6 h-6" />}
+                  {isCompleted ? <CheckCircle2 className="w-7 h-7" /> : <Icon className="w-7 h-7" />}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-800 mb-1.5 flex items-center gap-2 group-hover:text-[#00bdd9] transition-colors">
                     {form.title}
                   </h3>
-                  <p className="text-sm text-slate-500">{form.desc}</p>
+                  <p className="text-sm text-slate-500 line-clamp-1">{form.desc}</p>
                 </div>
-                <div className="shrink-0 flex items-center gap-3">
-                  {isCompleted && (
-                    <span className="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-md">
+                <div className="shrink-0 flex items-center gap-4 ml-2">
+                  {isCompleted ? (
+                    <span className="text-xs font-bold px-3 py-1.5 bg-[#00bdd9]/10 text-[#009bc2] rounded-lg border border-[#00bdd9]/20 shadow-sm">
                       Completed
                     </span>
+                  ) : (
+                    <span className="text-xs font-bold px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg group-hover:bg-[#00bdd9]/10 group-hover:text-[#00bdd9] transition-colors border border-slate-200 group-hover:border-[#00bdd9]/20">
+                      Pending
+                    </span>
                   )}
-                  <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-400 group-hover:translate-x-1 transition-all" />
+                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-[#00bdd9] transition-colors">
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
                 </div>
               </button>
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Optional: CSAT Link if they want to access it directly without certifying first */}
-        {project.health?.onboardingCsat?.submittedAt && (
-          <div className="mt-6 flex justify-center">
-            <button 
-              onClick={() => { setActiveFormType('onboardingCsat'); setViewState('csat_form'); }}
-              className="text-sm font-medium text-slate-500 hover:text-slate-800 underline"
-            >
-              Update your previous onboarding feedback
-            </button>
-          </div>
-        )}
+// Sub-component for handling Deliverables Grid natively in the Portal
+function DeliverablesPortalView({ project, template, initialData, onSave, onCancel, isSubmitting }: any) {
+  const [localData, setLocalData] = useState<Record<string, any>>(initialData || {});
+
+  const handleChange = (itemId: string, field: string, value: any) => {
+    if (field === 'replace') {
+      setLocalData(prev => ({ ...prev, [itemId]: value }));
+    } else {
+      setLocalData(prev => ({
+        ...prev,
+        [itemId]: { ...(prev[itemId] || {}), [field]: value }
+      }));
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full">
+      <div className="flex-1 p-6 overflow-auto">
+        <DeliverablesGrid 
+          template={template} 
+          project={project} 
+          values={localData} 
+          onChange={handleChange} 
+        />
+      </div>
+      <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 items-center">
+        <button 
+          onClick={onCancel}
+          className="px-6 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={() => onSave(localData)}
+          disabled={isSubmitting}
+          className="px-6 py-2.5 rounded-xl font-semibold bg-[#00bdd9] text-white hover:bg-[#009bc2] transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          {isSubmitting ? (
+            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Submitting...</>
+          ) : localData?.submittedAt ? "Update Deliverables" : "Submit Deliverables"}
+        </button>
       </div>
     </div>
   );

@@ -74,6 +74,7 @@ export async function sendEmailAlert(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        emailTo: 'support@avesdo.com',
         subject: `[CS Hub Alert] ${projectName} ${action} ${formName}`,
         body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.`,
       }),
