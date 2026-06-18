@@ -57,6 +57,7 @@ export async function markAllNotificationsAsRead(notifications: AppNotification[
 const APPS_SCRIPT_WEBHOOK_URL = ''; // Replace with actual Google Apps Script Webhook URL
 
 export async function sendEmailAlert(
+  projectId: string,
   projectName: string,
   formName: string,
   action: 'submitted' | 'updated'
@@ -65,6 +66,8 @@ export async function sendEmailAlert(
     console.log('Email alert suppressed: No Webhook URL configured.');
     return;
   }
+
+  const projectUrl = `https://avesdo-cs-hub.web.app/?drawer=project&drawerId=${projectId}`;
 
   try {
     await fetch(APPS_SCRIPT_WEBHOOK_URL, {
@@ -76,7 +79,7 @@ export async function sendEmailAlert(
       body: JSON.stringify({
         emailTo: 'support@avesdo.com',
         subject: `[CS Hub Alert] ${projectName} ${action} ${formName}`,
-        body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.`,
+        body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.\n\nView Project: ${projectUrl}`,
       }),
     });
   } catch (err) {

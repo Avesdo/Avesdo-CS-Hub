@@ -138,7 +138,7 @@ export default function ClientPortal() {
 
       // Send email if first submission
       if (isFirstSubmission && ['survey', 'clientQA', 'certification'].includes(activeFormType)) {
-        await sendEmailAlert(project.name, prettyFormName, 'submitted');
+        await sendEmailAlert(project.id, project.name, prettyFormName, 'submitted');
       }
 
       // Update local state
@@ -224,7 +224,11 @@ export default function ClientPortal() {
             <div className="w-px h-6 bg-slate-200"></div>
             <div className="flex items-center gap-4">
               <button 
-                onClick={() => { setViewState('dashboard'); setActiveFormType(null); }}
+                onClick={() => { 
+                  setViewState('dashboard'); 
+                  setActiveFormType(null); 
+                  window.history.replaceState({}, '', window.location.pathname);
+                }}
                 className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -315,8 +319,12 @@ export default function ClientPortal() {
           <h2 className="text-2xl font-bold text-slate-800 mb-3">Thank You!</h2>
           <p className="text-slate-600 mb-8">Your feedback has been successfully submitted. We appreciate your partnership!</p>
           <button
-            onClick={() => setViewState('dashboard')}
-            className="w-full bg-slate-100 text-slate-700 font-bold py-3 px-6 hover:bg-slate-200 rounded-xl transition-colors"
+            onClick={() => { 
+              setViewState('dashboard'); 
+              setActiveFormType(null); 
+              window.history.replaceState({}, '', window.location.pathname);
+            }}
+            className="px-6 py-2 bg-slate-900 text-white font-semibold rounded-lg shadow-sm hover:bg-slate-800 transition-all duration-200"
           >
             Return to Dashboard
           </button>
@@ -388,7 +396,7 @@ export default function ClientPortal() {
                 className="flex items-center text-left p-6 bg-white border border-slate-200 rounded-2xl hover:border-[#00bdd9]/40 hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
               >
                 {isCompleted && (
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/10 to-transparent pointer-events-none rounded-tr-2xl"></div>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/20 via-emerald-500/5 to-transparent pointer-events-none rounded-tr-2xl"></div>
                 )}
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 mr-6 transition-all duration-300 ${
                   isCompleted 
