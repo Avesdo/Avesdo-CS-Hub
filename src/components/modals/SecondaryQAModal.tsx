@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, CheckCircle , Edit2 } from 'lucide-react';
+import { X, Save, CheckCircle, Edit2, FileText } from 'lucide-react';
 import { updateProjectRecord } from '../../api/dbService';
 import { useAppStore } from '../../store/useAppStore';
 import { DynamicForm } from '../ui/DynamicForm';
