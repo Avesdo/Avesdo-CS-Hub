@@ -738,7 +738,7 @@ export default function TemplateDesigner() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-300">
+    <div className="flex flex-col h-full bg-white overflow-hidden animate-in fade-in duration-300">
       <div className="p-4 border-b border-border bg-slate-50 flex items-center justify-between shrink-0">
         <h2 className="text-lg font-semibold text-slate-800">Template Designer</h2>
         <button onClick={handleSave} className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors">

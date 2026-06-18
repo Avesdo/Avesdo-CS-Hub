@@ -66,10 +66,10 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       />
       
       {/* Modal Container */}
-      <div className="relative w-full max-w-4xl max-h-[95vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
+      <div className="relative w-full max-w-4xl h-[95vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-white">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-white shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 text-primary rounded-lg">
                <FileText className="w-5 h-5" />

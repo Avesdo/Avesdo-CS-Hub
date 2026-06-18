@@ -321,7 +321,8 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full bg-white relative">
+      <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-8 custom-thin-scroll space-y-6">
       {visiblePages.length > 1 && (
         <div className="flex items-center gap-2 mb-6">
           {visiblePages.map((_, idx) => (
@@ -377,8 +378,9 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
         );
       })}
       </div>
+      </div>
 
-      <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-8">
+      <div className="shrink-0 flex items-center justify-between p-4 sm:px-8 border-t border-slate-200 bg-white/95 backdrop-blur-sm shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] z-10">
         <div>
           {onCancel && (
             <button

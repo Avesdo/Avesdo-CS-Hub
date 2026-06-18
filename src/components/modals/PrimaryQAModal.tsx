@@ -71,11 +71,11 @@ export default function PrimaryQAModal({ project, onClose }: PrimaryQAModalProps
       }}
     >
       <div 
-        className="bg-slate-50 flex flex-col w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-slate-50 flex flex-col w-full max-w-4xl h-[95vh] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-white border-b border-slate-200 px-5 py-3 flex items-center justify-between shrink-0">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Primary QA</h2>
             <div className="flex items-center gap-4 mt-1">
@@ -118,26 +118,23 @@ export default function PrimaryQAModal({ project, onClose }: PrimaryQAModalProps
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-10 bg-slate-50 custom-thin-scroll">
-          <div className="max-w-3xl mx-auto space-y-4">
-
-            <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
-              {template ? (
-                <DynamicForm 
-                  template={template} 
-                  readOnly={!isEditing} 
-                  initialValues={project?.onboarding?.primaryQA || {}} 
-                  onSubmit={handleSave} 
-                  onCancel={onClose}
-                  projectFeatures={project.features || []}
-                  submitLabel={project?.onboarding?.primaryQA && Object.keys(project.onboarding.primaryQA).length > 0 ? "Update Response" : "Submit"}
-                />
-              ) : (
-                <div className="text-center text-slate-500 py-12">
-                  No form template found. Please create one in Settings &gt; Templates named "Primary QA".
-                </div>
-              )}
-            </div>
+        <div className="flex-1 min-h-0 p-0 md:p-6 flex items-center justify-center custom-thin-scroll">
+          <div className="w-full max-w-3xl h-full bg-white md:rounded-xl md:shadow-sm md:border border-slate-200 overflow-hidden">
+            {template ? (
+              <DynamicForm 
+                template={template} 
+                readOnly={!isEditing} 
+                initialValues={project?.onboarding?.primaryQA || {}} 
+                onSubmit={handleSave} 
+                onCancel={onClose}
+                projectFeatures={project.features || []}
+                submitLabel={project?.onboarding?.primaryQA && Object.keys(project.onboarding.primaryQA).length > 0 ? "Update Response" : "Submit"}
+              />
+            ) : (
+              <div className="text-center text-slate-500 py-12">
+                No form template found. Please create one in Settings &gt; Templates named "Primary QA".
+              </div>
+            )}
           </div>
         </div>
       </div>

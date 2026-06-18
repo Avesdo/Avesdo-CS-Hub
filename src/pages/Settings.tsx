@@ -1026,7 +1026,7 @@ export default function SettingsDraft() {
           ))}
         </div>
 
-        <div className="flex-1 p-6 md:p-10 overflow-y-auto bg-white custom-thin-scroll">
+        <div className={`flex-1 overflow-y-auto bg-white custom-thin-scroll ${activeTab === 'templates' ? '' : 'p-6 md:p-10'}`}>
           {activeTab === 'org' && (
             <div className="max-w-3xl animate-in fade-in duration-300">
               {renderList(
@@ -1174,7 +1174,7 @@ export default function SettingsDraft() {
             </div>
           )}
           {activeTab === 'templates' && (
-            <div className="h-full animate-in fade-in duration-300">
+            <div className="h-full w-full animate-in fade-in duration-300 flex flex-col">
               <TemplateDesigner />
             </div>
           )}
