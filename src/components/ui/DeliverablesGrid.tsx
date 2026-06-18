@@ -10,6 +10,7 @@ interface DeliverablesGridProps {
   values: Record<string, any>;
   onChange: (itemId: string, field: string, value: any) => void;
   readOnly?: boolean;
+  isClientPortal?: boolean;
 }
 
 const STATUS_OPTIONS = [
@@ -33,7 +34,8 @@ export default function DeliverablesGrid({
   project,
   values,
   onChange,
-  readOnly = false
+  readOnly = false,
+  isClientPortal = false
 }: DeliverablesGridProps) {
   
   // States for advanced features
@@ -178,9 +180,10 @@ export default function DeliverablesGrid({
     const internalNoteVal = itemData.internalNote || '';
 
     return (
-      <div key={itemId} className={`group relative flex gap-3 px-4 py-3 bg-white border rounded-xl transition-all duration-200 ${isHidden ? 'opacity-40 grayscale border-slate-100' : 'border-slate-200 hover:border-primary/40 hover:shadow-sm'} ${isSelected ? 'border-primary ring-1 ring-primary/20 bg-primary/[0.02]' : ''}`}>
+      <div key={itemId} className={`group/item relative flex gap-3 px-4 py-3 bg-white border rounded-xl transition-all duration-200 ${isHidden ? 'opacity-40 grayscale border-slate-100' : 'border-slate-200 hover:border-primary/40 hover:shadow-sm'} ${isSelected ? 'border-primary ring-1 ring-primary/20 bg-primary/[0.02]' : ''}`}>
         
-        {!readOnly && !isHidden && (
+        {/* Checkbox */}
+        {!readOnly && !isClientPortal && !isHidden && (
            <div className="pt-1.5 shrink-0 flex flex-col gap-2">
              <input 
                type="checkbox" 
@@ -191,17 +194,7 @@ export default function DeliverablesGrid({
            </div>
         )}
 
-        {!readOnly && !isCustom && (
-          <button 
-            onClick={() => toggleHideItem(itemId)}
-            className="absolute -left-3 top-3 p-1.5 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity bg-white rounded-full shadow-sm border border-slate-100 z-10"
-            title={isHidden ? "Unhide Item" : "Exclude Item from Project"}
-          >
-            {isHidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-          </button>
-        )}
-
-        <div className="flex flex-col gap-2.5 w-full">
+        <div className="flex-1 min-w-0 pr-4">
           {/* Top Row: Task Name & Primary Badges */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -227,7 +220,16 @@ export default function DeliverablesGrid({
                     <h4 className="text-[13px] font-semibold text-slate-900 leading-snug break-words">
                       {taskName}
                     </h4>
-                    {isHidden && <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">Excluded</span>}
+                    {!readOnly && !isClientPortal && (
+                      <button 
+                        onClick={() => toggleHideItem(itemId)}
+                        className="p-1 opacity-0 group-hover/item:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity ml-1"
+                        title={isHidden ? "Unhide Task" : "Exclude Task"}
+                      >
+                        {isHidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                    {isHidden && <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-semibold ml-2">Excluded</span>}
                   </div>
                   {defaultNote && !isHidden && (
                     <p className="text-[11px] font-medium text-slate-500 mt-1 leading-relaxed max-w-2xl block w-full">
@@ -329,22 +331,24 @@ export default function DeliverablesGrid({
                </div>
 
                {/* Internal Note Area (Primary tint) */}
-               <div className="relative flex-1 min-w-0 w-full">
-                 <textarea
-                    disabled={readOnly || isHidden}
-                    value={internalNoteVal}
-                    onChange={(e) => handleChange('internalNote', e.target.value)}
-                    placeholder="Internal notes..."
-                    rows={1}
-                    className={`w-full text-[11px] font-medium text-primary outline-none border border-transparent rounded-md px-3 py-1.5 sm:py-1.5 placeholder:text-primary/50 transition-all min-h-[30px] sm:min-h-[26px] bg-primary/5 ${(readOnly || isHidden) ? '' : 'hover:border-primary/30 hover:bg-primary/10 focus:bg-primary/5 focus:border-primary focus:shadow-sm focus:ring-1 focus:ring-primary/20'}`}
-                    style={{ overflow: 'hidden', resize: 'none' }}
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      target.style.height = 'auto';
-                      target.style.height = `${target.scrollHeight}px`;
-                    }}
-                  />
-               </div>
+               {!isClientPortal && (
+                  <div className="relative flex-1 min-w-0 w-full">
+                    <textarea
+                       disabled={readOnly || isHidden}
+                       value={internalNoteVal}
+                       onChange={(e) => handleChange('internalNote', e.target.value)}
+                       placeholder="Internal notes..."
+                       rows={1}
+                       className={`w-full text-[11px] font-medium text-primary outline-none border border-transparent rounded-md px-3 py-1.5 sm:py-1.5 placeholder:text-primary/50 transition-all min-h-[30px] sm:min-h-[26px] bg-primary/5 ${(readOnly || isHidden) ? '' : 'hover:border-primary/30 hover:bg-primary/10 focus:bg-primary/5 focus:border-primary focus:shadow-sm focus:ring-1 focus:ring-primary/20'}`}
+                       style={{ overflow: 'hidden', resize: 'none' }}
+                       onInput={(e) => {
+                         const target = e.target as HTMLTextAreaElement;
+                         target.style.height = 'auto';
+                         target.style.height = `${target.scrollHeight}px`;
+                       }}
+                     />
+                  </div>
+                )}
             </div>
           )}
         </div>
@@ -455,7 +459,7 @@ export default function DeliverablesGrid({
                       {section.name}
                     </h3>
 
-                    {!readOnly && (
+                    {!readOnly && !isClientPortal && (
                       <button 
                         onClick={() => toggleHideSection(section.id)}
                         className="p-1 opacity-0 group-hover/secheader:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity"
@@ -536,7 +540,7 @@ export default function DeliverablesGrid({
         )}
 
         {/* Add Custom Item Button */}
-        {!readOnly && (
+        {!readOnly && !isClientPortal && (
           <div className="pt-2">
              <button
                onClick={handleCustomItemAdd}
@@ -549,7 +553,7 @@ export default function DeliverablesGrid({
       </div>
 
       {/* Floating Bulk Action Bar */}
-      {selectedItems.length > 0 && !readOnly && (
+      {selectedItems.length > 0 && !readOnly && !isClientPortal && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white text-slate-800 border border-slate-200 rounded-xl shadow-2xl px-6 py-3 flex flex-wrap justify-center sm:flex-nowrap items-center gap-4 sm:gap-6 z-50 animate-in slide-in-from-bottom-8 fade-in duration-300 pointer-events-auto">
           <div className="flex items-center gap-3 sm:pr-4 sm:border-r border-slate-200">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold shrink-0">
