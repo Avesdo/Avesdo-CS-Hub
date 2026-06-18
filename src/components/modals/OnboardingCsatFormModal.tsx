@@ -131,6 +131,7 @@ export default function OnboardingCsatFormModal({ project, onClose }: Onboarding
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
