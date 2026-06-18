@@ -7,5 +7,17 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if isAvesdoEmployee();
     }
+
+    match /projects/{projectId} {
+      allow read, write: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+      allow update: if !isAvesdoEmployee() 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health']);
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if isAvesdoEmployee();
+      allow create: if !isAvesdoEmployee();
+    }
   }
 }

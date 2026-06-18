@@ -15,7 +15,9 @@ export default defineConfig({
         manualChunks: {
           react: ['react', 'react-dom', 'react-router-dom'],
           firebase: ['firebase/app', 'firebase/firestore'],
-          tanstack: ['@tanstack/react-query', '@tanstack/react-virtual'],
+          tanstack: ['@tanstack/react-query', '@tanstack/react-virtual', '@tanstack/react-table'],
+          tiptap: ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link'],
+          dndkit: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
         },
       },
     },
