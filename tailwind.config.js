@@ -32,6 +32,7 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)"
         },
+        blue: { 50: '#e0f8fb', 100: '#b3ecf4', 200: '#80dfed', 300: '#4dd2e5', 400: '#26c7e0', 500: '#00bdd9', 600: '#00abc6', 700: '#0087a1', 800: '#00657a', 900: '#004454' },
         red: { 50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 500: '#e7000b', 600: '#e7000b', 700: '#e7000b' },
         emerald: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 500: '#5ea500', 600: '#5ea500', 700: '#5ea500' },
         lime: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 500: '#5ea500', 600: '#5ea500', 700: '#5ea500' },

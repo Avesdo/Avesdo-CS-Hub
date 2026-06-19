@@ -483,7 +483,7 @@ export default function AdminHub() {
             <div className="divide-y divide-border">
               {Object.entries(groupedLogs).map(([dateLabel, group]) => (
                 <div key={dateLabel}>
-                  <div className="bg-slate-50/80 px-5 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider sticky top-0 backdrop-blur-sm z-10 border-b border-border">
+                  <div className="bg-slate-50/80 px-5 py-2.5 text-xs font-bold text-slate-500 tracking-wider sticky top-0 backdrop-blur-sm z-10 border-b border-border">
                     {dateLabel}
                   </div>
                   <div className="divide-y divide-border/50">
