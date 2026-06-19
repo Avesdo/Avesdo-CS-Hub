@@ -1149,7 +1149,7 @@ export default function Dashboard() {
                     style={{ width: `${t.percentage}%`, backgroundColor: hexColor }}
                     onClick={() =>
                       openDrawer('dashDrilldown', undefined, {
-                        title: `Delivery Status: ${t.name}`,
+                        title: `Schedule Status: ${t.name}`,
                         subtitle: 'Onboarding Projects',
                         contextType: 'timeline',
                         projects: projects.filter(
@@ -1169,7 +1169,7 @@ export default function Dashboard() {
                     key={t.name}
                     onClick={() =>
                       openDrawer('dashDrilldown', undefined, {
-                        title: `Delivery Status: ${t.name}`,
+                        title: `Schedule Status: ${t.name}`,
                         subtitle: 'Onboarding Projects',
                         contextType: 'timeline',
                         projects: projects.filter(
