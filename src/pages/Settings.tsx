@@ -1015,13 +1015,15 @@ export default function SettingsDraft() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all w-full text-left outline-none ${
+              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95 w-full text-left outline-none ${
                 activeTab === tab.id
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'
               }`}
             >
-              <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
+              <div className="flex items-center gap-3">
+                <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
+              </div>
             </button>
           ))}
         </div>

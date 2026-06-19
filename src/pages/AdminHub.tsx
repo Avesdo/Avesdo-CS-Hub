@@ -969,7 +969,7 @@ export default function AdminHub() {
   return (
     <div className="flex flex-1 overflow-hidden flex-col bg-white p-6">
       <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
-        <div className="w-full md:w-72 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
+        <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
             { id: 'pipeline', label: 'Data Pipeline', icon: Database },
             { id: 'exports', label: 'Data Exports', icon: FileDown },
@@ -979,7 +979,7 @@ export default function AdminHub() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95  w-full text-left outline-none ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'}`}
+              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95 w-full text-left outline-none ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'}`}
             >
               <div className="flex items-center gap-3">
                 <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
