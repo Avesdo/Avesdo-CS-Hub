@@ -19,7 +19,9 @@ import {
   AlertCircle,
   Palette,
   LayoutTemplate,
-  FileText
+  FileText,
+  Home,
+  Briefcase
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import {
