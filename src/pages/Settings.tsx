@@ -288,7 +288,7 @@ export default function SettingsDraft() {
   const clients = useAppStore(state => state.clients);
   const services = useAppStore(state => state.services);
   const user = useAppStore(state => state.user);
-  const [activeTab, setActiveTab] = useState<'org' | 'workflow' | 'products' | 'scoring' | 'templates'>('org');
+  const [activeTab, setActiveTab] = useState<'global' | 'projects' | 'services' | 'scoring' | 'templates'>('global');
 
   const [editingItem, setEditingItem] = useState<{
     field: string;
@@ -1002,34 +1002,32 @@ export default function SettingsDraft() {
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden flex-col bg-white p-6">
-      <div className="flex flex-1 min-h-0 w-full bg-white border border-border rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
-        <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-border shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
+    <div className="flex flex-1 overflow-hidden flex-col bg-slate-50/50 p-6">
+      <div className="flex flex-1 min-h-0 w-full bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl shadow-sm overflow-hidden flex-col md:flex-row">
+        <div className="w-full md:w-64 bg-slate-50/50 border-b md:border-b-0 md:border-r border-slate-200/60 shrink-0 p-4 flex flex-col gap-1 overflow-y-auto custom-thin-scroll">
           {[
-            { id: 'org', label: 'Organization', icon: Building2 },
-            { id: 'workflow', label: 'Workflow & Status', icon: GitMerge },
-            { id: 'products', label: 'Features & Services', icon: Package },
+            { id: 'global', label: 'Global & Organization', icon: Building2 },
+            { id: 'projects', label: 'Projects', icon: Home },
+            { id: 'services', label: 'Services', icon: Briefcase },
             { id: 'scoring', label: 'Scoring Engine', icon: Calculator },
             { id: 'templates', label: 'Templates', icon: FileText },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all active:scale-95 w-full text-left outline-none ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all w-full text-left outline-none ${
                 activeTab === tab.id
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
-              </div>
+              <tab.icon className="w-4 h-4 opacity-70" /> {tab.label}
             </button>
           ))}
         </div>
 
-        <div className={`flex-1 overflow-y-auto bg-white custom-thin-scroll ${activeTab === 'templates' ? '' : 'p-6 md:p-10'}`}>
-          {activeTab === 'org' && (
+        <div className={`flex-1 overflow-y-auto custom-thin-scroll ${activeTab === 'templates' ? '' : 'p-6 md:p-10'}`}>
+          {activeTab === 'global' && (
             <div className="max-w-3xl animate-in fade-in duration-300">
               {renderList(
                 'Account Managers',
@@ -1037,9 +1035,10 @@ export default function SettingsDraft() {
                 'managers'
               )}
               {renderList('Client Types', 'Classify your clients.', 'clientTypes')}
+              {renderList('Platform Features', 'System features and modules.', 'features')}
             </div>
           )}
-          {activeTab === 'workflow' && (
+          {activeTab === 'projects' && (
             <div className="max-w-3xl animate-in fade-in duration-300">
               {renderList('Project Status', 'Workflow stages for projects.', 'statuses')}
               {renderList(
@@ -1048,19 +1047,18 @@ export default function SettingsDraft() {
                 'timelines'
               )}
               {renderList('Implementation Pipeline', 'Milestones for project execution.', 'phases')}
+            </div>
+          )}
+          {activeTab === 'services' && (
+            <div className="max-w-3xl animate-in fade-in duration-300">
+              {renderList('Available Services', 'Available billable services.', 'services')}
+              {renderList('Service Types', 'Categories of services.', 'serviceTypes')}
               {renderList('Service Outcomes', 'Outcome statuses for services.', 'serviceOutcomes')}
               {renderList(
                 'Fulfillment Status',
                 'Lifecycle stages for services.',
                 'serviceStatuses'
               )}
-            </div>
-          )}
-          {activeTab === 'products' && (
-            <div className="max-w-3xl animate-in fade-in duration-300">
-              {renderList('Service Types', 'Categories of services.', 'serviceTypes')}
-              {renderList('Services', 'Available billable services.', 'services')}
-              {renderList('Features', 'System features and modules.', 'features')}
             </div>
           )}
           {activeTab === 'scoring' && (
