@@ -25,7 +25,7 @@ export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
   if (activeItems.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mt-2 mb-0 animate-in fade-in slide-in-from-top-1">
+    <div className="flex flex-wrap items-center gap-2 mt-3 mb-1 animate-in fade-in slide-in-from-top-1">
       <span className="text-xs font-semibold text-slate-500 tracking-wider mr-1">
         Active Filters:
       </span>
