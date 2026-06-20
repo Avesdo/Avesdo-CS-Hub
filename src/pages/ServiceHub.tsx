@@ -27,7 +27,7 @@ import {
 import { TrendIndicator } from '../components/TrendIndicator';
 import { PageHeader } from '../components/PageHeader';
 import { useTableFilter } from '../hooks/useTableFilter';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
 import { useUI } from '../context/UIContext';
@@ -573,28 +573,36 @@ export default function ServiceHub() {
                 <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" /> <span className="shrink-0">Export</span>
                 <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
               </button>
+              <AnimatePresence>
               {showExportMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                <motion.div 
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
+                >
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
+                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Services', services, 'All_Services');
                     }}
                   >
-                    <Database className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export All
+                    <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export All
                   </div>
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
+                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Services', tableData, 'Filtered_Services');
                     }}
                   >
-                    <Filter className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export Filtered View
+                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export Filtered View
                   </div>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
