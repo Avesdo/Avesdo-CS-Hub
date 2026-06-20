@@ -1080,7 +1080,7 @@ export default function Dashboard() {
             </div>
             <div className="text-right shrink-0 ml-4">
               <div className="text-2xl font-bold text-foreground leading-none">
-                {onboardingPhases.reduce((acc, curr) => acc + curr[1], 0)}
+                {onboardingPhases.reduce((acc, curr) => acc + Number(curr[1]), 0)}
               </div>
               <div className="text-[11px] text-muted-foreground font-semibold mt-1">
                 Onboarding Projects
