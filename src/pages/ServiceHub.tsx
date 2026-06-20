@@ -149,7 +149,7 @@ export default function ServiceHub() {
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
-  const toolbarRef = useRef<HTMLDivElement>(null);
+
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
     // One-time migrations
@@ -508,32 +508,23 @@ export default function ServiceHub() {
     { label: 'Included', icon: Package },
   ];
 
+  const [isScrolled, setIsScrolled] = useState(false);
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const handleScroll = useCallback(() => {
     const scrollContainer = tableScrollRef.current;
-    if (!scrollContainer || !toolbarRef.current) return;
+    if (!scrollContainer) return;
+    const scrollTop = scrollContainer.scrollTop;
 
-    const handleScroll = () => {
-      const scrollTop = scrollContainer.scrollTop;
-      const toolbar = toolbarRef.current;
-      if (!toolbar) return;
-
-      if (scrollTop > 40) {
-        if (!toolbar.classList.contains('max-h-0')) {
-          if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
-            toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-            toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-          }
+    setIsScrolled(prev => {
+      if (scrollTop > 40 && !prev) {
+        if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+          return true;
         }
-      } else if (scrollTop <= 10) {
-        toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-        toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
       }
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+      if (scrollTop <= 10 && prev) return false;
+      return prev;
+    });
   }, []);
 
   const rowVirtualizer = useVirtualizer({
@@ -556,10 +547,7 @@ export default function ServiceHub() {
         }
       }}
     >
-      <div
-        ref={toolbarRef}
-        className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
-      >
+      <div>
         {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
@@ -611,8 +599,11 @@ export default function ServiceHub() {
           </div>
         </div>
 
-        {/* KPI Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+        {/* KPI Section - COLLAPSIBLE ON SCROLL */}
+        <div
+          className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-6">
           {/* Revenue Won This Year */}
           <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
@@ -735,6 +726,7 @@ export default function ServiceHub() {
               periodText="vs last year"
             />
           </motion.div>
+          </div>
         </div>
       </div>
 
@@ -815,6 +807,13 @@ export default function ServiceHub() {
           <div
             ref={tableScrollRef}
             className="flex-1 overflow-auto custom-thin-scroll w-full relative"
+            onScroll={handleScroll}
+            onWheel={(e) => {
+              const target = e.currentTarget;
+              if (e.deltaY < -10 && target.scrollTop <= 10) {
+                setIsScrolled(false);
+              }
+            }}
           >
             {useMemo(
               () => (

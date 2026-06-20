@@ -101,7 +101,7 @@ export default function ClientHealth() {
   const location = useLocation();
   const [healthHistory, setHealthHistory] = useState<any>({});
   
-  const toolbarRef = useRef<HTMLDivElement>(null);
+
 
   
 const ClientRow = React.memo(({
@@ -653,32 +653,23 @@ const ClientRow = React.memo(({
     [sortCol, sortAsc]
   );
 
+  const [isScrolled, setIsScrolled] = useState(false);
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const handleScroll = useCallback(() => {
     const scrollContainer = tableScrollRef.current;
-    if (!scrollContainer || !toolbarRef.current) return;
+    if (!scrollContainer) return;
+    const scrollTop = scrollContainer.scrollTop;
 
-    const handleScroll = () => {
-      const scrollTop = scrollContainer.scrollTop;
-      const toolbar = toolbarRef.current;
-      if (!toolbar) return;
-
-      if (scrollTop > 40) {
-        if (!toolbar.classList.contains('max-h-0')) {
-          if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
-            toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
-            toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-          }
+    setIsScrolled(prev => {
+      if (scrollTop > 40 && !prev) {
+        if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+          return true;
         }
-      } else if (scrollTop <= 10) {
-        toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
-        toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
       }
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+      if (scrollTop <= 10 && prev) return false;
+      return prev;
+    });
   }, []);
 
   const rowVirtualizer = useVirtualizer({
@@ -708,10 +699,7 @@ const ClientRow = React.memo(({
         }
       }}
     >
-      <div
-        ref={toolbarRef}
-        className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
-      >
+      <div>
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
@@ -765,7 +753,11 @@ const ClientRow = React.memo(({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+        {/* KPI CARDS - COLLAPSIBLE ON SCROLL */}
+        <div
+          className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-6">
           <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => setActiveTab('At Risk')}
@@ -869,6 +861,7 @@ const ClientRow = React.memo(({
             </div>
             <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
           </motion.div>
+          </div>
         </div>
       </div>
 
@@ -945,6 +938,13 @@ const ClientRow = React.memo(({
           <div
             ref={tableScrollRef}
             className="flex-1 overflow-auto custom-thin-scroll w-full relative"
+            onScroll={handleScroll}
+            onWheel={(e) => {
+              const target = e.currentTarget;
+              if (e.deltaY < -10 && target.scrollTop <= 10) {
+                setIsScrolled(false);
+              }
+            }}
           >
                 <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
