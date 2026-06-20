@@ -73,7 +73,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
         />
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-white border border-border rounded-lg shadow-lg z-[99999] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="absolute top-full left-0 mt-1 w-full bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll animate-in fade-in slide-in-from-top-1 duration-200">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((opt) => (
               <div
@@ -84,7 +84,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   setIsOpen(false);
                   setSearchTerm('');
                 }}
-                className={`px-3 py-2 flex items-center hover:bg-slate-50 cursor-pointer rounded-md text-sm transition-colors text-slate-700 ${value === opt.value ? 'bg-primary/5 text-primary font-medium' : ''}`}
+                className={`px-3 py-2 flex items-center cursor-pointer rounded-md text-sm transition-colors ${value === opt.value ? 'bg-primary/5 text-primary font-medium' : 'text-slate-700 hover:bg-primary/5 hover:text-primary'}`}
               >
                 {opt.label}
               </div>

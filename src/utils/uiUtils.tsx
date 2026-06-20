@@ -178,7 +178,7 @@ export const getSettingBadge = (
     if (listName === 'managers' || listName === 'accountManager' || listName === 'assignee') {
       return (
         <span
-          className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-500 border-slate-200 inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
+          className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-500 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
         >
           <LucideIcons.UserX className={iconSize} /> Unassigned
         </span>
@@ -186,7 +186,7 @@ export const getSettingBadge = (
     }
     return (
       <span
-        className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-500 border-slate-200 inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
+        className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-500 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap`}
       >
         <LucideIcons.HelpCircle className={iconSize} /> Not Set
       </span>
@@ -228,7 +228,7 @@ export const getSettingBadge = (
     if (listName === 'managers' || listName === 'accountManager' || listName === 'assignee') {
       return (
         <span
-          className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center gap-1.5 shrink-0`}
+          className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
           <LucideIcons.User className={iconSize} /> 
           <span className="truncate max-w-[180px]">{value}</span>
@@ -237,7 +237,7 @@ export const getSettingBadge = (
     }
     return (
       <span
-        className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center shrink-0`}
+        className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center shrink-0`}
       >
         <span className="truncate max-w-[180px]">{value}</span>
       </span>
@@ -248,8 +248,8 @@ export const getSettingBadge = (
 
   return (
     <span
-      className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border inline-flex items-center gap-1.5 shrink-0`}
-      style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
+      className={`${sizeClasses} font-medium rounded-md inline-flex items-center gap-1.5 shrink-0`}
+      style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}` }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
       <span className="truncate max-w-[180px]">{item.name}</span>
@@ -301,8 +301,8 @@ export const getTypeBadgeIconOnly = (value: string, settings: any) => {
 export const getHealthBadge = (score: number | string | undefined | null, settings: any) => {
   if (score === undefined || score === null || score === 'N/A' || typeof score !== 'number') {
     return (
-      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200 shadow-sm shrink-0 whitespace-nowrap">
-        N/A
+      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-500 ring-1 ring-inset ring-slate-200 shrink-0 whitespace-nowrap flex items-center gap-1">
+        <LucideIcons.Heart className="w-3 h-3 text-slate-400" /> N/A
       </span>
     );
   }
@@ -312,21 +312,21 @@ export const getHealthBadge = (score: number | string | undefined | null, settin
 
   if (score >= healthyThresh) {
     return (
-      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-lime-100 text-lime-700 border border-lime-200 shadow-sm shrink-0 whitespace-nowrap">
-        {score}
+      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-lime-50 text-lime-700 ring-1 ring-inset ring-lime-600/20 shrink-0 whitespace-nowrap flex items-center gap-1">
+        <LucideIcons.Heart className="w-3 h-3 fill-lime-500/20 text-lime-600" /> {score}
       </span>
     );
   }
   if (score >= warningThresh) {
     return (
-      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20 border border-orange-200 shadow-sm shrink-0 whitespace-nowrap">
-        {score}
+      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20 shrink-0 whitespace-nowrap flex items-center gap-1">
+        <LucideIcons.Heart className="w-3 h-3 fill-orange-500/20 text-orange-600" /> {score}
       </span>
     );
   }
   return (
-    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10 border border-red-200 shadow-sm shrink-0 whitespace-nowrap flex items-center gap-1">
-      <LucideIcons.AlertCircle className="w-3.5 h-3.5" /> {score}
+    <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20 shrink-0 whitespace-nowrap flex items-center gap-1">
+      <LucideIcons.HeartPulse className="w-3 h-3 text-red-600" /> {score}
     </span>
   );
 };

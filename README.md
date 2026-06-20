@@ -35,4 +35,4 @@ Firestore data is intentionally denormalized for speed. When a root record updat
   - `clientIds: string[]`
   - `projectIds: string[]` (Supports multiple assigned projects)
   - `managers: string[]` (Supports multiple assigned managers)
-**Architecture Note (Data Integrity):** The UI requires the string `companyName` to power the Global Search bar. However, we strictly **DO NOT** store duplicated `companyName` strings inside `projects` or `services` in the database to prevent siloing. Instead, `AppStateContext.tsx` dynamically resolves the UUID connections via a React `useMemo` hook in real-time. This guarantees perfect data integrity without expensive batch updates.
+**Architecture Note (Data Integrity):** The UI requires the string `companyName` to power the Global Search bar. However, we strictly **DO NOT** store duplicated `companyName` strings inside `projects` or `services` in the database to prevent siloing. Instead, the Zustand store (`useAppStore.ts`) and global hooks dynamically resolve the UUID connections via React `useMemo` hooks in real-time. This guarantees perfect data integrity without expensive batch updates.

@@ -24,7 +24,7 @@ export function MultiSelect({
   align = 'left',
   className = '',
   menuClassName = '',
-  dropdownWidth = 'min-w-[240px]',
+  dropdownWidth = 'min-w-[160px]',
   searchable = false,
   searchPlaceholder = 'Search...',
 }: MultiSelectProps) {
@@ -61,7 +61,7 @@ export function MultiSelect({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <Popover.Root modal={true} onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
+      <Popover.Root modal={false} onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
         <Popover.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}
@@ -70,9 +70,11 @@ export function MultiSelect({
 
         <Popover.Portal>
           <Popover.Content
+            // @ts-ignore: Prevent Radix UI auto-focus on open
+            onOpenAutoFocus={(e: Event) => e.preventDefault()}
             align={radixAlign}
             sideOffset={8}
-            className={`bg-white border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
+            className={`bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200 ${dropdownWidth} ${menuClassName}`}
           >
             {searchable && (
               <div className="p-2 border-b border-border bg-slate-50 flex items-center gap-2">
@@ -100,7 +102,7 @@ export function MultiSelect({
                     <button
                       key={opt.value}
                       type="button"
-                      className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors outline-none focus:bg-slate-50 ${isSelected ? 'bg-primary/5 text-primary' : 'text-foreground'}`}
+                      className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm rounded-md transition-colors outline-none ${isSelected ? 'bg-primary/5 text-primary' : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'}`}
                       onClick={() => toggleValue(opt.value)}
                     >
                       <span className="font-medium">{opt.label}</span>

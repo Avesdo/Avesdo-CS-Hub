@@ -28,7 +28,7 @@ export function Select({
   align = 'left',
   className = '',
   menuClassName = '',
-  dropdownWidth = 'min-w-[240px]',
+  dropdownWidth = 'min-w-[160px]',
   hideCheckmark = false,
   position = 'bottom',
 }: SelectProps) {
@@ -36,7 +36,7 @@ export function Select({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <DropdownMenu.Root>
+      <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}
@@ -45,10 +45,12 @@ export function Select({
 
         <DropdownMenu.Portal>
           <DropdownMenu.Content
+            // @ts-ignore: Radix UI Types missing onOpenAutoFocus for DropdownMenu in this version, but it works at runtime
+            onOpenAutoFocus={(e: Event) => e.preventDefault()}
             align={radixAlign}
             side={position}
             sideOffset={8}
-            className={`bg-white border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100 ${dropdownWidth} ${menuClassName}`}
+            className={`bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200 ${dropdownWidth} ${menuClassName}`}
           >
             <div className="overflow-y-auto p-1 custom-thin-scroll">
               <DropdownMenu.RadioGroup value={value} onValueChange={onChange}>
@@ -56,8 +58,8 @@ export function Select({
                   <DropdownMenu.RadioItem
                     key={opt.value}
                     value={opt.value}
-                    className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors cursor-pointer outline-none focus:bg-slate-50 ${
-                      value === opt.value ? 'bg-primary/5 text-primary' : 'text-foreground'
+                    className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm rounded-md transition-colors cursor-pointer outline-none ${
+                      value === opt.value ? 'bg-primary/5 text-primary' : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                     }`}
                   >
                     <span className="font-medium">{opt.label}</span>

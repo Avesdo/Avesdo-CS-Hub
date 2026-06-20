@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as Popover from '@radix-ui/react-popover';
 import { MultiSelect } from './ui/MultiSelect';
 import { Select } from './ui/Select';
 import { getSettingBadge } from '../utils/uiUtils';
@@ -21,7 +23,6 @@ export const ColumnFilter = ({
       values={selected}
       onChange={onChange}
       searchable={searchable}
-      dropdownWidth="w-[260px]"
       trigger={
         <button
           className={`p-1 rounded transition-opacity ${selected.length > 0 ? 'opacity-100 text-primary bg-primary/10' : 'opacity-0 group-hover/th:opacity-100 text-slate-400 hover:bg-slate-200'}`}
@@ -62,23 +63,6 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
       }
     }
   }, [isOpen, dateRange]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setIsOpen(false);
-    };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
 
   const months = [
     { value: '01', label: 'January' },
@@ -182,24 +166,29 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
 
   return (
     <div className="relative inline-block ml-1" ref={ref}>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-        className={`p-1 rounded opacity-0 group-hover/th:opacity-100 transition-opacity ${dateRange ? 'opacity-100 text-primary bg-primary/10' : 'text-slate-400 hover:bg-slate-200'}`}
-      >
-        <Filter className="w-3.5 h-3.5" />
-      </button>
-      {isOpen && (
-        <div
-          className="absolute top-full right-0 mt-2 w-[440px] flex bg-white border border-border rounded-xl shadow-xl z-50 font-normal cursor-default"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="w-[140px] bg-slate-50 border-r border-border p-2 flex flex-col gap-1 shrink-0 rounded-l-xl">
-            <div className="text-[11px] font-bold text-muted-foreground px-2 py-1 mb-1">
-              Quick Select
-            </div>
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Popover.Trigger asChild>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+            className={`p-1 rounded opacity-0 group-hover/th:opacity-100 transition-opacity ${dateRange ? 'opacity-100 text-primary bg-primary/10' : 'text-slate-400 hover:bg-slate-200'}`}
+          >
+            <Filter className="w-3.5 h-3.5" />
+          </button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            align="end"
+            sideOffset={8}
+            className="w-[440px] flex bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] font-normal cursor-default overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-[140px] bg-slate-50/50 border-r border-border p-2 flex flex-col gap-1 shrink-0">
+              <div className="text-[11px] font-bold text-muted-foreground px-2 py-1 mb-1">
+                Quick Select
+              </div>
             {[
               'This Month',
               'Last Month',
@@ -329,23 +318,24 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-              <button
-                onClick={handleClear}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-              >
-                Clear Date
-              </button>
-              <button
-                onClick={handleApply}
-                className="h-9 text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors shadow-sm"
-              >
-                Apply Filter
-              </button>
+              <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
+                <button
+                  onClick={handleClear}
+                  className="text-xs font-semibold text-red-600 bg-transparent hover:bg-red-50 hover:text-red-700 transition-colors rounded-full px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                >
+                  Clear Date
+                </button>
+                <button
+                  onClick={handleApply}
+                  className="text-xs font-semibold bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:scale-[1.02] transition-all focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                  Apply Filter
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };

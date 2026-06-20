@@ -5,7 +5,7 @@
 ## 0. TECH STACK & ARCHITECTURE (CRITICAL CONTEXT)
 - **Core Framework:** React 19 + TypeScript + Vite (compiled as a Single Page Application).
 - **Styling:** Tailwind CSS + PostCSS.
-- **State Management & Global Data:** TanStack React Query perfectly layered with native React Context (`AppStateContext.tsx`, hydrated live from Firestore via snapshot listeners).
+- **State Management & Global Data:** Zustand (`useAppStore.ts`) for atomic global state selectors, replacing old React Context. Hydrated live from Firestore via snapshot listeners in `useFirebaseSync`.
 - **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 - **Testing & Code Quality:** Playwright, ESLint, and Prettier are properly configured.
 - **Data Pipeline:** Google Apps Script (runs isolated in the background to ingest Drive files and securely call the Gemini API).
@@ -26,7 +26,7 @@
 - **Dropdown Escape Safety:** When capturing the `Escape` key to close a dropdown/popover, you MUST call `e.stopPropagation()` so the event doesn't bubble up and close the parent Drawer/Modal.
 
 ## 3. DATABASE INTEGRITY & DATA PIPELINE
-- **Global Search Dependencies:** We use dynamic native connections via UUIDs to power text searches. NEVER duplicate a Client's name inside `projects` or `services`. `AppStateContext` will automatically attach the `companyName` to the data object before broadcasting to the UI.
+- **Global Search Dependencies:** We use dynamic native connections via UUIDs to power text searches. NEVER duplicate a Client's name inside `projects` or `services`. `useAppStore` hooks dynamically attach the `companyName` to the data object before broadcasting to the UI.
 - **Drawer Triggering:** Global Search NEVER renders a Drawer directly. It passes an ID to `openDrawer(type, id)` so `UIContext` mounts the overlay safely.
 - **Data Intake Queue:** The Apps Script compiler (`AppsScriptCompiler.js`) writes unmatched entities to the `aliases` collection with `status: 'pending_approval'` and a `contextName` (e.g. "Active Users"). The AdminHub resolves these via the `resolveAlias` function.
 - **Health Scoring Engine:** Health scores are NOT hardcoded. They are dynamically calculated in `src/utils/scoringUtils.ts` using weights pulled directly from the `settings` collection in Firestore. Changing settings immediately re-renders all scores.

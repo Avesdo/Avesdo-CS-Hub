@@ -245,7 +245,7 @@ export default function ProjectDrawer() {
       ></div>
 
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-[650px] bg-white border-l border-border flex flex-col shadow-2xl ${drawerData?.isClosing ? 'animate-out slide-out-to-right fade-out' : 'animate-in slide-in-from-right'} duration-300 ease-in-out transform-gpu`}
+        className={`fixed top-0 right-0 h-full w-full max-w-[800px] bg-white border-l border-border flex flex-col shadow-2xl ${drawerData?.isClosing ? 'animate-out slide-out-to-right fade-out' : 'animate-in slide-in-from-right'} duration-300 ease-in-out transform-gpu`}
         style={{ zIndex: zIndexDrawer }}
       >
         {isSuspended && (

@@ -30,18 +30,18 @@ function NotificationBell() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-          <Bell className="w-5 h-5" />
+        <Button variant="ghost" size="icon" className="relative group text-muted-foreground hover:text-foreground">
+          <Bell className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-4 w-4 p-0 items-center justify-center text-[10px]">
+            <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-4 w-4 p-0 items-center justify-center text-[10px] animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]">
               {unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/50">
-          <h3 className="font-semibold text-foreground">Notifications</h3>
+      <PopoverContent className="w-80 p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2" align="end" sideOffset={8}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
+          <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
           <div className="flex items-center gap-3">
             {unreadCount > 0 && (
               <Button 
@@ -64,20 +64,24 @@ function NotificationBell() {
           </div>
         </div>
         
-        <div className="max-h-[350px] overflow-y-auto">
+        <div className="max-h-[350px] overflow-y-auto custom-thin-scroll">
           {notifications.length === 0 ? (
-            <div className="px-4 py-6 text-center text-muted-foreground text-sm">
-              No notifications yet
+            <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                <Check className="w-6 h-6 text-slate-400" />
+              </div>
+              <p className="text-sm font-medium text-slate-600">You're all caught up!</p>
+              <p className="text-xs text-slate-400 mt-1">No new notifications at this time.</p>
             </div>
           ) : (
             <div className="flex flex-col">
               {notifications.map(n => (
                 <div 
                   key={n.id} 
-                  className={`px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer flex gap-3 ${!n.read ? 'bg-primary/5' : ''}`}
+                  className={`px-4 py-3 hover:bg-primary/5 transition-colors cursor-pointer flex gap-3 ${!n.read ? 'bg-primary/[0.03]' : ''}`}
                   onClick={() => markNotificationAsRead(n.id)}
                 >
-                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${!n.read ? 'bg-primary' : 'bg-transparent'}`} />
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`} />
                   <div>
                     <p className="text-sm text-foreground">
                       <span className="font-semibold">{n.projectName}</span>{' '}

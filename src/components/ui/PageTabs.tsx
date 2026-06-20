@@ -1,5 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export interface TabConfig {
   label: string;
@@ -15,7 +16,7 @@ interface PageTabsProps {
 
 export function PageTabs({ tabs, activeTab, onTabChange }: PageTabsProps) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-2 px-2 -mx-2">
+    <div className="flex items-center gap-1.5 overflow-x-auto custom-thin-scroll py-2 px-2 -mx-2 bg-slate-100/50 p-1.5 rounded-xl border border-border/50 shadow-inner w-max">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.label;
@@ -25,26 +26,32 @@ export function PageTabs({ tabs, activeTab, onTabChange }: PageTabsProps) {
           <button
             key={tab.label}
             onClick={() => onTabChange(tab.label)}
-            className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-all duration-300 ease-in-out transform-gpu active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm whitespace-nowrap border focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+            className={`relative flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 whitespace-nowrap z-0 group ${
               isActive
-                ? 'bg-white text-foreground border-border'
-                : `bg-muted border-transparent hover:bg-accent hover:border-border ${
-                    isSuspended
-                      ? 'text-destructive/70 hover:text-destructive'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`
+                ? isSuspended
+                  ? 'text-destructive'
+                  : 'text-primary'
+                : `hover:text-slate-700 ${isSuspended ? 'text-destructive/60 hover:text-destructive' : 'text-slate-500'}`
             }`}
           >
+            {isActive && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute inset-0 bg-white rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.1)] border border-slate-200/60 -z-10"
+                initial={false}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
             <Icon
-              className={`w-4 h-4 shrink-0 ${
+              className={`w-4 h-4 shrink-0 transition-colors duration-200 ${
                 isActive && isSuspended
                   ? 'text-destructive'
                   : isActive
                     ? 'text-primary'
-                    : 'opacity-70'
+                    : 'text-slate-400 group-hover:text-slate-600'
               }`}
             />
-            {tab.label}
+            <span className="relative z-10">{tab.label}</span>
           </button>
         );
       })}

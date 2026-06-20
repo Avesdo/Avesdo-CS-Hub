@@ -198,7 +198,7 @@ export default function ClientDrawer() {
       ></div>
 
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-[700px] bg-white shadow-2xl flex flex-col border-l border-border ${drawerData?.isClosing ? 'animate-out slide-out-to-right fade-out' : 'animate-in slide-in-from-right'} duration-300 ease-in-out transform-gpu`}
+        className={`fixed top-0 right-0 h-full w-full max-w-[800px] bg-white shadow-2xl flex flex-col border-l border-border ${drawerData?.isClosing ? 'animate-out slide-out-to-right fade-out' : 'animate-in slide-in-from-right'} duration-300 ease-in-out transform-gpu`}
         style={{ zIndex: zIndexDrawer }}
       >
         {hasSuspendedProjects && (

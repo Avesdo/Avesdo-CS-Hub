@@ -1,5 +1,6 @@
 import React, { startTransition, useState, useMemo, useRef, useEffect, useCallback, useDeferredValue } from 'react';
 import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUrlState } from '../hooks/useUrlState';
 import { useAppStore } from '../store/useAppStore';
 import { ColumnFilter, DateFilter, StatusDropdown } from '../components/TableFilters';
@@ -10,6 +11,7 @@ import { TrendIndicator } from '../components/TrendIndicator';
 import { calculateProjectHealth } from '../utils/scoringUtils';
 import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
 import { useUI } from '../context/UIContext';
+import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
 import {
   Download,
@@ -26,10 +28,13 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
+  ArrowRight,
   Search,
   PlayCircle,
   PauseCircle,
   ListTodo,
+  List,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getHealthHistory } from '../api/dbService';
@@ -64,8 +69,8 @@ export default function ProjectTracker() {
   const [searchInput, setSearchInput] = useState(searchTerm);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const toolbarRef = useRef<HTMLDivElement>(null);
-  
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+
   const handleScroll = useCallback(() => {
     const scrollContainer = tableScrollRef.current;
     if (!scrollContainer) return;
@@ -169,15 +174,37 @@ export default function ProjectTracker() {
     }
   };
 
+  const getDefaultSort = useCallback((tab: string) => {
+    if (tab === 'No Due Date' || tab === 'Suspended') return { col: 'name', asc: true };
+    if (tab === 'All Released' || tab === 'All Projects') return { col: 'releaseDateVal', asc: false };
+    return { col: 'releaseDateVal', asc: true };
+  }, []);
+
   const handleSort = useCallback(
     (col: string) => {
-      if (sortCol === col) setSortAsc(!sortAsc);
-      else {
+      const defSort = getDefaultSort(activeTab);
+
+      if (sortCol === col) {
+        if (col === defSort.col) {
+          // If clicking the default column, just endlessly toggle ASC/DESC
+          setSortAsc(!sortAsc);
+        } else {
+          // For a custom column: ASC -> DESC -> DEFAULT
+          if (sortAsc) {
+            setSortAsc(false); // Go DESC
+          } else {
+            // Go back to DEFAULT
+            setSortCol(defSort.col);
+            setSortAsc(defSort.asc);
+          }
+        }
+      } else {
+        // First click on a new column: sort ASC
         setSortCol(col);
         setSortAsc(true);
       }
     },
-    [sortCol, sortAsc]
+    [sortCol, sortAsc, activeTab, getDefaultSort]
   );
 
   // 1. Pre-calculate Health Scores and Trend Data
@@ -656,10 +683,6 @@ export default function ProjectTracker() {
     setSelectedRows([]);
   };
 
-  const tableScrollRef = useRef<HTMLDivElement>(null);
-
-
-
   const handleOpenDrawer = useCallback(
     (type: string, id: string, data?: any) => {
       openDrawer(type as any, id, data);
@@ -670,85 +693,97 @@ export default function ProjectTracker() {
 
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
+      {/* FIXED HEADER */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-40">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+            Projects
+          </h1>
+          <p className="text-base text-muted-foreground mt-1">
+            Comprehensive tracker and reporting for all projects.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
+          <button
+            onClick={() => openModal('addProject')}
+            className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          >
+            <Plus className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:rotate-90" />
+            <span>Add Project</span>
+          </button>
+          <div className="relative rounded-lg" ref={exportMenuRef}>
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none"
+            >
+              <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              <span>Export</span>
+              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+            </button>
+            <AnimatePresence>
+            {showExportMenu && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
+              >
+                <div
+                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    universalExportCSV('Projects', projects, 'All_Projects');
+                  }}
+                >
+                  <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export All
+                </div>
+                <div
+                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
+                  }}
+                >
+                  <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export Filtered View
+                </div>
+              </motion.div>
+            )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI CARDS - COLLAPSIBLE ON SCROLL */}
       <div
         className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
       >
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-              Projects
-            </h1>
-            <p className="text-base text-muted-foreground mt-1">
-              Comprehensive tracker and reporting for all projects.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
-            <button
-              onClick={() => openModal('addProject')}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-            >
-              <Plus className="w-4 h-4 shrink-0" />
-              <span>Add Project</span>
-            </button>
-            <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
-              <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-              >
-                <Download className="w-4 h-4 shrink-0" />
-                <span>Export</span>
-                <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
-              </button>
-              {showExportMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
-                  <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Projects', projects, 'All_Projects');
-                    }}
-                  >
-                    <Database className="w-4 h-4 text-muted-foreground" /> Export All
-                  </div>
-                  <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
-                    }}
-                  >
-                    <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 pt-4">
           <div
             onClick={() => {
               clearAllFilters();
               setPtFilter('All Onboarding');
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '50ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                  <Target className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Onboarding
-                </span>
-                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                  Projects currently in onboarding
-                </span>
+                  <UITooltip content="Projects currently in onboarding">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <Target className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator
               current={onboardingCount}
@@ -762,22 +797,25 @@ export default function ProjectTracker() {
               clearAllFilters();
               setPtFilter('Actively Onboarding');
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '150ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-200"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-purple-500/10 text-purple-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Launch Pipeline
-                </span>
-                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                  Target launch &le; 45 days
-                </span>
+                  <UITooltip content="Target launch &le; 45 days">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <Zap className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
           </div>
@@ -788,22 +826,25 @@ export default function ProjectTracker() {
               setPtFilter('All Projects');
               setHealthFilter(['At Risk']);
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-red-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '250ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-200"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                  <AlertOctagon className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   At-Risk Projects
-                </span>
-                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                  Live projects scoring under 50
-                </span>
+                  <UITooltip content="Live projects scoring under 50">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <AlertOctagon className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
           </div>
@@ -814,22 +855,25 @@ export default function ProjectTracker() {
               setPtFilter('All Released');
               setStatusFilter(['Active', 'Suspended']);
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '350ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <span className="font-bold text-sm text-foreground flex items-center gap-1.5">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                  <Building className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Total Live Units
-                </span>
-                <span className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                  Scale of actively supported product
-                </span>
+                  <UITooltip content="Scale of actively supported product">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <Building className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
           </div>
@@ -839,21 +883,39 @@ export default function ProjectTracker() {
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
         {(() => {
           const toolbarContent = (
-            <div className="flex flex-col gap-1.5 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
+            <div className="flex flex-col gap-3 pb-3 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
-                  <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] mr-2 shrink-0">
+                  <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
                     <button
                       onClick={() => setViewMode('list')}
-                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'list' ? 'bg-slate-100 text-foreground shadow-sm' : 'text-slate-500 hover:text-foreground hover:bg-slate-50'}`}
+                      className={`relative flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${viewMode === 'list' ? 'text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                      List View
+                      {viewMode === 'list' && (
+                        <motion.div
+                          layoutId="viewModeIndicator"
+                          className="absolute inset-0 bg-white rounded-lg shadow-sm border border-slate-200/60 -z-10"
+                          initial={false}
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <List className="w-4 h-4" />
+                      <span>List View</span>
                     </button>
                     <button
                       onClick={() => setViewMode('calendar')}
-                      className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${viewMode === 'calendar' ? 'bg-slate-100 text-foreground shadow-sm' : 'text-slate-500 hover:text-foreground hover:bg-slate-50'}`}
+                      className={`relative flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${viewMode === 'calendar' ? 'text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                      Calendar
+                      {viewMode === 'calendar' && (
+                        <motion.div
+                          layoutId="viewModeIndicator"
+                          className="absolute inset-0 bg-white rounded-lg shadow-sm border border-slate-200/60 -z-10"
+                          initial={false}
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <Calendar className="w-4 h-4" />
+                      <span>Calendar</span>
                     </button>
                   </div>
                   {viewMode === 'list' &&
@@ -890,7 +952,7 @@ export default function ProjectTracker() {
                       placeholder="Search projects..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
-                      className="w-full pl-9 pr-9 py-2 bg-white border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm h-9"
+                      className="w-full pl-9 pr-9 py-2 bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm h-9"
                     />
                     {searchInput && (
                       <button
@@ -996,7 +1058,7 @@ export default function ProjectTracker() {
           return viewMode === 'list' ? (
             <>
               {toolbarContent}
-              <div className="flex-1 overflow-auto custom-thin-scroll border border-border rounded-xl shadow-sm bg-white relative flex flex-col">
+              <div className="flex-1 border border-border rounded-xl shadow-sm bg-white relative flex flex-col overflow-hidden">
                 <div
                   ref={tableScrollRef}
                   className="flex-1 overflow-auto custom-thin-scroll w-full relative"
@@ -1004,13 +1066,13 @@ export default function ProjectTracker() {
                   onWheel={(e) => {
                     const target = e.currentTarget;
                     if (e.deltaY < -10 && target.scrollTop <= 10) {
-              setIsScrolled(false);
-            }
+                      setIsScrolled(false);
+                    }
                   }}
                 >
                   <div className="w-full">
                     <ProjectTrackerTable
-                    parentRef={tableScrollRef}
+                      parentRef={tableScrollRef}
                       projects={filteredProjects}
                       baseProjects={baseProjects}
                       activeTab={activeTab}
@@ -1019,28 +1081,28 @@ export default function ProjectTracker() {
                       setSelectedRows={setSelectedRows}
                       sortCol={sortCol}
                       sortAsc={sortAsc}
-                    onSort={handleSort}
-                    onUpdateProject={handleUpdateProject}
-                    openDrawer={handleOpenDrawer}
-                    statusFilter={statusFilter}
-                    setStatusFilter={setStatusFilter}
-                    healthFilter={healthFilter}
-                    setHealthFilter={setHealthFilter}
-                    nameFilter={nameFilter}
-                    setNameFilter={setNameFilter}
-                    clientFilter={clientFilter}
-                    setClientFilter={setClientFilter}
-                    managerFilter={managerFilter}
-                    setManagerFilter={setManagerFilter}
-                    timelineFilter={timelineFilter}
-                    setTimelineFilter={setTimelineFilter}
-                    phaseFilter={phaseFilter}
-                    setPhaseFilter={setPhaseFilter}
-                    featuresFilter={featuresFilter}
-                    setFeaturesFilter={setFeaturesFilter}
-                    releaseDateFilter={releaseDateFilter}
-                    setReleaseDateFilter={setReleaseDateFilter}
-                  />
+                      onSort={handleSort}
+                      onUpdateProject={handleUpdateProject}
+                      openDrawer={handleOpenDrawer}
+                      statusFilter={statusFilter}
+                      setStatusFilter={setStatusFilter}
+                      healthFilter={healthFilter}
+                      setHealthFilter={setHealthFilter}
+                      nameFilter={nameFilter}
+                      setNameFilter={setNameFilter}
+                      clientFilter={clientFilter}
+                      setClientFilter={setClientFilter}
+                      managerFilter={managerFilter}
+                      setManagerFilter={setManagerFilter}
+                      timelineFilter={timelineFilter}
+                      setTimelineFilter={setTimelineFilter}
+                      phaseFilter={phaseFilter}
+                      setPhaseFilter={setPhaseFilter}
+                      featuresFilter={featuresFilter}
+                      setFeaturesFilter={setFeaturesFilter}
+                      releaseDateFilter={releaseDateFilter}
+                      setReleaseDateFilter={setReleaseDateFilter}
+                    />
                   </div>
                 </div>
                 {footerContent}
@@ -1056,8 +1118,8 @@ export default function ProjectTracker() {
                 onWheel={(e) => {
                   const target = e.currentTarget;
                   if (e.deltaY < -10 && target.scrollTop <= 10) {
-              setIsScrolled(false);
-            }
+                    setIsScrolled(false);
+                  }
                 }}
               >
                 <ProjectTrackerCalendar openDrawer={handleOpenDrawer} />

@@ -65,7 +65,7 @@ export const CreatableSelect: React.FC<CreatableSelectProps> = ({
         />
       </div>
       {isOpen && filteredOptions.length > 0 && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-white border border-border rounded-xl shadow-xl z-[99999] p-1 font-normal animate-in fade-in slide-in-from-top-1 duration-100 max-h-48 overflow-y-auto custom-thin-scroll">
+        <div className="absolute top-full left-0 mt-1 w-full bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] p-1 font-normal animate-in fade-in slide-in-from-top-1 duration-200 max-h-48 overflow-y-auto custom-thin-scroll">
           {filteredOptions.map((opt) => (
             <div
               key={opt}
@@ -73,7 +73,7 @@ export const CreatableSelect: React.FC<CreatableSelectProps> = ({
                 onChange(opt);
                 setIsOpen(false);
               }}
-              className="px-3 py-2 flex items-center justify-between hover:bg-slate-50 cursor-pointer rounded-md text-sm transition-colors text-foreground"
+              className="px-3 py-2 flex items-center justify-between cursor-pointer rounded-md text-sm transition-colors text-foreground hover:bg-primary/5 hover:text-primary"
             >
               {opt}
             </div>

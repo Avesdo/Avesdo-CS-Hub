@@ -1,7 +1,9 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import React, { useState, useRef, useCallback , useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import {
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Calendar,
   ChevronRight,
   CheckSquare,
@@ -10,6 +12,7 @@ import {
   Info,
   MoreHorizontal,
   Plus,
+  CheckCircle2,
 } from 'lucide-react';
 import { getSettingBadge, getHealthBadge, getFeatureBadgeProps } from '../../utils/uiUtils';
 import { TruncatedText } from '../ui/TruncatedText';
@@ -122,10 +125,10 @@ const ProjectRow = React.memo(({
 }: any) => {
   return (
     <tr
-              key={virtualRow.index}
-              className={`hover:bg-slate-50 transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white'}`}
-              onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
-            >
+      key={virtualRow.index}
+      className={`transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
+      onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
+    >
               <td
                 className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2"
                 onClick={stopProp}
@@ -137,18 +140,18 @@ const ProjectRow = React.memo(({
                   className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
                 />
               </td>
-              <td className="sticky left-12 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2 font-semibold text-foreground">
-                <TruncatedText
-                  text={p.name || 'Unnamed Project'}
-                  className="max-w-[250px] 2xl:max-w-[400px] group-hover:text-primary transition-colors"
-                />
-              </td>
-              <td className="px-4 py-2 text-muted-foreground">
-                <TruncatedText
-                  text={p.clients?.join(', ') || 'None'}
-                  className="max-w-[200px]"
-                />
-              </td>
+      <td className="sticky left-12 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
+        <TruncatedText
+          text={p.name || 'Unnamed Project'}
+          className="max-w-[280px] 2xl:max-w-[450px] group-hover:text-primary transition-colors"
+        />
+      </td>
+      <td className="px-4 py-2 text-slate-500">
+        <TruncatedText
+          text={p.clients?.join(', ') || 'None'}
+          className="max-w-[200px]"
+        />
+      </td>
               {showHealthScore && (
                 <td
                   className="px-4 py-2 cursor-pointer"
@@ -179,10 +182,10 @@ const ProjectRow = React.memo(({
                   onChange={(val, str) => {
                     onUpdateProject(p.id, 'releaseDateVal', val);
                   }}
-                  className="w-auto"
-                  trigger={
-                    <div className="flex items-center gap-2 hover:text-primary transition-colors hover:bg-slate-100 px-2 py-1 -ml-2 rounded-md group">
-                      <Calendar className="w-4 h-4 opacity-50" />
+          className="w-auto"
+          trigger={
+            <div className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md group">
+              <Calendar className="w-4 h-4 opacity-50" />
                       <span className="whitespace-nowrap">
                         {p.releaseDateVal
                           ? new Date(p.releaseDateVal).toLocaleDateString('en-US', {
@@ -207,13 +210,13 @@ const ProjectRow = React.memo(({
                       value: m,
                     }))}
                     onChange={(val) => onUpdateProject(p.id, 'assignee', val)}
-                    hideCheckmark={true}
-                    trigger={
-                      <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                        {getSettingBadge('managers', p.assignee, settings)}
-                      </div>
-                    }
-                  />
+            hideCheckmark={true}
+            trigger={
+              <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                {getSettingBadge('managers', p.assignee, settings)}
+              </div>
+            }
+          />
                 </div>
               </td>
               <td className="px-4 py-2" onClick={stopProp}>
@@ -225,13 +228,13 @@ const ProjectRow = React.memo(({
                       value: s,
                     }))}
                     onChange={(val) => onUpdateProject(p.id, 'projectStatus', val)}
-                    hideCheckmark={true}
-                    trigger={
-                      <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                        {getSettingBadge('statuses', p.projectStatus, settings)}
-                      </div>
-                    }
-                  />
+            hideCheckmark={true}
+            trigger={
+              <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                {getSettingBadge('statuses', p.projectStatus, settings)}
+              </div>
+            }
+          />
                 </div>
               </td>
               {showTimeline && (
@@ -246,13 +249,13 @@ const ProjectRow = React.memo(({
                         })
                       )}
                       onChange={(val) => onUpdateProject(p.id, 'timelineStatus', val)}
-                      hideCheckmark={true}
-                      trigger={
-                        <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                          {getSettingBadge('timelines', p.timelineStatus, settings)}
-                        </div>
-                      }
-                    />
+              hideCheckmark={true}
+              trigger={
+                <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                  {getSettingBadge('timelines', p.timelineStatus, settings)}
+                </div>
+              }
+            />
                   </div>
                 </td>
               )}
@@ -268,27 +271,21 @@ const ProjectRow = React.memo(({
                         })
                       )}
                       onChange={(val) => onUpdateProject(p.id, 'onboardingPhase', val)}
-                      hideCheckmark={true}
-                      trigger={
-                        <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                          {getSettingBadge('phases', p.onboardingPhase, settings)}
-                        </div>
-                      }
-                    />
+              hideCheckmark={true}
+              trigger={
+                <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                  {getSettingBadge('phases', p.onboardingPhase, settings)}
+                </div>
+              }
+            />
                   </div>
                 </td>
               )}
-              <td className="px-4 py-2 text-right font-medium text-foreground">
+              <td className="px-4 py-2 text-center font-medium text-foreground">
                 {p.units ? parseInt(p.units).toLocaleString() : '0'}
               </td>
               {showFeatures && (
-                <td
-                  className="px-4 py-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openDrawer('project', p.id, { targetTab: 'features' });
-                  }}
-                >
+                <td className="px-4 py-2">
                   {(() => {
                     const pt_features = [
                       'Contracts',
@@ -307,18 +304,37 @@ const ProjectRow = React.memo(({
                     const fCount = Array.isArray(p.features) ? p.features.length : 0;
                     const pct = Math.round((fCount / fTotal) * 100);
                     const colors = getFeatureBadgeProps(pct, settings);
+                    
+                    const colorMap: Record<string, string> = {
+                      'bg-lime-500': 'text-lime-500',
+                      'bg-orange-500': 'text-orange-500',
+                      'bg-red-500': 'text-red-500'
+                    };
+                    const textColor = colorMap[colors.fill] || 'text-primary';
+                    const radius = 6.5;
+                    const circumference = 2 * Math.PI * radius;
+                    const dasharray = `${(pct / 100) * circumference} ${circumference}`;
+
                     return (
-                      <div className="flex items-center justify-center gap-2.5 group/feature cursor-pointer">
-                        <div className="w-[50px] shrink-0 bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${colors.fill} transition-all duration-500`}
-                            style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
-                          ></div>
+                      <div className="flex items-center justify-center gap-2.5 px-2 py-1 -ml-2">
+                        <div className="relative w-4 h-4 flex items-center justify-center -rotate-90">
+                          <svg className="w-full h-full" viewBox="0 0 16 16">
+                            <circle cx="8" cy="8" r={radius} fill="none" className="stroke-slate-200" strokeWidth="2.5" />
+                            <circle 
+                              cx="8" 
+                              cy="8" 
+                              r={radius} 
+                              fill="none" 
+                              className={`transition-all duration-500 ${textColor}`} 
+                              strokeWidth="2.5" 
+                              strokeDasharray={dasharray} 
+                              strokeLinecap="round" 
+                              stroke="currentColor" 
+                            />
+                          </svg>
                         </div>
-                        <span
-                          className={`text-[11px] font-bold tabular-nums w-8 text-right transition-colors ${colors.text} group-hover/feature:text-primary`}
-                        >
-                          {pct}%
+                        <span className="text-[11px] font-bold tabular-nums w-6 text-left text-slate-500">
+                          {fCount}/{fTotal}
                         </span>
                       </div>
                     );
@@ -429,6 +445,13 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
     overscan: 35,
   });
 
+  // Force a re-render after the initial mount so the virtualizer 
+  // can correctly read the parentRef's dimensions now that it is attached to the DOM.
+  const [, forceUpdate] = useState({});
+  useEffect(() => {
+    forceUpdate({});
+  }, []);
+
   const virtualItems = virtualizer.getVirtualItems();
   const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
   const paddingBottom = virtualItems.length > 0 
@@ -444,6 +467,28 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
 
     const stopProp = (e: React.MouseEvent) => e.stopPropagation();
 
+    const getDefaultSort = (tab: string) => {
+      if (tab === 'No Due Date' || tab === 'Suspended') return { col: 'name', asc: true };
+      if (tab === 'All Released' || tab === 'All Projects') return { col: 'releaseDateVal', asc: false };
+      return { col: 'releaseDateVal', asc: true };
+    };
+
+    const renderSortIcon = (colName: string) => {
+      const isCurrentlySorted = sortCol === colName;
+      const defSort = getDefaultSort(activeTab);
+      const isDefaultState = isCurrentlySorted && sortCol === defSort.col && sortAsc === defSort.asc;
+    
+      if (isDefaultState) {
+        return <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover/th:opacity-100 ml-1 transition-opacity shrink-0" />;
+      }
+    
+      if (isCurrentlySorted) {
+        return sortAsc ? <ArrowUp className="w-3.5 h-3.5 text-primary ml-1 shrink-0" /> : <ArrowDown className="w-3.5 h-3.5 text-primary ml-1 shrink-0" />;
+      }
+      
+      return <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover/th:opacity-100 ml-1 transition-opacity shrink-0" />;
+    };
+
     return (
       <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-fixed">
 
@@ -458,13 +503,14 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
               />
             </th>
-            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 group/th">
+            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-[280px] min-w-[280px] group/th">
               <div className="flex items-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('name')}
                 >
                   Project Name
+                  {renderSortIcon('name')}
                 </div>
                 {setNameFilter && (
                   <ColumnFilter
@@ -479,10 +525,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
             <th className="border-b border-border px-4 py-2 w-[250px] max-w-[250px] group/th">
               <div className="flex items-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('clients')}
                 >
                   Client(s)
+                  {renderSortIcon('clients')}
                 </div>
                 {setClientFilter && (
                   <ColumnFilter
@@ -498,10 +545,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               <th className="border-b border-border px-4 py-2 min-w-[160px] group/th">
                 <div className="flex items-center justify-center">
                   <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                     onClick={() => onSort('healthScore')}
                   >
                     Health Score
+                    {renderSortIcon('healthScore')}
                   </div>
                   {setHealthFilter && (
                     <ColumnFilter
@@ -516,10 +564,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
             <th className="border-b border-border px-4 py-2 min-w-[110px] group/th">
               <div className="flex items-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('releaseDateVal')}
                 >
                   Release Date
+                  {renderSortIcon('releaseDateVal')}
                 </div>
                 {setReleaseDateFilter && (
                   <DateFilter dateRange={releaseDateFilter} setDateRange={setReleaseDateFilter} />
@@ -529,10 +578,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
             <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
               <div className="flex items-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('assignee')}
                 >
                   Manager
+                  {renderSortIcon('assignee')}
                 </div>
                 {setManagerFilter && (
                   <ColumnFilter
@@ -546,10 +596,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
             <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
               <div className="flex items-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('projectStatus')}
                 >
                   Project Status
+                  {renderSortIcon('projectStatus')}
                 </div>
                 {setStatusFilter && (
                   <ColumnFilter
@@ -564,10 +615,11 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
                 <div className="flex items-center">
                   <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                     onClick={() => onSort('timelineStatus')}
                   >
                     Schedule Status
+                    {renderSortIcon('timelineStatus')}
                   </div>
                   {setTimelineFilter && (
                     <ColumnFilter
@@ -583,12 +635,12 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               <th className="border-b border-border px-4 py-2 min-w-[190px] group/th">
                 <div className="flex items-center">
                   <div
-                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
+                    className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                     onClick={() => onSort('onboardingPhase')}
                   >
                     Implementation Status
-                  </div>
-                  {setPhaseFilter && (
+                    {renderSortIcon('onboardingPhase')}
+                  </div>    {setPhaseFilter && (
                     <ColumnFilter
                       options={allPhases}
                       selected={phaseFilter || []}
@@ -599,12 +651,13 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </th>
             )}
             <th className="border-b border-border px-4 py-2 w-[80px] group/th">
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-center">
                 <div
-                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap"
+                  className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap flex items-center"
                   onClick={() => onSort('units')}
                 >
-                  Live Units
+                  Units
+                  {renderSortIcon('units')}
                 </div>
               </div>
             </th>
@@ -627,7 +680,8 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
         </thead>
         ), [
           selectedRows.length, projects.length, toggleAll,
-          onSort, setNameFilter, nameFilter, allNames,
+          onSort, sortCol, sortAsc, activeTab,
+          setNameFilter, nameFilter, allNames,
           setClientFilter, clientFilter, allClients,
           showHealthScore, setHealthFilter, healthFilter,
           setReleaseDateFilter, releaseDateFilter,
@@ -676,29 +730,21 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
             </tr>
           )}
           {projects.length === 0 && (
-            <tr>
-              <td colSpan={12} className="px-6 py-12">
-                <EmptyState
-                  icon={CheckSquare}
-                  title="No projects found"
-                  subtitle="Try adjusting your filters or tab selection."
-                />
+            <tr className="bg-white">
+              <td className="sticky left-0 z-20 bg-white border-r-0" />
+              <td className="sticky left-12 z-20 bg-white border-r-0" />
+              <td colSpan={columnCount > 2 ? columnCount - 2 : 10} className="px-6 py-24">
+                <div className="flex justify-center -ml-[328px]">
+                  <EmptyState
+                    icon={CheckSquare}
+                    title="No projects found"
+                    subtitle="Try adjusting your filters or tab selection."
+                  />
+                </div>
               </td>
             </tr>
           )}
         </tbody>
-        {footerContent && (
-          <tfoot className="sticky bottom-0 z-40 bg-slate-50">
-            <tr>
-              <td
-                colSpan={100}
-                className="px-[128px] py-[12px] h-[45px] border-t border-border shadow-[0_-1px_2px_rgba(0,0,0,0.02)] rounded-b-xl"
-              >
-                {footerContent}
-              </td>
-            </tr>
-          </tfoot>
-        )}
       </table>
     );
   }

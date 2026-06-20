@@ -12,7 +12,7 @@ export function TruncatedText({
   text,
   className = '',
   containerClassName = 'w-full',
-  tooltipClassName = 'bg-slate-100 text-slate-800 border border-slate-200 shadow-xl text-sm px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium',
+  tooltipClassName = 'bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200 shadow-xl text-xs px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium',
 }: TruncatedTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -23,9 +23,13 @@ export function TruncatedText({
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (containerRef.current && textRef.current) {
-      // For truncate, compare scrollWidth against clientWidth to see if it overflowed horizontally
+      // A highly robust way to check truncation is comparing the raw text width to the container width.
+      const textWidth = textRef.current.getBoundingClientRect().width;
+      const containerWidth = containerRef.current.getBoundingClientRect().width;
+      
       const isActuallyTruncated =
-        containerRef.current.scrollWidth > containerRef.current.clientWidth;
+        containerRef.current.scrollWidth > containerRef.current.clientWidth || 
+        textWidth > containerWidth;
 
       setIsTruncated(isActuallyTruncated);
 
@@ -57,7 +61,7 @@ export function TruncatedText({
         isTruncated &&
         createPortal(
           <div
-            className={`fixed ${tooltipClassName}`}
+            className={`fixed ${tooltipClassName} animate-in fade-in zoom-in-95 duration-100`}
             style={{
               top: coords.y,
               left: coords.x,

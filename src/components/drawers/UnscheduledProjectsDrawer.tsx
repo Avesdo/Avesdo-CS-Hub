@@ -39,27 +39,49 @@ export default function UnscheduledProjectsDrawer() {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white flex flex-col border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 ease-in-out transform-gpu`}
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-slate-50 flex flex-col border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 ease-in-out transform-gpu`}
         style={{ zIndex: zIndexDrawer }}
       >
-        <div className="px-6 py-5 border-b border-border bg-slate-50 flex items-start justify-between shrink-0">
-          <div className="min-w-0 pr-4">
-            <h2 className="text-xl font-bold text-foreground tracking-tight truncate">
-              Unscheduled Projects
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1 truncate">
-              Projects missing a release date
-            </p>
+        <div className="px-6 py-6 border-b border-border bg-white flex flex-col shrink-0 relative overflow-hidden shadow-sm">
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 z-0"></div>
+          
+          <div className="flex items-start justify-between relative z-10">
+            <div className="flex items-center gap-3 min-w-0 pr-4">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner bg-orange-50 text-orange-500 border-orange-500/20"
+              >
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <h2 className="text-xl font-bold text-foreground tracking-tight truncate">
+                  Unscheduled Projects
+                </h2>
+                <p className="text-sm text-muted-foreground mt-0.5 font-medium truncate">
+                  Projects missing a release date
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={closeDrawer}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-full transition-all duration-200 active:scale-95 shrink-0 bg-white shadow-sm border border-slate-200 z-10"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={closeDrawer}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          <div className="mt-6 flex items-center justify-between relative z-10">
+             <span className="text-sm font-semibold text-muted-foreground shrink-0">
+               {unscheduledProjects.length} Projects
+             </span>
+             <div className="flex items-center gap-3 flex-1 ml-4">
+               <div className="h-px bg-border flex-1"></div>
+             </div>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-thin-scroll">
+
+        <div className="flex-1 overflow-y-auto p-5 custom-thin-scroll">
           <div className="flex flex-col gap-3">
             {unscheduledProjects.length > 0 ? (
               unscheduledProjects.map((p) => {
@@ -69,7 +91,7 @@ export default function UnscheduledProjectsDrawer() {
                   <div
                     key={p.id}
                     onClick={() => handleProjectClick(p.id)}
-                    className="bg-card border border-border rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 cursor-pointer group"
+                    className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 cursor-pointer group flex flex-col relative overflow-hidden"
                   >
                     <div className="flex justify-between items-start mb-1">
                       <h3

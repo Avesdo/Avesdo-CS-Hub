@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/useAppStore';
 import { Doughnut, Line } from 'react-chartjs-2';
 import {
@@ -90,6 +91,25 @@ export default function Dashboard() {
   const [featTab, setFeatTab] = useState<'active' | 'onb'>('active');
   const [hoveredTimeline, setHoveredTimeline] = useState<string | null>(null);
   const [hoveredHealth, setHoveredHealth] = useState<'healthy' | 'warning' | 'risk' | null>(null);
+
+  const [isScrolled, setIsScrolled] = useState(false);
+  const dashboardScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    const scrollContainer = dashboardScrollRef.current;
+    if (!scrollContainer) return;
+    const scrollTop = scrollContainer.scrollTop;
+    
+    setIsScrolled(prev => {
+      if (scrollTop > 40 && !prev) {
+        if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+          return true;
+        }
+      }
+      if (scrollTop <= 10 && prev) return false;
+      return prev;
+    });
+  }, []);
 
   const amMenuRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -644,9 +664,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-1 overflow-y-auto px-4 pt-0 md:px-6 md:pt-0 flex-col bg-white relative">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 shrink-0 mt-2 relative z-30">
+    <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
+      {/* FIXED HEADER */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-40">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             Executive Dashboard
@@ -658,21 +678,28 @@ export default function Dashboard() {
 
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
           {/* Global View Selector */}
-          <div className="relative shadow-sm rounded-lg" ref={amMenuRef}>
+          <div className="relative rounded-lg" ref={amMenuRef}>
             <button
               onClick={() => setShowAmMenu(!showAmMenu)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-200 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-slate-400/20"
             >
               <div className="flex items-center gap-1.5 flex-1 text-left">
-                <span className="text-slate-400 font-medium">View:</span>
+                <span className="text-slate-500 font-medium">View:</span>
                 <span className="truncate text-foreground font-bold" title={managerFilter}>{managerFilter}</span>
               </div>
-              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
             </button>
+            <AnimatePresence>
             {showAmMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-2 shadow-xl border border-border rounded-xl min-w-[150px] z-[90]">
+              <motion.div 
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[150px] z-[90]"
+              >
                 <div
-                  className="px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-100 cursor-pointer"
+                  className="group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary"
                   onClick={() => {
                     setManagerFilter('All Managers');
                     setShowAmMenu(false);
@@ -680,11 +707,11 @@ export default function Dashboard() {
                 >
                   All Managers
                 </div>
-                <div className="border-t border-border mt-1 pt-1"></div>
+                <div className="border-t border-slate-100 my-1"></div>
                 {allManagers.map((m) => (
                   <div
                     key={m}
-                    className="px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-100 cursor-pointer"
+                    className="group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5"
                     onClick={() => {
                       setManagerFilter(m);
                       setShowAmMenu(false);
@@ -693,64 +720,77 @@ export default function Dashboard() {
                     {m}
                   </div>
                 ))}
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
           {/* Create Shortcut */}
-          <div className="relative shadow-sm rounded-lg" ref={addMenuRef}>
+          <div className="relative rounded-lg" ref={addMenuRef}>
             <button
               onClick={() => setShowAddMenu(!showAddMenu)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-200 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 text-slate-700 shadow-sm px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <Plus className="w-4 h-4 shrink-0" />
+              <Plus className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:rotate-90" />
               <span>Create</span>
             </button>
+            <AnimatePresence>
             {showAddMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[130px] z-[90]">
+              <motion.div 
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[150px] z-[90]"
+              >
                 <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
                   onClick={() => {
                     openModal('addClient');
                     setShowAddMenu(false);
                   }}
                 >
-                  <Building className="w-4 h-4 text-muted-foreground" /> Client
+                  <Building className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Client
                 </div>
                 <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
                   onClick={() => {
                     openModal('addProject');
                     setShowAddMenu(false);
                   }}
                 >
-                  <HousePlus className="w-4 h-4 text-muted-foreground" /> Project
+                  <HousePlus className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Project
                 </div>
                 <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
                   onClick={() => {
                     openModal('addService');
                     setShowAddMenu(false);
                   }}
                 >
-                  <Briefcase className="w-4 h-4 text-muted-foreground" /> Service
+                  <Briefcase className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Service
                 </div>
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
 
         </div>
       </div>
 
-      {/* TOP 4 KPI TILES */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 relative z-10">
+      {/* KPI CARDS - COLLAPSIBLE ON SCROLL */}
+      <div
+        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 pt-4">
         <div
           onClick={() => navigate('/clients', { state: { kpiFilter: 'active' } })}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-lime-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-lime-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '50ms' }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 group-hover:bg-lime-500/10 rounded-full blur-xl transition-colors duration-200"></div>
+          <div className="flex items-center justify-between mb-3 relative z-10">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-md bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
                 <Activity className="w-4 h-4" />
@@ -786,10 +826,11 @@ export default function Dashboard() {
           onClick={() =>
             navigate('/projects', { state: { ptTab: 'All Projects', kpiFilter: 'units' } })
           }
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '150ms' }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
+          <div className="flex items-center justify-between mb-3 relative z-10">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
                 <Building className="w-4 h-4" />
@@ -812,10 +853,11 @@ export default function Dashboard() {
           onClick={() =>
             navigate('/projects', { state: { ptTab: 'Actively Onboarding' } })
           }
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '250ms' }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-200"></div>
+          <div className="flex items-center justify-between mb-3 relative z-10">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-md bg-purple-500/10 text-purple-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
                 <TrendingUp className="w-4 h-4" />
@@ -845,10 +887,11 @@ export default function Dashboard() {
               state: { svTab: 'Won', dateRange: { start: `${y}-${sm}`, end: `${y}-${em}` } },
             });
           }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '350ms' }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-xl transition-colors duration-200"></div>
+          <div className="flex items-center justify-between mb-3 relative z-10">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
                 <DollarSign className="w-4 h-4" />
@@ -867,9 +910,16 @@ export default function Dashboard() {
           <TrendIndicator current={qRev} previous={prevQRev} prefix="$" periodText="last quarter" />
         </div>
       </div>
+      </div>
 
-            {/* MAIN BENTO GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 relative z-10 animate-in fade-in duration-700 delay-300 fill-mode-both">
+      {/* SCROLLABLE MAIN CONTENT */}
+      <div 
+        ref={dashboardScrollRef}
+        onScroll={handleScroll}
+        className="flex-1 min-h-0 flex flex-col px-4 md:px-6 overflow-y-auto pb-6 relative scroll-smooth custom-thin-scroll"
+      >
+        {/* MAIN BENTO GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 relative z-10 animate-in fade-in duration-700 delay-300 fill-mode-both">
         
         {/* LEFT COLUMN: Data & Analytics (2/3 Width) */}
         <div className="lg:col-span-2 flex flex-col gap-5">
@@ -1665,6 +1715,7 @@ export default function Dashboard() {
           </div>
         </div>
         </div>
+      </div>
       </div>
     </div>
   );

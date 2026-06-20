@@ -102,7 +102,7 @@ export default function DashDrilldownDrawer() {
           </div>
 
           <div className="mt-6 flex items-center justify-between relative z-10">
-             <span className="text-xs font-bold text-muted-foreground tracking-wider shrink-0">
+             <span className="text-sm font-semibold text-muted-foreground shrink-0">
                {projects?.length ? `${projects.length} Projects` : rawClients?.length ? `${rawClients.length} Clients` : '0 Items'}
              </span>
              <div className="flex items-center gap-3 flex-1 ml-4">
@@ -205,7 +205,7 @@ export default function DashDrilldownDrawer() {
                               {getSettingBadge('managers', p.assignee, settings)}
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
                               <Calendar className="w-3.5 h-3.5 shrink-0" />
                               {p.releaseDateVal
                                 ? new Date(p.releaseDateVal).toLocaleDateString('en-US', {

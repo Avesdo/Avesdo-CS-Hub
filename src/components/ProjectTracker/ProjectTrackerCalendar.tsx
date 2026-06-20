@@ -10,6 +10,7 @@ import {
 import { useAppStore } from '../../store/useAppStore';
 import { getSafeHex, hexToRgba } from '../../utils/uiUtils';
 import { Select } from '../ui/Select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 interface ProjectTrackerCalendarProps {
   openDrawer: (type: string, id: string, data?: any) => void;
@@ -19,21 +20,9 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
   ({ openDrawer }) => {
     const projects = useAppStore(state => state.projects);
   const settings = useAppStore(state => state.settings);
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [activePopover, setActivePopover] = useState<string | null>(null);
-
-    React.useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && activePopover) {
-          e.stopPropagation();
-          setActivePopover(null);
-        }
-      };
-      if (activePopover) {
-        window.addEventListener('keydown', handleKeyDown, true);
-      }
-      return () => window.removeEventListener('keydown', handleKeyDown, true);
-    }, [activePopover]);
+    const currentDateState = useState(new Date());
+    const currentDate = currentDateState[0];
+    const setCurrentDate = currentDateState[1];
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -92,12 +81,9 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
         <div
           key={p.id}
           onClick={() => openDrawer('project', p.id)}
-          className="p-2 mb-1.5 rounded-md border border-l-4 shadow-sm cursor-pointer hover:-translate-y-[1px] hover:shadow-md transition-all group"
+          className="p-2 mb-1.5 rounded-lg border border-transparent shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all group"
           style={{
-            borderLeftColor: borderHex,
-            borderTopColor: hexToRgba(borderHex, 0.3),
-            borderRightColor: hexToRgba(borderHex, 0.3),
-            borderBottomColor: hexToRgba(borderHex, 0.3),
+            borderLeft: `4px solid ${borderHex}`,
             backgroundColor: hexToRgba(borderHex, 0.08),
           }}
         >
@@ -120,7 +106,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
       // Previous month trailing cells
       for (let i = firstDay - 1; i >= 0; i--) {
         cells.push(
-          <div key={`prev-${i}`} className="bg-slate-50/30 p-2 min-h-[120px]">
+          <div key={`prev-${i}`} className="bg-slate-100 p-2 min-h-[120px]">
             <div className="text-xs font-medium mb-2 text-slate-300">{daysInPrevMonth - i}</div>
           </div>
         );
@@ -140,7 +126,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
 
         const isWknd = (firstDay + day - 1) % 7 === 0 || (firstDay + day - 1) % 7 === 6;
         let dayBgClass = 'bg-white';
-        if (isToday(day, month, year)) dayBgClass = 'bg-primary/5 ring-inset ring-2 ring-primary';
+        if (isToday(day, month, year)) dayBgClass = 'bg-primary/5';
         else if (isWknd) dayBgClass = 'bg-slate-50';
 
         const maxVisible = 3;
@@ -153,7 +139,9 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
             className={`${dayBgClass} p-2 min-h-[120px] flex flex-col relative`}
           >
             <div
-              className={`text-xs font-bold mb-2 ${isToday(day, month, year) ? 'text-primary' : 'text-foreground opacity-70'}`}
+              className={`text-xs font-bold mb-2 flex items-center justify-center w-7 h-7 rounded-full ${
+                isToday(day, month, year) ? 'bg-primary text-white shadow-sm' : 'text-slate-500'
+              }`}
             >
               {day}
             </div>
@@ -162,35 +150,21 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
               {visibleProjs.map((p) => renderProjectBlock(p))}
               {hiddenCount > 0 && (
                 <div className="relative w-full text-center mt-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActivePopover(activePopover === dateStr ? null : dateStr);
-                    }}
-                    className="text-[11px] font-bold text-muted-foreground hover:text-primary transition-colors bg-white border border-border hover:bg-slate-50 w-full py-1 rounded-md shadow-sm active:scale-95 duration-200"
-                  >
-                    +{hiddenCount} More
-                  </button>
-
-                  {activePopover === dateStr && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-[80]"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActivePopover(null);
-                        }}
-                      />
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-56 p-2 bg-white shadow-xl border border-border rounded-xl z-[90]">
-                        <div className="text-xs font-bold text-muted-foreground mb-2 pb-2 border-b border-border text-center">
-                          {monthNames[month]} {day}, {year}
-                        </div>
-                        <div className="max-h-64 overflow-y-auto space-y-1 text-left flex flex-col custom-thin-scroll">
-                          {dayProjects.map((p) => renderProjectBlock(p))}
-                        </div>
+                  <Popover modal={false}>
+                    <PopoverTrigger asChild>
+                      <button className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors bg-transparent hover:bg-slate-50 w-full py-1 rounded-md active:scale-95 duration-200">
+                        +{hiddenCount} More
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-2 shadow-xl border-slate-200 rounded-xl" align="center" side="bottom">
+                      <div className="text-xs font-bold text-slate-500 mb-2 pb-2 border-b border-slate-100 text-center">
+                        {monthNames[month]} {day}, {year}
                       </div>
-                    </>
-                  )}
+                      <div className="max-h-64 overflow-y-auto space-y-1 text-left flex flex-col custom-thin-scroll">
+                        {dayProjects.map((p) => renderProjectBlock(p))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               )}
             </div>
@@ -203,7 +177,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
       const trailingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
       for (let i = 1; i <= trailingCells; i++) {
         cells.push(
-          <div key={`next-${i}`} className="bg-slate-50/30 p-2 min-h-[120px]">
+          <div key={`next-${i}`} className="bg-slate-100 p-2 min-h-[120px]">
             <div className="text-xs font-medium mb-2 text-slate-300">{i}</div>
           </div>
         );
@@ -244,7 +218,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
 
     return (
       <div className="flex-1 bg-white sm:rounded-b-xl border-x border-b border-border flex flex-col">
-        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-slate-50 sm:rounded-b-none sticky top-0 z-20">
+        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/95 backdrop-blur-md sm:rounded-b-none sticky top-0 z-20 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 bg-white rounded-lg border border-border shadow-sm p-1">
               <button
@@ -273,7 +247,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
                 onChange={(val) => setCurrentDate(new Date(year, parseInt(val), 1))}
                 dropdownWidth="min-w-[140px]"
                 trigger={
-                  <div className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
+                  <div className="text-xl font-bold text-slate-800 hover:text-primary transition-colors cursor-pointer">
                     {monthNames[month]}
                   </div>
                 }
@@ -284,7 +258,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
                 onChange={(val) => setCurrentDate(new Date(parseInt(val), month, 1))}
                 dropdownWidth="min-w-[100px]"
                 trigger={
-                  <div className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
+                  <div className="text-xl font-bold text-slate-800 hover:text-primary transition-colors cursor-pointer">
                     {year}
                   </div>
                 }
@@ -294,27 +268,37 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
 
           <button
             onClick={() => openDrawer('unscheduledProjects', '')}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg shadow-sm hover:border-primary/50 hover:shadow-md transition-all group"
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all group ${
+              unscheduledProjects.length > 0 
+                ? 'bg-orange-50/50 border-orange-200 hover:bg-orange-50 hover:border-orange-300 shadow-sm'
+                : 'bg-transparent border-transparent hover:bg-slate-100 text-slate-600'
+            }`}
           >
-            <AlertCircle className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="font-semibold text-sm text-foreground">Unscheduled</span>
-            <span className="ml-1 bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10 px-2 py-0.5 rounded-full text-xs font-bold group-hover:bg-red-200 group-hover:text-red-700 transition-colors">
-              {unscheduledProjects.length}
-            </span>
+            <AlertCircle className={`w-4 h-4 transition-colors ${unscheduledProjects.length > 0 ? 'text-orange-500 group-hover:scale-110 duration-300' : 'text-slate-400 group-hover:text-slate-600'}`} />
+            <span className={`font-semibold text-sm ${unscheduledProjects.length > 0 ? 'text-orange-900' : ''}`}>Unscheduled</span>
+            {unscheduledProjects.length > 0 && (
+              <span className="ml-1 bg-orange-100 text-orange-700 ring-1 ring-inset ring-orange-600/20 px-2 py-0.5 rounded-full text-xs font-bold group-hover:bg-orange-200 transition-colors">
+                {unscheduledProjects.length}
+              </span>
+            )}
           </button>
         </div>
 
         <div className="flex-1">
           <div className="min-w-[800px]">
-            <div className="grid grid-cols-7 border-b border-border bg-white sticky top-[72px] z-10">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
-                <div
-                  key={d}
-                  className={`py-3 text-center text-sm font-semibold text-muted-foreground ${i < 6 ? 'border-r border-border' : ''}`}
-                >
-                  {d}
-                </div>
-              ))}
+            <div className="grid grid-cols-7 border-b border-slate-100 bg-white/90 backdrop-blur-md sticky top-[72px] z-10 shadow-sm">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => {
+                const isCurrentMonth = month === new Date().getMonth() && year === new Date().getFullYear();
+                const isTodayCol = isCurrentMonth && i === new Date().getDay();
+                return (
+                  <div
+                    key={d}
+                    className={`py-3 text-center text-sm font-semibold ${isTodayCol ? 'text-primary' : 'text-slate-500'} ${i < 6 ? 'border-r border-slate-100/50' : ''}`}
+                  >
+                    {d}
+                  </div>
+                );
+              })}
             </div>
             <div className="grid grid-cols-7 bg-border gap-[1px]">{renderCalendarCells()}</div>
           </div>

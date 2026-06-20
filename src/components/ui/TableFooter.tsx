@@ -12,7 +12,7 @@ export function TableFooter({
   rightContent,
 }: TableFooterProps) {
   return (
-    <div className="flex justify-between items-center px-[128px] py-3 bg-slate-50 border-t border-border shrink-0 z-[60]">
+    <div className="flex justify-between items-center px-6 py-3 bg-slate-50 border-t border-border shrink-0 z-[60]">
       <span className="text-[11px] capitalize tracking-wider text-muted-foreground font-bold">
         {label}:{' '}
         <span className="text-foreground text-[13px] ml-1">{totalItems.toLocaleString()}</span>
