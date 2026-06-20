@@ -694,7 +694,7 @@ export default function ProjectTracker() {
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       {/* FIXED HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-40">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-2 bg-white z-40">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             Projects
@@ -757,9 +757,9 @@ export default function ProjectTracker() {
 
       {/* KPI CARDS - COLLAPSIBLE ON SCROLL */}
       <div
-        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-2 scale-y-100'}`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 py-2">
           <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => {
