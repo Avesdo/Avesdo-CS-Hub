@@ -556,9 +556,13 @@ export default function ServiceHub() {
         }
       }}
     >
-      {/* FIXED HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-6 bg-white z-40">
-        <div>
+      <div
+        ref={toolbarRef}
+        className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
+      >
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
+          <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
               Services
             </h1>
@@ -606,13 +610,10 @@ export default function ServiceHub() {
             </div>
           </div>
         </div>
+
         {/* KPI Section */}
-        <div
-          ref={toolbarRef}
-          className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6">
-            {/* Revenue Won This Year */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
+          {/* Revenue Won This Year */}
           <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
             className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
@@ -701,9 +702,6 @@ export default function ServiceHub() {
               <div className="text-3xl font-bold tracking-tight text-foreground">
                 {formatCurrency(kpiData.totalServicesRev)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1.5 font-medium">
-                Historical lifetime metric
-              </p>
             </div>
           </motion.div>
 
