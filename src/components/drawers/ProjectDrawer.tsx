@@ -202,10 +202,10 @@ export default function ProjectDrawer() {
     await updateProjectRecord(
       { ...project, timeline: val as 'On Track' | 'At Risk' | 'Delayed' | 'Not Started' },
       {
-        successMsg: `Delivery Status successfully updated for '${project.name}'.`,
-        errorMsg: `Failed to update delivery status for '${project.name}'.`,
+        successMsg: `Schedule Status successfully updated for '${project.name}'.`,
+        errorMsg: `Failed to update schedule status for '${project.name}'.`,
       },
-      `Delivery Status changed from ${oldVal} to ${val}`,
+      `Schedule Status changed from ${oldVal} to ${val}`,
       user?.name
     );
   };

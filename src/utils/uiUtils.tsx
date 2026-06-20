@@ -231,7 +231,7 @@ export const getSettingBadge = (
           className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
           <LucideIcons.User className={iconSize} /> 
-          <TruncatedText text={value} className="max-w-[180px]" />
+          <span className="truncate max-w-[180px]">{value}</span>
         </span>
       );
     }
@@ -239,7 +239,7 @@ export const getSettingBadge = (
       <span
         className={`${sizeClasses} shadow-sm tracking-wide font-semibold rounded-full border bg-slate-100 text-slate-600 border-slate-200 inline-flex items-center shrink-0`}
       >
-        <TruncatedText text={value} className="max-w-[180px]" />
+        <span className="truncate max-w-[180px]">{value}</span>
       </span>
     );
   }
@@ -252,7 +252,7 @@ export const getSettingBadge = (
       style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
-      <TruncatedText text={item.name} className="max-w-[180px]" />
+      <span className="truncate max-w-[180px]">{item.name}</span>
     </span>
   );
 };

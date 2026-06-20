@@ -1,4 +1,4 @@
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 
 export interface AppNotification {
@@ -50,6 +50,15 @@ export async function markAllNotificationsAsRead(notifications: AppNotification[
     await Promise.all(unread.map(n => markNotificationAsRead(n.id)));
   } catch (err) {
     console.error('Failed to mark all as read:', err);
+  }
+}
+
+// 4. Clear all notifications
+export async function clearAllNotifications(notifications: AppNotification[]) {
+  try {
+    await Promise.all(notifications.map(n => deleteDoc(doc(db, 'notifications', n.id))));
+  } catch (err) {
+    console.error('Failed to clear notifications:', err);
   }
 }
 

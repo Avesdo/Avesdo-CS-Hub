@@ -697,10 +697,20 @@ export default function TemplateDesigner() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
+  const hasLoadedSettingsRef = React.useRef(false);
+  const currentTabRef = React.useRef(activeTemplateId);
+
   React.useEffect(() => {
-    setFields(templates[activeTemplateId]?.fields || []);
-    setSections(templates[activeTemplateId]?.sections || []);
-  }, [activeTemplateId, settings?.templates]);
+    if (currentTabRef.current !== activeTemplateId) {
+      setFields(templates[activeTemplateId]?.fields || []);
+      setSections(templates[activeTemplateId]?.sections || []);
+      currentTabRef.current = activeTemplateId;
+    } else if (!hasLoadedSettingsRef.current && settings?.templates) {
+      setFields(templates[activeTemplateId]?.fields || []);
+      setSections(templates[activeTemplateId]?.sections || []);
+      hasLoadedSettingsRef.current = true;
+    }
+  }, [activeTemplateId, settings?.templates, templates]);
 
   const handleAddField = (type: FieldType = 'text') => {
     const meta = getFieldMeta(type);

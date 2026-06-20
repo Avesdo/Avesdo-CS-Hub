@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Check, AlertTriangle } from 'lucide-react';
+import { Calendar, Check, AlertTriangle, ChevronDown } from 'lucide-react';
 import { DatePicker } from '../../../components/ui/DatePicker';
+import { MultiSelect } from '../../../components/ui/MultiSelect';
 import {
   updateServiceRecord,
   addAutoLog,
@@ -487,53 +488,34 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
       </div>
 
       {/* Row 2: Personnel & Routing */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-border items-start">
-        <div id="popover-manager" className="relative popover-container">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-border items-start">
+        <div className="relative">
           <label className="block text-sm font-medium text-muted-foreground mb-1.5">Manager</label>
-          <button
-            onClick={() => setOpenPop(openPop === 'manager' ? null : 'manager')}
-            className="w-full flex items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:border-primary/50 focus:outline-none min-h-[38px]"
-          >
-            <span className="truncate font-semibold text-foreground">
-              {service?.managers?.length
-                ? service.managers.join(', ')
-                : service?.manager || 'Unassigned'}
-            </span>
-            <div className="i-lucide-chevron-down w-4 h-4 text-muted-foreground shrink-0" />
-          </button>
-          {openPop === 'manager' && (
-            <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1 animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-thin-scroll">
-              {settings?.managers?.map((m: any) => {
-                const isSelected =
-                  service?.managers?.includes(m.name) ||
-                  (!service?.managers && service?.manager === m.name);
-                return (
-                  <button
-                    key={m.name}
-                    onClick={() => {
-                      let newManagers = [
-                        ...(service?.managers || (service?.manager ? [service.manager] : [])),
-                      ];
-                      if (isSelected) {
-                        newManagers = newManagers.filter((name) => name !== m.name);
-                      } else {
-                        newManagers.push(m.name);
-                      }
-                      const payload = {
-                        manager: newManagers.length > 0 ? newManagers[0] : 'Unassigned',
-                        managers: newManagers,
-                      };
-                      handleUpdate('managers', newManagers, service?.managers, 'Managers', payload);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-slate-50 flex items-center justify-between whitespace-nowrap"
-                  >
-                    {m.name}
-                    {isSelected && <div className="i-lucide-check w-4 h-4 text-primary" />}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <MultiSelect
+            options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
+              label: m,
+              value: m,
+            }))}
+            values={service?.managers || (service?.manager ? service.manager.split(',').map((s: string) => s.trim()) : [])}
+            onChange={(newManagers) => {
+              const payload = {
+                manager: newManagers.join(', ') || 'Unassigned',
+                managers: newManagers,
+              };
+              handleUpdate('managers', newManagers, service?.managers, 'Managers', payload);
+            }}
+            dropdownWidth="w-full min-w-[200px]"
+            trigger={
+              <button className="w-full flex items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:border-primary/50 focus:outline-none min-h-[38px]">
+                <span className="truncate font-semibold text-foreground">
+                  {service?.managers?.length
+                    ? service.managers.join(', ')
+                    : service?.manager || 'Unassigned'}
+                </span>
+                <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+              </button>
+            }
+          />
         </div>
 
         <div>

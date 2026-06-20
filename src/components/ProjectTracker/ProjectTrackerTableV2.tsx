@@ -567,7 +567,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2"
                     onClick={() => onSort('timelineStatus')}
                   >
-                    Delivery Status
+                    Schedule Status
                   </div>
                   {setTimelineFilter && (
                     <ColumnFilter

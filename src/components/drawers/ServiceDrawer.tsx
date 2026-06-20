@@ -329,22 +329,6 @@ export default function ServiceDrawer() {
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="relative inline-block">
                   <Select
-                    value={service?.manager || 'Unassigned'}
-                    options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
-                      label: getSettingBadge('managers', m, settings),
-                      value: m,
-                    }))}
-                    onChange={handleUpdateManager}
-                    hideCheckmark={true}
-                    trigger={
-                      <button className="hover:-translate-y-0.5 hover:shadow-md transition-all rounded-full inline-block">
-                        {getSettingBadge('managers', service?.manager || 'Unassigned', settings)}
-                      </button>
-                    }
-                  />
-                </div>
-                <div className="relative inline-block">
-                  <Select
                     value={service?.status || 'Not Set'}
                     options={(
                       (settings?.settingsData || [])
@@ -362,6 +346,13 @@ export default function ServiceDrawer() {
                       </button>
                     }
                   />
+                </div>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {(service?.managers?.length ? service.managers : service?.manager && service.manager !== 'Unassigned' ? service.manager.split(',').map((s: string) => s.trim()) : ['Unassigned']).map((m: string) => (
+                    <div key={m} className="relative inline-block">
+                      {getSettingBadge('managers', m, settings)}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { Tooltip } from './ui/Tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 export default function Sidebar() {
   const pendingAliasesCount = useAppStore(state => state.pendingAliasesCount);
@@ -40,7 +41,7 @@ export default function Sidebar() {
       ></div>
       <aside
         id="mobile-sidebar"
-        className="w-56 lg:w-64 bg-sidebar text-sidebar-foreground border-r border-border flex flex-col z-40 shrink-0 absolute md:relative h-full shadow-2xl md:shadow-none transition-all duration-200"
+        className="w-56 bg-sidebar text-sidebar-foreground border-r border-border flex flex-col z-40 shrink-0 absolute md:relative h-full shadow-2xl md:shadow-none transition-all duration-200"
       >
         {/* Brand Logo */}
         <div className="flex flex-col gap-2 p-0 shrink-0">
@@ -63,9 +64,9 @@ export default function Sidebar() {
           <ul className="space-y-1 flex flex-col w-full">
             {[
               { to: '/', icon: <LayoutDashboard className="w-4 h-4" />, label: 'Dashboard' },
-              { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Client Health' },
-              { to: '/projects', icon: <ListTodo className="w-4 h-4" />, label: 'Project Tracker' },
-              { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Service Hub' },
+              { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Clients' },
+              { to: '/projects', icon: <ListTodo className="w-4 h-4" />, label: 'Projects' },
+              { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Services' },
             ].map((link) => (
               <li key={link.to}>
                 <NavLink
@@ -111,26 +112,20 @@ export default function Sidebar() {
         </div>
 
         <div className="px-3 py-4 mt-auto shrink-0">
-          <div className="flex items-center gap-3 p-2 w-full text-left">
-            {authUser?.photoURL ? (
-              <img
-                src={authUser.photoURL}
-                alt={authUser.displayName || 'User'}
-                className="h-8 w-8 rounded-full object-cover shrink-0"
-              />
-            ) : (
-              <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs shrink-0">
+          <div className="flex items-center gap-3 p-2 w-full text-left rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group">
+            <Avatar className="h-8 w-8 shrink-0">
+              <AvatarImage src={authUser?.photoURL || ''} alt={authUser?.displayName || 'User'} />
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xs">
                 {getInitials(authUser?.displayName, authUser?.email)}
-              </span>
-            )}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1 text-left min-w-0">
               <div className="font-medium text-sm truncate">{authUser?.displayName || 'User'}</div>
-              <div className="text-xs text-muted-foreground truncate">{authUser?.email || ''}</div>
             </div>
             <Tooltip content="Log Out" position="top">
               <button
                 onClick={logout}
-                className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors rounded-md shrink-0"
+                className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors rounded-md shrink-0 md:opacity-0 group-hover:opacity-100"
               >
                 <LogOut className="w-4 h-4" />
               </button>

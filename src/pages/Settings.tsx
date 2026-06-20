@@ -354,7 +354,7 @@ export default function SettingsDraft() {
     managers: 'Account manager',
     phases: 'Implementation Status',
     statuses: 'Status',
-    timelines: 'Delivery Status',
+    timelines: 'Schedule Status',
     clientTypes: 'Client Type',
     features: 'Feature',
     services: 'Service',
@@ -1044,11 +1044,11 @@ export default function SettingsDraft() {
             <div className="max-w-3xl animate-in fade-in duration-300">
               {renderList('Project Status', 'Workflow stages for projects.', 'statuses')}
               {renderList(
-                'Project Delivery Health',
-                'Delivery statuses for projects.',
+                'Schedule Status',
+                'Schedule statuses for projects.',
                 'timelines'
               )}
-              {renderList('Implementation Pipeline', 'Milestones for project execution.', 'phases')}
+              {renderList('Implementation Status', 'Milestones for project execution.', 'phases')}
             </div>
           )}
           {activeTab === 'services' && (

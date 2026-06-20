@@ -104,20 +104,27 @@ export default function ProjectTracker() {
   });
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState<string[]>(
-    location.state?.kpiFilter === 'units'
-      ? ['Active', 'Suspended']
-      : location.state?.kpiFilter === 'onboarding'
-        ? ['Onboarding']
-        : []
-  );
+  const [statusFilter, setStatusFilter] = useState<string[]>(() => {
+    if (location.state?.statusFilter) return [location.state.statusFilter];
+    if (location.state?.kpiFilter === 'units') return ['Active', 'Suspended'];
+    if (location.state?.kpiFilter === 'onboarding') return ['Onboarding'];
+    return [];
+  });
   const [healthFilter, setHealthFilter] = useState<string[]>([]);
   const [nameFilter, setNameFilter] = useState<string[]>([]);
   const [clientFilter, setClientFilter] = useState<string[]>([]);
-  const [managerFilter, setManagerFilter] = useState<string[]>([]);
-  const [timelineFilter, setTimelineFilter] = useState<string[]>([]);
-  const [phaseFilter, setPhaseFilter] = useState<string[]>([]);
-  const [featuresFilter, setFeaturesFilter] = useState<string[]>([]);
+  const [managerFilter, setManagerFilter] = useState<string[]>(() => {
+    return location.state?.managerFilter ? [location.state.managerFilter] : [];
+  });
+  const [timelineFilter, setTimelineFilter] = useState<string[]>(() => {
+    return location.state?.timelineFilter ? [location.state.timelineFilter] : [];
+  });
+  const [phaseFilter, setPhaseFilter] = useState<string[]>(() => {
+    return location.state?.phaseFilter ? [location.state.phaseFilter] : [];
+  });
+  const [featuresFilter, setFeaturesFilter] = useState<string[]>(() => {
+    return location.state?.featuresFilter ? [location.state.featuresFilter] : [];
+  });
   const [releaseDateFilter, setReleaseDateFilter] = useState<
     { start: string; end: string } | 'no-date' | null
   >(null);
@@ -469,7 +476,7 @@ export default function ProjectTracker() {
         if (field === 'projectStatus') fieldName = 'Status';
         else if (field === 'assignee') fieldName = 'Account Manager';
         else if (field === 'onboardingPhase') fieldName = 'Implementation Status';
-        else if (field === 'timelineStatus') fieldName = 'Delivery Status';
+        else if (field === 'timelineStatus') fieldName = 'Schedule Status';
         else if (field === 'releaseDateVal') fieldName = 'Release Date';
         else {
           fieldName =
@@ -669,7 +676,7 @@ export default function ProjectTracker() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-              Project Tracker
+              Projects
             </h1>
             <p className="text-base text-muted-foreground mt-1">
               Comprehensive tracker and reporting for all projects.

@@ -93,7 +93,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
           />
         </div>
 
-        {/* Delivery Status Select */}
+        {/* Schedule Status Select */}
         <div className="relative">
           <Select
             value={pendingUpdates.timelineStatus || ''}

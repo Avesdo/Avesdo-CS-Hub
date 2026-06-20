@@ -4,12 +4,14 @@ import { createPortal } from 'react-dom';
 interface TruncatedTextProps {
   text: string;
   className?: string;
+  containerClassName?: string;
   tooltipClassName?: string;
 }
 
 export function TruncatedText({
   text,
   className = '',
+  containerClassName = 'w-full',
   tooltipClassName = 'bg-slate-100 text-slate-800 border border-slate-200 shadow-xl text-sm px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium',
 }: TruncatedTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export function TruncatedText({
 
   return (
     <div
-      className="w-full relative flex items-center"
+      className={`${containerClassName} relative flex items-center`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

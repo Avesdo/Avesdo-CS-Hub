@@ -194,7 +194,7 @@ export default React.memo(function ProjectOverviewTab({ project }: ProjectOvervi
       if (!projectLogMsg) {
         let displayField = field;
         if (field === 'projectStatus') displayField = 'Project Status';
-        if (field === 'timelineStatus') displayField = 'Delivery Status';
+        if (field === 'timelineStatus') displayField = 'Schedule Status';
         if (field === 'onboardingPhase') displayField = 'Implementation Status';
         if (field === 'releaseDateStr' || field === 'releaseDateVal') displayField = 'Release Date';
         if (field === 'manager' || field === 'assignee') displayField = 'Account Manager';

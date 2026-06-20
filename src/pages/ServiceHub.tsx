@@ -535,7 +535,7 @@ export default function ServiceHub() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-              Service Hub
+              Services
             </h1>
             <p className="text-base text-muted-foreground mt-1">
               Track additional services, invoices, and commissions.

@@ -309,7 +309,7 @@ export default function AdminHub() {
     managers: 'Account manager',
     phases: 'Implementation Status',
     statuses: 'Status',
-    timelines: 'Delivery Status',
+    timelines: 'Schedule Status',
     clientTypes: 'Client Type',
     features: 'Feature',
     services: 'Service',

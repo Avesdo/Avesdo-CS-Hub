@@ -37,6 +37,7 @@ import {
   Package,
   Rocket,
   HousePlus,
+  Calendar,
 } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
 import { useUI } from '../context/UIContext';
@@ -66,6 +67,8 @@ ChartJS.register(
 
 import { TrendIndicator } from '../components/TrendIndicator';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
+import { Tooltip as UITooltip } from '../components/ui/Tooltip';
+import { TruncatedText } from '../components/ui/TruncatedText';
 
 export default function Dashboard() {
   const clients = useAppStore(state => state.clients);
@@ -85,6 +88,8 @@ export default function Dashboard() {
 
   // Feature adoption tabs: 'active' or 'onb'
   const [featTab, setFeatTab] = useState<'active' | 'onb'>('active');
+  const [hoveredTimeline, setHoveredTimeline] = useState<string | null>(null);
+  const [hoveredHealth, setHoveredHealth] = useState<'healthy' | 'warning' | 'risk' | null>(null);
 
   const amMenuRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -113,20 +118,8 @@ export default function Dashboard() {
   }, []);
 
   const allManagers = useMemo(() => {
-    const managers = new Set<string>();
-    projects?.forEach((p) => {
-      if (p.assignee) managers.add(p.assignee);
-    });
-    const managerOrder = settings?.managers?.map((m) => m.name) || [];
-    return Array.from(managers).sort((a, b) => {
-      const idxA = managerOrder.indexOf(a);
-      const idxB = managerOrder.indexOf(b);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return a.localeCompare(b);
-    });
-  }, [projects, settings]);
+    return settings?.managers?.map((m) => m.name) || [];
+  }, [settings]);
 
   const filteredProjects = useMemo(() => {
     if (managerFilter === 'All Managers') return projects || [];
@@ -349,8 +342,8 @@ export default function Dashboard() {
 
   // Timelines
   const deliveryTimelines = useMemo(() => {
-    if (!projects || !settings?.timelines) return [];
-    const onboardingProjects = projects.filter((p) => p.projectStatus === 'Onboarding');
+    if (!filteredProjects || !settings?.timelines) return [];
+    const onboardingProjects = filteredProjects.filter((p) => p.projectStatus === 'Onboarding');
     const total = onboardingProjects.length || 1;
 
     return settings.timelines
@@ -367,37 +360,51 @@ export default function Dashboard() {
         };
       })
       .filter((t) => t.count > 0);
-  }, [projects, settings]);
+  }, [filteredProjects, settings]);
 
   const allSystemFeatures = useMemo(() => {
     if (!projects) return [];
     return Array.from(new Set(projects.flatMap((p) => p.features || [])));
   }, [projects]);
 
-  const featureAdoptionActive = useMemo(() => {
+  const featureAdoptionCombined = useMemo(() => {
     const activeProjs = filteredProjects.filter(
       (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
     );
-    const counts: Record<string, number> = {};
-    allSystemFeatures.forEach((f) => (counts[f] = 0));
+    const onbProjs = filteredProjects.filter((p) => p.projectStatus === 'Onboarding');
+
+    const combined: Record<string, { active: number; onboarding: number }> = {};
+    allSystemFeatures.forEach((f) => {
+      combined[f] = { active: 0, onboarding: 0 };
+    });
+
     activeProjs.forEach((p) => {
       (p.features || []).forEach((f: string) => {
-        counts[f] = (counts[f] || 0) + 1;
+        if (combined[f]) combined[f].active += 1;
       });
     });
-    return { data: Object.entries(counts).sort((a, b) => b[1] - a[1]), total: activeProjs.length };
-  }, [filteredProjects, allSystemFeatures]);
 
-  const featureAdoptionOnb = useMemo(() => {
-    const onbProjs = filteredProjects.filter((p) => p.projectStatus === 'Onboarding');
-    const counts: Record<string, number> = {};
-    allSystemFeatures.forEach((f) => (counts[f] = 0));
     onbProjs.forEach((p) => {
       (p.features || []).forEach((f: string) => {
-        counts[f] = (counts[f] || 0) + 1;
+        if (combined[f]) combined[f].onboarding += 1;
       });
     });
-    return { data: Object.entries(counts).sort((a, b) => b[1] - a[1]), total: onbProjs.length };
+
+    const data = Object.entries(combined)
+      .map(([feature, counts]) => ({
+        feature,
+        active: counts.active,
+        onboarding: counts.onboarding,
+        total: counts.active + counts.onboarding,
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    return {
+      data,
+      totalActiveProjects: activeProjs.length,
+      totalOnbProjects: onbProjs.length,
+      totalProjects: activeProjs.length + onbProjs.length,
+    };
   }, [filteredProjects, allSystemFeatures]);
 
   const managerWorkload = useMemo(() => {
@@ -427,6 +434,7 @@ export default function Dashboard() {
     return [...filteredServices]
       .filter((s) => {
         if (s.outcome !== 'Won') return false;
+        if (s.status !== 'Completed') return false;
         if (!s.dateVal) return false;
         const d = new Date(s.dateVal);
         return d.getFullYear() === currentYear && Math.floor((d.getMonth() + 3) / 3) === currentQtr;
@@ -472,6 +480,42 @@ export default function Dashboard() {
         return valB - valA;
       });
   }, [filteredProjects]);
+
+  const recentActivity = useMemo(() => {
+    const activities: any[] = [];
+    
+    recentServices.forEach((s: any) => {
+      activities.push({
+        id: `srv-${s.id}`,
+        type: 'service',
+        dateVal: s.dateVal || (s.dateInput ? new Date(s.dateInput).getTime() : 0),
+        title: s.name,
+        serviceType: s.serviceType || s.type || 'Unknown Type',
+        projectName: s.projectName || 'Unknown Project',
+        clientName: s.clientName || 'No Client',
+        manager: s.manager || 'Unassigned',
+        amount: s.price,
+        originalItem: s
+      });
+    });
+
+    recentLaunches.forEach((p: any) => {
+      const primaryClientName = p.clients && p.clients.length > 0 ? p.clients[0] : null;
+      const val = p.releaseDateVal || (p.releaseDate ? new Date(p.releaseDate).getTime() : 0);
+      activities.push({
+        id: `prj-${p.id}`,
+        type: 'launch',
+        dateVal: val,
+        title: p.projectName || p.name,
+        clientName: primaryClientName || 'No Client',
+        manager: p.assignee || 'Unassigned',
+        amount: null,
+        originalItem: p
+      });
+    });
+
+    return activities.sort((a, b) => b.dateVal - a.dateVal);
+  }, [recentServices, recentLaunches]);
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', {
@@ -544,6 +588,54 @@ export default function Dashboard() {
   const hasSus = suspendedProjects.length > 0;
   const showActionReq = hasRisk || hasSus;
 
+  // Upcoming Activity
+  const upcomingActivity = useMemo(() => {
+    const now = new Date().getTime();
+    const activities: any[] = [];
+    
+    filteredProjects.forEach((p) => {
+      if (p.projectStatus !== 'Onboarding') return;
+      if (!p.releaseDateVal) return;
+      const diffTime = p.releaseDateVal - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays <= 45 && diffDays >= -30) {
+        activities.push({
+          id: `prj-${p.id}`,
+          type: 'launch',
+          dateVal: p.releaseDateVal,
+          title: p.projectName || p.name,
+          clientName: p.clients && p.clients.length > 0 ? p.clients[0] : 'No Client',
+          manager: p.assignee || 'Unassigned',
+          diffDays,
+          originalItem: p
+        });
+      }
+    });
+
+    filteredServices.forEach((s) => {
+      if (s.outcome === 'Lost' || s.status === 'Completed' || s.status === 'Cancelled') return;
+      if (!s.dateVal) return;
+      const diffTime = s.dateVal - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays <= 45 && diffDays >= -30) {
+        activities.push({
+          id: `srv-${s.id}`,
+          type: 'service',
+          dateVal: s.dateVal,
+          title: s.name,
+          serviceType: s.serviceType || s.type || 'Unknown Type',
+          projectName: s.projectName || 'Unknown Project',
+          clientName: s.clientName || 'No Client',
+          manager: s.manager || 'Unassigned',
+          diffDays,
+          originalItem: s
+        });
+      }
+    });
+
+    return activities.sort((a, b) => a.dateVal - b.dateVal);
+  }, [filteredProjects, filteredServices]);
+
   // Health color dynamic based on score
   const getHealthColorClass = (score: number) => {
     if (score >= healthyThresh) return 'text-lime-600';
@@ -565,20 +657,20 @@ export default function Dashboard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
-          {/* All Managers Filter */}
-          <div className="relative shadow-sm rounded-md" ref={amMenuRef}>
+          {/* Global View Selector */}
+          <div className="relative shadow-sm rounded-lg" ref={amMenuRef}>
             <button
               onClick={() => setShowAmMenu(!showAmMenu)}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm text-foreground px-3 py-1.5 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-200 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <span className="truncate flex-1 text-left font-semibold text-sm">
-                {managerFilter}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <div className="flex items-center gap-1.5 flex-1 text-left">
+                <span className="text-slate-400 font-medium">View:</span>
+                <span className="truncate text-foreground font-bold" title={managerFilter}>{managerFilter}</span>
+              </div>
+              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
             </button>
             {showAmMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-2 shadow-xl border border-border rounded-xl min-w-[200px] z-[90]">
+              <div className="absolute right-0 top-full mt-1 bg-white p-2 shadow-xl border border-border rounded-xl min-w-[150px] z-[90]">
                 <div
                   className="px-3 py-2 text-sm font-medium rounded-md hover:bg-slate-100 cursor-pointer"
                   onClick={() => {
@@ -605,18 +697,17 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Add New Button */}
-          <div className="relative shadow-sm rounded-md" ref={addMenuRef}>
+          {/* Create Shortcut */}
+          <div className="relative shadow-sm rounded-lg" ref={addMenuRef}>
             <button
               onClick={() => setShowAddMenu(!showAddMenu)}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-200 border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 text-slate-700 shadow-sm px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <Plus className="w-4 h-4 shrink-0" />
-              <span>Add New</span>
-              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              <span>Create</span>
             </button>
             {showAddMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[180px] z-[90]">
+              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[130px] z-[90]">
                 <div
                   className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
                   onClick={() => {
@@ -648,48 +739,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Export Button */}
-          <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
-            <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            >
-              <Download className="w-4 h-4 shrink-0" />
-              <span>Export</span>
-              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
-            </button>
-            {showExportMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Clients', clients, 'All_Clients');
-                  }}
-                >
-                  <Building className="w-4 h-4 text-muted-foreground" /> All Clients
-                </div>
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Projects', projects, 'All_Projects');
-                  }}
-                >
-                  <HousePlus className="w-4 h-4 text-muted-foreground" /> All Projects
-                </div>
-                <div
-                  className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Services', services, 'All_Services');
-                  }}
-                >
-                  <Briefcase className="w-4 h-4 text-muted-foreground" /> All Services
-                </div>
-              </div>
-            )}
-          </div>
+
         </div>
       </div>
 
@@ -697,23 +747,24 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 relative z-10">
         <div
           onClick={() => navigate('/clients', { state: { kpiFilter: 'active' } })}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-lime-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '50ms' }}
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 rounded-full blur-xl group-hover:bg-lime-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Global Health Index{' '}
-                <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                <Activity className="w-4 h-4" />
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Average score of all active accounts
-              </span>
+              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Global Health Index
+                <UITooltip content="Average score of all active accounts">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                  </div>
+                </UITooltip>
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <Activity className="w-5 h-5" />
-            </div>
+            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
           {totalScored > 0 ? (
             <TrendIndicator
@@ -735,48 +786,50 @@ export default function Dashboard() {
           onClick={() =>
             navigate('/projects', { state: { ptTab: 'All Projects', kpiFilter: 'units' } })
           }
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '150ms' }}
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Live Units{' '}
-                <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                <Building className="w-4 h-4" />
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Scale of actively supported product
-              </span>
+              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Live Units
+                <UITooltip content="Total scale of actively supported product">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                  </div>
+                </UITooltip>
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <Building className="w-5 h-5" />
-            </div>
+            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
           <TrendIndicator current={totalUnits} previous={prevUnits} />
         </div>
 
         <div
           onClick={() =>
-            navigate('/projects', { state: { ptTab: 'All Projects', kpiFilter: 'onboarding' } })
+            navigate('/projects', { state: { ptTab: 'Actively Onboarding' } })
           }
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '250ms' }}
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Launch Pipeline{' '}
-                <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-purple-500/10 text-purple-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Projects launching in &le; 45 days
-              </span>
+              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Launch Pipeline
+                <UITooltip content="Projects launching in ≤ 45 days">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                  </div>
+                </UITooltip>
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <TrendingUp className="w-5 h-5" />
-            </div>
+            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
           <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
         </div>
@@ -792,335 +845,470 @@ export default function Dashboard() {
               state: { svTab: 'Won', dateRange: { start: `${y}-${sm}`, end: `${y}-${em}` } },
             });
           }}
-          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
           style={{ animationDelay: '350ms' }}
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
-          <div className="flex items-start justify-between mb-2 relative z-10">
-            <div className="flex flex-col pr-2">
-              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                Service Revenue{' '}
-                <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+                <DollarSign className="w-4 h-4" />
               </div>
-              <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Revenue won in this quarter
-              </span>
+              <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                Service Revenue
+                <UITooltip content="Revenue won in this quarter">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                  </div>
+                </UITooltip>
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-              <DollarSign className="w-5 h-5" />
-            </div>
+            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
           <TrendIndicator current={qRev} previous={prevQRev} prefix="$" periodText="last quarter" />
         </div>
       </div>
 
-      {/* ROW 2: Portfolio Dist + Movers + Action Required */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-5 mb-5 relative z-10 transition-all duration-500 animate-in fade-in duration-700 delay-300 fill-mode-both">
-        <div
-          className={`flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md lg:col-span-1 ${showActionReq ? 'xl:col-span-2' : 'xl:col-span-3'} overflow-hidden min-h-[300px] max-h-[520px]`}
-        >
-          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Portfolio Distribution
+            {/* MAIN BENTO GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 relative z-10 animate-in fade-in duration-700 delay-300 fill-mode-both">
+        
+        {/* LEFT COLUMN: Data & Analytics (2/3 Width) */}
+        <div className="lg:col-span-2 flex flex-col gap-5">
+          {/* Client Health Hub */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
+          
+          {/* TOP: Segmented Distribution Bar */}
+          <div className="p-4 pb-2 border-b border-border bg-slate-50 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-base font-semibold tracking-tight text-foreground">Client Health</div>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">Real-time health segmentation and action feed</p>
+              </div>
+              <div className="text-right">
+                 <div className="text-2xl font-bold text-foreground leading-none">{totalScored}</div>
+                 <div className="text-[11px] text-muted-foreground font-semibold mt-1">Active Clients</div>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Real-time health segmentation across active accounts
-            </p>
-          </div>
-          <div className="flex-1 overflow-hidden p-6 flex items-center justify-center gap-6">
-            {totalScored === 0 ? (
-              <EmptyState
-                icon={PieChart}
-                title="No Data"
-                subtitle="Score your clients to see portfolio distribution"
-                className="w-full"
-              />
-            ) : (
-              <div className="flex flex-row items-center justify-center gap-6 w-full h-full px-2">
-                <div className="w-60 h-60 shrink-0 relative flex items-center justify-center">
-                  <Doughnut data={chartData} options={chartOptions} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-1">
-                    <span className="text-4xl font-bold text-foreground leading-none">
-                      {totalScored}
-                    </span>
-                    <span className="text-[11px] text-muted-foreground font-semibold mt-1 text-center leading-tight">
-                      Active
-                      <br />
-                      Clients
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center space-y-4 shrink-0 pr-2">
-                  <button
-                    className="px-5 py-2.5 rounded-full text-[13px] font-medium bg-lime-500/10 text-lime-700 border border-lime-500/20 hover:bg-lime-500/20 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm text-left flex items-center justify-between min-w-[120px] active:scale-95"
-                    onClick={() => navigate('/clients', { state: { kpiFilter: 'healthy' } })}
-                  >
-                    <span>Healthy</span>
-                    <span className="ml-3 text-sm font-bold">{healthyCount}</span>
-                  </button>
-                  <button
-                    className="px-5 py-2.5 rounded-full text-[13px] font-medium bg-orange-500/10 text-orange-700 border border-orange-500/20 hover:bg-orange-500/20 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm text-left flex items-center justify-between min-w-[120px] active:scale-95"
-                    onClick={() => navigate('/clients', { state: { kpiFilter: 'warning' } })}
-                  >
-                    <span>Warning</span>
-                    <span className="ml-3 text-sm font-bold">{warningCount}</span>
-                  </button>
-                  <button
-                    className="px-5 py-2.5 rounded-full text-[13px] font-medium bg-red-500/10 text-destructive border border-red-500/20 hover:bg-destructive/20 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm text-left flex items-center justify-between min-w-[120px] active:scale-95"
-                    onClick={() => navigate('/clients', { state: { kpiFilter: 'risk' } })}
-                  >
-                    <span>At Risk</span>
-                    <span className="ml-3 text-sm font-bold">{riskCount}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden min-h-[300px] max-h-[520px] lg:col-span-1 xl:col-span-2">
-          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Quarterly Movers
-            </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Largest 90-day health score changes
-            </p>
-          </div>
-          <div className="flex-1 overflow-auto p-5 custom-thin-scroll">
-            {isFetchingHistory ? (
-              <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00bdd9]"></div>
-                </div>
-                <h4 className="text-sm font-bold text-foreground mb-1">Gathering Data...</h4>
-              </div>
-            ) : !movers || (movers.improvers.length === 0 && movers.droppers.length === 0) ? (
-              <EmptyState
-                icon={BarChart3}
-                title="No Significant Movement"
-                subtitle="There have been no major health score shifts in the last 90 days."
-                className="h-full"
-              />
-            ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full h-full pb-2 pr-2 content-start">
-                {movers.improvers.length > 0 && (
-                  <div className="flex flex-col gap-2.5">
-                    <h5 className="text-sm font-bold text-lime-500 mb-1 flex items-center gap-1.5">
-                      <TrendingUp className="w-4 h-4" /> Top Improvers
-                    </h5>
-                    {movers.improvers.map((m: any) => (
-                      <div
-                        key={m.id}
-                        onClick={() => openDrawer('client', m.id, { targetTab: 'health' })}
-                        className="flex items-center justify-between p-3.5 rounded-xl border border-border border-l-4 border-l-lime-500 bg-white shadow-sm cursor-pointer hover:border-lime-500/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
-                      >
-                        <div className="flex flex-col min-w-0 pr-3 justify-center">
-                          <span className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                            {m.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                            {m.oldest} <ArrowRight className="w-3 h-3 opacity-50" /> {m.latest}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-lime-500/10 text-lime-500 shadow-sm">
-                            +{m.diff}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {movers.droppers.length > 0 && (
-                  <div className="flex flex-col gap-2.5">
-                    <h5 className="text-sm font-bold text-red-500 mb-1 flex items-center gap-1.5">
-                      <TrendingDown className="w-4 h-4" /> At Risk (Dropping)
-                    </h5>
-                    {movers.droppers.map((m: any) => (
-                      <div
-                        key={m.id}
-                        onClick={() => openDrawer('client', m.id, { targetTab: 'health' })}
-                        className="flex items-center justify-between p-3.5 rounded-xl border border-border border-l-4 border-l-red-500 bg-white shadow-sm cursor-pointer hover:border-red-500/50 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
-                      >
-                        <div className="flex flex-col min-w-0 pr-3 justify-center">
-                          <span className="text-sm font-semibold text-foreground truncate group-hover:text-red-500 transition-colors">
-                            {m.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                            {m.oldest} <ArrowRight className="w-3 h-3 opacity-50" /> {m.latest}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-500/10 text-red-500 shadow-sm">
-                            {m.diff}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ACTION REQUIRED WIDGET */}
-        {showActionReq && (
-          <div className="flex flex-col gap-0 rounded-xl border border-red-200 bg-white shadow-sm transition-all duration-300 hover:border-red-300 hover:shadow-md lg:col-span-2 xl:col-span-1 overflow-hidden min-h-[300px] max-h-[520px]">
-            {hasRisk && hasSus ? (
-              <div className="flex flex-col p-4 pb-3 border-b border-red-200 bg-red-50 w-full shrink-0">
-                <div className="text-base font-semibold tracking-tight text-red-600 flex items-center gap-2 mb-3">
-                  <AlertOctagon className="w-4 h-4" /> Action Required
-                </div>
-                <div className="flex items-center gap-1.5 w-full">
-                  <button
-                    onClick={() => setActionTab('sus')}
-                    className={`relative inline-flex flex-1 items-center justify-center rounded-full px-4 py-1.5 text-[11px] font-bold whitespace-nowrap transition-all duration-200 border ${actionTab === 'sus' ? 'bg-white text-red-600 shadow-sm border-red-200' : 'bg-red-50 text-red-600/70 border-transparent hover:bg-red-100 hover:text-red-600 hover:border-red-200'}`}
-                  >
-                    Suspended
-                  </button>
-                  <button
-                    onClick={() => setActionTab('risk')}
-                    className={`relative inline-flex flex-1 items-center justify-center rounded-full px-4 py-1.5 text-[11px] font-bold whitespace-nowrap transition-all duration-200 border ${actionTab === 'risk' ? 'bg-white text-red-600 shadow-sm border-red-200' : 'bg-red-50 text-red-600/70 border-transparent hover:bg-red-100 hover:text-red-600 hover:border-red-200'}`}
-                  >
-                    At Risk
-                  </button>
-                </div>
-              </div>
-            ) : hasRisk ? (
-              <div className="flex flex-col p-4 pb-3 border-b border-red-200 bg-red-50 w-full shrink-0">
-                <div className="text-base font-semibold tracking-tight text-red-600 flex items-center gap-2">
-                  <AlertOctagon className="w-4 h-4" /> At-Risk Watchlist
-                </div>
-                <p className="text-xs text-red-500 font-medium mt-1">
-                  Clients with health scores under {warningThresh}
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col p-4 pb-3 border-b border-red-200 bg-red-50 w-full shrink-0">
-                <div className="text-base font-semibold tracking-tight text-red-600 flex items-center gap-2">
-                  <PauseCircle className="w-4 h-4" /> Suspended Projects
-                </div>
-                <p className="text-xs text-red-500 font-medium mt-1">
-                  Temporarily suspended projects
-                </p>
-              </div>
-            )}
-
-            <div className="flex-1 overflow-auto p-4 custom-thin-scroll">
-              {hasRisk && (!hasSus || actionTab === 'risk') && (
-                <div className="flex flex-col gap-3">
-                  {atRiskClients.map((c) => (
-                    <div
-                      key={c.clientId}
-                      onClick={() => openDrawer('client', c.clientId, { targetTab: 'health' })}
-                      className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-white shadow-sm cursor-pointer hover:border-red-300 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
+            {totalScored > 0 ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 w-full mt-1" onMouseLeave={() => setHoveredHealth(null)}>
+                  {/* The Bar */}
+                  <div className="w-full h-3 rounded-full flex bg-slate-100 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] overflow-hidden relative">
+                    {/* Healthy */}
+                    <div 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'Healthy', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'healthy' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore >= healthyThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('healthy')}
+                      style={{width: `${(healthyCount / totalScored) * 100}%`}} 
+                      className={`bg-lime-500 h-full transition-all duration-300 cursor-pointer group ${hoveredHealth === 'healthy' ? 'brightness-110 shadow-md' : ''} ${hoveredHealth && hoveredHealth !== 'healthy' ? 'opacity-50' : ''}`} 
                     >
-                      <span className="text-[13px] font-bold text-foreground truncate pr-2 group-hover:text-red-600 transition-colors">
-                        {c.companyName}
-                      </span>
-                      {getHealthBadge(c.healthScore, settings)}
                     </div>
-                  ))}
+                    {/* Warning */}
+                    <div 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'Warning', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'warning' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore >= warningThresh && c.healthScore < healthyThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('warning')}
+                      style={{width: `${(warningCount / totalScored) * 100}%`}} 
+                      className={`bg-orange-400 h-full transition-all duration-300 cursor-pointer group border-l border-white/20 ${hoveredHealth === 'warning' ? 'brightness-110 shadow-md' : ''} ${hoveredHealth && hoveredHealth !== 'warning' ? 'opacity-50' : ''}`} 
+                    >
+                    </div>
+                    {/* Risk */}
+                    <div 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'At Risk', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'risk' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore < warningThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('risk')}
+                      style={{width: `${(riskCount / totalScored) * 100}%`}} 
+                      className={`bg-red-500 h-full transition-all duration-300 cursor-pointer group border-l border-white/20 ${hoveredHealth === 'risk' ? 'brightness-110 shadow-md' : ''} ${hoveredHealth && hoveredHealth !== 'risk' ? 'opacity-50' : ''}`} 
+                    >
+                    </div>
+                  </div>
+                  
+                  {/* The Badges */}
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <button 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'Healthy', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'healthy' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore >= healthyThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('healthy')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold border shadow-sm transition-all cursor-pointer bg-lime-500/10 text-lime-700 border-lime-500/20 whitespace-nowrap active:scale-95 ${hoveredHealth === 'healthy' ? '-translate-y-0.5 shadow-md ring-2 ring-lime-500/30' : ''} ${hoveredHealth && hoveredHealth !== 'healthy' ? 'opacity-50' : ''}`}
+                    >
+                      <span className="font-bold">{healthyCount}</span> Healthy
+                    </button>
+                    <button 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'Warning', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'warning' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore >= warningThresh && c.healthScore < healthyThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('warning')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold border shadow-sm transition-all cursor-pointer bg-orange-400/10 text-orange-700 border-orange-400/20 whitespace-nowrap active:scale-95 ${hoveredHealth === 'warning' ? '-translate-y-0.5 shadow-md ring-2 ring-orange-400/30' : ''} ${hoveredHealth && hoveredHealth !== 'warning' ? 'opacity-50' : ''}`}
+                    >
+                      <span className="font-bold">{warningCount}</span> Warning
+                    </button>
+                    <button 
+                      onClick={() => openDrawer('dashDrilldown', undefined, { title: 'At Risk', subtitle: 'Active Clients', viewAllPath: '/clients', viewAllState: { kpiFilter: 'risk' }, clients: activeClients.filter((c: any) => c.healthScore !== 'N/A' && typeof c.healthScore === 'number' && c.healthScore < warningThresh) })} 
+                      onMouseEnter={() => setHoveredHealth('risk')}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold border shadow-sm transition-all cursor-pointer bg-red-500/10 text-red-700 border-red-500/20 whitespace-nowrap active:scale-95 ${hoveredHealth === 'risk' ? '-translate-y-0.5 shadow-md ring-2 ring-red-500/30' : ''} ${hoveredHealth && hoveredHealth !== 'risk' ? 'opacity-50' : ''}`}
+                    >
+                      <span className="font-bold">{riskCount}</span> At Risk
+                    </button>
+                  </div>
                 </div>
-              )}
-              {hasSus && (!hasRisk || actionTab === 'sus') && (
-                <div className="flex flex-col gap-3">
-                  {suspendedProjects.map((p) => {
-                    const clientDisplay = (p.clients || []).join(', ');
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground py-2 font-medium flex items-center justify-center bg-white rounded-md border border-dashed">No scored clients</div>
+            )}
+          </div>
+
+          {/* BODY: Three Columns */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-border">
+            
+            {/* LEFT COL: Action Required Feed */}
+            <div className="p-4 flex flex-col gap-3 bg-white">
+              <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                <AlertOctagon className="w-4 h-4 text-red-500" /> Action Required
+              </div>
+              <div className="flex flex-col gap-2.5 h-[280px] overflow-y-auto custom-thin-scroll pr-2 content-start">
+                 {!hasSus && !hasRisk ? (
+                   <EmptyState icon={ShieldCheck} title="Inbox Zero" subtitle="No clients currently suspended or at risk." className="h-full" />
+                 ) : (
+                   <>
+                     {/* Suspended First */}
+                     {suspendedProjects.map(p => {
+                       const clientDisplay = (p.clients || []).join(', ');
+                       return (
+                         <div onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-amber-400/50 hover:shadow-md transition-all duration-300 group">
+                             <div className="flex items-center gap-3 min-w-0">
+                               <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                                 <PauseCircle className="w-4 h-4 text-amber-600" />
+                               </div>
+                               <div className="flex flex-col min-w-0">
+                                 <TruncatedText text={p.name} className="text-[13px] font-bold text-foreground group-hover:text-amber-600 transition-colors" />
+                                 <TruncatedText text={clientDisplay || 'Unknown Client'} className="text-[11px] font-semibold text-muted-foreground" />
+                               </div>
+                             </div>
+                             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground shrink-0 ml-2" />
+                           </div>
+                       );
+                     })}
+                     {/* At Risk Second */}
+                     {atRiskClients.map(c => (
+                       <div onClick={() => openDrawer('client', c.clientId, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-400/50 hover:shadow-md transition-all duration-300 group">
+                           <div className="flex items-center gap-3 min-w-0">
+                             <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                               <AlertOctagon className="w-4 h-4 text-red-600" />
+                             </div>
+                             <div className="flex flex-col min-w-0">
+                               <TruncatedText text={c.companyName} className="text-[13px] font-bold text-foreground group-hover:text-red-600 transition-colors" />
+                             </div>
+                           </div>
+                           <div className="flex items-center shrink-0 ml-2">
+                             {getHealthBadge(c.healthScore, settings)}
+                             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground ml-2" />
+                           </div>
+                         </div>
+                     ))}
+                   </>
+                 )}
+              </div>
+            </div>
+
+            {/* MID COL: Top Improvers */}
+            <div className="p-4 flex flex-col gap-3 bg-white">
+              <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-lime-500" /> Top Improvers
+              </div>
+              <div className="flex flex-col gap-2.5 h-[280px] overflow-y-auto custom-thin-scroll pr-2 content-start">
+                {isFetchingHistory ? (
+                   <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div></div>
+                ) : !movers || movers.improvers.length === 0 ? (
+                   <EmptyState icon={BarChart3} title="No Movement" subtitle="No upward shifts in the last 90 days." className="h-full" />
+                ) : (
+                   <>
+                     {movers.improvers.map((m: any) => (
+                       <div onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-lime-500/50 hover:shadow-md transition-all duration-300 group">
+                           <div className="flex items-center gap-3 min-w-0">
+                             <div className="w-8 h-8 rounded-full bg-lime-100 flex items-center justify-center shrink-0">
+                               <TrendingUp className="w-4 h-4 text-lime-600" />
+                             </div>
+                             <div className="flex flex-col min-w-0">
+                               <TruncatedText text={m.name} className="text-[13px] font-bold text-foreground group-hover:text-lime-600 transition-colors" />
+                             </div>
+                           </div>
+                           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-lime-500/10 text-lime-600 shadow-sm shrink-0 ml-2">+{m.diff}</span>
+                         </div>
+                     ))}
+                   </>
+                 )}
+              </div>
+            </div>
+
+            {/* RIGHT COL: At Risk (Dropping) */}
+            <div className="p-4 flex flex-col gap-3 bg-white">
+              <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                <TrendingDown className="w-4 h-4 text-red-500" /> At Risk (Dropping)
+              </div>
+              <div className="flex flex-col gap-2.5 h-[280px] overflow-y-auto custom-thin-scroll pr-2 content-start">
+                {isFetchingHistory ? (
+                   <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div></div>
+                ) : !movers || movers.droppers.length === 0 ? (
+                   <EmptyState icon={BarChart3} title="No Movement" subtitle="No downward shifts in the last 90 days." className="h-full" />
+                ) : (
+                   <>
+                     {movers.droppers.map((m: any) => (
+                       <div onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-500/50 hover:shadow-md transition-all duration-300 group">
+                           <div className="flex items-center gap-3 min-w-0">
+                             <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                               <TrendingDown className="w-4 h-4 text-red-600" />
+                             </div>
+                             <div className="flex flex-col min-w-0">
+                               <TruncatedText text={m.name} className="text-[13px] font-bold text-foreground group-hover:text-red-600 transition-colors" />
+                             </div>
+                           </div>
+                           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-red-500/10 text-red-600 shadow-sm shrink-0 ml-2">{m.diff}</span>
+                         </div>
+                     ))}
+                   </>
+                 )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+          {/* Project Delivery Hub */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
+          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+            <div className="flex flex-col min-w-0">
+              <div className="text-base font-semibold tracking-tight text-foreground">
+                Project Delivery
+              </div>
+              <p className="text-xs text-muted-foreground font-medium mt-1">
+                Implementation pipeline and schedule health for onboarding projects
+              </p>
+            </div>
+            <div className="text-right shrink-0 ml-4">
+              <div className="text-2xl font-bold text-foreground leading-none">
+                {onboardingPhases.reduce((acc, curr) => acc + curr[1], 0)}
+              </div>
+              <div className="text-[11px] text-muted-foreground font-semibold mt-1">
+                Onboarding Projects
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col p-6 gap-6">
+            {/* Top Half: Pipeline */}
+            <div className="relative min-h-[120px] flex items-center justify-center">
+              <div className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 h-1.5 bg-slate-100 rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] z-0"></div>
+              <div className="flex items-center w-full justify-between relative z-10 px-[10%] h-full">
+                {onboardingPhases.length === 0 ? (
+                  <span className="bg-white px-4 text-muted-foreground font-medium z-10 w-full text-center">
+                    No onboarding projects
+                  </span>
+                ) : (
+                  onboardingPhases.map(([phase, count], idx) => {
+                    const isTop = idx % 2 === 0;
+                    const colorName = settings?.phases?.find(
+                      (p) => p.name?.toLowerCase() === String(phase).toLowerCase()
+                    )?.color;
+                    const hexColor = getSafeHex(colorName, 'slate');
+
                     return (
                       <div
-                        key={p.id}
-                        onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
-                        className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-white shadow-sm cursor-pointer hover:border-red-300 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
+                        key={phase}
+                        className="relative flex flex-col items-center justify-center group cursor-pointer transition-all duration-300 z-10"
+                        onClick={() =>
+                          openDrawer('dashDrilldown', undefined, {
+                            title: `Milestone: ${phase}`,
+                            subtitle: 'Onboarding Projects',
+                            viewAllPath: '/projects',
+                            viewAllState: { ptTab: 'All Projects', statusFilter: 'Onboarding', phaseFilter: phase === 'Not Started' ? 'Not Started' : phase },
+                            projects: filteredProjects.filter(
+                              (p) =>
+                                p.projectStatus === 'Onboarding' &&
+                                (p.onboardingPhase === phase ||
+                                  (!p.onboardingPhase && phase === 'Not Started'))
+                            ),
+                          })
+                        }
                       >
-                        <div className="flex flex-col min-w-0 pr-3 flex-1">
-                          <span className="text-[13px] font-bold text-foreground group-hover:text-red-600 transition-colors truncate">
-                            {p.name}
-                          </span>
-                          <span className="text-[11px] font-bold text-muted-foreground truncate mt-1">
-                            {clientDisplay}
-                          </span>
-                        </div>
-                        <PauseCircle className="w-5 h-5 text-red-500 shrink-0 group-hover:text-red-600 transition-colors" />
+                        {isTop && (
+                          <div className="absolute bottom-full mb-3 flex flex-col items-center justify-end text-center w-[120px] transition-transform group-hover:-translate-y-1.5">
+                            <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none tracking-tight">
+                              {count}
+                            </span>
+                            <span className="text-[11px] font-semibold text-muted-foreground mt-1.5 whitespace-normal leading-tight">
+                              {phase}
+                            </span>
+                          </div>
+                        )}
+                        <div
+                          className="w-8 h-4 shrink-0 rounded-full ring-[3px] ring-white shadow-md group-hover:scale-110 transition-transform z-10"
+                          style={{ backgroundColor: hexColor }}
+                        ></div>
+                        {!isTop && (
+                          <div className="absolute top-full mt-3 flex flex-col items-center justify-start text-center w-[120px] transition-transform group-hover:translate-y-1.5">
+                            <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none tracking-tight">
+                              {count}
+                            </span>
+                            <span className="text-[11px] font-semibold text-muted-foreground mt-1.5 whitespace-normal leading-tight">
+                              {phase}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     );
-                  })}
-                </div>
-              )}
+                  })
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* ROW 3: Phases + Timelines */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5 transition-all duration-500 animate-in fade-in duration-700 delay-300 fill-mode-both">
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[400px] min-h-[280px] overflow-hidden lg:col-span-1">
-          <div className="flex flex-col items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Implementation Pipeline
-            </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Projects in each implementation stage
-            </p>
-          </div>
-          <div className="flex-1 overflow-y-hidden overflow-x-auto pb-8 pt-8 custom-thin-scroll relative min-h-[160px] group/container">
-            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-border z-0"></div>
-            <div className="flex items-center w-full min-w-max justify-around relative z-10 px-6 h-full gap-12">
-              {onboardingPhases.length === 0 ? (
-                <span className="bg-white px-4 text-muted-foreground font-medium z-10">
-                  No onboarding projects
-                </span>
-              ) : (
-                onboardingPhases.map(([phase, count], idx) => {
-                  const isTop = idx % 2 === 0;
-                  const colorName = settings?.phases?.find(
-                    (p) => p.name?.toLowerCase() === String(phase).toLowerCase()
-                  )?.color;
-                  const hexColor = getSafeHex(colorName, 'slate');
+            {/* Divider */}
+            <div className="h-px bg-border w-[90%] mx-auto"></div>
 
+            {/* Bottom Half: Health Progress Bar */}
+            <div className="flex flex-col items-center gap-4 w-full max-w-4xl mx-auto pt-2 pb-6">
+              <div className="w-full flex gap-1 h-3 mt-1 items-center">
+                {deliveryTimelines.map((t) => {
+                  const hexColor = getSafeHex(t.color, 'slate');
                   return (
                     <div
-                      key={phase}
-                      className="relative flex flex-col items-center justify-center min-w-[120px] flex-1 group cursor-pointer transition-all duration-300 z-10 h-[10px]"
+                      key={t.name}
+                      title={`${t.name}: ${t.count}`}
+                      onMouseEnter={() => setHoveredTimeline(t.name)}
+                      onMouseLeave={() => setHoveredTimeline(null)}
+                      className={`h-full rounded-full cursor-pointer transition-all duration-300 ${hoveredTimeline === t.name ? '-translate-y-0.5 shadow-md brightness-110' : ''}`}
+                      style={{ width: `${t.percentage}%`, backgroundColor: hexColor }}
                       onClick={() =>
                         openDrawer('dashDrilldown', undefined, {
-                          title: `Milestone: ${phase}`,
+                          title: `Schedule Status: ${t.name}`,
                           subtitle: 'Onboarding Projects',
-                          projects: filteredProjects.filter(
-                            (p) =>
-                              p.projectStatus === 'Onboarding' &&
-                              (p.onboardingPhase === phase ||
-                                (!p.onboardingPhase && phase === 'Not Started'))
+                          contextType: 'timeline',
+                          viewAllPath: '/projects',
+                          viewAllState: { ptTab: 'All Projects', statusFilter: 'Onboarding', timelineFilter: t.name },
+                          projects: projects.filter(
+                            (p) => p.projectStatus === 'Onboarding' && p.timelineStatus === t.name
                           ),
                         })
                       }
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+                {deliveryTimelines.map((t) => {
+                  const hexColor = getSafeHex(t.color, 'slate');
+                  return (
+                    <button
+                      key={t.name}
+                      onMouseEnter={() => setHoveredTimeline(t.name)}
+                      onMouseLeave={() => setHoveredTimeline(null)}
+                      onClick={() =>
+                        openDrawer('dashDrilldown', undefined, {
+                          title: `Schedule Status: ${t.name}`,
+                          subtitle: 'Onboarding Projects',
+                          contextType: 'timeline',
+                          viewAllPath: '/projects',
+                          viewAllState: { ptTab: 'All Projects', statusFilter: 'Onboarding', timelineFilter: t.name },
+                          projects: projects.filter(
+                            (p) => p.projectStatus === 'Onboarding' && p.timelineStatus === t.name
+                          ),
+                        })
+                      }
+                      className={`flex items-center gap-2 px-3 py-1 rounded-full text-[13px] font-bold border shadow-sm transition-all cursor-pointer bg-white whitespace-nowrap active:scale-95 ${hoveredTimeline === t.name ? '-translate-y-1 shadow-md' : ''}`}
+                      style={{
+                        backgroundColor: hexToRgba(hexColor, 0.08),
+                        color: hexColor,
+                        borderColor: hexToRgba(hexColor, 0.2),
+                      }}
                     >
-                      {isTop && (
-                        <div className="absolute bottom-full mb-3 flex flex-col items-center justify-end text-center w-[120px] transition-transform group-hover:-translate-y-1 left-1/2 -translate-x-1/2">
-                          <span className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
-                            {count}
-                          </span>
-                          <span className="text-[13px] font-medium text-muted-foreground mt-1.5 whitespace-normal leading-tight w-full">
-                            {phase}
-                          </span>
+                      <span className="font-black">{t.count}</span> {t.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+          {/* Feature Adoption */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
+          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+            <div className="flex flex-col pr-4 min-w-0">
+              <div className="text-base font-semibold tracking-tight text-foreground truncate" title="Feature Adoption">
+                Feature Adoption
+              </div>
+              <p className="text-xs text-muted-foreground mt-1 font-medium truncate" title={`Combined adoption across ${featureAdoptionCombined.totalProjects} total projects`}>
+                Combined adoption across {featureAdoptionCombined.totalProjects} total projects
+              </p>
+            </div>
+          </div>
+          <div className="flex-1 overflow-auto p-5 content-start custom-thin-scroll bg-white">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+              {featureAdoptionCombined.data.length === 0 ? (
+                <span className="text-sm text-muted-foreground font-medium text-center w-full block md:col-span-2 py-4">
+                  No features tracked.
+                </span>
+              ) : (
+                featureAdoptionCombined.data.map(({ feature, active, onboarding, total }) => {
+                  const totalPct =
+                    featureAdoptionCombined.totalProjects > 0
+                      ? Math.round((total / featureAdoptionCombined.totalProjects) * 100)
+                      : 0;
+
+                  return (
+                    <div
+                      key={feature}
+                      className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-primary/50 hover:shadow-md transition-all group"
+                    >
+                      <div className="flex flex-col gap-2 flex-1 overflow-hidden pr-2">
+                        <span className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors" title={feature}>
+                          {feature}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              openDrawer('dashDrilldown', undefined, {
+                                contextType: 'featureAdoption',
+                                title: `Feature: ${feature}`,
+                                subtitle: 'Active Projects',
+                                viewAllPath: '/projects',
+                                viewAllState: { ptTab: 'All Projects', kpiFilter: 'units', featuresFilter: feature },
+                                projects: filteredProjects.filter(
+                                  (p) =>
+                                    (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') &&
+                                    (p.features || []).includes(feature)
+                                ),
+                              })
+                            }
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-green-50 text-green-600 border border-green-200/50 hover:bg-green-100 hover:shadow-sm active:scale-95 transition-all"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            {active} Active
+                          </button>
+                          <button
+                            onClick={() =>
+                              openDrawer('dashDrilldown', undefined, {
+                                contextType: 'featureAdoption',
+                                title: `Feature: ${feature}`,
+                                subtitle: 'Onboarding Projects',
+                                viewAllPath: '/projects',
+                                viewAllState: { ptTab: 'All Projects', statusFilter: 'Onboarding', featuresFilter: feature },
+                                projects: filteredProjects.filter(
+                                  (p) =>
+                                    p.projectStatus === 'Onboarding' &&
+                                    (p.features || []).includes(feature)
+                                ),
+                              })
+                            }
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-600 border border-blue-200/50 hover:bg-blue-100 hover:shadow-sm active:scale-95 transition-all"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            {onboarding} Onboarding
+                          </button>
                         </div>
-                      )}
-                      <div
-                        className="w-6 h-3 shrink-0 rounded-full ring-4 ring-white shadow-sm group-hover:scale-110 transition-transform z-10"
-                        style={{ backgroundColor: hexColor }}
-                      ></div>
-                      {!isTop && (
-                        <div className="absolute top-full mt-3 flex flex-col items-center justify-start text-center w-[120px] transition-transform group-hover:translate-y-1 left-1/2 -translate-x-1/2">
-                          <span className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
-                            {count}
-                          </span>
-                          <span className="text-[13px] font-medium text-muted-foreground mt-1.5 whitespace-normal leading-tight w-full">
-                            {phase}
-                          </span>
-                        </div>
-                      )}
+                      </div>
+                      <div className="flex flex-col items-end justify-center shrink-0 pl-4 border-l border-slate-100 min-w-[70px]">
+                        <span className="text-2xl font-bold text-foreground leading-none group-hover:text-primary transition-colors">
+                          {totalPct}%
+                        </span>
+                        <span className="text-[10px] font-bold text-muted-foreground mt-1 tracking-wider">
+                          {total} Projects
+                        </span>
+                      </div>
                     </div>
                   );
                 })
@@ -1128,209 +1316,13 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[400px] min-h-[280px] overflow-hidden lg:col-span-1">
-          <div className="flex flex-col items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Project Delivery Health
-            </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Breakdown of projects based on delivery status
-            </p>
-          </div>
-          <div className="flex-1 overflow-auto p-6 flex flex-col justify-center">
-            <div className="w-full flex h-6 rounded-full overflow-hidden mb-5 gap-[3px]">
-              {deliveryTimelines.map((t) => {
-                const hexColor = getSafeHex(t.color, 'slate');
-                return (
-                  <div
-                    key={t.name}
-                    className="h-full hover:opacity-90 cursor-pointer transition-opacity"
-                    style={{ width: `${t.percentage}%`, backgroundColor: hexColor }}
-                    onClick={() =>
-                      openDrawer('dashDrilldown', undefined, {
-                        title: `Schedule Status: ${t.name}`,
-                        subtitle: 'Onboarding Projects',
-                        contextType: 'timeline',
-                        projects: projects.filter(
-                          (p) => p.projectStatus === 'Onboarding' && p.timelineStatus === t.name
-                        ),
-                      })
-                    }
-                  ></div>
-                );
-              })}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 text-sm font-semibold text-foreground">
-              {deliveryTimelines.map((t) => {
-                const hexColor = getSafeHex(t.color, 'slate');
-                return (
-                  <button
-                    key={t.name}
-                    onClick={() =>
-                      openDrawer('dashDrilldown', undefined, {
-                        title: `Schedule Status: ${t.name}`,
-                        subtitle: 'Onboarding Projects',
-                        contextType: 'timeline',
-                        projects: projects.filter(
-                          (p) => p.projectStatus === 'Onboarding' && p.timelineStatus === t.name
-                        ),
-                      })
-                    }
-                    className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-semibold border shadow-sm transition-all hover:-translate-y-1 hover:shadow-md active:scale-95 cursor-pointer bg-white"
-                    style={{
-                      backgroundColor: hexToRgba(hexColor, 0.1),
-                      color: hexColor,
-                      borderColor: hexToRgba(hexColor, 0.2),
-                    }}
-                  >
-                    <span className="font-bold">{t.count}</span> {t.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 4: Features + Workload */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 animate-in fade-in duration-700 delay-300 fill-mode-both">
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md lg:col-span-2 overflow-hidden h-full min-h-[250px] max-h-[400px]">
-          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="flex flex-col pr-4 min-w-0">
-              <div className="text-base font-semibold tracking-tight text-foreground truncate">
-                Feature Adoption
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 font-medium truncate">
-                Percentage of total projects utilizing platform modules
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                onClick={() => setFeatTab('active')}
-                className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm border focus:outline-none focus:ring-2 focus:ring-primary/20 ${featTab === 'active' ? 'bg-white text-foreground border-border' : 'bg-muted text-muted-foreground border-transparent hover:text-foreground hover:bg-accent hover:border-border'}`}
-              >
-                Active
-              </button>
-              <button
-                onClick={() => setFeatTab('onb')}
-                className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm border focus:outline-none focus:ring-2 focus:ring-primary/20 ${featTab === 'onb' ? 'bg-white text-foreground border-border' : 'bg-muted text-muted-foreground border-transparent hover:text-foreground hover:bg-accent hover:border-border'}`}
-              >
-                Onboarding
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-auto p-6 custom-thin-scroll">
-            {featTab === 'active' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 content-start">
-                {featureAdoptionActive.data.length === 0 ? (
-                  <span className="text-sm text-muted-foreground font-medium text-center w-full block">
-                    No active features tracked.
-                  </span>
-                ) : (
-                  featureAdoptionActive.data.map(([feature, count]) => {
-                    const pct =
-                      featureAdoptionActive.total > 0
-                        ? Math.round((count / featureAdoptionActive.total) * 100)
-                        : 0;
-                    const barColorClass =
-                      pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-orange-500' : 'bg-red-500';
-
-                    return (
-                      <div
-                        key={feature}
-                        className="flex items-center gap-4 cursor-pointer group p-2 rounded-lg bg-white border border-transparent hover:border-border hover:shadow-sm transition-all -m-2"
-                        onClick={() =>
-                          openDrawer('dashDrilldown', undefined, {
-                            contextType: 'featureAdoption',
-                            title: `Feature: ${feature}`,
-                            subtitle: 'Active Projects',
-                            projects: filteredProjects.filter(
-                              (p) =>
-                                (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') &&
-                                (p.features || []).includes(feature)
-                            ),
-                          })
-                        }
-                      >
-                        <div className="w-[140px] text-[13px] text-slate-600 font-bold truncate group-hover:text-primary transition-colors">
-                          {feature}
-                        </div>
-                        <div className="flex-1 bg-slate-100 h-2.5 rounded-full overflow-hidden shadow-inner">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ease-out ${barColorClass}`}
-                            style={{ width: `${pct}%` }}
-                          ></div>
-                        </div>
-                        <div className="w-[85px] text-right flex items-center justify-end gap-1.5 shrink-0">
-                          <span className="text-sm font-bold text-foreground">{pct}%</span>
-                          <span className="text-[10px] font-medium text-slate-400/80">
-                            ({count}/{featureAdoptionActive.total})
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            )}
-            {featTab === 'onb' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 content-start">
-                {featureAdoptionOnb.data.length === 0 ? (
-                  <span className="text-sm text-muted-foreground font-medium text-center w-full block">
-                    No onboarding features tracked.
-                  </span>
-                ) : (
-                  featureAdoptionOnb.data.map(([feature, count]) => {
-                    const pct =
-                      featureAdoptionOnb.total > 0
-                        ? Math.round((count / featureAdoptionOnb.total) * 100)
-                        : 0;
-                    const barColorClass =
-                      pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-orange-500' : 'bg-red-500';
-
-                    return (
-                      <div
-                        key={feature}
-                        className="flex items-center gap-4 cursor-pointer group p-2 rounded-lg bg-white border border-transparent hover:border-border hover:shadow-sm transition-all -m-2"
-                        onClick={() =>
-                          openDrawer('dashDrilldown', undefined, {
-                            contextType: 'featureAdoption',
-                            title: `Feature: ${feature}`,
-                            subtitle: 'Onboarding Projects',
-                            projects: filteredProjects.filter(
-                              (p) =>
-                                p.projectStatus === 'Onboarding' &&
-                                (p.features || []).includes(feature)
-                            ),
-                          })
-                        }
-                      >
-                        <div className="w-[140px] text-[13px] text-slate-600 font-bold truncate group-hover:text-primary transition-colors">
-                          {feature}
-                        </div>
-                        <div className="flex-1 bg-slate-100 h-2.5 rounded-full overflow-hidden shadow-inner">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ease-out ${barColorClass}`}
-                            style={{ width: `${pct}%` }}
-                          ></div>
-                        </div>
-                        <div className="w-[85px] text-right flex items-center justify-end gap-1.5 shrink-0">
-                          <span className="text-sm font-bold text-foreground">{pct}%</span>
-                          <span className="text-[10px] font-medium text-slate-400/80">
-                            ({count}/{featureAdoptionOnb.total})
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden h-full min-h-[250px] max-h-[400px]">
+        {/* RIGHT COLUMN: People & Activity (1/3 Width) */}
+        <div className="flex flex-col gap-5 h-full lg:block lg:relative">
+          <div className="flex flex-col gap-5 lg:absolute lg:inset-0">
+          {/* Manager Workload */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
           <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
             <div className="text-base font-semibold tracking-tight text-foreground">
               Manager Workload
@@ -1339,7 +1331,7 @@ export default function Dashboard() {
               Project volume distribution by assignee
             </p>
           </div>
-          <div className="flex-1 overflow-auto p-4 space-y-3 content-start custom-thin-scroll">
+          <div className="flex-1 overflow-auto p-5 space-y-3 content-start custom-thin-scroll bg-white">
             {managerWorkload.length === 0 && (
               <span className="text-sm text-muted-foreground font-medium text-center w-full block">
                 No manager workload data.
@@ -1359,238 +1351,319 @@ export default function Dashboard() {
                 settings?.managers?.find((m: any) => m.name === manager)?.color,
                 'slate'
               );
+              const total = counts.active + counts.onboarding;
+
               return (
-                <div
-                  key={manager}
-                  className="flex items-center justify-between p-2 rounded-lg bg-white border border-transparent hover:border-border hover:shadow-sm transition-all group"
-                >
-                  <div className="flex items-center gap-3 w-1/3 min-w-[120px]">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 border border-slate-200"
-                      style={{
-                        backgroundColor: hexToRgba(mHex, 0.08),
-                        color: mHex,
-                        borderColor: hexToRgba(mHex, 0.2),
-                      }}
-                    >
-                      {initials}
+                <div key={manager} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-primary/50 hover:shadow-md transition-all group">
+                  <div className="flex flex-col gap-2 flex-1">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 border border-slate-200"
+                        style={{
+                          backgroundColor: hexToRgba(mHex, 0.08),
+                          color: mHex,
+                          borderColor: hexToRgba(mHex, 0.2),
+                        }}
+                      >
+                        {initials}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-foreground truncate" title={manager}>{manager}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            onClick={() =>
+                              openDrawer('dashDrilldown', undefined, {
+                                contextType: 'managerWorkloadActive',
+                                title: 'Active Projects',
+                                subtitle: manager,
+                                viewAllPath: '/projects',
+                                viewAllState: { ptTab: 'All Projects', kpiFilter: 'units', managerFilter: manager },
+                                projects: filteredProjects.filter(
+                                  (p: any) =>
+                                    p.assignee === manager &&
+                                    (p.projectStatus === 'Active' || p.projectStatus === 'Suspended')
+                                ),
+                              })
+                            }
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-green-50 text-green-600 border border-green-200/50 hover:bg-green-100 hover:shadow-sm active:scale-95 transition-all"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            {counts.active} Active
+                          </button>
+                          <button
+                            onClick={() =>
+                              openDrawer('dashDrilldown', undefined, {
+                                contextType: 'managerWorkloadOnboarding',
+                                title: 'Onboarding Projects',
+                                subtitle: manager,
+                                viewAllPath: '/projects',
+                                viewAllState: { ptTab: 'All Projects', statusFilter: 'Onboarding', managerFilter: manager },
+                                projects: filteredProjects.filter(
+                                  (p: any) => p.assignee === manager && p.projectStatus === 'Onboarding'
+                                ),
+                              })
+                            }
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-600 border border-blue-200/50 hover:bg-blue-100 hover:shadow-sm active:scale-95 transition-all"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            {counts.onboarding} Onboarding
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-sm font-bold text-foreground truncate">{manager}</span>
                   </div>
-                  <div className="flex items-center gap-3 flex-1 justify-end">
-                    <button
-                      onClick={() =>
-                        openDrawer('dashDrilldown', undefined, {
-                          contextType: 'managerWorkloadActive',
-                          title: 'Active Projects',
-                          subtitle: manager,
-                          projects: projects.filter(
-                            (p: any) =>
-                              p.assignee === manager &&
-                              (p.projectStatus === 'Active' || p.projectStatus === 'Suspended')
-                          ),
-                        })
-                      }
-                      className="px-4 py-2 rounded-md text-xs font-bold transition-all border w-[110px] text-center bg-green-50 text-green-500 border-transparent shadow-sm hover:border-green-500/30 hover:bg-green-100 hover:-translate-y-1 hover:shadow-md active:scale-95 cursor-pointer"
-                    >
-                      {counts.active} Active
-                    </button>
-                    <button
-                      onClick={() =>
-                        openDrawer('dashDrilldown', undefined, {
-                          contextType: 'managerWorkloadOnboarding',
-                          title: 'Onboarding Projects',
-                          subtitle: manager,
-                          projects: projects.filter(
-                            (p: any) => p.assignee === manager && p.projectStatus === 'Onboarding'
-                          ),
-                        })
-                      }
-                      className="px-4 py-2 rounded-md text-xs font-bold transition-all border w-[120px] text-center bg-blue-50 text-blue-500 border-transparent shadow-sm hover:border-blue-500/30 hover:bg-blue-100 hover:-translate-y-1 hover:shadow-md active:scale-95 cursor-pointer"
-                    >
-                      {counts.onboarding} Onboarding
-                    </button>
+                  <div className="flex flex-col items-end justify-center shrink-0 pl-4 border-l border-slate-100">
+                    <span className="text-2xl font-bold text-foreground leading-none group-hover:text-primary transition-colors">{total}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground mt-1 tracking-wider">Total</span>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
 
-      {/* ROW 5: Recent Services + Launches */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8 animate-in fade-in duration-700 delay-300 fill-mode-both">
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[350px] min-h-[250px] overflow-hidden">
-          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Recent Services Delivered
+          {/* Upcoming Activity */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md min-h-[300px] lg:min-h-0 lg:flex-1 overflow-hidden">
+            <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+              <div className="flex flex-col">
+                <div className="text-base font-semibold tracking-tight text-foreground">
+                  Upcoming Activity
+                </div>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                  Projects & services scheduled for the next 45 days
+                </p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-lg">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500"></span> {upcomingActivity.filter((a) => a.type === 'service').length} Services</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500"></span> {upcomingActivity.filter((a) => a.type === 'launch').length} Projects</span>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Services completed this quarter
-            </p>
-          </div>
+            
+            <div className="flex-1 overflow-auto custom-thin-scroll bg-slate-50/30">
+              <div className="p-5 flex flex-col relative min-h-full z-0">
+                {/* vertical timeline line */}
+                {upcomingActivity.length > 0 && (
+                  <div className="absolute left-[96px] top-6 bottom-6 w-0.5 bg-slate-200 -z-10"></div>
+                )}
 
-          <div className="flex-1 overflow-auto p-4 custom-thin-scroll flex flex-col gap-3">
-            {recentServices.length === 0 && (
+                {upcomingActivity.length === 0 && (
+                  <div className="text-sm text-muted-foreground text-center mt-4 pb-4">
+                    No upcoming activity.
+                  </div>
+                )}
+                
+                {upcomingActivity.map((act) => {
+                  const d = new Date(act.dateVal);
+                  const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  
+                  const isService = act.type === 'service';
+                  const iconObj = isService ? getServiceIcon(act.originalItem.serviceType || act.originalItem.type) : null;
+                  
+                  const hexColor = isService ? getSafeHex(iconObj?.color, 'blue') : getSafeHex('violet', 'violet');
+                  const IconName = isService ? (iconObj?.iconName || 'Briefcase') : 'Rocket';
+                  
+                  const isOverdue = act.diffDays < 0;
+                  const isSoon = act.diffDays >= 0 && act.diffDays <= 14;
+                  
+                  let badgeClass = 'bg-slate-100 text-slate-600';
+                  let badgeText = `${act.diffDays} days`;
+                  if (isOverdue) {
+                    badgeClass = 'bg-red-50 text-red-600 border border-red-200/50';
+                    badgeText = 'Overdue';
+                  } else if (isSoon) {
+                    badgeClass = 'bg-orange-50 text-orange-600 border border-orange-200/50';
+                    badgeText = act.diffDays === 0 ? 'Today' : `${act.diffDays} days`;
+                  } else {
+                    badgeClass = 'bg-slate-50 text-slate-600 border border-slate-200/50';
+                  }
+
+                  const initials = act.manager !== 'Unassigned' 
+                    ? act.manager.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() 
+                    : '?';
+                    
+                  const mHex = getSafeHex(
+                    settings?.managers?.find((m: any) => m.name === act.manager)?.color,
+                    'slate'
+                  );
+
+                  return (
+                    <div key={act.id} className="flex items-center gap-4 relative py-2 group">
+                      <div className="w-[45px] shrink-0 text-right">
+                        <span className="text-[11px] font-bold text-slate-400">{dateStr}</span>
+                      </div>
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-white shadow-sm shrink-0 transition-transform group-hover:scale-110">
+                          <div 
+                            className="w-full h-full rounded-full border flex items-center justify-center"
+                            style={{ 
+                              backgroundColor: hexToRgba(hexColor, 0.1), 
+                              color: hexColor,
+                              borderColor: hexToRgba(hexColor, 0.2)
+                            }}
+                            title={isService ? act.serviceType : 'Launch'}
+                          >
+                            {renderIcon(IconName, 'w-4 h-4')}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div 
+                          className="flex-1 bg-white border border-slate-200 shadow-sm rounded-xl p-3 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer overflow-hidden" 
+                          onClick={() => isService ? openDrawer('service', act.originalItem.id) : openDrawer('project', act.originalItem.id, { targetTab: 'overview' })}
+                        >
+
+                        <div className="flex justify-between items-center">
+                          <div className="flex flex-col min-w-0 pr-2">
+                            <div className="flex items-center gap-2">
+                              <TruncatedText text={act.title} className="text-[13px] font-bold text-foreground group-hover:text-primary transition-colors" containerClassName="flex-shrink min-w-0" />
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap ${badgeClass}`}>
+                                {badgeText}
+                              </span>
+                            </div>
+                            {isService ? (
+                              <span className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate" title={`${act.projectName} • ${act.clientName}`}>
+                                {act.projectName} &bull; {act.clientName}
+                              </span>
+                            ) : (
+                              <span className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate" title={act.clientName}>
+                                {act.clientName}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end shrink-0 pl-2">
+                            <div 
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm transition-all group-hover:scale-110 group-hover:shadow-md"
+                              title={act.manager}
+                              style={{
+                                backgroundColor: hexToRgba(mHex, 0.1),
+                                color: mHex,
+                                borderColor: hexToRgba(mHex, 0.25),
+                                borderWidth: '1px'
+                              }}
+                            >
+                              {initials}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          {/* Recent Activity */}
+          <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md min-h-[400px] lg:min-h-0 lg:flex-1 overflow-hidden">
+          <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+            <div className="flex flex-col">
+              <div className="text-base font-semibold tracking-tight text-foreground">
+                Recent Activity
+              </div>
+              <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                Projects released and services sold this quarter
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-lg">
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500"></span> {recentServices.length} Services</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500"></span> {recentLaunches.length} Projects</span>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-auto custom-thin-scroll bg-slate-50/30">
+            <div className="p-5 flex flex-col relative min-h-full z-0">
+              {/* vertical timeline line */}
+            {recentActivity.length > 0 && (
+              <div className="absolute left-[96px] top-6 bottom-6 w-0.5 bg-slate-200 -z-10"></div>
+            )}
+
+            {recentActivity.length === 0 && (
               <div className="text-sm text-muted-foreground text-center mt-4 pb-4">
-                No recent services.
+                No recent activity.
               </div>
             )}
-            {recentServices.map((s, idx) => {
-              const { iconName: SIconName, color: sColor } = getServiceIcon(s.type || '');
-              const hexColor = getSafeHex(sColor, 'slate');
-              const sDate = s.dateVal
-                ? new Date(s.dateVal).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                : 'No Date';
-              const formattedPrice = formatCurrency(
-                parseFloat(s.price?.toString().replace(/[^0-9.-]+/g, '')) || 0
+            
+            {recentActivity.map((act) => {
+              const d = new Date(act.dateVal);
+              const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              
+              const isService = act.type === 'service';
+              const iconObj = isService ? getServiceIcon(act.originalItem.serviceType || act.originalItem.type) : null;
+              
+              const hexColor = isService ? getSafeHex(iconObj?.color, 'blue') : getSafeHex('violet', 'violet');
+              const IconName = isService ? (iconObj?.iconName || 'Briefcase') : 'Rocket';
+              
+              const initials = act.manager !== 'Unassigned' 
+                ? act.manager.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() 
+                : '?';
+                
+              const mHex = getSafeHex(
+                settings?.managers?.find((m: any) => m.name === act.manager)?.color,
+                'slate'
               );
+
               return (
-                <div
-                  key={s.id}
-                  onClick={() => openDrawer('service', s.id)}
-                  className="bg-white border border-border rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer group active:scale-[0.99] flex justify-between items-center"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border bg-white shadow-sm"
-                      style={{
-                        backgroundColor: hexToRgba(hexColor, 0.1),
-                        borderColor: hexToRgba(hexColor, 0.2),
-                        color: hexColor,
-                      }}
-                    >
-                      {renderIcon(SIconName, 'w-5 h-5')}
-                    </div>
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                        {s.name}
-                      </span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">
-                        {s.clientName || 'Not Set'} &bull; {s.manager || 'Unassigned'}
-                      </span>
+                <div key={act.id} className="flex items-center gap-4 relative py-2 group">
+                  <div className="w-[45px] shrink-0 text-right">
+                    <span className="text-[11px] font-bold text-slate-400">{dateStr}</span>
+                  </div>
+                  
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full bg-white shadow-sm shrink-0 transition-transform group-hover:scale-110">
+                      <div 
+                        className="w-full h-full rounded-full border flex items-center justify-center"
+                        style={{ 
+                          backgroundColor: hexToRgba(hexColor, 0.1), 
+                          color: hexColor,
+                          borderColor: hexToRgba(hexColor, 0.2)
+                        }}
+                        title={isService ? act.serviceType : 'Launch'}
+                      >
+                        {renderIcon(IconName, 'w-4 h-4')}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end shrink-0">
-                    <span className="text-sm font-bold text-foreground">{formattedPrice}</span>
-                    <span className="text-[11px] text-muted-foreground font-medium mt-0.5">
-                      {sDate}
-                    </span>
+
+                  <div 
+                    className="flex-1 bg-white border border-slate-200 shadow-sm rounded-xl p-3 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer overflow-hidden" 
+                    onClick={() => isService ? openDrawer('service', act.originalItem.id) : openDrawer('project', act.originalItem.id)}>
+
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col min-w-0 pr-2">
+                        <TruncatedText text={act.title} className="text-[13px] font-bold text-foreground group-hover:text-primary transition-colors" containerClassName="flex-shrink min-w-0" />
+                        {isService ? (
+                          <span className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate" title={`${act.projectName} • ${act.clientName}`}>
+                                {act.projectName} &bull; {act.clientName}
+                              </span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate" title={act.clientName}>
+                                {act.clientName}
+                              </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end shrink-0 pl-2">
+                        <div 
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm transition-all group-hover:scale-110 group-hover:shadow-md"
+                          title={act.manager}
+                          style={{
+                            backgroundColor: hexToRgba(mHex, 0.1),
+                            color: mHex,
+                            borderColor: hexToRgba(mHex, 0.25),
+                            borderWidth: '1px'
+                          }}
+                        >
+                          {initials}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
             })}
+            </div>
           </div>
-
-          <div className="bg-muted/50 border-t border-border font-medium text-foreground px-6 py-3 flex justify-between items-center shrink-0">
-            <span className="text-xs text-muted-foreground font-semibold">
-              Total Services:{' '}
-              <span className="text-foreground text-sm font-bold ml-1">
-                {recentServices.length}
-              </span>
-            </span>
-            <span className="text-xs text-muted-foreground font-semibold">
-              Total Revenue:{' '}
-              <span className="text-sm font-bold ml-1 text-lime-600">{formatCurrency(qRev)}</span>
-            </span>
           </div>
         </div>
-
-        <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md h-full max-h-[350px] min-h-[250px] overflow-hidden">
-          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
-            <div className="text-base font-semibold tracking-tight text-foreground">
-              Recent Launches
-            </div>
-            <p className="text-xs text-muted-foreground font-medium">
-              Projects released in this quarter
-            </p>
-          </div>
-          <div className="flex-1 overflow-auto p-4 custom-thin-scroll flex flex-col gap-3 mt-0">
-            {recentLaunches.length === 0 && (
-              <div className="text-sm text-muted-foreground text-center mt-4 pb-4">
-                No recent launches.
-              </div>
-            )}
-            {recentLaunches.map((p, idx) => {
-              const primaryClientName = p.clients && p.clients.length > 0 ? p.clients[0] : null;
-              const primaryClient = activeClients?.find(
-                (c: any) => c.companyName === primaryClientName
-              );
-              const score =
-                p.healthScore ||
-                (primaryClient?.healthScore !== 'N/A' &&
-                typeof primaryClient?.healthScore === 'number'
-                  ? primaryClient.healthScore
-                  : 0);
-
-              const healthyThresh = settings?.scoring?.thresholds?.healthy || 80;
-              const warningThresh = settings?.scoring?.thresholds?.warning || 50;
-              let orbColorClass = 'text-red-500 bg-red-50 border-red-200';
-              let badgeColorClass = 'bg-red-500';
-              const numScore = score === 'N/A' ? 0 : Number(score);
-              if (numScore >= healthyThresh) {
-                orbColorClass = 'text-green-500 bg-green-50 border-green-200';
-                badgeColorClass = 'bg-green-500';
-              } else if (numScore >= warningThresh) {
-                orbColorClass = 'text-orange-500 bg-orange-50 border-orange-200';
-                badgeColorClass = 'bg-orange-500';
-              }
-
-              const pDate = p.releaseDateVal
-                ? new Date(p.releaseDateVal).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                : 'No Date';
-              const clientDisplay = (p.clients || []).join(', ');
-
-              return (
-                <div
-                  key={p.id}
-                  onClick={() => openDrawer('project', p.id)}
-                  className="bg-white border border-border rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer group active:scale-[0.99] flex justify-between items-center"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border shadow-sm ${orbColorClass}`}
-                    >
-                      <Rocket className="w-5 h-5" />
-                    </div>
-                    <div className="flex flex-col overflow-hidden pr-3">
-                      <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                        {p.name}
-                      </span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate">
-                        {clientDisplay || 'No Client'} &bull; {p.assignee || 'No Manager'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end shrink-0 pl-2">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white mb-0.5 shadow-sm ${badgeColorClass}`}
-                    >
-                      {score}
-                    </div>
-                    <span className="text-[11px] text-muted-foreground font-medium">{pDate}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="bg-muted/50 border-t border-border font-medium text-foreground px-6 py-3 flex justify-between items-center shrink-0">
-            <span className="text-xs text-muted-foreground font-semibold">
-              Total Projects:{' '}
-              <span className="text-foreground text-sm font-bold ml-1">
-                {recentLaunches.length}
-              </span>
-            </span>
-          </div>
         </div>
       </div>
     </div>

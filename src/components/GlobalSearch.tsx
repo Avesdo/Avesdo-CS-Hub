@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, Building, Box, Briefcase, SearchX } from 'lucide-react';
+import Fuse from 'fuse.js';
 import { useAppStore } from '../store/useAppStore';
 import { useUI } from '../context/UIContext';
 import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
@@ -84,51 +85,30 @@ export default function GlobalSearch() {
     }
   };
 
-  const activeQuery = debouncedQuery.trim().toLowerCase();
+  const activeQuery = debouncedQuery.trim();
   const hasEnoughChars = activeQuery.length >= 2;
 
-  const cMatches = [];
-  const pMatches = [];
-  const sMatches = [];
+  const fuseClients = useMemo(() => new Fuse(clients, {
+    keys: ['companyName', 'accountManager'],
+    threshold: 0.4,
+    ignoreLocation: true,
+  }), [clients]);
 
-  if (hasEnoughChars) {
-    // Search Clients
-    for (const c of clients) {
-      const cName = c.companyName?.toLowerCase() || '';
-      const cManager = c.accountManager?.toLowerCase() || '';
-      if (cName.includes(activeQuery) || cManager.includes(activeQuery)) {
-        cMatches.push(c);
-      }
-    }
+  const fuseProjects = useMemo(() => new Fuse(projects, {
+    keys: ['name', 'assignee', 'clients'],
+    threshold: 0.4,
+    ignoreLocation: true,
+  }), [projects]);
 
-    // Search Projects
-    for (const p of projects) {
-      const pName = p.name?.toLowerCase() || '';
-      const pAssignee = p.assignee?.toLowerCase() || '';
-      const pClients = (p.clients || []).join(' ').toLowerCase();
-      if (
-        pName.includes(activeQuery) ||
-        pAssignee.includes(activeQuery) ||
-        pClients.includes(activeQuery)
-      ) {
-        pMatches.push(p);
-      }
-    }
+  const fuseServices = useMemo(() => new Fuse(services, {
+    keys: ['name', 'clientName', 'invoiceNum'],
+    threshold: 0.4,
+    ignoreLocation: true,
+  }), [services]);
 
-    // Search Services
-    for (const s of services) {
-      const sName = s.name?.toLowerCase() || '';
-      const sClient = s.clientName?.toLowerCase() || '';
-      const sInvoice = s.invoiceNum?.toLowerCase() || '';
-      if (
-        sName.includes(activeQuery) ||
-        sClient.includes(activeQuery) ||
-        sInvoice.includes(activeQuery)
-      ) {
-        sMatches.push(s);
-      }
-    }
-  }
+  const cMatches = hasEnoughChars ? fuseClients.search(activeQuery).map(res => res.item) : [];
+  const pMatches = hasEnoughChars ? fuseProjects.search(activeQuery).map(res => res.item) : [];
+  const sMatches = hasEnoughChars ? fuseServices.search(activeQuery).map(res => res.item) : [];
 
   const matchedClients = viewAll ? cMatches : cMatches.slice(0, 4);
   const matchedProjects = viewAll ? pMatches : pMatches.slice(0, 4);
