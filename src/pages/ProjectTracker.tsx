@@ -889,7 +889,7 @@ export default function ProjectTracker() {
           const toolbarContent = (
             <div className="flex flex-col gap-0 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
-                <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
+                <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5">
                   <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
                     <button
                       onClick={() => setViewMode('list')}

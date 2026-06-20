@@ -16,7 +16,7 @@ interface PageTabsProps {
 
 export function PageTabs({ tabs, activeTab, onTabChange }: PageTabsProps) {
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto custom-thin-scroll py-2 px-2 -mx-2 bg-slate-100/50 p-1.5 rounded-xl border border-border/50 shadow-inner w-max">
+    <div className="flex items-center gap-1.5 overflow-x-auto custom-thin-scroll bg-slate-100/50 p-1.5 rounded-xl border border-border/50 shadow-inner w-max">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.label;
