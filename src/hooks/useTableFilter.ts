@@ -21,17 +21,21 @@ export function useTableFilter<T>({
 
   const handleSort = React.useCallback(
     (col: keyof T) => {
-      setSortCol((prevSortCol) => {
-        if (prevSortCol === col) {
-          setSortAsc((prevAsc) => !prevAsc);
-          return prevSortCol;
+      if (sortCol === col) {
+        if (sortAsc) {
+          setSortAsc(false); // Go DESC
         } else {
+          // Go DEFAULT
+          setSortCol(defaultSortCol);
           setSortAsc(defaultSortDir === 'asc');
-          return col;
         }
-      });
+      } else {
+        // First click on new column: ASC
+        setSortCol(col);
+        setSortAsc(true);
+      }
     },
-    [defaultSortDir]
+    [sortCol, sortAsc, defaultSortCol, defaultSortDir]
   );
 
   const filteredData = useMemo(() => {

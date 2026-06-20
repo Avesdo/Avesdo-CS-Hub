@@ -179,7 +179,7 @@ export default function DashDrilldownDrawer() {
                     <div
                       key={p.id}
                       onClick={() => handleProjectClick(p.id)}
-                      className={`bg-white border border-border border-l-[4px] ${borderLeftClass} rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/40 hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 cursor-pointer group relative overflow-hidden`}
+                      className={`bg-white border border-border border-l-[4px] ${borderLeftClass} rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 cursor-pointer group relative overflow-hidden`}
                     >
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 text-slate-400 group-hover:text-primary">
                         <ChevronRight className="w-5 h-5" />
@@ -291,7 +291,7 @@ export default function DashDrilldownDrawer() {
                     <div
                       key={c.clientId || c.id}
                       onClick={() => handleClientClick(c.clientId || c.id)}
-                      className={`bg-white border border-border border-l-[4px] ${borderLeftClass} rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/40 hover:-translate-y-1 active:scale-[0.99] transition-all duration-300 cursor-pointer group relative overflow-hidden`}
+                      className={`bg-white border border-border border-l-[4px] ${borderLeftClass} rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 cursor-pointer group relative overflow-hidden`}
                     >
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 text-slate-400 group-hover:text-primary">
                         <ChevronRight className="w-5 h-5" />

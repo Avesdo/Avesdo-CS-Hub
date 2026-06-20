@@ -760,12 +760,13 @@ export default function ProjectTracker() {
         className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 pt-4">
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => {
               clearAllFilters();
               setPtFilter('All Onboarding');
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-500/40 transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '50ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -790,14 +791,15 @@ export default function ProjectTracker() {
               previous={prevOnboardingCount}
               neutral={true}
             />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => {
               clearAllFilters();
               setPtFilter('Actively Onboarding');
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:border-purple-500/40 transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '150ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -818,15 +820,16 @@ export default function ProjectTracker() {
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => {
               clearAllFilters();
               setPtFilter('All Projects');
               setHealthFilter(['At Risk']);
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-red-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:border-red-500/40 transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '250ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 group-hover:bg-red-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -847,15 +850,16 @@ export default function ProjectTracker() {
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => {
               clearAllFilters();
               setPtFilter('All Released');
               setStatusFilter(['Active', 'Suspended']);
             }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-500/40 transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '350ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -876,14 +880,14 @@ export default function ProjectTracker() {
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
-          </div>
+          </motion.div>
         </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
         {(() => {
           const toolbarContent = (
-            <div className="flex flex-col gap-3 pb-3 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
+            <div className="flex flex-col gap-0 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll py-1.5 px-2 -mx-2">
                   <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">

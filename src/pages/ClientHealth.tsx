@@ -6,6 +6,8 @@ import { getHealthBadge, getSettingBadge, getSafeHex, hexToRgba } from '../utils
 import { universalExportCSV } from '../utils/exportUtils';
 import { PageHeader } from '../components/PageHeader';
 import { TrendIndicator } from '../components/TrendIndicator';
+import { motion } from 'framer-motion';
+import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import {
   Users,
   AlertCircle,
@@ -635,8 +637,15 @@ const ClientRow = React.memo(({
 
   const handleSort = useCallback(
     (col: SortCol) => {
-      if (sortCol === col) setSortAsc(!sortAsc);
-      else {
+      if (sortCol === col) {
+        if (sortAsc) {
+          setSortAsc(false); // Go DESC
+        } else {
+          // Go DEFAULT
+          setSortCol('healthScore');
+          setSortAsc(true);
+        }
+      } else {
         setSortCol(col);
         setSortAsc(true); // new column default is ascending
       }
@@ -716,39 +725,39 @@ const ClientRow = React.memo(({
           <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
             <button
               onClick={() => openModal('addClient')}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Plus className="w-4 h-4 shrink-0" />
+              <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" />
               <span>Add Client</span>
             </button>
             <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
               >
-                <Download className="w-4 h-4 shrink-0" />
+                <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" />
                 <span>Export</span>
                 <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
               </button>
               {showExportMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                <div className="absolute right-0 top-full mt-1 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Clients', clients, 'All_Clients');
                     }}
                   >
-                    <Database className="w-4 h-4 text-muted-foreground" /> Export All
+                    <Database className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export All
                   </div>
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Clients', sortedClients, 'Filtered_Clients');
                     }}
                   >
-                    <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+                    <Filter className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export Filtered View
                   </div>
                 </div>
               )}
@@ -757,99 +766,114 @@ const ClientRow = React.memo(({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => setActiveTab('At Risk')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '50ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-colors duration-500"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <AlertCircle className="w-4 h-4" />
+                </div>
                 <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   At Risk
+                  <UITooltip content={`Health score under ${settings?.scoring?.thresholds?.warning || 50}`}>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
                 </div>
-                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Health score under {settings?.scoring?.thresholds?.warning || 50}
-                </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                <AlertCircle className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => setActiveTab('Warning')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '150ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors duration-500"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
                 <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Warning
+                  <UITooltip content={`Health score between ${settings?.scoring?.thresholds?.warning || 50} and ${settings?.scoring?.thresholds?.healthy || 80}`}>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
                 </div>
-                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Score between {settings?.scoring?.thresholds?.warning || 50} &{' '}
-                  {(settings?.scoring?.thresholds?.healthy || 80) - 1}
-                </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => setActiveTab('Healthy')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '250ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
                 <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Healthy
+                  <UITooltip content={`Health score over ${settings?.scoring?.thresholds?.healthy || 80}`}>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
                 </div>
-                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Health score of {settings?.scoring?.thresholds?.healthy || 80} or above
-                </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
             onClick={() => setActiveTab('Active')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '350ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
-            <div className="flex items-start justify-between mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <Activity className="w-4 h-4" />
+                </div>
                 <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Active Clients
+                  <UITooltip content="Clients with active projects">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
                 </div>
-                <span className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Clients with active projects
-                </span>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                <Activity className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
-          </div>
+          </motion.div>
         </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
-        <div className="flex flex-col gap-3 pb-3 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
+        <div className="flex flex-col gap-0 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
             <PageTabs
               tabs={[
@@ -868,7 +892,7 @@ const ClientRow = React.memo(({
               <input
                 type="text"
                 placeholder="Search clients..."
-                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm h-9"
+                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 bg-slate-50/50 hover:bg-slate-50 transition-colors h-9 shadow-sm"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -932,7 +956,11 @@ const ClientRow = React.memo(({
                             onClick={() => handleSort('companyName')}
                           >
                             Client Name
-                            {sortCol === 'companyName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'companyName' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </div>
                           <ColumnFilter
                             options={allCompanyNames}
@@ -949,7 +977,11 @@ const ClientRow = React.memo(({
                             onClick={() => handleSort('type')}
                           >
                             Type
-                            {sortCol === 'type' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'type' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </div>
                           <ColumnFilter
                             options={allTypes}
@@ -965,7 +997,11 @@ const ClientRow = React.memo(({
                             onClick={() => handleSort('healthScore')}
                           >
                             Health
-                            {sortCol === 'healthScore' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'healthScore' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </div>
                           <ColumnFilter
                             options={['Healthy', 'Warning', 'At Risk']}
@@ -981,7 +1017,11 @@ const ClientRow = React.memo(({
                             onClick={() => handleSort('projectCount')}
                           >
                             Projects
-                            {sortCol === 'projectCount' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'projectCount' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                             <span className="text-[9px] font-normal text-slate-400 normal-case tracking-normal ml-1">
                               (Active/Onboarding/Closed)
                             </span>
@@ -1000,7 +1040,11 @@ const ClientRow = React.memo(({
                             onClick={() => handleSort('manager')}
                           >
                             Manager
-                            {sortCol === 'manager' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'manager' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </div>
                           <ColumnFilter
                             options={allManagers}

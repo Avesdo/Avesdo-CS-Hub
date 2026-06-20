@@ -22,10 +22,13 @@ import {
   TrendingDown,
   PlusCircle,
   Package,
+  AlertCircle,
 } from 'lucide-react';
 import { TrendIndicator } from '../components/TrendIndicator';
 import { PageHeader } from '../components/PageHeader';
 import { useTableFilter } from '../hooks/useTableFilter';
+import { motion } from 'framer-motion';
+import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
 import { useUI } from '../context/UIContext';
 import {
@@ -145,9 +148,8 @@ export default function ServiceHub() {
   const user = useAppStore(state => state.user);
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
   const exportMenuRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
     // One-time migrations
@@ -508,6 +510,32 @@ export default function ServiceHub() {
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const scrollContainer = tableScrollRef.current;
+    if (!scrollContainer || !toolbarRef.current) return;
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop;
+      const toolbar = toolbarRef.current;
+      if (!toolbar) return;
+
+      if (scrollTop > 40) {
+        if (!toolbar.classList.contains('max-h-0')) {
+          if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
+            toolbar.classList.add('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+            toolbar.classList.remove('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+          }
+        }
+      } else if (scrollTop <= 10) {
+        toolbar.classList.add('max-h-[800px]', 'opacity-100', 'mb-4', 'scale-y-100');
+        toolbar.classList.remove('max-h-0', 'opacity-0', 'mb-0', 'scale-y-95');
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const rowVirtualizer = useVirtualizer({
     count: tableData.length,
     getScrollElement: () => tableScrollRef.current,
@@ -529,7 +557,8 @@ export default function ServiceHub() {
       }}
     >
       <div
-        className={`transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-4 scale-y-100'}`}
+        ref={toolbarRef}
+        className="transition-all duration-500 ease-in-out transform origin-top overflow-hidden shrink-0 max-h-[800px] opacity-100 mb-4 scale-y-100"
       >
         {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4 shrink-0 px-4 md:px-6 pt-4">
@@ -544,37 +573,37 @@ export default function ServiceHub() {
           <div className="flex gap-2 flex-wrap self-start md:self-auto mt-2 md:mt-0">
             <button
               onClick={() => openModal('addService')}
-              className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Plus className="w-4 h-4 shrink-0" /> <span className="shrink-0">Add Service</span>
+              <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" /> <span className="shrink-0">Add Service</span>
             </button>
             <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all duration-200 border border-input bg-white hover:bg-accent hover:text-accent-foreground active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm h-9 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
               >
-                <Download className="w-4 h-4 shrink-0" /> <span className="shrink-0">Export</span>
+                <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" /> <span className="shrink-0">Export</span>
                 <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
               </button>
               {showExportMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
+                <div className="absolute right-0 top-full mt-1 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-border rounded-xl min-w-[220px] whitespace-nowrap z-[90]">
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Services', services, 'All_Services');
                     }}
                   >
-                    <Database className="w-4 h-4 text-muted-foreground" /> Export All
+                    <Database className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export All
                   </div>
                   <div
-                    className="px-3 py-2 rounded-md hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm font-medium"
+                    className="px-3 py-2 rounded-md hover:bg-primary/5 hover:text-primary cursor-pointer flex items-center gap-2 text-sm font-medium group/item transition-colors duration-200"
                     onClick={() => {
                       setShowExportMenu(false);
                       universalExportCSV('Services', tableData, 'Filtered_Services');
                     }}
                   >
-                    <Filter className="w-4 h-4 text-muted-foreground" /> Export Filtered View
+                    <Filter className="w-4 h-4 text-muted-foreground group-hover/item:text-primary transition-colors" /> Export Filtered View
                   </div>
                 </div>
               )}
@@ -585,23 +614,27 @@ export default function ServiceHub() {
         {/* KPI Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0 px-4 md:px-6">
           {/* Revenue Won This Year */}
-          <div
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '50ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-start mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <h3 className="text-foreground text-sm font-bold tracking-tight flex items-center gap-1.5">
+            <div className="flex justify-between items-center mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Revenue Won This Year
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Total value of won services
-                </p>
+                  <UITooltip content="Total value of won services this year">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <TrendingUp className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator
               current={kpiData.revWonThisYear}
@@ -609,26 +642,30 @@ export default function ServiceHub() {
               prefix="$"
               periodText="vs last year"
             />
-          </div>
+          </motion.div>
 
           {/* Revenue Won This Quarter */}
-          <div
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '150ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 group-hover:bg-lime-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-start mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <h3 className="text-foreground text-sm font-bold tracking-tight flex items-center gap-1.5">
+            <div className="flex justify-between items-center mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <BarChart2 className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Revenue Won This Quarter
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Total value of won services
-                </p>
+                  <UITooltip content="Total value of won services this quarter">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-lime-500/10 text-lime-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <BarChart2 className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator
               current={kpiData.revWonThisQuarter}
@@ -636,26 +673,30 @@ export default function ServiceHub() {
               prefix="$"
               periodText="vs last quarter"
             />
-          </div>
+          </motion.div>
 
           {/* Total Services Revenue */}
-          <div
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '250ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/5 group-hover:bg-indigo-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-start mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <h3 className="text-foreground text-sm font-bold tracking-tight flex items-center gap-1.5">
+            <div className="flex justify-between items-center mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <Database className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Total Services Revenue
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Historical total of won services
-                </p>
+                  <UITooltip content="Historical lifetime total of won services">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <Database className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <div className="relative z-10 mt-auto pt-2">
               <div className="text-3xl font-bold tracking-tight text-foreground">
@@ -665,26 +706,30 @@ export default function ServiceHub() {
                 Historical lifetime metric
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Total Commission */}
-          <div
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
             style={{ animationDelay: '350ms' }}
           >
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-start mb-2 relative z-10">
-              <div className="flex flex-col pr-2">
-                <h3 className="text-foreground text-sm font-bold tracking-tight flex items-center gap-1.5">
+            <div className="flex justify-between items-center mb-3 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   Total Commission This Year
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                  Value of won commissions
-                </p>
+                  <UITooltip content="Value of won commissions this year">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </div>
+                  </UITooltip>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                <DollarSign className="w-5 h-5" />
-              </div>
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
             <TrendIndicator
               current={kpiData.totalCommissionThisYear}
@@ -692,12 +737,12 @@ export default function ServiceHub() {
               prefix="$"
               periodText="vs last year"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col px-4 md:px-6 lg:px-8 pb-6 relative z-20 w-full">
-        <div className="flex flex-col gap-3 pb-3 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/90 backdrop-blur-md">
+        <div className="flex flex-col gap-0 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
             <PageTabs
               tabs={tabs}
@@ -712,7 +757,7 @@ export default function ServiceHub() {
                 placeholder="Search services..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white shadow-sm h-9"
+                className="w-full pl-9 pr-9 py-2 text-sm border border-input rounded-lg outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 bg-slate-50/50 hover:bg-slate-50 transition-colors h-9 shadow-sm"
               />
               {searchInput && (
                 <button
@@ -773,14 +818,6 @@ export default function ServiceHub() {
           <div
             ref={tableScrollRef}
             className="flex-1 overflow-auto custom-thin-scroll w-full relative"
-            onScroll={(e) => {
-              if (e.currentTarget.scrollTop > 40 && !isScrolled) {
-                if (e.currentTarget.scrollHeight - e.currentTarget.clientHeight > 250) {
-                  setIsScrolled(true);
-                }
-              }
-              else if (e.currentTarget.scrollTop <= 10 && isScrolled) setIsScrolled(false);
-            }}
           >
             {useMemo(
               () => (
@@ -794,7 +831,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('name')}
                           >
                             Service Name
-                            {sortCol === 'name' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'name' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allNames}
@@ -811,7 +852,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('projectName')}
                           >
                             Project Name
-                            {sortCol === 'projectName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'projectName' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allProjects}
@@ -828,7 +873,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('clientName')}
                           >
                             Client
-                            {sortCol === 'clientName' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'clientName' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allClients}
@@ -845,7 +894,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('type')}
                           >
                             Service Type
-                            {sortCol === 'type' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'type' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allTypes}
@@ -861,7 +914,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('manager')}
                           >
                             Manager
-                            {sortCol === 'manager' && <ArrowUpDown className="w-3.5 h-3.5 text-primary" />}
+                            {sortCol === 'manager' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allManagers}
@@ -877,6 +934,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('status')}
                           >
                             Fulfillment Status
+                            {sortCol === 'status' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <ColumnFilter
                             options={allStatuses}
@@ -892,6 +954,11 @@ export default function ServiceHub() {
                             onClick={() => handleSort('dateVal')}
                           >
                             Completion Date
+                            {sortCol === 'dateVal' ? (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                            )}
                           </span>
                           <DateFilter dateRange={dateRange} setDateRange={setDateRange} />
                         </div>
@@ -899,16 +966,30 @@ export default function ServiceHub() {
                       {activeTab !== 'Included' && (
                         <>
                           <th
-                            className="px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                            className="group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
                             onClick={() => handleSort('price')}
                           >
-                            <div className="flex items-center justify-end gap-1.5">Invoice Value</div>
+                            <div className="flex items-center justify-end gap-1.5">
+                              {sortCol === 'price' ? (
+                                <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                              ) : (
+                                <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                              )}
+                              Invoice Value
+                            </div>
                           </th>
                           <th
-                            className="px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                            className="group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
                             onClick={() => handleSort('serviceValue')}
                           >
-                            <div className="flex items-center justify-end gap-1.5">Service Value</div>
+                            <div className="flex items-center justify-end gap-1.5">
+                              {sortCol === 'serviceValue' ? (
+                                <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
+                              ) : (
+                                <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+                              )}
+                              Service Value
+                            </div>
                           </th>
                         </>
                       )}
