@@ -82,22 +82,22 @@ const ServiceRow = React.memo(({
                           <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground group-hover:text-primary transition-colors block w-full"
+                              className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
                             <TruncatedText
                               text={s.projectName || 'No Project'}
-                              className="w-full block"
+                              className="max-w-[150px]"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
                             <TruncatedText
                               text={s.clientName || s.clients?.join(', ') || 'No Client'}
-                              className="w-full block"
+                              className="max-w-[150px]"
                             />
                           </td>
-                          <td className="px-6 py-2 text-center">{getTypeBadgeIconOnly(s.type, settings)}</td>
+                          <td className="px-6 py-2">{getTypeBadgeIconOnly(s.type, settings)}</td>
                           <td className="px-6 py-2">
                             <div className="flex gap-1 flex-wrap">
                               {s.managers && s.managers.length > 0 ? (
@@ -123,11 +123,9 @@ const ServiceRow = React.memo(({
                             {sDate}
                           </td>
                           {activeTab !== 'Included' && (
-                            <>
-                              <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
-                                {formatCurrency(Number(s.price) || 0)}
-                              </td>
-                            </>
+                            <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+                              {formatCurrency(Number(s.price) || 0)}
+                            </td>
                           )}
                         </tr>
   );
@@ -822,10 +820,10 @@ export default function ServiceHub() {
           >
             {useMemo(
               () => (
-                <table className="w-full text-left bg-white border-separate border-spacing-0 table-auto min-w-[1200px]">
+                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1200px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2 w-[280px] min-w-[280px] max-w-[280px]">
+                      <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
@@ -888,7 +886,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border text-center">
+                      <th className="group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"

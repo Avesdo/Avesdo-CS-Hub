@@ -128,7 +128,7 @@ const ClientRow = React.memo(({
                           <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
                             <TruncatedText
                               text={c.companyName || 'Unnamed Client'}
-                              className="group-hover:text-primary transition-colors w-full block"
+                              className="max-w-[200px] group-hover:text-primary transition-colors"
                             />
                           </td>
                           <td className="px-6 py-2 text-muted-foreground border-l-0">
@@ -954,10 +954,10 @@ const ClientRow = React.memo(({
               }
             }}
           >
-                <table className="w-full text-left bg-white border-separate border-spacing-0 table-auto min-w-[1000px]">
+                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th w-[280px] min-w-[280px] max-w-[280px]">
+                      <th className="sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"

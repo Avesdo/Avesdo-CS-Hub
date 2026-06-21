@@ -141,16 +141,16 @@ const ProjectRow = React.memo(({
                 />
               </td>
       <td className="sticky left-12 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
-          <TruncatedText
-            text={p.name}
-            className="group-hover:text-primary transition-colors w-full block"
-          />
+        <TruncatedText
+          text={p.name || 'Unnamed Project'}
+          className="max-w-[280px] 2xl:max-w-[450px] group-hover:text-primary transition-colors"
+        />
       </td>
       <td className="px-4 py-2 text-slate-500">
-          <TruncatedText
-            text={p.clients && p.clients.length > 0 ? p.clients.join(', ') : 'No Client'}
-            className="w-full block"
-          />
+        <TruncatedText
+          text={p.clients?.join(', ') || 'None'}
+          className="max-w-[200px]"
+        />
       </td>
               {showHealthScore && (
                 <td
@@ -490,7 +490,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
     };
 
     return (
-      <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-auto">
+      <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-fixed">
 
         {useMemo(() => (
         <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
@@ -503,7 +503,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
               />
             </th>
-            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-[280px] min-w-[280px] max-w-[280px] group/th">
+            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-[280px] min-w-[280px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -522,7 +522,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 min-w-[150px] group/th">
+            <th className="border-b border-border px-4 py-2 w-[250px] max-w-[250px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
