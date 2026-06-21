@@ -141,16 +141,16 @@ const ProjectRow = React.memo(({
                 />
               </td>
       <td className="sticky left-12 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
-        <TruncatedText
-          text={p.name || 'Unnamed Project'}
-          className="max-w-[280px] 2xl:max-w-[450px] group-hover:text-primary transition-colors"
-        />
+          <TruncatedText
+            text={p.name}
+            className="group-hover:text-primary transition-colors w-full block"
+          />
       </td>
       <td className="px-4 py-2 text-slate-500">
-        <TruncatedText
-          text={p.clients?.join(', ') || 'None'}
-          className="max-w-[200px]"
-        />
+          <TruncatedText
+            text={p.clients && p.clients.length > 0 ? p.clients.join(', ') : 'No Client'}
+            className="w-full block"
+          />
       </td>
               {showHealthScore && (
                 <td

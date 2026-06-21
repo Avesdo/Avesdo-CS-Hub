@@ -82,19 +82,19 @@ const ServiceRow = React.memo(({
                           <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
+                              className="font-bold text-[13px] text-foreground group-hover:text-primary transition-colors block w-full"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
                             <TruncatedText
                               text={s.projectName || 'No Project'}
-                              className="max-w-[150px]"
+                              className="w-full block"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
                             <TruncatedText
                               text={s.clientName || s.clients?.join(', ') || 'No Client'}
-                              className="max-w-[150px]"
+                              className="w-full block"
                             />
                           </td>
                           <td className="px-6 py-2 text-center">{getTypeBadgeIconOnly(s.type, settings)}</td>
