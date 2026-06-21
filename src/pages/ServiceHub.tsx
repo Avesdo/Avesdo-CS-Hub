@@ -97,7 +97,7 @@ const ServiceRow = React.memo(({
                               className="max-w-[150px]"
                             />
                           </td>
-                          <td className="px-6 py-2">{getTypeBadgeIconOnly(s.type, settings)}</td>
+                          <td className="px-6 py-2 text-center">{getTypeBadgeIconOnly(s.type, settings)}</td>
                           <td className="px-6 py-2">
                             <div className="flex gap-1 flex-wrap">
                               {s.managers && s.managers.length > 0 ? (
@@ -126,9 +126,6 @@ const ServiceRow = React.memo(({
                             <>
                               <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
                                 {formatCurrency(Number(s.price) || 0)}
-                              </td>
-                              <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
-                                {formatCurrency(Number(s.serviceValue) || 0)}
                               </td>
                             </>
                           )}
@@ -825,10 +822,10 @@ export default function ServiceHub() {
           >
             {useMemo(
               () => (
-                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1200px]">
+                <table className="w-full text-left bg-white border-separate border-spacing-0 table-auto min-w-[1200px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                      <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2 w-[280px] min-w-[280px] max-w-[280px]">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
@@ -891,7 +888,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
+                      <th className="group/th px-6 py-2 border-b border-border text-center">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
@@ -980,19 +977,6 @@ export default function ServiceHub() {
                                 <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
                               )}
                               Invoice Value
-                            </div>
-                          </th>
-                          <th
-                            className="group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
-                            onClick={() => handleSort('serviceValue')}
-                          >
-                            <div className="flex items-center justify-end gap-1.5">
-                              {sortCol === 'serviceValue' ? (
-                                <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                              ) : (
-                                <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                              )}
-                              Service Value
                             </div>
                           </th>
                         </>
