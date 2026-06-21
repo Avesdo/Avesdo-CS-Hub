@@ -82,22 +82,26 @@ const ServiceRow = React.memo(({
                           <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground max-w-[180px] group-hover:text-primary transition-colors"
+                              className="font-bold text-[13px] text-foreground w-full group-hover:text-primary transition-colors"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
                             <TruncatedText
                               text={s.projectName || 'No Project'}
-                              className="max-w-[150px]"
+                              className="w-full"
                             />
                           </td>
                           <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
                             <TruncatedText
                               text={s.clientName || s.clients?.join(', ') || 'No Client'}
-                              className="max-w-[150px]"
+                              className="w-full"
                             />
                           </td>
-                          <td className="px-6 py-2">{getTypeBadgeIconOnly(s.type, settings)}</td>
+                          <td className="px-6 py-2">
+                            <div className="flex justify-center">
+                              {getTypeBadgeIconOnly(s.type, settings)}
+                            </div>
+                          </td>
                           <td className="px-6 py-2">
                             <div className="flex gap-1 flex-wrap">
                               {s.managers && s.managers.length > 0 ? (
@@ -533,6 +537,16 @@ export default function ServiceHub() {
   const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
   const paddingBottom = virtualItems.length > 0 ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end : 0;
 
+  const renderSortArrow = (colName: string) => {
+    const isActive = sortCol === colName;
+    const isDefault = colName === 'dateVal' && !sortAsc; // dateVal DESC is default
+
+    if (isActive && !isDefault) {
+      return <ArrowUpDown className="w-3.5 h-3.5 text-primary" />;
+    }
+    return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />;
+  };
+
   return (
     <div
       className="flex-1 flex flex-col h-full overflow-hidden bg-white"
@@ -823,18 +837,14 @@ export default function ServiceHub() {
                 <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1200px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                      <th className="w-[20%] group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('name')}
                           >
                             Service Name
-                            {sortCol === 'name' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('name')}
                           </span>
                           <ColumnFilter
                             options={allNames}
@@ -844,18 +854,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-l-0 border-b border-border">
+                      <th className="w-[18%] group/th px-6 py-2 border-b border-border border-l-0">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('projectName')}
                           >
                             Project Name
-                            {sortCol === 'projectName' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('projectName')}
                           </span>
                           <ColumnFilter
                             options={allProjects}
@@ -865,18 +871,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
+                      <th className="w-[16%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('clientName')}
                           >
                             Client
-                            {sortCol === 'clientName' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('clientName')}
                           </span>
                           <ColumnFilter
                             options={allClients}
@@ -886,18 +888,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
-                        <div className="flex items-center gap-1.5">
+                      <th className="w-[10%] group/th px-6 py-2 border-b border-border">
+                        <div className="flex items-center justify-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('type')}
                           >
                             Service Type
-                            {sortCol === 'type' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('type')}
                           </span>
                           <ColumnFilter
                             options={allTypes}
@@ -906,18 +904,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
+                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('manager')}
                           >
                             Manager
-                            {sortCol === 'manager' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('manager')}
                           </span>
                           <ColumnFilter
                             options={allManagers}
@@ -926,18 +920,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
+                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('status')}
                           >
                             Fulfillment Status
-                            {sortCol === 'status' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('status')}
                           </span>
                           <ColumnFilter
                             options={allStatuses}
@@ -946,18 +936,14 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="group/th px-6 py-2 border-b border-border">
+                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5"
+                            className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
                             onClick={() => handleSort('dateVal')}
                           >
                             Completion Date
-                            {sortCol === 'dateVal' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('dateVal')}
                           </span>
                           <DateFilter dateRange={dateRange} setDateRange={setDateRange} />
                         </div>
@@ -965,15 +951,11 @@ export default function ServiceHub() {
                       {activeTab !== 'Included' && (
                         <>
                           <th
-                            className="group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                            className="w-[10%] group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
                             onClick={() => handleSort('price')}
                           >
-                            <div className="flex items-center justify-end gap-1.5">
-                              {sortCol === 'price' ? (
-                                <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                              ) : (
-                                <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                              )}
+                            <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
+                              {renderSortArrow('price')}
                               Invoice Value
                             </div>
                           </th>

@@ -222,6 +222,7 @@ export default function ProjectTracker() {
         .sort((a: any, b: any) => a.timeVal - b.timeVal);
       const trendData = sortedHist.map((h: any) => h.score);
       if (typeof finalScore === 'number') trendData.push(finalScore);
+      if (trendData.length === 1 && typeof finalScore === 'number') trendData.unshift(finalScore);
       return { ...p, healthScore: finalScore, trendData };
     });
   }, [projects, settings, healthHistory]);

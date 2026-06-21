@@ -128,7 +128,7 @@ const ClientRow = React.memo(({
                           <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
                             <TruncatedText
                               text={c.companyName || 'Unnamed Client'}
-                              className="max-w-[200px] group-hover:text-primary transition-colors"
+                              className="w-full group-hover:text-primary transition-colors"
                             />
                           </td>
                           <td className="px-6 py-2 text-muted-foreground border-l-0">
@@ -434,6 +434,9 @@ const ClientRow = React.memo(({
       if (typeof c.healthScore === 'number') {
         trendData.push(c.healthScore);
       }
+      if (trendData.length === 1 && typeof c.healthScore === 'number') {
+        trendData.unshift(c.healthScore);
+      }
 
       return {
         ...c,
@@ -690,6 +693,16 @@ const ClientRow = React.memo(({
   const activeHex = getSafeHex(activeStatus?.color, 'emerald');
   const onboardingHex = getSafeHex(onboardingStatus?.color, 'blue');
   const closedHex = getSafeHex(closedStatus?.color, 'slate');
+
+  const renderSortArrow = (colName: string) => {
+    const isActive = sortCol === colName;
+    const isDefault = colName === 'healthScore' && sortAsc === true; // healthScore ASC is default
+
+    if (isActive && !isDefault) {
+      return <ArrowUpDown className="w-3.5 h-3.5 text-primary" />;
+    }
+    return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />;
+  };
 
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden"
@@ -957,18 +970,14 @@ const ClientRow = React.memo(({
                 <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
+                      <th className="w-[30%] sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"
                             onClick={() => handleSort('companyName')}
                           >
                             Client Name
-                            {sortCol === 'companyName' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('companyName')}
                           </div>
                           <ColumnFilter
                             options={allCompanyNames}
@@ -978,18 +987,14 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="border-b border-border px-6 py-2 group/th">
+                      <th className="w-[15%] border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('type')}
                           >
                             Type
-                            {sortCol === 'type' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('type')}
                           </div>
                           <ColumnFilter
                             options={allTypes}
@@ -998,18 +1003,14 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="border-b border-border px-6 py-2 group/th">
+                      <th className="w-[20%] border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('healthScore')}
                           >
                             Health
-                            {sortCol === 'healthScore' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('healthScore')}
                           </div>
                           <ColumnFilter
                             options={['Healthy', 'Warning', 'At Risk']}
@@ -1018,21 +1019,14 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="border-b border-border px-6 py-2 group/th">
+                      <th className="w-[20%] border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('projectCount')}
                           >
                             Projects
-                            {sortCol === 'projectCount' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
-                            <span className="text-[9px] font-normal text-slate-400 normal-case tracking-normal ml-1">
-                              (Active/Onboarding/Closed)
-                            </span>
+                            {renderSortArrow('projectCount')}
                           </div>
                           <ColumnFilter
                             options={['Active', 'Onboarding', 'Closed']}
@@ -1041,18 +1035,14 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="border-b border-border px-6 py-2 group/th">
+                      <th className="w-[15%] border-b border-border px-6 py-2 group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('manager')}
                           >
                             Manager
-                            {sortCol === 'manager' ? (
-                              <ArrowUpDown className="w-3.5 h-3.5 text-primary" />
-                            ) : (
-                              <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
-                            )}
+                            {renderSortArrow('manager')}
                           </div>
                           <ColumnFilter
                             options={allManagers}

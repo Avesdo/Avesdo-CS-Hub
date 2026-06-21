@@ -13,6 +13,7 @@ import {
   MoreHorizontal,
   Plus,
   CheckCircle2,
+  Check,
 } from 'lucide-react';
 import { getSettingBadge, getHealthBadge, getFeatureBadgeProps } from '../../utils/uiUtils';
 import { TruncatedText } from '../ui/TruncatedText';
@@ -129,22 +130,30 @@ const ProjectRow = React.memo(({
       className={`transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
       onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
     >
-              <td
-                className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2"
+      <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
+        <div className="flex items-center gap-2 w-full">
+          <div className={`flex-shrink-0 flex items-center transition-opacity duration-200 ${selectedRows.includes(p.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+            <div className="relative group/cb flex items-center justify-center">
+              <input
+                type="checkbox"
+                checked={selectedRows.includes(p.id)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  toggleRow(p.id, e as any);
+                }}
                 onClick={stopProp}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedRows.includes(p.id)}
-                  onChange={(e) => toggleRow(p.id, e as any)}
-                  className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
-                />
-              </td>
-      <td className="sticky left-12 z-20 group-hover:z-[110] bg-inherit border-r-0 px-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
-        <TruncatedText
-          text={p.name || 'Unnamed Project'}
-          className="max-w-[280px] 2xl:max-w-[450px] group-hover:text-primary transition-colors"
-        />
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              <div className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-200 ${selectedRows.includes(p.id) ? 'bg-primary border-primary shadow-sm shadow-primary/20' : 'bg-white border-slate-300 group-hover/cb:border-primary/50'}`}>
+                <Check className={`w-3 h-3 text-white transition-transform duration-200 ${selectedRows.includes(p.id) ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`} strokeWidth={3} />
+              </div>
+            </div>
+          </div>
+          <TruncatedText
+            text={p.name || 'Unnamed Project'}
+            className="w-full max-w-[240px] 2xl:max-w-[410px] group-hover:text-primary transition-colors"
+          />
+        </div>
       </td>
       <td className="px-4 py-2 text-slate-500">
         <TruncatedText
@@ -495,16 +504,21 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
         {useMemo(() => (
         <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
           <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-12 group/th">
-              <input
-                type="checkbox"
-                checked={selectedRows.length === projects.length && projects.length > 0}
-                onChange={toggleAll}
-                className="rounded border-slate-300 text-primary focus:ring-0 focus-visible:ring-2 focus-visible:ring-primary/20 focus:ring-offset-0 outline-none cursor-pointer"
-              />
-            </th>
-            <th className="sticky left-12 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-4 py-2 w-[280px] min-w-[280px] group/th">
-              <div className="flex items-center">
+            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[280px] min-w-[280px] group/th">
+              <div className="flex items-center w-full">
+                <div className={`flex-shrink-0 flex items-center mr-2 transition-opacity duration-200 ${selectedRows.length > 0 ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-100'}`}>
+                  <div className="relative group/cb flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.length === projects.length && projects.length > 0}
+                      onChange={toggleAll}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-200 ${selectedRows.length === projects.length && projects.length > 0 ? 'bg-primary border-primary shadow-sm shadow-primary/20' : 'bg-white border-slate-300 group-hover/cb:border-primary/50'}`}>
+                      <Check className={`w-3 h-3 text-white transition-transform duration-200 ${selectedRows.length === projects.length && projects.length > 0 ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`} strokeWidth={3} />
+                    </div>
+                  </div>
+                </div>
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
                   onClick={() => onSort('name')}
@@ -732,7 +746,6 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
           {projects.length === 0 && (
             <tr className="bg-white">
               <td className="sticky left-0 z-20 bg-white border-r-0" />
-              <td className="sticky left-12 z-20 bg-white border-r-0" />
               <td colSpan={columnCount > 2 ? columnCount - 2 : 10} className="px-6 py-24">
                 <div className="flex justify-center -ml-[328px]">
                   <EmptyState
