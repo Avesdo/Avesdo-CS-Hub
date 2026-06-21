@@ -1018,7 +1018,7 @@ export default function Dashboard() {
                      {suspendedProjects.map(p => {
                        const clientDisplay = (p.clients || []).join(', ');
                        return (
-                         <div onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-amber-400/50 hover:shadow-md transition-all duration-300 group">
+                         <div key={p.id} onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-amber-400/50 hover:shadow-md transition-all duration-300 group">
                              <div className="flex items-center gap-3 min-w-0">
                                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                                  <PauseCircle className="w-4 h-4 text-amber-600" />
@@ -1034,7 +1034,7 @@ export default function Dashboard() {
                      })}
                      {/* At Risk Second */}
                      {atRiskClients.map(c => (
-                       <div onClick={() => openDrawer('client', c.clientId, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-400/50 hover:shadow-md transition-all duration-300 group">
+                       <div key={c.clientId || c.id} onClick={() => openDrawer('client', c.clientId, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-400/50 hover:shadow-md transition-all duration-300 group">
                            <div className="flex items-center gap-3 min-w-0">
                              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                                <AlertOctagon className="w-4 h-4 text-red-600" />
@@ -1067,7 +1067,7 @@ export default function Dashboard() {
                 ) : (
                    <>
                      {movers.improvers.map((m: any) => (
-                       <div onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-lime-500/50 hover:shadow-md transition-all duration-300 group">
+                       <div key={m.id} onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-lime-500/50 hover:shadow-md transition-all duration-300 group">
                            <div className="flex items-center gap-3 min-w-0">
                              <div className="w-8 h-8 rounded-full bg-lime-100 flex items-center justify-center shrink-0">
                                <TrendingUp className="w-4 h-4 text-lime-600" />
@@ -1097,7 +1097,7 @@ export default function Dashboard() {
                 ) : (
                    <>
                      {movers.droppers.map((m: any) => (
-                       <div onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-500/50 hover:shadow-md transition-all duration-300 group">
+                       <div key={m.id} onClick={() => openDrawer('client', m.id, { targetTab: 'health' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-red-500/50 hover:shadow-md transition-all duration-300 group">
                            <div className="flex items-center gap-3 min-w-0">
                              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                                <TrendingDown className="w-4 h-4 text-red-600" />

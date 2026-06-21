@@ -138,12 +138,9 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        // If there's an active modal, close the top one
-        if (activeModals.length > 0) {
-          closeModal();
-        }
-        // Else if there's an active drawer, close the top one
-        else if (activeDrawers.length > 0) {
+        // Only handle drawers globally, let Modals handle their own Escape events natively
+        // to preserve unsaved changes confirmations and strict focus trapping.
+        if (activeDrawers.length > 0 && activeModals.length === 0) {
           closeDrawer();
         }
       }

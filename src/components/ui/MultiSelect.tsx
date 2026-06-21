@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { Check, Search } from 'lucide-react';
+import { Check, Search, Ghost } from 'lucide-react';
 import { SelectOption } from './Select';
 
 interface MultiSelectProps {
@@ -29,6 +29,7 @@ export function MultiSelect({
   searchPlaceholder = 'Search...',
 }: MultiSelectProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const radixAlign = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center';
 
@@ -61,7 +62,7 @@ export function MultiSelect({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <Popover.Root modal={false} onOpenChange={(open) => { if (!open) setSearchTerm(''); }}>
+      <Popover.Root open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) setSearchTerm(''); }} modal={true}>
         <Popover.Trigger asChild>
           <div className="cursor-pointer outline-none">
             {trigger}
@@ -70,8 +71,6 @@ export function MultiSelect({
 
         <Popover.Portal>
           <Popover.Content
-            // @ts-ignore: Prevent Radix UI auto-focus on open
-            onOpenAutoFocus={(e: Event) => e.preventDefault()}
             align={radixAlign}
             sideOffset={8}
             className={`bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200 ${dropdownWidth} ${menuClassName}`}
@@ -90,10 +89,11 @@ export function MultiSelect({
               </div>
             )}
 
-            <div className="overflow-y-auto p-1 custom-thin-scroll">
+            <div className="overflow-y-auto p-1 custom-thin-scroll flex flex-col overscroll-contain">
               {filteredOptions.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-muted-foreground text-center">
-                  No results found.
+                <div className="px-3 py-6 flex flex-col items-center justify-center text-sm text-slate-400">
+                  <Ghost className="w-8 h-8 text-slate-200 mb-2" />
+                  <span className="font-medium text-slate-500">No results found</span>
                 </div>
               ) : (
                 filteredOptions.map((opt) => {

@@ -39,7 +39,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   };
 
   return (
-    <div className="hidden group-focus-within/editor:flex flex-wrap items-center gap-1 p-1.5 border-b border-border bg-slate-50/50 rounded-t-2xl">
+    <div className="flex flex-wrap items-center gap-1 p-1.5 border-b border-border bg-slate-50/50 rounded-t-2xl transition-opacity duration-200 opacity-40 group-focus-within/editor:opacity-100">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -150,7 +150,7 @@ export function RichTextEditor({ content, onChange, placeholder = 'Write an inte
       <MenuBar editor={editor} />
       <div className="cursor-text min-h-[80px] relative" onClick={() => editor?.chain().focus().run()}>
         {editor && !editor.getText() && !editor.isActive('link') && (
-           <div className="absolute left-0 top-0 px-4 py-3 text-sm text-muted-foreground/60 pointer-events-none">
+           <div className="absolute left-0 top-0 px-4 py-3 text-sm text-slate-300 pointer-events-none">
              {placeholder}
            </div>
         )}

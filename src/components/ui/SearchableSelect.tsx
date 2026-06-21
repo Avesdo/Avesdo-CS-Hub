@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Ghost } from 'lucide-react';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 
 interface SearchableSelectProps {
@@ -73,7 +73,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
         />
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="absolute top-full left-0 mt-1 w-full bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] p-1 font-normal max-h-48 overflow-y-auto custom-thin-scroll overscroll-contain animate-in fade-in slide-in-from-top-1 duration-200">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((opt) => (
               <div
@@ -90,7 +90,10 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
               </div>
             ))
           ) : (
-            <div className="px-3 py-2 text-sm text-slate-400 italic">No matches found.</div>
+            <div className="px-3 py-6 flex flex-col items-center justify-center text-sm text-slate-400">
+              <Ghost className="w-8 h-8 text-slate-200 mb-2" />
+              <span className="font-medium text-slate-500">No matches found</span>
+            </div>
           )}
         </div>
       )}

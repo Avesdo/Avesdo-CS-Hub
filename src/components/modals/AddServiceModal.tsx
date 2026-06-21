@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, Check, Tag, User, AlignLeft, Building, Layers, DollarSign, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
 import {
@@ -13,9 +14,8 @@ import { Service } from '../../types';
 
 import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
+import { CreatableMultiSelect } from '../ui/CreatableMultiSelect';
 import { RichTextEditor } from '../ui/RichTextEditor';
-import { CreatableSelect } from '../ui/CreatableSelect';
-import { SearchableSelect } from '../ui/SearchableSelect';
 
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,12 +23,12 @@ import * as z from 'zod';
 
 const serviceSchema = z
   .object({
-    serviceName: z.string().min(1, 'Service Name is required.'),
+    serviceNames: z.array(z.string()).min(1, 'At least one service is required'),
     type: z.string().min(1, 'Service Type is required.'),
     price: z.string().optional(),
     serviceValue: z.string().optional(),
     selectedClient: z.string().min(1, 'Client is required.'),
-    selectedProjects: z.array(z.string()),
+    selectedProjects: z.array(z.string()).min(1, 'Project is required.'),
     assignees: z.array(z.string()),
     contactName: z.string().optional(),
     note: z.string().optional(),
@@ -56,6 +56,21 @@ const serviceSchema = z
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
+const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
+  >
+    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
+    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+      {value || 'Select'}
+    </span>
+    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+  </button>
+);
+
 export default function AddServiceModal() {
   const { isModalOpen, closeModal, activeDrawer, openDrawer } = useUI();
   const clients = useAppStore(state => state.clients);
@@ -65,9 +80,13 @@ export default function AddServiceModal() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
-
-    
+  const [showNote, setShowNote] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const isOpen = isModalOpen('addService');
+  const isAddClientOpen = isModalOpen('addClient');
+  const isAddProjectOpen = isModalOpen('addProject');
 
   const {
     control,
@@ -75,11 +94,11 @@ export default function AddServiceModal() {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
-      serviceName: '',
+      serviceNames: [],
       type: '',
       price: '',
       serviceValue: '',
@@ -91,8 +110,8 @@ export default function AddServiceModal() {
     },
   });
 
+
   const watchType = watch('type');
-  const watchServiceName = watch('serviceName');
   const watchSelectedClient = watch('selectedClient');
   const watchSelectedProjects = watch('selectedProjects');
 
@@ -103,20 +122,6 @@ export default function AddServiceModal() {
       setValue('price', '0', { shouldValidate: true });
     }
   }, [watchType, setValue]);
-
-  useEffect(() => {
-    const predefinedService = settings?.services?.find((s: any) => s.name === watchServiceName);
-    if (predefinedService) {
-      setValue(
-        'serviceValue',
-        new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(predefinedService.price),
-        { shouldValidate: true }
-      );
-    }
-  }, [watchServiceName, settings, setValue]);
 
   const availableProjects = useMemo(() => {
     const defaultOption = { id: 'none', name: 'None (Client Level)' };
@@ -154,10 +159,19 @@ export default function AddServiceModal() {
   );
 
   
-  const handleClose = () => {
+  const handleClose = (force?: boolean | any) => {
+    const isForced = force === true;
+    if (!isForced && isDirty) {
+      setShowDiscardConfirm(true);
+      return;
+    }
+    setShowDiscardConfirm(false);
     closeModal();
     reset();
     setGlobalError('');
+    setShowNote(false);
+    setShowContact(false);
+    setShowSuccess(false);
   };
 
   const onSubmit = async (data: ServiceFormValues) => {
@@ -168,64 +182,73 @@ export default function AddServiceModal() {
       const actualProjectIds = data.selectedProjects.filter((id) => id !== 'none');
       const projectObjs = projects.filter((p) => actualProjectIds.includes(p.id));
 
-      const serviceId = crypto.randomUUID();
-      const today = new Date();
-      const newService: Service = {
-        id: serviceId,
-        serviceId: serviceId.substring(0, 8).toLowerCase(),
-        serviceName: data.serviceName.trim(),
-        name: data.serviceName.trim(),
-        type: data.type,
-        status: 'Proposal Sent',
-        clientName: clientObj?.companyName || clientObj?.name || 'Unknown',
-        clientIds: clientObj ? [clientObj.clientId || clientObj.id] : [],
-        clients: clientObj ? [clientObj.companyName || clientObj.name] : [],
-        projectName: projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A',
-        projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A', // Legacy field
-        projectIds: actualProjectIds,
-        assignee: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
-        manager: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
-        managers: data.assignees.length > 0 ? data.assignees : ['Unassigned'],
-        price: data.price ? parseFloat(data.price.replace(/,/g, '')) : 0,
-        serviceValue: data.serviceValue ? parseFloat(data.serviceValue.replace(/,/g, '')) : 0,
-        contactName: data.contactName || '',
-        outcome: 'Proposal Sent',
-        invoiceSent: false,
-        commissionPaid: false,
-        dateVal: today.getTime(),
-        dateStr: today.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        }),
-        dateAdded: today.getTime(),
-        lastUpdated: today.getTime(),
-      };
+      const logPromises = [];
+      let lastServiceId = '';
 
-      await updateServiceRecord(newService, {
-        successMsg: `Service '${data.serviceName.trim()}' successfully added.`,
-        errorMsg: `Failed to add service '${data.serviceName.trim()}'.`,
-      });
+      for (const sName of data.serviceNames) {
+        const serviceId = crypto.randomUUID();
+        lastServiceId = serviceId;
+        const today = new Date();
+        const newService: Service = {
+          id: serviceId,
+          serviceId: serviceId.substring(0, 8).toLowerCase(),
+          serviceName: sName.trim(),
+          name: sName.trim(),
+          type: data.type,
+          status: 'Proposal Sent',
+          clientName: clientObj?.companyName || clientObj?.name || 'Unknown',
+          clientIds: clientObj ? [clientObj.clientId || clientObj.id] : [],
+          clients: clientObj ? [clientObj.companyName || clientObj.name] : [],
+          projectName: projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A',
+          projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A', // Legacy field
+          projectIds: actualProjectIds,
+          assignee: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
+          manager: data.assignees.length > 0 ? data.assignees[0] : 'Unassigned', // Legacy field
+          managers: data.assignees.length > 0 ? data.assignees : ['Unassigned'],
+          price: data.price ? parseFloat(data.price.replace(/,/g, '')) : 0,
+          serviceValue: data.serviceValue ? parseFloat(data.serviceValue.replace(/,/g, '')) : 0,
+          contactName: data.contactName || '',
+          outcome: 'Proposal Sent',
+          invoiceSent: false,
+          commissionPaid: false,
+          dateVal: today.getTime(),
+          dateStr: today.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }),
+          dateAdded: today.getTime(),
+          lastUpdated: today.getTime(),
+        };
 
-      const baseLogMsg = `New service added: ${data.serviceName.trim()}`;
-      const logMessage = data.note ? `${baseLogMsg}. Initial Note: ${data.note}` : baseLogMsg;
+        await updateServiceRecord(newService, {
+          successMsg: `Service '${sName.trim()}' successfully added.`,
+          errorMsg: `Failed to add service '${sName.trim()}'.`,
+        });
 
-      const logPromises = [addServiceAutoLog(serviceId, logMessage, user?.name || 'System')];
-      if (clientObj) {
-        logPromises.push(
-          addAutoLog(clientObj.clientId || clientObj.id, logMessage, user?.name || 'System', true)
-        );
+        const baseLogMsg = `New service added: ${sName.trim()}`;
+        const logMessage = data.note ? `${baseLogMsg}. Initial Note: ${data.note}` : baseLogMsg;
+
+        logPromises.push(addServiceAutoLog(serviceId, logMessage, user?.name || 'System'));
+        if (clientObj) {
+          logPromises.push(
+            addAutoLog(clientObj.clientId || clientObj.id, logMessage, user?.name || 'System', true)
+          );
+        }
+        for (const p of projectObjs) {
+          logPromises.push(addProjectAutoLog(p.id, logMessage, user?.name || 'System', true));
+        }
       }
-      for (const p of projectObjs) {
-        logPromises.push(addProjectAutoLog(p.id, logMessage, user?.name || 'System', true));
-      }
+
       await Promise.all(logPromises);
 
+      setShowSuccess(true);
       setTimeout(() => {
-        openDrawer('service', serviceId);
-      }, 350);
-
-      handleClose();
+        handleClose(true);
+        setTimeout(() => {
+          openDrawer('service', lastServiceId);
+        }, 350);
+      }, 1000);
     } catch (err) {
       console.error(err);
       setGlobalError('Failed to create service.');
@@ -235,56 +258,63 @@ export default function AddServiceModal() {
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
-          <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
-            <h3 className="font-semibold text-lg tracking-tight text-foreground">
-              Add New Service
-            </h3>
+        <Dialog.Content 
+          onInteractOutside={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          className={`fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen || isAddProjectOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}>
+          <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
-              onClick={handleClose}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm duration-200"
+              type="button"
+              onClick={() => handleClose(false)}
+              className="p-2 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 duration-200"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll min-h-0">
+          <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6">
                 {globalError}
-              </div>
+              </motion.div>
             )}
 
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Service Name <span className="text-destructive">*</span>
-                </label>
-                <Controller
-                  name="serviceName"
-                  control={control}
-                  render={({ field }) => (
-                    <CreatableSelect
-                      value={field.value}
-                      options={serviceOptions}
-                      onChange={field.onChange}
-                      placeholder="Select or enter a service name..."
-                    />
-                  )}
-                />
-                {errors.serviceName && (
-                  <p className="text-destructive text-xs mt-1 font-medium">{errors.serviceName.message}</p>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+              <Controller
+                name="serviceNames"
+                control={control}
+                render={({ field }) => (
+                  <CreatableMultiSelect
+                    values={field.value}
+                    onChange={field.onChange}
+                    options={serviceOptions}
+                    placeholder="Service Name..."
+                  />
                 )}
-              </div>
+              />
+              <AnimatePresence>
+                {errors.serviceNames && (
+                  <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-sm mt-2 font-medium ml-2">
+                    {errors.serviceNames.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-              <div className={`grid gap-5 pt-2 ${watchType === 'Included' ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                <div>
-                  <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                    Service Type <span className="text-destructive">*</span>
-                  </label>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-col gap-4 mb-10">
+              
+              {/* Row 1: Type, Invoice Value, Service Value */}
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col gap-1">
                   <Controller
                     name="type"
                     control={control}
@@ -293,238 +323,327 @@ export default function AddServiceModal() {
                         value={field.value}
                         options={typeOptions}
                         onChange={field.onChange}
-                        className="w-full block"
-                        trigger={
-                          <button
-                            type="button"
-                            className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.type ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
-                          >
-                            <span
-                              className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
-                            >
-                              {field.value || 'Select Service Type'}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </button>
-                        }
+                        trigger={<TokenTrigger label="Type" value={field.value} icon={Tag} error={errors.type} />}
                       />
                     )}
                   />
-                  {errors.type && (
-                    <p className="text-destructive text-xs mt-1 font-medium">{errors.type.message}</p>
-                  )}
+                  <AnimatePresence>
+                    {errors.type && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.type.message}</motion.span>}
+                  </AnimatePresence>
                 </div>
-                {watchType !== 'Included' && (
-                    <div>
-                      <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                        Invoice Value <span className="text-destructive">*</span>
-                      </label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
-                          $
-                        </span>
-                        <Controller
-                          name="price"
-                          control={control}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              onBlur={() => {
-                                const num = parseFloat((field.value || '').replace(/,/g, ''));
-                                if (!isNaN(num)) {
-                                  field.onChange(
-                                    new Intl.NumberFormat('en-US', {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    }).format(num)
-                                  );
-                                }
-                              }}
-                              className={`w-full min-w-0 rounded-md border ${errors.price ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
-                              placeholder="0.00"
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.price && (
-                        <p className="text-destructive text-xs mt-1 font-medium">{errors.price.message}</p>
-                      )}
-                    </div>
-                  )}
-                    <div>
-                      <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                        Service Value
-                      </label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-3 text-muted-foreground font-semibold text-sm">
-                          $
-                        </span>
-                        <Controller
-                          name="serviceValue"
-                          control={control}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              onBlur={() => {
-                                const num = parseFloat((field.value || '').replace(/,/g, ''));
-                                if (!isNaN(num)) {
-                                  field.onChange(
-                                    new Intl.NumberFormat('en-US', {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    }).format(num)
-                                  );
-                                }
-                              }}
-                              className={`w-full min-w-0 rounded-md border ${errors.serviceValue ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white pl-7 pr-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 h-[38px] text-sm`}
-                              placeholder="0.00"
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.serviceValue && (
-                        <p className="text-destructive text-xs mt-1 font-medium">{errors.serviceValue.message}</p>
-                      )}
-                    </div>
-              </div>
-            </div>
 
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                    Client Name <span className="text-destructive">*</span>
-                  </label>
+                {watchType !== 'Included' && (
+                  <div className="flex flex-col gap-1">
+                    <Controller
+                      name="price"
+                      control={control}
+                      render={({ field }) => (
+                        <div className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.price ? 'border-destructive' : 'border-slate-200'}`}>
+                          <DollarSign className="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors mr-2 shrink-0" />
+                          <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">Invoice Value:</span>
+                          <input
+                            type="text"
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            onBlur={() => {
+                              const num = parseFloat((field.value || '').replace(/,/g, ''));
+                              if (!isNaN(num)) {
+                                field.onChange(
+                                  new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num)
+                                );
+                              }
+                            }}
+                            placeholder="0.00"
+                            className="bg-transparent border-none outline-none focus:ring-0 p-0 text-[13px] font-semibold text-slate-900 w-20"
+                          />
+                        </div>
+                      )}
+                    />
+                    <AnimatePresence>
+                      {errors.price && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.price.message}</motion.span>}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1">
+                  <Controller
+                    name="serviceValue"
+                    control={control}
+                    render={({ field }) => (
+                      <div className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.serviceValue ? 'border-destructive' : 'border-slate-200'}`}>
+                        <DollarSign className="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors mr-2 shrink-0" />
+                        <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">Service Value:</span>
+                        <input
+                          type="text"
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          onBlur={() => {
+                            const num = parseFloat((field.value || '').replace(/,/g, ''));
+                            if (!isNaN(num)) {
+                              field.onChange(
+                                new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num)
+                              );
+                            }
+                          }}
+                          placeholder="0.00"
+                          className="bg-transparent border-none outline-none focus:ring-0 p-0 text-[13px] font-semibold text-slate-900 w-20"
+                        />
+                      </div>
+                    )}
+                  />
+                  <AnimatePresence>
+                    {errors.serviceValue && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.serviceValue.message}</motion.span>}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Row 2: Client, Project */}
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col gap-1">
                   <Controller
                     name="selectedClient"
                     control={control}
                     render={({ field }) => (
-                      <SearchableSelect
-                        value={field.value}
+                      <MultiSelect
+                        values={field.value ? [field.value] : []}
                         options={clientOptions}
-                        onChange={(val) => {
-                          field.onChange(val);
+                        onChange={(vals) => {
+                          const newVal = vals[vals.length - 1] || '';
+                          field.onChange(newVal);
                           setValue('selectedProjects', []);
                         }}
-                        placeholder="Select Client..."
+                        searchable
+                        searchPlaceholder="Search Clients..."
+                        trigger={
+                          <TokenTrigger
+                            label="Client"
+                            value={clientOptions.find((o) => o.value === field.value)?.label}
+                            icon={Building}
+                            error={errors.selectedClient}
+                          />
+                        }
                       />
                     )}
                   />
-                  {errors.selectedClient && (
-                    <p className="text-destructive text-xs mt-1 font-medium">{errors.selectedClient.message}</p>
-                  )}
+                  <AnimatePresence>
+                    {errors.selectedClient && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedClient.message}</motion.span>}
+                  </AnimatePresence>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                    Project Name
-                  </label>
+
+                <div className="flex flex-col gap-1">
                   <Controller
                     name="selectedProjects"
                     control={control}
                     render={({ field }) => (
-                      <SearchableSelect
-                        value={field.value[0] || ''}
+                      <MultiSelect
+                        values={field.value}
                         options={availableProjects.map((p) => ({ value: p.id, label: p.name }))}
-                        onChange={(val) => {
-                          field.onChange([val]);
-                        }}
-                        placeholder="Select Project..."
+                        onChange={field.onChange}
+                        searchable
+                        searchPlaceholder="Search Projects..."
+                        trigger={
+                          <TokenTrigger
+                            label="Project"
+                            value={
+                              field.value.length === 1
+                                ? availableProjects.find((p) => p.id === field.value[0])?.name || ''
+                                : field.value.length > 1
+                                ? `${field.value.length} Projects`
+                                : ''
+                            }
+                            icon={Layers}
+                            error={errors.selectedProjects}
+                          />
+                        }
                       />
                     )}
                   />
+                  <AnimatePresence>
+                    {errors.selectedProjects && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedProjects.message}</motion.span>}
+                  </AnimatePresence>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Manager
-                </label>
-                <Controller
-                  name="assignees"
-                  control={control}
-                  render={({ field }) => (
-                    <MultiSelect
-                      values={field.value}
-                      options={managerOptions}
-                      onChange={field.onChange}
-                      className="w-full"
-                      trigger={
-                        <button
-                          type="button"
-                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                        >
-                          <span
-                            className={`truncate ${field.value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value.length > 0 ? field.value.join(', ') : 'Select Managers'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
-                    />
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Client Contact Name{' '}
-                  <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <Controller
-                  name="contactName"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      className="w-full min-w-0 rounded-md border border-input bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all hover:border-primary/50 text-sm h-[38px]"
-                      placeholder="Enter primary contact name..."
-                    />
-                  )}
-                />
-              </div>
-              <div className="pt-3 border-t border-border/50">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <Controller
-                  name="note"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
-                      <RichTextEditor
-                        content={field.value || ''}
+              {/* Row 3: Manager */}
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col gap-1">
+                  <Controller
+                    name="assignees"
+                    control={control}
+                    render={({ field }) => (
+                      <MultiSelect
+                        values={field.value}
+                        options={managerOptions}
                         onChange={field.onChange}
-                        placeholder="Enter an optional note..."
+                        trigger={
+                          <TokenTrigger
+                            label="Manager"
+                            value={field.value.length ? field.value.join(', ') : ''}
+                            icon={User}
+                            error={errors.assignees}
+                          />
+                        }
                       />
-                    </div>
-                  )}
-                />
+                    )}
+                  />
+                  <AnimatePresence>
+                    {errors.assignees && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.assignees.message}</motion.span>}
+                  </AnimatePresence>
+                </div>
               </div>
+            </motion.div>
+
+
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+              <AnimatePresence mode="popLayout">
+                {!showContact ? (
+                  <motion.div key="contact-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <button type="button" onClick={() => setShowContact(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap">
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Contact</span>
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div key="contact-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden pt-1 pb-2">
+                    <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
+                      <User className="w-3.5 h-3.5 mr-1.5" /> Client Contact Name
+                    </label>
+                    <Controller
+                      name="contactName"
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          {...field}
+                          type="text"
+                          placeholder="Enter primary contact name..."
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-primary/50 outline-none"
+                        />
+                      )}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence mode="popLayout">
+                {!showNote ? (
+                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap">
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden pb-2">
+                    <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
+                      <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
+                    </label>
+                    <Controller
+                      name="note"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                          <RichTextEditor
+                            content={field.value || ''}
+                            onChange={field.onChange}
+                            placeholder="Enter an optional note..."
+                          />
+                        </div>
+                      )}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end items-center shrink-0 rounded-b-2xl">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleClose(false)}
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-lg text-[13px] font-semibold transition-all duration-200 active:scale-95 hover:-translate-y-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 h-10 px-5 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+                className="group inline-flex items-center justify-center rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating...' : 'Create Service'}
+              </button>
             </div>
           </div>
-          <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl mt-auto">
-            <button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm border border-input bg-white hover:bg-accent hover:text-accent-foreground h-10 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Creating...' : 'Create Service'}
-            </button>
-          </div>
-                </Dialog.Content>
+
+          <AnimatePresence>
+            {showDiscardConfirm && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
+              >
+                <motion.div 
+                  initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-4">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
+                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <div className="flex gap-3 w-full">
+                    <button 
+                      type="button"
+                      onClick={() => setShowDiscardConfirm(false)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    >
+                      Keep Editing
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleClose(true)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div
+                key="success-bloom"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white rounded-2xl"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
+                >
+                  <Check className="w-12 h-12 text-green-600 stroke-[3]" />
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold text-slate-800"
+                >
+                  Service Created
+                </motion.h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );

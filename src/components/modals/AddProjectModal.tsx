@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar, Building, Target, Hash, User, Layers, FileText, AlignLeft } from 'lucide-react';
+import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar, Building, Target, Hash, User, Layers, FileText, AlignLeft, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -73,7 +73,9 @@ export default function AddProjectModal() {
   const [showKYC, setShowKYC] = useState(false);
   const [showNote, setShowNote] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const isOpen = isModalOpen('addProject');
+  const isAddClientOpen = isModalOpen('addClient');
 
   const {
     control,
@@ -81,7 +83,7 @@ export default function AddProjectModal() {
     reset,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -120,7 +122,13 @@ export default function AddProjectModal() {
   }, [getValues, setValue]);
 
   
-  const handleClose = () => {
+  const handleClose = (force?: boolean | any) => {
+    const isForced = force === true;
+    if (!isForced && isDirty) {
+      setShowDiscardConfirm(true);
+      return;
+    }
+    setShowDiscardConfirm(false);
     closeModal();
     reset();
     setGlobalError('');
@@ -226,7 +234,7 @@ export default function AddProjectModal() {
 
       // Seamless Routing Handoff (wait for bloom to finish)
       setTimeout(() => {
-        handleClose();
+        handleClose(true);
         setTimeout(() => {
           openDrawer('project', newProject.id, { targetTab: 'overview' });
         }, 350);
@@ -240,13 +248,23 @@ export default function AddProjectModal() {
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none relative overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+        <Dialog.Content 
+          onInteractOutside={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          className={`fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}>
           <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
-              onClick={handleClose}
+              type="button"
+              onClick={() => handleClose(false)}
               className="p-2 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 duration-200"
             >
               <X className="w-5 h-5" />
@@ -279,27 +297,32 @@ export default function AddProjectModal() {
               )}
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-3 mb-10 items-center">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-start gap-3 mb-10">
               
-              <Controller
-                name="selectedDevelopers"
-                control={control}
-                render={({ field }) => {
-                  const displayValue = field.value.length
-                    ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
-                    : '';
-                  return (
-                    <MultiSelect
-                      values={field.value}
-                      options={[...clients].filter((c) => c.clientType === 'Developer' || !c.clientType).sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
-                      onChange={field.onChange}
-                      searchable={true}
-                      searchPlaceholder="Search developers..."
-                      trigger={<TokenTrigger label="Developer" value={displayValue} icon={Building} error={errors.selectedDevelopers} />}
-                    />
-                  );
-                }}
-              />
+              <div className="flex flex-col gap-1">
+                <Controller
+                  name="selectedDevelopers"
+                  control={control}
+                  render={({ field }) => {
+                    const displayValue = field.value.length
+                      ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
+                      : '';
+                    return (
+                      <MultiSelect
+                        values={field.value}
+                        options={[...clients].filter((c) => c.clientType === 'Developer' || !c.clientType).sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                        onChange={field.onChange}
+                        searchable={true}
+                        searchPlaceholder="Search developers..."
+                        trigger={<TokenTrigger label="Developer" value={displayValue} icon={Building} error={errors.selectedDevelopers} />}
+                      />
+                    );
+                  }}
+                />
+                <AnimatePresence>
+                  {errors.selectedDevelopers && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedDevelopers.message}</motion.span>}
+                </AnimatePresence>
+              </div>
 
               <Controller
                 name="selectedSalesMarketing"
@@ -363,22 +386,27 @@ export default function AddProjectModal() {
 
               <div className="w-full" /> {/* Force Break */}
 
-              <Controller
-                name="units"
-                control={control}
-                render={({ field }) => (
-                  <div className={`relative group flex items-center h-10 rounded-full border bg-white shadow-sm transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 hover:shadow-md px-4 overflow-hidden w-[160px] ${errors.units ? 'border-destructive' : 'border-slate-200'}`}>
-                    <Hash className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
-                    <span className="text-[13px] font-medium text-slate-500 mr-2">Units:</span>
-                    <input
-                      {...field}
-                      type="number"
-                      placeholder="0"
-                      className="w-full text-[13px] font-semibold text-slate-900 border-none bg-transparent outline-none p-0 focus:ring-0 placeholder:text-slate-400 placeholder:font-normal"
-                    />
-                  </div>
-                )}
-              />
+              <div className="flex flex-col gap-1">
+                <Controller
+                  name="units"
+                  control={control}
+                  render={({ field }) => (
+                    <div className={`relative group flex items-center h-10 rounded-full border bg-white shadow-sm transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 hover:shadow-md px-4 overflow-hidden w-[160px] ${errors.units ? 'border-destructive' : 'border-slate-200'}`}>
+                      <Hash className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
+                      <span className="text-[13px] font-medium text-slate-500 mr-2">Units:</span>
+                      <input
+                        {...field}
+                        type="number"
+                        placeholder="0"
+                        className="w-full text-[13px] font-semibold text-slate-900 border-none bg-transparent outline-none p-0 focus:ring-0 placeholder:text-slate-400 placeholder:font-normal"
+                      />
+                    </div>
+                  )}
+                />
+                <AnimatePresence>
+                  {errors.units && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.units.message}</motion.span>}
+                </AnimatePresence>
+              </div>
 
               <Controller
                 name="activeFeatures"
@@ -396,18 +424,12 @@ export default function AddProjectModal() {
               />
             </motion.div>
 
-            {errors.selectedDevelopers && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-destructive text-xs font-medium -mt-6 mb-6 ml-2">{errors.selectedDevelopers.message}</motion.p>
-            )}
-            {errors.units && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-destructive text-xs font-medium -mt-6 mb-6 ml-2">{errors.units.message}</motion.p>
-            )}
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
               <AnimatePresence mode="popLayout">
                 {!showKYC && (
                   <motion.div key="kyc-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowKYC(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none w-fit">
+                    <button type="button" onClick={() => setShowKYC(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
                       <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add KYC Details</span>
                     </button>
                   </motion.div>
@@ -435,7 +457,7 @@ export default function AddProjectModal() {
 
                 {!showNote && (
                   <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none w-fit">
+                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
                       <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
                     </button>
                   </motion.div>
@@ -467,7 +489,8 @@ export default function AddProjectModal() {
           <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end items-center shrink-0 rounded-b-2xl">
             <div className="flex gap-3">
               <button
-                onClick={handleClose}
+                type="button"
+                onClick={() => handleClose(false)}
                 disabled={isSubmitting}
                 className="inline-flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 active:scale-95 hover:bg-slate-100 text-slate-600 h-10 px-5 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
               >
@@ -482,6 +505,45 @@ export default function AddProjectModal() {
               </button>
             </div>
           </div>
+
+          <AnimatePresence>
+            {showDiscardConfirm && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
+              >
+                <motion.div 
+                  initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-4">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
+                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <div className="flex gap-3 w-full">
+                    <button 
+                      type="button"
+                      onClick={() => setShowDiscardConfirm(false)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    >
+                      Keep Editing
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleClose(true)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence>
             {showSuccess && (

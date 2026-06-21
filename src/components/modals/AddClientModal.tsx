@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, Check, Tag, User, AlignLeft, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
 import { updateClientRecord, addAutoLog } from '../../api/dbService';
@@ -22,6 +23,21 @@ const clientSchema = z.object({
 
 type ClientFormValues = z.infer<typeof clientSchema>;
 
+const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
+  >
+    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
+    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+      {value || 'Select'}
+    </span>
+    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+  </button>
+);
+
 export default function AddClientModal() {
   const { isModalOpen, closeModal, openDrawer } = useUI();
   const settings = useAppStore(state => state.settings);
@@ -30,12 +46,14 @@ export default function AddClientModal() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
-    
+  const [showNote, setShowNote] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ClientFormValues>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -50,10 +68,18 @@ export default function AddClientModal() {
 
   
   
-  const handleClose = () => {
+  const handleClose = (force?: boolean | any) => {
+    const isForced = force === true;
+    if (!isForced && isDirty) {
+      setShowDiscardConfirm(true);
+      return;
+    }
+    setShowDiscardConfirm(false);
     closeModal();
     reset();
     setGlobalError('');
+    setShowNote(false);
+    setShowSuccess(false);
   };
 
   const onSubmit = async (data: ClientFormValues) => {
@@ -94,16 +120,21 @@ export default function AddClientModal() {
         : `Client profile created.`;
       await addAutoLog(newClientId, logMessage, user?.name || 'System');
 
-      handleClose();
+      // Only close if we're not showing the success animation
+      // The timeout handles the actual closing later
 
       // Seamless Routing Handoff
-      if (isModalOpen('addProject')) {
-        window.dispatchEvent(new CustomEvent('clientCreated', { detail: newClientId }));
-      } else {
-        setTimeout(() => {
-          openDrawer('client', newClient.id);
-        }, 350);
-      }
+      setShowSuccess(true);
+      setTimeout(() => {
+        handleClose(true);
+        if (isModalOpen('addProject')) {
+          window.dispatchEvent(new CustomEvent('clientCreated', { detail: newClientId }));
+        } else {
+          setTimeout(() => {
+            openDrawer('client', newClient.id);
+          }, 350);
+        }
+      }, 1000);
     } catch (err) {
       console.error(err);
       setGlobalError('An error occurred while creating the client.');
@@ -113,157 +144,212 @@ export default function AddClientModal() {
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-md translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
-          <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
-            <h3 className="font-semibold text-lg tracking-tight text-foreground">Add New Client</h3>
+        <Dialog.Content 
+          onInteractOutside={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            handleClose(false);
+          }}
+          className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300">
+          <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
-              onClick={handleClose}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm duration-200"
+              type="button"
+              onClick={() => handleClose(false)}
+              className="p-2 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 duration-200"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll min-h-0">
+
+          <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6">
                 {globalError}
-              </div>
+              </motion.div>
             )}
 
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Client Name <span className="text-destructive">*</span>
-                </label>
-                <Controller
-                  name="companyName"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      className={`w-full min-w-0 rounded-md border ${errors.companyName ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 hover:border-primary/50 h-[38px] placeholder:text-muted-foreground`}
-                      placeholder="Enter client name..."
-                    />
-                  )}
-                />
-                {errors.companyName && (
-                  <p className="text-destructive text-xs mt-1 font-medium">{errors.companyName.message}</p>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+              <Controller
+                name="companyName"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-full text-4xl font-bold text-slate-800 placeholder:text-slate-300 border-none bg-transparent focus:outline-none focus:ring-0 p-0"
+                    placeholder="Client Name"
+                    autoFocus
+                  />
                 )}
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Client Type <span className="text-destructive">*</span>
-                </label>
+              />
+              {errors.companyName && (
+                <p className="text-destructive text-sm mt-2 font-medium">{errors.companyName.message}</p>
+              )}
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-start gap-3 mb-10">
+              <div className="flex flex-col gap-1">
                 <Controller
                   name="clientType"
                   control={control}
                   render={({ field }) => (
                     <Select
                       value={field.value}
-                      options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({
-                        label: t,
-                        value: t,
-                      }))}
+                      options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({ label: t, value: t }))}
                       onChange={field.onChange}
-                      className="w-full block"
-                      trigger={
-                        <button
-                          type="button"
-                          className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.clientType ? 'border-destructive focus:border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
-                        >
-                          <span
-                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value || 'Select Type'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
+                      trigger={<TokenTrigger label="Client Type" value={field.value} icon={Tag} error={errors.clientType} />}
                     />
                   )}
                 />
-                {errors.clientType && (
-                  <p className="text-destructive text-xs mt-1 font-medium">{errors.clientType.message}</p>
+                <AnimatePresence>
+                  {errors.clientType && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.clientType.message}</motion.span>}
+                </AnimatePresence>
+              </div>
+
+              <Controller
+                name="accountManager"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value || ''}
+                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({ label: m, value: m }))}
+                    onChange={field.onChange}
+                    trigger={<TokenTrigger label="Manager" value={field.value} icon={User} />}
+                  />
                 )}
-              </div>
-            </div>
+              />
+            </motion.div>
 
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Manager
-                </label>
-                <Controller
-                  name="accountManager"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value || ''}
-                      options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
-                        label: m,
-                        value: m,
-                      }))}
-                      onChange={field.onChange}
-                      className="w-full block"
-                      trigger={
-                        <button
-                          type="button"
-                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                        >
-                          <span
-                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value || 'Select Manager'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
+
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+              <AnimatePresence mode="popLayout">
+                {!showNote && (
+                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                    </button>
+                  </motion.div>
+                )}
+                {showNote && (
+                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                    <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
+                      <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
+                    </label>
+                    <Controller
+                      name="note"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                          <RichTextEditor
+                            content={field.value || ''}
+                            onChange={field.onChange}
+                            placeholder="Enter an optional note..."
+                          />
+                        </div>
+                      )}
                     />
-                  )}
-                />
-              </div>
-              <div className="pt-3 border-t border-border/50">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <Controller
-                  name="note"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
-                      <RichTextEditor
-                        content={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder="Enter an optional note..."
-                      />
-                    </div>
-                  )}
-                />
-              </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end items-center shrink-0 rounded-b-2xl">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleClose(false)}
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-lg text-[13px] font-semibold transition-all duration-200 active:scale-95 hover:-translate-y-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 h-10 px-5 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+                className="group inline-flex items-center justify-center rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating...' : 'Create Client'}
+              </button>
             </div>
           </div>
 
-          <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl">
-            <button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm border border-input bg-white hover:bg-accent hover:text-accent-foreground h-10 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Creating...' : 'Create Client'}
-            </button>
-          </div>
-                </Dialog.Content>
+          <AnimatePresence>
+            {showDiscardConfirm && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
+              >
+                <motion.div 
+                  initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-4">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
+                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <div className="flex gap-3 w-full">
+                    <button 
+                      type="button"
+                      onClick={() => setShowDiscardConfirm(false)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                    >
+                      Keep Editing
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleClose(true)}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div
+                key="success-bloom"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white rounded-2xl"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
+                >
+                  <Check className="w-12 h-12 text-green-600 stroke-[3]" />
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold text-slate-800"
+                >
+                  Client Created
+                </motion.h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );
