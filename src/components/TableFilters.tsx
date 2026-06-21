@@ -182,7 +182,7 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
           <Popover.Content
             align="end"
             sideOffset={8}
-            className="w-[440px] flex bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[99999] font-normal cursor-default overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150"
+            className="w-[440px] flex bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[99999] font-normal cursor-default overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-[140px] bg-slate-50/50 border-r border-border p-2 flex flex-col gap-1 shrink-0">
@@ -203,7 +203,7 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
               <button
                 key={preset}
                 onClick={() => handlePresetSelect(preset)}
-                className="text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-200/50 hover:text-slate-900 rounded-md transition-colors font-medium whitespace-nowrap"
+                className="text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-primary/5 hover:text-primary rounded-md transition-colors font-medium whitespace-nowrap"
               >
                 {preset}
               </button>
@@ -375,8 +375,15 @@ export const StatusDropdown = ({ value, options, onChange, settings }: any) => {
       >
         {getSettingBadge('serviceStatuses', value, settings)}
       </div>
+      <AnimatePresence>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 min-w-[140px] bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col max-h-[300px] animate-in fade-in zoom-in-95 duration-100">
+        <motion.div 
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="absolute top-full left-0 mt-2 min-w-[140px] bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[90] overflow-hidden flex flex-col max-h-[300px]"
+        >
           <div className="overflow-y-auto p-1 custom-thin-scroll">
             {options.map((opt: string) => (
               <button
@@ -388,7 +395,7 @@ export const StatusDropdown = ({ value, options, onChange, settings }: any) => {
                   onChange(opt);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors ${value === opt ? 'bg-primary/5 text-primary' : 'text-foreground'}`}
+                className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm hover:bg-primary/5 hover:text-primary rounded-md transition-colors ${value === opt ? 'bg-primary/5 text-primary' : 'text-foreground'}`}
               >
                 <span className="font-medium">
                   {getSettingBadge('serviceStatuses', opt, settings)}
@@ -396,8 +403,9 @@ export const StatusDropdown = ({ value, options, onChange, settings }: any) => {
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 };
