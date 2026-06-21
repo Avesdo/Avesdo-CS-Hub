@@ -162,7 +162,7 @@ export function DatePicker({
       }}
     >
       <Popover.Trigger asChild>
-        <div className={`relative block popover-container w-full ${className}`}>
+        <div className={`relative popover-container ${trigger ? 'inline-block' : 'block w-full'} ${className}`}>
           {trigger ? (
             <div className="w-fit">{trigger}</div>
           ) : (

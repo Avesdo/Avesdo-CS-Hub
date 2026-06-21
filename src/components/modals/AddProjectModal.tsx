@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar } from 'lucide-react';
+import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar, Building, Target, Hash, User, Layers, FileText, AlignLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
 import {
@@ -28,7 +29,7 @@ const projectSchema = z
     selectedSalesMarketing: z.array(z.string()),
     activeFeatures: z.array(z.string()),
     releaseDateVal: z.number().nullable(),
-    units: z.string(),
+    units: z.string().min(1, 'Units are required.'),
     assignee: z.string().optional(),
     kycDetails: z.string().optional(),
     note: z.string().optional(),
@@ -45,6 +46,21 @@ const projectSchema = z
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
+const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
+  >
+    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
+    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+      {value || 'Select'}
+    </span>
+    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+  </button>
+);
+
 export default function AddProjectModal() {
   const { activeModal, isModalOpen, closeModal, openModal, openDrawer } = useUI();
   const clients = useAppStore(state => state.clients);
@@ -54,8 +70,9 @@ export default function AddProjectModal() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
-
-    
+  const [showKYC, setShowKYC] = useState(false);
+  const [showNote, setShowNote] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const isOpen = isModalOpen('addProject');
 
   const {
@@ -107,6 +124,9 @@ export default function AddProjectModal() {
     closeModal();
     reset();
     setGlobalError('');
+    setShowKYC(false);
+    setShowNote(false);
+    setShowSuccess(false);
   };
 
   const onSubmit = async (data: ProjectFormValues) => {
@@ -202,12 +222,15 @@ export default function AddProjectModal() {
 
       await Promise.all(dbPromises);
 
-      handleClose();
+      setShowSuccess(true);
 
-      // Seamless Routing Handoff (350ms delay to let Modal animate out)
+      // Seamless Routing Handoff (wait for bloom to finish)
       setTimeout(() => {
-        openDrawer('project', newProject.id, { targetTab: 'overview' });
-      }, 350);
+        handleClose();
+        setTimeout(() => {
+          openDrawer('project', newProject.id, { targetTab: 'overview' });
+        }, 350);
+      }, 1000);
     } catch (err) {
       console.error(err);
       setGlobalError('An error occurred while creating the project.');
@@ -220,321 +243,275 @@ export default function AddProjectModal() {
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
-          <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20 rounded-t-xl shrink-0">
-            <h3 className="font-semibold text-lg tracking-tight text-foreground">
-              Add New Project
-            </h3>
+        <Dialog.Content onPointerDownOutside={(e) => e.preventDefault()} className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none relative overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+          <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
               onClick={handleClose}
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm duration-200"
+              className="p-2 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0 active:scale-95 duration-200"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="p-6 flex-1 overflow-y-auto custom-thin-scroll min-h-0">
+
+          <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <div className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+              <motion.div initial={{opacity: 0, y: -10}} animate={{opacity: 1, y: 0}} className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
                 {globalError}
-              </div>
+              </motion.div>
             )}
-            {/* REQUIRED METADATA */}
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5 mb-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Project Name <span className="text-destructive">*</span>
-                </label>
-                <Controller
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      className={`w-full min-w-0 rounded-md border ${errors.name ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 text-sm`}
-                      placeholder="Enter project name..."
-                    />
-                  )}
-                />
-                {errors.name && (
-                  <p className="text-destructive text-xs mt-1 font-medium">{errors.name.message}</p>
-                )}
-              </div>
 
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-[11px] font-semibold text-muted-foreground">
-                    Developer Client(s) <span className="text-destructive">*</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => openModal('addClient')}
-                    className="text-[10px] font-bold text-primary hover:underline transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:outline-none rounded-sm px-1"
-                  >
-                    + Add Client
-                  </button>
-                </div>
-                <Controller
-                  name="selectedDevelopers"
-                  control={control}
-                  render={({ field }) => (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-full text-4xl font-bold text-slate-800 placeholder:text-slate-300 border-none bg-transparent outline-none focus:ring-0 p-0 mb-2"
+                    placeholder="Project Name"
+                    autoFocus
+                  />
+                )}
+              />
+              {errors.name && (
+                <p className="text-destructive text-xs font-medium ml-1 mb-4">{errors.name.message}</p>
+              )}
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-3 mb-10 items-center">
+              
+              <Controller
+                name="selectedDevelopers"
+                control={control}
+                render={({ field }) => {
+                  const displayValue = field.value.length
+                    ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
+                    : '';
+                  return (
                     <MultiSelect
                       values={field.value}
-                      options={[...clients]
-                        .filter((c) => c.clientType === 'Developer' || !c.clientType)
-                        .sort((a, b) =>
-                          (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
-                        )
-                        .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                      options={[...clients].filter((c) => c.clientType === 'Developer' || !c.clientType).sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
                       onChange={field.onChange}
                       searchable={true}
-                      searchPlaceholder="Search developer clients..."
-                      className="w-full block mb-1"
-                      trigger={
-                        <button
-                          type="button"
-                          className={`w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border ${errors.selectedDevelopers ? 'border-destructive' : 'border-input'} rounded-md px-3 text-left flex justify-between items-center text-sm`}
-                        >
-                          <span
-                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value.length
-                              ? field.value
-                                  .map(
-                                    (id) =>
-                                      clients.find((c) => c.clientId === id || c.id === id)
-                                        ?.companyName || id
-                                  )
-                                  .join(', ')
-                              : 'Select Developer Clients...'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
+                      searchPlaceholder="Search developers..."
+                      trigger={<TokenTrigger label="Developer" value={displayValue} icon={Building} error={errors.selectedDevelopers} />}
                     />
-                  )}
-                />
-                {errors.selectedDevelopers && (
-                  <p className="text-destructive text-xs mt-1 font-medium mb-3">{errors.selectedDevelopers.message}</p>
-                )}
+                  );
+                }}
+              />
 
-                <div className="flex justify-between items-center mb-2 mt-4">
-                  <label className="block text-[11px] font-semibold text-muted-foreground">
-                    Sales & Marketing Client(s)
-                  </label>
-                </div>
-                <Controller
-                  name="selectedSalesMarketing"
-                  control={control}
-                  render={({ field }) => (
+              <Controller
+                name="selectedSalesMarketing"
+                control={control}
+                render={({ field }) => {
+                  const displayValue = field.value.length
+                    ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
+                    : '';
+                  return (
                     <MultiSelect
                       values={field.value}
-                      options={[...clients]
-                        .filter((c) => c.clientType === 'Sales & Marketing')
-                        .sort((a, b) =>
-                          (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')
-                        )
-                        .map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                      options={[...clients].filter((c) => c.clientType === 'Sales & Marketing').sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
                       onChange={field.onChange}
                       searchable={true}
-                      searchPlaceholder="Search sales & marketing clients..."
-                      className="w-full block"
-                      trigger={
-                        <button
-                          type="button"
-                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                        >
-                          <span
-                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value.length
-                              ? field.value
-                                  .map(
-                                    (id) =>
-                                      clients.find((c) => c.clientId === id || c.id === id)
-                                        ?.companyName || id
-                                  )
-                                  .join(', ')
-                              : 'Select Sales & Marketing Clients...'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
+                      searchPlaceholder="Search sales & marketing..."
+                      trigger={<TokenTrigger label="Sales & Mktg" value={displayValue} icon={Target} />}
                     />
-                  )}
-                />
-              </div>
-            </div>
+                  );
+                }}
+              />
 
-            {/* LOGISTICS */}
-            <div className="bg-muted/40 border border-border rounded-lg p-5 mb-5 grid grid-cols-2 gap-5 items-start">
-              <div className="mt-0">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Release Date
-                </label>
-                <Controller
-                  name="releaseDateVal"
-                  control={control}
-                  render={({ field }) => (
+              <div className="w-full m-0 p-0 h-0" /> {/* Force Break to move New Client down */}
+
+              <button
+                type="button"
+                onClick={() => openModal('addClient')}
+                className="group flex items-center px-2 py-0.5 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none -mt-5 ml-1"
+              >
+                <span className="text-[12px] font-bold text-primary hover:underline transition-colors">+ New Client</span>
+              </button>
+
+              <div className="w-full" /> {/* Force Break for next row */}
+
+              <Controller
+                name="releaseDateVal"
+                control={control}
+                render={({ field }) => {
+                  const dateStr = field.value ? new Date(field.value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                  return (
                     <DatePicker
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Select Date"
-                      label="Set Release Date"
+                      trigger={<TokenTrigger label="Release Date" value={dateStr} icon={Calendar} />}
                     />
-                  )}
-                />
-              </div>
-              <div className="mt-0 !space-y-0">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Live Units <span className="text-destructive">*</span>
-                </label>
-                <Controller
-                  name="units"
-                  control={control}
-                  render={({ field }) => (
+                  );
+                }}
+              />
+
+              <Controller
+                name="assignee"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value || ''}
+                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({ label: m, value: m }))}
+                    onChange={field.onChange}
+                    trigger={<TokenTrigger label="Manager" value={field.value} icon={User} />}
+                  />
+                )}
+              />
+
+              <div className="w-full" /> {/* Force Break */}
+
+              <Controller
+                name="units"
+                control={control}
+                render={({ field }) => (
+                  <div className={`relative group flex items-center h-10 rounded-full border bg-white shadow-sm transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 hover:shadow-md px-4 overflow-hidden w-[160px] ${errors.units ? 'border-destructive' : 'border-slate-200'}`}>
+                    <Hash className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
+                    <span className="text-[13px] font-medium text-slate-500 mr-2">Units:</span>
                     <input
                       {...field}
                       type="number"
-                      className={`w-full min-w-0 rounded-md border ${errors.units ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : 'border-input focus:border-primary focus:ring-primary/20'} bg-white px-3 py-2 shadow-sm outline-none transition-all hover:border-primary/50 text-sm h-[38px]`}
                       placeholder="0"
+                      className="w-full text-[13px] font-semibold text-slate-900 border-none bg-transparent outline-none p-0 focus:ring-0 placeholder:text-slate-400 placeholder:font-normal"
                     />
-                  )}
-                />
-                {errors.units && (
-                  <p className="text-destructive text-xs mt-1 font-medium">{errors.units.message}</p>
+                  </div>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* CLASSIFICATION */}
-            <div className="bg-muted/40 border border-border rounded-lg p-5 mb-5 grid grid-cols-2 gap-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Manager
-                </label>
-                <Controller
-                  name="assignee"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value || ''}
-                      options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
-                        label: m,
-                        value: m,
-                      }))}
-                      onChange={field.onChange}
-                      className="w-full block"
-                      trigger={
-                        <button
-                          type="button"
-                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                        >
-                          <span
-                            className={`truncate ${field.value ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value || 'Select Manager'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
-                    />
-                  )}
-                />
-              </div>
-              <div className="mt-0">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Active Features
-                </label>
-                <Controller
-                  name="activeFeatures"
-                  control={control}
-                  render={({ field }) => (
-                    <MultiSelect
-                      values={field.value}
-                      options={settings?.features?.map((f) => ({ label: f, value: f })) || []}
-                      onChange={field.onChange}
-                      searchable={true}
-                      searchPlaceholder="Search features..."
-                      className="w-full block"
-                      trigger={
-                        <button
-                          type="button"
-                          className="w-full bg-white shadow-sm h-[38px] active:scale-95 transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 border border-input rounded-md px-3 text-left flex justify-between items-center text-sm"
-                        >
-                          <span
-                            className={`truncate ${field.value.length ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {field.value.length
-                              ? `${field.value.length} Selected`
-                              : 'Select Active Features...'}
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      }
-                    />
-                  )}
-                />
-              </div>
-            </div>
+              <Controller
+                name="activeFeatures"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelect
+                    values={field.value}
+                    options={settings?.features?.map((f) => ({ label: f, value: f })) || []}
+                    onChange={field.onChange}
+                    searchable={true}
+                    searchPlaceholder="Search features..."
+                    trigger={<TokenTrigger label="Features" value={field.value.length ? field.value.join(', ') : ''} icon={Layers} />}
+                  />
+                )}
+              />
+            </motion.div>
 
-            {/* CONTEXT */}
-            <div className="bg-muted/40 border border-border rounded-lg p-5 space-y-5">
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  KYC Details <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <Controller
-                  name="kycDetails"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
-                      <RichTextEditor
-                        content={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder="Enter KYC details here..."
-                      />
-                    </div>
-                  )}
-                />
-              </div>
-              <div className="pt-3 border-t border-border/50">
-                <label className="block text-[11px] font-semibold text-muted-foreground mb-2">
-                  Initial Note <span className="text-muted-foreground font-normal">(Optional)</span>
-                </label>
-                <Controller
-                  name="note"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="rounded-md border border-input bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
-                      <RichTextEditor
-                        content={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder="Enter an optional note..."
-                      />
-                    </div>
-                  )}
-                />
-              </div>
+            {errors.selectedDevelopers && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-destructive text-xs font-medium -mt-6 mb-6 ml-2">{errors.selectedDevelopers.message}</motion.p>
+            )}
+            {errors.units && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-destructive text-xs font-medium -mt-6 mb-6 ml-2">{errors.units.message}</motion.p>
+            )}
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+              <AnimatePresence mode="popLayout">
+                {!showKYC && (
+                  <motion.div key="kyc-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <button type="button" onClick={() => setShowKYC(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none w-fit">
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add KYC Details</span>
+                    </button>
+                  </motion.div>
+                )}
+                {showKYC && (
+                  <motion.div key="kyc-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                    <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
+                      <FileText className="w-3.5 h-3.5 mr-1.5" /> KYC Details
+                    </label>
+                    <Controller
+                      name="kycDetails"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                          <RichTextEditor
+                            content={field.value || ''}
+                            onChange={field.onChange}
+                            placeholder="Enter KYC details here..."
+                          />
+                        </div>
+                      )}
+                    />
+                  </motion.div>
+                )}
+
+                {!showNote && (
+                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none w-fit">
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                    </button>
+                  </motion.div>
+                )}
+                {showNote && (
+                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                    <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
+                      <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
+                    </label>
+                    <Controller
+                      name="note"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 overflow-hidden">
+                          <RichTextEditor
+                            content={field.value || ''}
+                            onChange={field.onChange}
+                            placeholder="Enter an optional note..."
+                          />
+                        </div>
+                      )}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end items-center shrink-0 rounded-b-2xl">
+            <div className="flex gap-3">
+              <button
+                onClick={handleClose}
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 active:scale-95 hover:bg-slate-100 text-slate-600 h-10 px-5 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-0.5 hover:shadow-lg shadow-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-8 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating...' : 'Create Project'}
+              </button>
             </div>
           </div>
-          <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3 shrink-0 rounded-b-xl mt-auto">
-            <button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm border border-input bg-white hover:bg-accent hover:text-accent-foreground h-10 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Creating...' : 'Create Project'}
-            </button>
-          </div>
-                </Dialog.Content>
+
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div
+                key="success-bloom"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white rounded-2xl"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
+                >
+                  <Check className="w-12 h-12 text-green-600 stroke-[3]" />
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold text-slate-800"
+                >
+                  Project Created
+                </motion.h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );
