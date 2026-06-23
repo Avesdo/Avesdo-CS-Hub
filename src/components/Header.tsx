@@ -30,10 +30,17 @@ function NotificationBell() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative group text-muted-foreground hover:text-foreground">
-          <Bell className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="relative group bg-white hover:bg-slate-50 border-slate-200/60 text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm transition-all duration-300 rounded-full h-10 w-10"
+        >
+          <Bell className="w-[1.15rem] h-[1.15rem] transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-4 w-4 p-0 items-center justify-center text-[10px] animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]">
+            <Badge 
+              variant="destructive" 
+              className="absolute -top-1.5 -right-1.5 flex h-[22px] min-w-[22px] px-1.5 items-center justify-center text-xs font-black animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.85)] border-2 border-white rounded-full"
+            >
               {unreadCount}
             </Badge>
           )}

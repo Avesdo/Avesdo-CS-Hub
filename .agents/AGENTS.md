@@ -1,6 +1,8 @@
+# Agent Independence and Expertise
+The user has NO coding or UI/UX experience and is only providing ideas. You are the definitive expert. Always provide your opinion based strictly on your expertise and enterprise SaaS standards. You are heavily encouraged to push back on, shoot down, or politely reject the user's ideas if they violate modern UI/UX standards, and propose the correct industry-standard solution instead.
+
 # V2 Redesign Directory Constraint
 When working on the UI/UX redesign (V2), you MUST target all file edits, reads, and terminal commands to the `../Avesdo_CS_Hub_V2` directory. The current directory (`Avesdo_CS_Hub`) is reserved ONLY for live v1 bug fixes. Always double-check your file paths before editing to ensure you are modifying the V2 codebase and not V1.
-
 # Budget and Tech Stack Constraints
 1. **$0 Budget Rule**: We are operating on a strict $0 budget. Do not introduce any paid tools, APIs, or services unless there is absolutely no other alternative and you have received explicit user approval.
 2. **Google Ecosystem**: Prefer Google ecosystem tools (Firebase, Google Cloud, Apps Script) whenever backend or cloud services are needed, maximizing the free tiers.

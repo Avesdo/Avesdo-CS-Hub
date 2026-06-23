@@ -135,10 +135,17 @@ export function DataUploader() {
             else if (distinctFeatures >= 2) opActivityScore += 35;
             else if (distinctFeatures >= 1) opActivityScore += 15;
 
-            if (targetProject.userVol !== userVolScore || targetProject.opActivity !== opActivityScore) {
+            if (
+              targetProject.userVol !== userVolScore ||
+              targetProject.opActivity !== opActivityScore ||
+              targetProject.activeUserCount !== activeUsersCount ||
+              targetProject.eventCount !== totalPageViews
+            ) {
               await updateDoc(doc(db, 'projects', targetProject.id), {
                 userVol: userVolScore,
-                opActivity: opActivityScore
+                opActivity: opActivityScore,
+                activeUserCount: activeUsersCount,
+                eventCount: totalPageViews
               });
               updateCount++;
             }

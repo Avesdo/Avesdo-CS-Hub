@@ -5,7 +5,7 @@ const AddClientModal = React.lazy(() => import('./modals/AddClientModal'));
 const AddProjectModal = React.lazy(() => import('./modals/AddProjectModal'));
 const AddServiceModal = React.lazy(() => import('./modals/AddServiceModal'));
 const ClientDrawer = React.lazy(() => import('./drawers/ClientDrawer'));
-const ProjectDrawer = React.lazy(() => import('./drawers/ProjectDrawer'));
+const ProjectProfileModal = React.lazy(() => import('./modals/ProjectProfileModal'));
 const ServiceDrawer = React.lazy(() => import('./drawers/ServiceDrawer'));
 const DashDrilldownDrawer = React.lazy(() => import('./drawers/DashDrilldownDrawer'));
 const UnscheduledProjectsDrawer = React.lazy(() => import('./drawers/UnscheduledProjectsDrawer'));
@@ -32,7 +32,7 @@ export default function GlobalOverlays() {
       
       {/* Drawers - Safe to conditionally mount because UIContext keeps them 'open' for 300ms while closing */}
       {isDrawerOpen('client') && <ClientDrawer />}
-      {isDrawerOpen('project') && <ProjectDrawer />}
+      {isDrawerOpen('project') && <ProjectProfileModal />}
       {isDrawerOpen('service') && <ServiceDrawer />}
       {isDrawerOpen('dashDrilldown') && <DashDrilldownDrawer />}
       {isDrawerOpen('unscheduledProjects') && <UnscheduledProjectsDrawer />}

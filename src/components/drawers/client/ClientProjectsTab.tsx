@@ -127,7 +127,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             return (
               <div
                 key={p.id}
-                onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
+                onClick={() => openDrawer('project', p.id)}
                 className="flex items-center justify-between px-4 py-3 bg-white border border-border rounded-lg shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 cursor-pointer group"
               >
                 <div className="flex items-center gap-3">

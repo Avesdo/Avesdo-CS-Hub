@@ -35,18 +35,18 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
   return (
     <div
       id="pt-bulk-action-bar"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-6 py-3 flex items-center gap-6 z-50 animate-in slide-in-from-bottom-10 fade-in zoom-in-95 duration-300 ease-out pointer-events-auto ring-1 ring-white/50"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-4 py-2.5 flex items-center gap-4 z-50 animate-in slide-in-from-bottom-10 fade-in zoom-in-95 duration-300 ease-out pointer-events-auto border border-slate-200/60 whitespace-nowrap ring-1 ring-white/50"
     >
       <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
-        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold shrink-0">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-[11px] font-bold shrink-0">
           {selectedCount}
         </span>
-        <span className="text-sm font-medium whitespace-nowrap text-slate-700">
+        <span className="text-[13px] font-bold text-slate-700">
           Projects Selected
         </span>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1">
         {/* Manager Select */}
         <div className="relative">
           <Select
@@ -60,11 +60,11 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
             position="top"
             trigger={
               <button
-                className={`flex items-center whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.assignee ? 'bg-primary/5 border-primary/20 text-primary shadow-sm hover:bg-primary/10' : 'bg-transparent hover:bg-slate-100 text-slate-700 border-transparent hover:border-slate-200'}`}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.assignee ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
                 {pendingUpdates.assignee
                   ? `Manager: ${pendingUpdates.assignee}`
-                  : 'Manager'}
+                  : 'Manager...'}
               </button>
             }
           />
@@ -83,11 +83,11 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
             position="top"
             trigger={
               <button
-                className={`flex items-center whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.projectStatus ? 'bg-primary/5 border-primary/20 text-primary shadow-sm hover:bg-primary/10' : 'bg-transparent hover:bg-slate-100 text-slate-700 border-transparent hover:border-slate-200'}`}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.projectStatus ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
                 {pendingUpdates.projectStatus
                   ? `Status: ${pendingUpdates.projectStatus}`
-                  : 'Status'}
+                  : 'Status...'}
               </button>
             }
           />
@@ -106,11 +106,11 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
             position="top"
             trigger={
               <button
-                className={`flex items-center whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.timelineStatus ? 'bg-primary/5 border-primary/20 text-primary shadow-sm hover:bg-primary/10' : 'bg-transparent hover:bg-slate-100 text-slate-700 border-transparent hover:border-slate-200'}`}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.timelineStatus ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
                 {pendingUpdates.timelineStatus
                   ? `Schedule: ${pendingUpdates.timelineStatus}`
-                  : 'Schedule'}
+                  : 'Schedule...'}
               </button>
             }
           />
@@ -129,11 +129,11 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
             position="top"
             trigger={
               <button
-                className={`flex items-center whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${pendingUpdates.onboardingPhase ? 'bg-primary/5 border-primary/20 text-primary shadow-sm hover:bg-primary/10' : 'bg-transparent hover:bg-slate-100 text-slate-700 border-transparent hover:border-slate-200'}`}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.onboardingPhase ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
                 {pendingUpdates.onboardingPhase
                   ? `Implementation: ${pendingUpdates.onboardingPhase}`
-                  : 'Implementation'}
+                  : 'Implementation...'}
               </button>
             }
           />
@@ -142,7 +142,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {hasUpdates && (
           <button
             onClick={handleApply}
-            className="ml-2 px-5 py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-lg shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all hover:-translate-y-0.5 animate-in fade-in zoom-in"
+            className="ml-2 px-4 py-1.5 bg-primary text-primary-foreground text-[13px] font-bold rounded-full shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all hover:-translate-y-0.5 animate-in fade-in zoom-in"
           >
             Update
           </button>

@@ -63,7 +63,7 @@ export async function clearAllNotifications(notifications: AppNotification[]) {
 }
 
 // 4. Send Email via Google Apps Script Webhook
-const APPS_SCRIPT_WEBHOOK_URL = ''; // Replace with actual Google Apps Script Webhook URL
+const APPS_SCRIPT_WEBHOOK_URL = import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL || '';
 
 export async function sendEmailAlert(
   projectId: string,
@@ -87,8 +87,11 @@ export async function sendEmailAlert(
       },
       body: JSON.stringify({
         emailTo: 'support@avesdo.com',
-        subject: `[CS Hub Alert] ${projectName} ${action} ${formName}`,
-        body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.\n\nView Project: ${projectUrl}`,
+        subject: `[CS Hub Alert] ${formName} ${action} for "${projectName}"`,
+        projectName: projectName,
+        formName: formName,
+        action: action,
+        projectUrl: projectUrl,
       }),
     });
   } catch (err) {

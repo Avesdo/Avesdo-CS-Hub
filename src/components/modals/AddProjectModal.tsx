@@ -177,6 +177,7 @@ export default function AddProjectModal() {
         features: data.activeFeatures,
         projectStatus: 'Onboarding',
         timelineStatus: 'Not Started',
+        onboardingPhase: 'Not Started',
         onboardingMilestone: 'Not Started',
         assignee: data.assignee || 'Unassigned',
         units: data.units.toString(),
@@ -236,7 +237,7 @@ export default function AddProjectModal() {
       setTimeout(() => {
         handleClose(true);
         setTimeout(() => {
-          openDrawer('project', newProject.id, { targetTab: 'overview' });
+          openDrawer('project', newProject.id);
         }, 350);
       }, 1000);
     } catch (err) {
@@ -351,7 +352,7 @@ export default function AddProjectModal() {
                 onClick={() => openModal('addClient')}
                 className="group flex items-center px-2 py-0.5 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none -mt-5 ml-1"
               >
-                <span className="text-[12px] font-bold text-primary hover:underline transition-colors">+ New Client</span>
+                <span className="text-[12px] font-medium text-slate-500 group-hover:text-slate-700 transition-colors">+ New Client</span>
               </button>
 
               <div className="w-full" /> {/* Force Break for next row */}

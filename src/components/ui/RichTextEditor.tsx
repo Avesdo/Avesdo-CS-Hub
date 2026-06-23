@@ -39,7 +39,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-1.5 border-b border-border bg-slate-50/50 rounded-t-2xl transition-opacity duration-200 opacity-40 group-focus-within/editor:opacity-100">
+    <div className="flex flex-wrap items-center gap-1 bg-slate-50/50 rounded-t-2xl transition-all duration-200 opacity-0 max-h-0 overflow-hidden px-1.5 py-0 border-b-0 group-focus-within/editor:opacity-100 group-focus-within/editor:max-h-[50px] group-focus-within/editor:py-1.5 group-focus-within/editor:border-b group-focus-within/editor:border-border">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -111,19 +111,21 @@ const MenuBar = ({ editor }: { editor: any }) => {
   );
 };
 
+const extensions = [
+  StarterKit,
+  Link.configure({
+    openOnClick: false,
+    HTMLAttributes: {
+      class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
+    },
+  }),
+];
+
 export function RichTextEditor({ content, onChange, placeholder = 'Write an internal note or update...', disabled = false }: RichTextEditorProps) {
   const [localContent, setLocalContent] = useState(content);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
-        },
-      }),
-    ],
+    extensions,
     content: localContent,
     editable: !disabled,
     onUpdate: ({ editor }) => {
@@ -133,7 +135,7 @@ export function RichTextEditor({ content, onChange, placeholder = 'Write an inte
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm prose-slate max-w-none w-full min-h-[80px] px-4 py-3 outline-none',
+        class: 'prose prose-sm prose-slate max-w-none w-full min-h-[80px] px-4 py-3 outline-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-li:p-0 leading-snug',
       },
     },
   });

@@ -128,7 +128,7 @@ const ProjectRow = React.memo(({
     <tr
       key={virtualRow.index}
       className={`transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
-      onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })}
+      onClick={() => openDrawer('project', p.id)}
     >
       <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
         <div className="flex items-center gap-2 w-full">
@@ -158,7 +158,6 @@ const ProjectRow = React.memo(({
       <td className="px-4 py-2 text-slate-500">
         <TruncatedText
           text={p.clients?.join(', ') || 'None'}
-          className="max-w-[200px]"
         />
       </td>
               {showHealthScore && (
@@ -536,7 +535,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 w-[250px] max-w-[250px] group/th">
+            <th className="border-b border-border px-4 py-2 w-full min-w-[250px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -556,7 +555,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showHealthScore && (
-              <th className="border-b border-border px-4 py-2 min-w-[160px] group/th">
+              <th className="border-b border-border px-4 py-2 w-[160px] group/th">
                 <div className="flex items-center justify-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -575,7 +574,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 </div>
               </th>
             )}
-            <th className="border-b border-border px-4 py-2 min-w-[110px] group/th">
+            <th className="border-b border-border px-4 py-2 w-[120px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -589,7 +588,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
+            <th className="border-b border-border px-4 py-2 w-[120px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -607,7 +606,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
+            <th className="border-b border-border px-4 py-2 w-[170px] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -626,7 +625,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showTimeline && (
-              <th className="border-b border-border px-4 py-2 min-w-[170px] group/th">
+              <th className="border-b border-border px-4 py-2 w-[170px] group/th">
                 <div className="flex items-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -646,7 +645,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </th>
             )}
             {showPhase && (
-              <th className="border-b border-border px-4 py-2 min-w-[190px] group/th">
+              <th className="border-b border-border px-4 py-2 w-[190px] group/th">
                 <div className="flex items-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -676,7 +675,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showFeatures && (
-              <th className="border-b border-border px-4 py-2 min-w-[120px] group/th">
+              <th className="border-b border-border px-4 py-2 w-[120px] group/th">
                 <div className="flex items-center justify-center">
                   <div className="whitespace-nowrap mr-2">Features</div>
                   {setFeaturesFilter && (

@@ -1,5 +1,3 @@
 **/**
-!AppsScriptCompiler.js
 !appsscript.json
-!Backend_Cron.js
-!Backend_Scoring.js
+!Code.js

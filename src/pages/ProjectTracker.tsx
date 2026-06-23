@@ -639,6 +639,19 @@ export default function ProjectTracker() {
             year: 'numeric',
           });
         }
+        
+        if (pUpdates.projectStatus === 'Active' && p.projectStatus === 'Onboarding') {
+          pUpdates.timelineStatus = 'Released';
+          pUpdates.onboardingPhase = 'Released';
+          const today = new Date();
+          const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          pUpdates.releaseDateVal = localMidnight.getTime();
+          pUpdates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        }
 
         await updateProjectRecord({ ...p, ...pUpdates }, { silent: true });
 

@@ -162,7 +162,8 @@ export const getSettingBadge = (
   listName: string,
   value: string,
   settings: any,
-  size: 'sm' | 'md' | 'lg' | boolean = false
+  size: 'sm' | 'md' | 'lg' | boolean = false,
+  truncateText: boolean = true
 ) => {
   let sizeClasses = 'px-2.5 py-1 text-[11px]';
   let iconSize = 'w-3 h-3';
@@ -231,7 +232,7 @@ export const getSettingBadge = (
           className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
           <LucideIcons.User className={iconSize} /> 
-          <span className="truncate max-w-[180px]">{value}</span>
+          <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{value}</span>
         </span>
       );
     }
@@ -239,7 +240,7 @@ export const getSettingBadge = (
       <span
         className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center shrink-0`}
       >
-        <span className="truncate max-w-[180px]">{value}</span>
+        <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{value}</span>
       </span>
     );
   }
@@ -252,7 +253,7 @@ export const getSettingBadge = (
       style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}` }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
-      <span className="truncate max-w-[180px]">{item.name}</span>
+      <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{item.name}</span>
     </span>
   );
 };

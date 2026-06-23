@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc, getDocs, collection } from 'firebase/firestore';
 import { db } from './firebase';
-import { calculateClientHealth } from '../utils/scoringUtils';
+import { calculateClientHealth, calculateProjectHealth } from '../utils/scoringUtils';
 import { Client, Project, Settings } from '../types';
 
 export async function generateDailyHealthSnapshots() {
@@ -64,7 +64,40 @@ export async function generateDailyHealthSnapshots() {
       hasUpdates = true;
     });
 
-    // 4. Save history Map
+    // 4. Iterate over projects and capture current score
+    projects.forEach(project => {
+      const projectId = project.projectId || (project as any).id;
+      if (!projectId) return;
+
+      const healthResult = calculateProjectHealth(project, settings);
+      const score = typeof healthResult.totalScore === 'number' ? healthResult.totalScore : 0;
+
+      if (!historyMap[projectId]) {
+        historyMap[projectId] = [];
+      }
+
+      const projectHistory = historyMap[projectId];
+      
+      // Check if we already have a snapshot for today
+      if (projectHistory.length > 0) {
+        const lastSnapshot = projectHistory[projectHistory.length - 1];
+        if (new Date(lastSnapshot.timeVal).toDateString() === todayStr) {
+          // Overwrite today's snapshot
+          lastSnapshot.score = score;
+          lastSnapshot.timeVal = timeVal;
+        } else {
+          // Append new daily snapshot
+          projectHistory.push({ timeVal, score });
+        }
+      } else {
+        // First snapshot ever
+        projectHistory.push({ timeVal, score });
+      }
+
+      hasUpdates = true;
+    });
+
+    // 5. Save history Map
     if (hasUpdates) {
       await setDoc(historyRef, { historyMap }, { merge: true });
     }

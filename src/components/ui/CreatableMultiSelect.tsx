@@ -69,10 +69,19 @@ export const CreatableMultiSelect: React.FC<CreatableMultiSelectProps> = ({
   };
 
   const filteredOptions = useMemo(() => {
-    return options.filter(
+    let result = options.filter(
       (o) => o.toLowerCase().includes(inputValue.toLowerCase())
     );
-  }, [options, inputValue]);
+    
+    result = [...result].sort((a, b) => {
+      const aSelected = values.includes(a);
+      const bSelected = values.includes(b);
+      if (aSelected === bSelected) return 0;
+      return aSelected ? -1 : 1;
+    });
+
+    return result;
+  }, [options, inputValue, values]);
 
   const showCreateOption =
     inputValue.trim() !== '' &&

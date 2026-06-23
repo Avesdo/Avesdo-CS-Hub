@@ -1018,7 +1018,7 @@ export default function Dashboard() {
                      {suspendedProjects.map(p => {
                        const clientDisplay = (p.clients || []).join(', ');
                        return (
-                         <div key={p.id} onClick={() => openDrawer('project', p.id, { targetTab: 'overview' })} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-amber-400/50 hover:shadow-md transition-all duration-300 group">
+                         <div key={p.id} onClick={() => openDrawer('project', p.id)} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-white shadow-sm cursor-pointer hover:border-amber-400/50 hover:shadow-md transition-all duration-300 group">
                              <div className="flex items-center gap-3 min-w-0">
                                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                                  <PauseCircle className="w-4 h-4 text-amber-600" />
