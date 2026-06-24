@@ -111,7 +111,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
             </UITooltip>
           </div>
           <div className="relative z-10">
-            <h3 className="text-slate-500 text-sm font-medium">Additional Value</h3>
+            <h3 className="text-slate-500 text-sm font-medium">Total Value</h3>
             <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{formatCurrency(totalAdditionalValue)}</p>
           </div>
         </motion.div>

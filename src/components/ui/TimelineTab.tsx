@@ -98,8 +98,8 @@ export function TimelineTab({
 
   return (
     <div className="flex flex-col h-full mx-auto w-full max-w-3xl">
-      {/* Sticky Header with Smart Composer and Filters */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md pt-2 pb-6 border-b border-slate-100/60 mb-6">
+      {/* Header with Smart Composer and Filters */}
+      <div className="pt-2 pb-6 border-b border-slate-100/60 mb-6">
         
         {/* Smart Composer */}
         <div className="mb-4">
@@ -195,7 +195,7 @@ export function TimelineTab({
             {Object.keys(groupedNotes).map((dateHeader) => (
               <div key={dateHeader} className="relative">
                 {/* Date Group Header */}
-                <div className="sticky top-[140px] z-30 -ml-[19px] mb-6 flex items-center">
+                <div className="sticky top-[-10px] z-30 -ml-[19px] mb-6 flex items-center">
                   <div className="bg-slate-50 px-3 py-1 rounded-full border border-slate-200/60 shadow-sm text-[12px] font-semibold text-slate-600 tracking-wide relative -left-[19px]">
                     {dateHeader}
                   </div>

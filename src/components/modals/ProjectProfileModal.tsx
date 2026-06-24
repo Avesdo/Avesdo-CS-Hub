@@ -77,6 +77,8 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
 
 export default function ProjectProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
+  const stackIndex = activeDrawers.findIndex(d => d.type === 'project');
+  const zIndexBase = 10000 + (stackIndex >= 0 ? stackIndex * 10 : 0);
   const projects = useAppStore(state => state.projects);
   const settings = useAppStore(state => state.settings);
   const clients = useAppStore(state => state.clients);
@@ -430,28 +432,30 @@ export default function ProjectProfileModal() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[9999]"
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
+                style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content
-              onEscapeKeyDown={(e) => {
-                e.preventDefault();
-                if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
-              }}
-              onInteractOutside={(e) => {
-                e.preventDefault();
-                if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
-              }}
-              asChild
-            >
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-45%" }}
-                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
-                exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-45%" }}
-                transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] w-[95vw] max-w-6xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex"
+            <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: zIndexBase }}>
+              <Dialog.Content
+                onEscapeKeyDown={(e) => {
+                  e.preventDefault();
+                  if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
+                }}
+                onInteractOutside={(e) => {
+                  e.preventDefault();
+                  if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
+                }}
+                asChild
               >
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                  className="w-[95vw] max-w-6xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex pointer-events-auto"
+                >
                 {/* LEFT SIDEBAR: Persistent Control Center */}
                 <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
                   {/* Header */}
@@ -895,14 +899,15 @@ export default function ProjectProfileModal() {
                   
                   {/* Scrollable Content Area */}
                   <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence mode="popLayout">
                       <motion.div
                         key={activeTab}
+                        layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="h-full"
+                        className="w-full"
                       >
                         {activeTab === 'overview' && <ProjectFeaturesTab project={project} />}
                         {activeTab === 'onboarding' && <ProjectOnboardingTab project={project} />}
@@ -923,8 +928,9 @@ export default function ProjectProfileModal() {
                     </AnimatePresence>
                   </div>
                 </div>
-              </motion.div>
-            </Dialog.Content>
+                </motion.div>
+              </Dialog.Content>
+            </div>
           </Dialog.Portal>
         )}
       </AnimatePresence>

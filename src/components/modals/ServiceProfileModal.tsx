@@ -91,7 +91,9 @@ const ContactInputPill = ({ value, onChange, onBlur }: any) => (
 );
 
 export default function ServiceProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUI();
+  const stackIndex = activeDrawers.findIndex(d => d.type === 'service');
+  const zIndexBase = 10000 + (stackIndex >= 0 ? stackIndex * 10 : 0);
   const services = useAppStore(state => state.services);
   const settings = useAppStore(state => state.settings);
   const user = useAppStore(state => state.user);
@@ -431,28 +433,30 @@ export default function ServiceProfileModal() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[9999]"
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
+                style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content
-              onEscapeKeyDown={(e) => {
-                e.preventDefault();
-                if (activeDrawer?.type === 'service') closeDrawer();
-              }}
-              onInteractOutside={(e) => {
-                e.preventDefault();
-                if (activeDrawer?.type === 'service') closeDrawer();
-              }}
-              asChild
-            >
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-45%" }}
-                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
-                exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-45%" }}
-                transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] w-[95vw] max-w-5xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex"
+            <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: zIndexBase }}>
+              <Dialog.Content
+                onEscapeKeyDown={(e) => {
+                  e.preventDefault();
+                  if (activeDrawer?.type === 'service') closeDrawer();
+                }}
+                onInteractOutside={(e) => {
+                  e.preventDefault();
+                  if (activeDrawer?.type === 'service') closeDrawer();
+                }}
+                asChild
               >
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                  className="w-[95vw] max-w-5xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex pointer-events-auto"
+                >
                 {/* LEFT SIDEBAR */}
                 <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
                   <div className="p-6 pb-4">
@@ -737,14 +741,15 @@ export default function ServiceProfileModal() {
 
                   {/* Scrollable Content Area */}
                   <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative z-0">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence mode="popLayout">
                       <motion.div
                         key={activeTab}
+                        layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="h-full"
+                        className="w-full"
                       >
                         {activeTab === 'details' && <ServiceDetailsTab service={service} />}
                         {activeTab === 'notes' && service && (
@@ -763,8 +768,9 @@ export default function ServiceProfileModal() {
                     </AnimatePresence>
                   </div>
                 </div>
-              </motion.div>
-            </Dialog.Content>
+                </motion.div>
+              </Dialog.Content>
+            </div>
           </Dialog.Portal>
         )}
       </AnimatePresence>
