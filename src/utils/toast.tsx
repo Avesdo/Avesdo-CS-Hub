@@ -1,45 +1,60 @@
 import React from 'react';
 import hotToast from 'react-hot-toast';
-import { AlertTriangle, Info, Check, AlertCircle } from 'lucide-react';
+import { AlertTriangle, Info, Check, AlertCircle, Loader2 } from 'lucide-react';
 
 const ToastContent = ({ title, message }: { title: string; message?: string }) => (
-  <div className="flex flex-col gap-0.5 text-sm">
-    <span className="font-semibold">{title}</span>
-    {message && <span className="text-xs opacity-90">{message}</span>}
+  <div className="flex flex-col gap-0.5">
+    <span className="text-sm font-semibold text-slate-800">{title}</span>
+    {message && <span className="text-xs font-medium text-slate-500">{message}</span>}
   </div>
 );
+
+const baseToastClass = '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl';
 
 export const toast = {
   success: (title: string, message?: string) =>
     hotToast.success(<ToastContent title={title} message={message} />, {
-      icon: <Check className="w-5 h-5 !text-green-600 shrink-0" />,
-      className:
-        '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+      icon: (
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+          <Check className="h-4 w-4" />
+        </div>
+      ),
+      className: baseToastClass,
       style: { background: 'unset', color: 'unset' },
     }),
 
   error: (title: string, message?: string) =>
     hotToast.error(<ToastContent title={title} message={message} />, {
-      icon: <AlertCircle className="w-5 h-5 !text-red-600 shrink-0" />,
-      className: '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+      icon: (
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+          <AlertCircle className="h-4 w-4" />
+        </div>
+      ),
+      className: baseToastClass,
       style: { background: 'unset', color: 'unset' },
     }),
 
   warning: (title: string, message?: string) =>
     hotToast(<ToastContent title={title} message={message} />, {
       duration: 5000,
-      icon: <AlertTriangle className="w-5 h-5 !text-orange-600 shrink-0" />,
-      className:
-        '!bg-orange-50 !text-orange-900 !border-orange-200 border shadow-xl rounded-lg font-medium',
+      icon: (
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+          <AlertTriangle className="h-4 w-4" />
+        </div>
+      ),
+      className: baseToastClass,
       style: { background: 'unset', color: 'unset' },
     }),
 
   info: (title: string, message?: string) =>
     hotToast(<ToastContent title={title} message={message} />, {
       duration: 4000,
-      icon: <Info className="w-5 h-5 !text-blue-600 shrink-0" />,
-      className:
-        '!bg-blue-50 !text-blue-900 !border-blue-200 border shadow-xl rounded-lg font-medium',
+      icon: (
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+          <Info className="h-4 w-4" />
+        </div>
+      ),
+      className: baseToastClass,
       style: { background: 'unset', color: 'unset' },
     }),
 
@@ -47,8 +62,12 @@ export const toast = {
 
   loading: (title: string, message?: string) =>
     hotToast.loading(<ToastContent title={title} message={message} />, {
-      className:
-        '!bg-cyan-50 !text-cyan-900 !border-cyan-200 border shadow-xl rounded-lg font-medium',
+      icon: (
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-600">
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </div>
+      ),
+      className: baseToastClass,
       style: { background: 'unset', color: 'unset' },
     }),
 
@@ -75,20 +94,30 @@ export const toast = {
       },
       {
         loading: {
-          className:
-            '!bg-cyan-50 !text-cyan-900 !border-cyan-200 border shadow-xl rounded-lg font-medium',
+          icon: (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-600">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ),
+          className: baseToastClass,
           style: { background: 'unset', color: 'unset' },
         },
         success: {
-          icon: <Check className="w-5 h-5 !text-green-600 shrink-0" />,
-          className:
-            '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+          icon: (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <Check className="h-4 w-4" />
+            </div>
+          ),
+          className: baseToastClass,
           style: { background: 'unset', color: 'unset' },
         },
         error: {
-          icon: <AlertCircle className="w-5 h-5 !text-red-600 shrink-0" />,
-          className:
-            '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+          icon: (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+              <AlertCircle className="h-4 w-4" />
+            </div>
+          ),
+          className: baseToastClass,
           style: { background: 'unset', color: 'unset' },
         },
       }

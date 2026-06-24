@@ -8,6 +8,7 @@ import {
   Check,
   Trash2,
   AlertTriangle,
+  FileText,
 } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -27,7 +28,7 @@ import ClientHealthTab from './client/ClientHealthTab';
 import ClientTrendsTab from './client/ClientTrendsTab';
 import ClientProjectsTab from './client/ClientProjectsTab';
 import ClientServicesTab from './client/ClientServicesTab';
-import { NotesTab } from '../ui/NotesTab';
+import { TimelineTab } from '../ui/TimelineTab';
 import { Select } from '../ui/Select';
 import { Tooltip } from '../ui/Tooltip';
 
@@ -92,8 +93,8 @@ export default function ClientDrawer() {
       await updateClientRecord(
         { ...client, companyName: newName, name: newName },
         {
-          successMsg: `Client Name successfully updated to '${newName}'.`,
-          errorMsg: `Failed to update Client Name to '${newName}'.`,
+          successMsg: `Client Name successfully updated to '${newName}'`,
+          errorMsg: `Failed to update Client Name to '${newName}'`,
         },
         `Client Name updated from "${oldName}" to "${newName}"`,
         user?.name
@@ -143,8 +144,8 @@ export default function ClientDrawer() {
     await updateClientRecord(
       { ...client, clientType: type },
       {
-        successMsg: `Client Type successfully updated for '${client.companyName || client.name}'.`,
-        errorMsg: `Failed to update Client Type for '${client.companyName || client.name}'.`,
+        successMsg: `Client Type successfully updated for '${client.companyName || client.name}'`,
+        errorMsg: `Failed to update Client Type for '${client.companyName || client.name}'`,
       },
       `Client Type changed from ${oldType} to ${type}`,
       user?.name
@@ -157,8 +158,8 @@ export default function ClientDrawer() {
     await updateClientRecord(
       { ...client, accountManager: manager },
       {
-        successMsg: `Manager successfully assigned for '${client.companyName || client.name}'.`,
-        errorMsg: `Failed to assign Manager for '${client.companyName || client.name}'.`,
+        successMsg: `Manager successfully assigned for '${client.companyName || client.name}'`,
+        errorMsg: `Failed to assign Manager for '${client.companyName || client.name}'`,
       },
       `Manager changed from ${oldManager} to ${manager || 'Unassigned'}`,
       user?.name
@@ -177,7 +178,7 @@ export default function ClientDrawer() {
     { id: 'health', label: 'Health & Trends' },
     { id: 'projects', label: 'Projects' },
     { id: 'services', label: 'Services' },
-    { id: 'notes', label: 'Activity Logs' },
+    { id: 'notes', label: 'Timeline', icon: FileText },
   ] as const;
 
   const healthResult = calculateClientHealth(client, projects, settings);
@@ -345,7 +346,7 @@ export default function ClientDrawer() {
                   if (client) {
                     const cid = client.clientId || client.id;
                     const cname = client.companyName || client.name || 'Record';
-                    await deleteClientRecord(cid, cname);
+                    await deleteClientRecord(cid, cname, user?.name || 'System');
                     await addAutoLog(cid, `Client profile archived`, user?.name || 'System');
                     const cProjects = projects.filter((p: any) => p.clientIds?.includes(cid));
                     for (const p of cProjects)
@@ -417,14 +418,13 @@ export default function ClientDrawer() {
           )}
           {activeTab === 'projects' && <ClientProjectsTab client={client} />}
           {activeTab === 'services' && <ClientServicesTab client={client} />}
-          {activeTab === 'notes' && (
-            <NotesTab
-              notes={client?.notes || []}
+          {activeTab === 'notes' && client && (
+            <TimelineTab
+              notes={client.notes || []}
               onSaveNotes={async (updatedNotes) => {
-                if (!client) return;
                 await updateClientRecord({ ...client, notes: updatedNotes } as any, {
-                  successMsg: `Note successfully added for '${client.companyName || client.name}'.`,
-                  errorMsg: `Failed to add note for '${client.companyName || client.name}'.`,
+                  successMsg: `Timeline updated for '${client.companyName || client.name}'.`,
+                  errorMsg: `Failed to update timeline for '${client.companyName || client.name}'.`,
                 });
               }}
               emptyStateMessage="Be the first to add a note or make changes to generate system logs."

@@ -15,7 +15,7 @@ import {
   CheckCircle2,
   Check,
 } from 'lucide-react';
-import { getSettingBadge, getHealthBadge, getFeatureBadgeProps } from '../../utils/uiUtils';
+import { getSettingBadge, getHealthBadge, getFeatureBadgeProps, formatRelativeDate } from '../../utils/uiUtils';
 import { TruncatedText } from '../ui/TruncatedText';
 import { Select } from '../ui/Select';
 import EmptyState from '../EmptyState';
@@ -122,7 +122,8 @@ const ProjectRow = React.memo(({
   showFeatures,
   getFeatureBadgeProps,
   Sparkline,
-  virtualRow
+  virtualRow,
+  useRelativeDate
 }: any) => {
   return (
     <tr
@@ -130,7 +131,7 @@ const ProjectRow = React.memo(({
       className={`transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
       onClick={() => openDrawer('project', p.id)}
     >
-      <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[280px] min-w-[280px]">
+      <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[35%] sm:w-[30%] lg:w-[25%]">
         <div className="flex items-center gap-2 w-full">
           <div className={`flex-shrink-0 flex items-center transition-opacity duration-200 ${selectedRows.includes(p.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
             <div className="relative group/cb flex items-center justify-center">
@@ -149,20 +150,21 @@ const ProjectRow = React.memo(({
               </div>
             </div>
           </div>
-          <TruncatedText
-            text={p.name || 'Unnamed Project'}
-            className="w-full max-w-[240px] 2xl:max-w-[410px] group-hover:text-primary transition-colors"
-          />
+            <TruncatedText
+              text={p.name || 'Unnamed Project'}
+              className="w-full min-w-[180px] group-hover:text-primary transition-colors"
+            />
         </div>
       </td>
-      <td className="px-4 py-2 text-slate-500">
+      <td className="px-4 py-2 text-slate-500 max-w-0 w-[15%]">
         <TruncatedText
           text={p.clients?.join(', ') || 'None'}
+          className="w-full"
         />
       </td>
               {showHealthScore && (
                 <td
-                  className="px-4 py-2 cursor-pointer"
+                  className="px-4 py-2 cursor-pointer hidden md:table-cell"
                   onClick={(e) => {
                     e.stopPropagation();
                     openDrawer('project', p.id, { targetTab: 'health' });
@@ -184,7 +186,7 @@ const ProjectRow = React.memo(({
                   </div>
                 </td>
               )}
-              <td className="px-4 py-2 text-muted-foreground" onClick={stopProp}>
+              <td className="px-4 py-2 text-muted-foreground hidden md:table-cell" onClick={stopProp}>
                 <DatePicker
                   value={p.releaseDateVal}
                   onChange={(val, str) => {
@@ -196,20 +198,22 @@ const ProjectRow = React.memo(({
               <Calendar className="w-4 h-4 opacity-50" />
                       <span className="whitespace-nowrap">
                         {p.releaseDateVal
-                          ? new Date(p.releaseDateVal).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              ...(!showYearInDate
-                                ? {}
-                                : { year: 'numeric' }),
-                            })
+                          ? useRelativeDate
+                            ? formatRelativeDate(p.releaseDateVal, showYearInDate)
+                            : new Date(p.releaseDateVal).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                ...(!showYearInDate
+                                  ? {}
+                                  : { year: 'numeric' }),
+                              })
                           : 'Not Set'}
                       </span>
                     </div>
                   }
                 />
               </td>
-              <td className="px-4 py-2" onClick={stopProp}>
+              <td className="px-4 py-2 hidden lg:table-cell" onClick={stopProp}>
                 <div className="inline-block relative">
                   <Select
                     value={p.assignee || 'Unassigned'}
@@ -246,7 +250,7 @@ const ProjectRow = React.memo(({
                 </div>
               </td>
               {showTimeline && (
-                <td className="px-4 py-2" onClick={stopProp}>
+                <td className="px-4 py-2 hidden lg:table-cell" onClick={stopProp}>
                   <div className="inline-block relative">
                     <Select
                       value={p.timelineStatus || 'Not Set'}
@@ -268,7 +272,7 @@ const ProjectRow = React.memo(({
                 </td>
               )}
               {showPhase && (
-                <td className="px-4 py-2" onClick={stopProp}>
+                <td className="px-4 py-2 hidden xl:table-cell" onClick={stopProp}>
                   <div className="inline-block relative">
                     <Select
                       value={p.onboardingPhase || 'Not Set'}
@@ -289,11 +293,11 @@ const ProjectRow = React.memo(({
                   </div>
                 </td>
               )}
-              <td className="px-4 py-2 text-center font-medium text-foreground">
+              <td className="px-4 py-2 text-center font-medium text-foreground hidden xl:table-cell">
                 {p.units ? parseInt(p.units).toLocaleString() : '0'}
               </td>
               {showFeatures && (
-                <td className="px-4 py-2">
+                <td className="px-4 py-2 hidden 2xl:table-cell">
                   {(() => {
                     const pt_features = [
                       'Contracts',
@@ -498,12 +502,12 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
     };
 
     return (
-      <table className="w-full text-left bg-white border-separate border-spacing-0 min-w-[1600px] table-fixed">
+      <table className="w-full text-left bg-white border-separate border-spacing-0">
 
         {useMemo(() => (
         <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
           <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[280px] min-w-[280px] group/th">
+            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
               <div className="flex items-center w-full">
                 <div className={`flex-shrink-0 flex items-center mr-2 transition-opacity duration-200 ${selectedRows.length > 0 ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-100'}`}>
                   <div className="relative group/cb flex items-center justify-center">
@@ -535,7 +539,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 w-full min-w-[250px] group/th">
+            <th className="border-b border-border px-4 py-2 w-[15%] group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -555,7 +559,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showHealthScore && (
-              <th className="border-b border-border px-4 py-2 w-[160px] group/th">
+              <th className="border-b border-border px-4 py-2 hidden md:table-cell group/th">
                 <div className="flex items-center justify-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -574,7 +578,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 </div>
               </th>
             )}
-            <th className="border-b border-border px-4 py-2 w-[120px] group/th">
+            <th className="border-b border-border px-4 py-2 hidden md:table-cell group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -588,7 +592,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 w-[120px] group/th">
+            <th className="border-b border-border px-4 py-2 hidden lg:table-cell group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -606,7 +610,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 )}
               </div>
             </th>
-            <th className="border-b border-border px-4 py-2 w-[170px] group/th">
+            <th className="border-b border-border px-4 py-2 group/th">
               <div className="flex items-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -625,7 +629,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showTimeline && (
-              <th className="border-b border-border px-4 py-2 w-[170px] group/th">
+              <th className="border-b border-border px-4 py-2 hidden lg:table-cell group/th">
                 <div className="flex items-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -645,7 +649,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </th>
             )}
             {showPhase && (
-              <th className="border-b border-border px-4 py-2 w-[190px] group/th">
+              <th className="border-b border-border px-4 py-2 hidden xl:table-cell group/th">
                 <div className="flex items-center">
                   <div
                     className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap mr-2 flex items-center"
@@ -663,7 +667,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 </div>
               </th>
             )}
-            <th className="border-b border-border px-4 py-2 w-[80px] group/th">
+            <th className="border-b border-border px-4 py-2 hidden xl:table-cell group/th">
               <div className="flex items-center justify-center">
                 <div
                   className="cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap flex items-center"
@@ -675,7 +679,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </div>
             </th>
             {showFeatures && (
-              <th className="border-b border-border px-4 py-2 w-[120px] group/th">
+              <th className="border-b border-border px-4 py-2 hidden 2xl:table-cell group/th">
                 <div className="flex items-center justify-center">
                   <div className="whitespace-nowrap mr-2">Features</div>
                   {setFeaturesFilter && (
@@ -726,6 +730,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 settings={settings}
                 showHealthScore={showHealthScore}
                 getHealthBadge={getHealthBadge}
+                useRelativeDate={activeTab === 'Actively Onboarding'}
                 showYearInDate={!(groupA && activeTab !== 'All Onboarding')}
                 onUpdateProject={onUpdateProject}
                 getSettingBadge={getSettingBadge}

@@ -344,3 +344,33 @@ export const getFeatureBadgeProps = (pct: number, settings: any) => {
   }
   return { bg: 'bg-red-100', fill: 'bg-red-500', text: 'text-foreground' };
 };
+
+export const formatRelativeDate = (dateVal: number | string | null | undefined, showYearInDate: boolean = false) => {
+  if (!dateVal) return 'Not Set';
+  const date = new Date(dateVal);
+  const now = new Date();
+  
+  const dDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const nDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  const diffTime = dDay.getTime() - nDay.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays === -1) return 'Yesterday';
+  
+  if (diffDays > 1 && diffDays <= 7) {
+    return date.toLocaleDateString('en-US', { weekday: 'long' });
+  }
+  
+  if (diffDays < -1 && diffDays >= -7) {
+    return `Last ${date.toLocaleDateString('en-US', { weekday: 'long' })}`;
+  }
+  
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    ...(showYearInDate ? { year: 'numeric' } : {}),
+  });
+};

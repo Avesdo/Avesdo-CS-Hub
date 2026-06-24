@@ -8,23 +8,20 @@ export const GlobalToaster = () => {
       containerStyle={{ zIndex: 99999 }}
       toastOptions={{
         duration: 4000,
-        className: 'shadow-xl border rounded-lg max-w-sm',
+        className: '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl !text-slate-800',
         success: {
           duration: 4000,
-          className:
-            '!bg-green-50 !text-green-900 !border-green-200 border shadow-xl rounded-lg font-medium',
+          className: '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl !text-slate-800',
           style: { background: 'unset', color: 'unset' },
         },
         error: {
           duration: 8000,
-          className:
-            '!bg-red-50 !text-red-900 !border-red-200 border shadow-xl rounded-lg font-medium',
+          className: '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl !text-slate-800',
           style: { background: 'unset', color: 'unset' },
         },
         loading: {
           duration: Infinity,
-          className:
-            '!bg-white !text-foreground !border-primary border shadow-xl rounded-lg font-medium',
+          className: '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl !text-slate-800',
           style: { background: 'unset', color: 'unset' },
           iconTheme: {
             primary: '#00bdd9',

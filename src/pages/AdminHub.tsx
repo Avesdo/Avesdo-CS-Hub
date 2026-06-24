@@ -130,12 +130,13 @@ export default function AdminHub() {
   const handleRestoreRecordLocal = async (collectionName: string, item: any) => {
     const title = item.companyName || item.name || 'Record';
     toast.promise(
-      restoreRecord(collectionName, item.clientId || item.id, title, { silent: true }).then(
+      restoreRecord(collectionName, item.clientId || item.id, title, { silent: true }, user?.name || user?.email || 'System').then(
         async () => {
           if (collectionName === 'projects') {
+            await addProjectAutoLog(item.clientId || item.id, `Project "${item.name}" restored`, user?.name || 'System');
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Project "${item.name}" restored`, 'System', true);
+                await addAutoLog(cid, `Project "${item.name}" restored`, user?.name || 'System', true);
               }
             }
             const pServices =
@@ -152,7 +153,7 @@ export default function AdminHub() {
               await addServiceAutoLog(
                 svc.id,
                 `Attached Project "${item.name}" restored`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -167,7 +168,7 @@ export default function AdminHub() {
               await addProjectAutoLog(
                 p.id,
                 `Client "${item.companyName || item.name}" restored`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -181,7 +182,7 @@ export default function AdminHub() {
               await addServiceAutoLog(
                 svc.id,
                 `Attached Client "${item.companyName || item.name}" restored`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -190,11 +191,11 @@ export default function AdminHub() {
               item.projectIds ||
               (item.projectId && item.projectId !== 'N/A' ? [item.projectId] : []);
             for (const pId of pIds) {
-              await addProjectAutoLog(pId, `Service "${item.name}" restored`, 'System', true);
+              await addProjectAutoLog(pId, `Service "${item.name}" restored`, user?.name || 'System', true);
             }
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Service "${item.name}" restored`, 'System', true);
+                await addAutoLog(cid, `Service "${item.name}" restored`, user?.name || 'System', true);
               }
             }
           }
@@ -202,8 +203,8 @@ export default function AdminHub() {
       ),
       {
         loading: `Restoring ${title}...`,
-        success: `${title} restored successfully.`,
-        error: `Failed to restore ${title}.`,
+        success: `${title} restored successfully`,
+        error: `Failed to restore ${title}`,
       }
     );
   };
@@ -230,7 +231,7 @@ export default function AdminHub() {
           if (collectionName === 'projects') {
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Project "${item.name}" permanently deleted`, 'System', true);
+                await addAutoLog(cid, `Project "${item.name}" permanently deleted`, user?.name || 'System', true);
               }
             }
             const pServices =
@@ -247,7 +248,7 @@ export default function AdminHub() {
               await addServiceAutoLog(
                 svc.id,
                 `Attached Project "${item.name}" permanently deleted`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -262,7 +263,7 @@ export default function AdminHub() {
               await addProjectAutoLog(
                 p.id,
                 `Client "${item.companyName || item.name}" permanently deleted`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -276,7 +277,7 @@ export default function AdminHub() {
               await addServiceAutoLog(
                 svc.id,
                 `Attached Client "${item.companyName || item.name}" permanently deleted`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
@@ -285,13 +286,13 @@ export default function AdminHub() {
               await addProjectAutoLog(
                 item.projectId,
                 `Service "${item.name}" permanently deleted`,
-                'System',
+                user?.name || 'System',
                 true
               );
             }
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Service "${item.name}" permanently deleted`, 'System', true);
+                await addAutoLog(cid, `Service "${item.name}" permanently deleted`, user?.name || 'System', true);
               }
             }
           }
@@ -299,8 +300,8 @@ export default function AdminHub() {
       ),
       {
         loading: `Permanently deleting ${title}...`,
-        success: `${title} permanently deleted.`,
-        error: `Failed to delete ${title}.`,
+        success: `${title} permanently deleted`,
+        error: `Failed to delete ${title}`,
       }
     );
   };
@@ -337,7 +338,7 @@ export default function AdminHub() {
     const restoredName =
       typeof restoredItem === 'string' ? restoredItem : restoredItem?.name || 'Unknown';
     const displayField = fieldDisplayNames[category] || category;
-    const msg = `${displayField} '${restoredName}' restored.`;
+    const msg = `${displayField} '${restoredName}' restored`;
     const author = user?.name || user?.email || 'Admin';
 
     addGlobalLog(msg, 'Setting', category, restoredName, author).then(() => loadLogs());
@@ -362,7 +363,7 @@ export default function AdminHub() {
     const deletedName =
       typeof deletedItem === 'string' ? deletedItem : deletedItem?.name || 'Unknown';
     const displayField = fieldDisplayNames[category] || category;
-    const msg = `${displayField} '${deletedName}' permanently deleted.`;
+    const msg = `${displayField} '${deletedName}' permanently deleted`;
     const author = user?.name || user?.email || 'Admin';
 
     addGlobalLog(msg, 'Setting', category, deletedName, author).then(() => loadLogs());

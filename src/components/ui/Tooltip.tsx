@@ -64,7 +64,7 @@ export function Tooltip({
       {children}
       {isHovered && createPortal(
         <div
-          className={`fixed bg-slate-100 text-slate-800 border border-slate-200 shadow-xl text-sm px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium animate-in fade-in zoom-in-95 duration-150 ${className}`}
+          className={`fixed bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap z-[99999] pointer-events-none font-medium animate-in fade-in zoom-in-95 duration-150 ${className}`}
           style={positionStyles}
         >
           {content}

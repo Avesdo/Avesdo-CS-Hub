@@ -205,11 +205,11 @@ export async function updateClientRecord(
   const successMsg =
     typeof config === 'object' && config.successMsg
       ? config.successMsg
-      : `All updates to '${client.companyName}' saved successfully.`;
+      : `All updates to '${client.companyName}' saved successfully`;
   const errorMsg =
     typeof config === 'object' && config.errorMsg
       ? config.errorMsg
-      : `Failed to save updates to '${client.companyName}'.`;
+      : `Failed to save updates to '${client.companyName}'`;
 
   try {
     const finalClient = { ...client };
@@ -291,7 +291,7 @@ export async function clearAuditTrail() {
     const batch = writeBatch(db);
     snap.docs.forEach((d) => batch.delete(doc(db, 'system_logs', d.id)));
     await batch.commit();
-    toast.success('Audit trail cleared.');
+    toast.success('Audit trail cleared');
   } catch (err: any) {
     toast.error('Failed to clear audit trail');
     console.error(err);
@@ -411,11 +411,11 @@ export async function updateProjectRecord(
   const successMsg =
     typeof config === 'object' && config.successMsg
       ? config.successMsg
-      : `All updates to '${project.name}' saved successfully.`;
+      : `All updates to '${project.name}' saved successfully`;
   const errorMsg =
     typeof config === 'object' && config.errorMsg
       ? config.errorMsg
-      : `Failed to save updates to '${project.name}'.`;
+      : `Failed to save updates to '${project.name}'`;
 
   let prevProjects: any[] = [];
   let prevArchivedProjects: any[] = [];
@@ -514,11 +514,11 @@ export async function updateServiceRecord(
   const successMsg =
     typeof config === 'object' && config.successMsg
       ? config.successMsg
-      : `All updates to '${service.name}' saved successfully.`;
+      : `All updates to '${service.name}' saved successfully`;
   const errorMsg =
     typeof config === 'object' && config.errorMsg
       ? config.errorMsg
-      : `Failed to save updates to '${service.name}'.`;
+      : `Failed to save updates to '${service.name}'`;
 
   try {
     const finalService = { ...service };
@@ -553,35 +553,38 @@ export async function updateServiceRecord(
   }
 }
 
-export async function deleteClientRecord(id: string, name: string = 'Record') {
+export async function deleteClientRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
     await updateDoc(doc(db, 'clients', id), { isArchived: true });
-    toast.success(`'${name}' successfully archived.`);
+    await addGlobalLog('Archived record', 'Client', id, name, author);
+    toast.success(`'${name}' successfully archived`);
     return { success: true };
   } catch (err: any) {
-    toast.error(`Failed to archive '${name}'.`);
+    toast.error(`Failed to archive '${name}'`);
     throw err;
   }
 }
 
-export async function deleteProjectRecord(id: string, name: string = 'Record') {
+export async function deleteProjectRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
     await updateDoc(doc(db, 'projects', id), { isArchived: true });
-    toast.success(`'${name}' successfully archived.`);
+    await addGlobalLog('Archived record', 'Project', id, name, author);
+    toast.success(`'${name}' successfully archived`);
     return { success: true };
   } catch (err: any) {
-    toast.error(`Failed to archive '${name}'.`);
+    toast.error(`Failed to archive '${name}'`);
     throw err;
   }
 }
 
-export async function deleteServiceRecord(id: string, name: string = 'Record') {
+export async function deleteServiceRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
     await updateDoc(doc(db, 'services', id), { isArchived: true });
-    toast.success(`'${name}' successfully archived.`);
+    await addGlobalLog('Archived record', 'Service', id, name, author);
+    toast.success(`'${name}' successfully archived`);
     return { success: true };
   } catch (err: any) {
-    toast.error(`Failed to archive '${name}'.`);
+    toast.error(`Failed to archive '${name}'`);
     throw err;
   }
 }
@@ -590,14 +593,23 @@ export async function restoreRecord(
   collectionName: string,
   id: string,
   name: string = 'Record',
-  config?: { silent?: boolean }
+  config?: { silent?: boolean },
+  author: string = 'System'
 ) {
   try {
     await updateDoc(doc(db, collectionName, id), { isArchived: false });
-    if (!config?.silent) toast.success(`'${name}' successfully restored.`);
+    
+    let entityType: any = 'System';
+    if (collectionName === 'clients') entityType = 'Client';
+    if (collectionName === 'projects') entityType = 'Project';
+    if (collectionName === 'services') entityType = 'Service';
+    
+    await addGlobalLog('Restored archived record', entityType, id, name, author);
+
+    if (!config?.silent) toast.success(`'${name}' successfully restored`);
     return { success: true };
   } catch (err: any) {
-    if (!config?.silent) toast.error(`Failed to restore '${name}'.`);
+    if (!config?.silent) toast.error(`Failed to restore '${name}'`);
     throw err;
   }
 }
@@ -610,18 +622,18 @@ export async function hardDeleteRecord(
 ) {
   try {
     await deleteDoc(doc(db, collectionName, id));
-    if (!config?.silent) toast.success(`'${name}' permanently deleted.`);
+    if (!config?.silent) toast.success(`'${name}' permanently deleted`);
     return { success: true };
   } catch (err: any) {
-    if (!config?.silent) toast.error(`Failed to delete '${name}'.`);
+    if (!config?.silent) toast.error(`Failed to delete '${name}'`);
     throw err;
   }
 }
 
 export async function saveSettings(settings: Settings, config?: ToastConfig) {
   const silent = config?.silent;
-  const successMsg = config?.successMsg || 'Global configuration updated successfully.';
-  const errorMsg = config?.errorMsg || 'Failed to update global configuration.';
+  const successMsg = config?.successMsg || 'Global configuration updated successfully';
+  const errorMsg = config?.errorMsg || 'Failed to update global configuration';
   try {
     await setDoc(doc(db, 'settings', 'global_config'), settings);
     if (!silent) toast.success(successMsg);
@@ -714,13 +726,13 @@ export async function resolveAlias(
   try {
     if (action === 'approve') {
       await updateDoc(doc(db, 'aliases', aliasId), { status: 'verified' });
-      toast.success('Alias approved and merged.');
+      toast.success('Alias approved and merged');
     } else if (action === 'correct') {
       await updateDoc(doc(db, 'aliases', aliasId), {
         status: 'verified',
         targetId: customTargetId,
       });
-      toast.success('Alias manually mapped and verified.');
+      toast.success('Alias manually mapped and verified');
     } else if (action === 'create_new') {
       const newId = customTargetId || `NEW-${new Date().getTime()}`;
 
@@ -753,15 +765,15 @@ export async function resolveAlias(
       }
 
       await updateDoc(doc(db, 'aliases', aliasId), { status: 'verified', targetId: newId });
-      toast.success('Alias mapped to a new entity.');
+      toast.success('Alias mapped to a new entity');
     } else if (action === 'reject') {
       await deleteDoc(doc(db, 'aliases', aliasId));
-      toast.success('Alias suggestion rejected and deleted.');
+      toast.success('Alias suggestion rejected and deleted');
     }
     return { success: true };
   } catch (err) {
     console.error('Failed to resolve alias', err);
-    toast.error('Failed to resolve alias.');
+    toast.error('Failed to resolve alias');
     throw err;
   }
 }

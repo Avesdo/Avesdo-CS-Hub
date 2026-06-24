@@ -82,15 +82,15 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
       });
     }
 
-    let successMsg = `Updates to '${service.name}' saved successfully.`;
-    let errorMsg = `Failed to save updates to '${service.name}'.`;
+    let successMsg = `Updates to '${service.name}' saved successfully`;
+    let errorMsg = `Failed to save updates to '${service.name}'`;
 
     if (logPrefix) {
-      successMsg = `${logPrefix} successfully updated for '${service.name}'.`;
-      errorMsg = `Failed to update ${logPrefix} for '${service.name}'.`;
+      successMsg = `${logPrefix} successfully updated for '${service.name}'`;
+      errorMsg = `Failed to update ${logPrefix} for '${service.name}'`;
     } else if (field === 'contactName') {
-      successMsg = `Client Contact Name successfully updated for '${service.name}'.`;
-      errorMsg = `Failed to update Client Contact Name for '${service.name}'.`;
+      successMsg = `Client Contact Name successfully updated for '${service.name}'`;
+      errorMsg = `Failed to update Client Contact Name for '${service.name}'`;
     }
 
     const displayVal = (val: any) => {

@@ -198,8 +198,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
       await updateProjectRecord(
         { ...project, ...updates },
         {
-          successMsg: `${field === 'timelineStatus' ? 'Schedule Status' : 'Implementation Status'} successfully updated.`,
-          errorMsg: `Failed to update status.`,
+          successMsg: `${field === 'timelineStatus' ? 'Schedule Status' : 'Implementation Status'} successfully updated`,
+          errorMsg: `Failed to update status`,
         }
       );
     } catch (err) {
@@ -209,10 +209,15 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
   const handleSaveKyc = async () => {
     setIsKycEditing(false);
-    await updateProjectRecord({ ...project, kycDetails: kycDraft }, {
-      successMsg: 'KYC Details updated successfully.',
-      errorMsg: 'Failed to update KYC Details.',
-    });
+    await updateProjectRecord(
+      { ...project, kycDetails: kycDraft },
+      {
+        successMsg: 'KYC Details updated successfully',
+        errorMsg: 'Failed to update KYC Details',
+      },
+      'KYC Details updated',
+      user?.name
+    );
   };
 
   useEffect(() => {

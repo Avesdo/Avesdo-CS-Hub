@@ -45,17 +45,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await signInWithPopup(auth, googleProvider);
       if (!result.user.email?.endsWith('@avesdo.com')) {
         await auth.signOut();
-        toast.error('Access Denied: Only @avesdo.com email addresses are authorized.');
+        toast.error('Access Denied: Only @avesdo.com email addresses are authorized');
         return;
       }
-      toast.success(`Welcome, ${result.user.displayName || result.user.email}!`);
+      toast.success(`Welcome, ${result.user.displayName || result.user.email}`);
     } catch (error: any) {
       console.error('Login failed:', error);
       if (
         error.code !== 'auth/popup-closed-by-user' &&
         error.code !== 'auth/cancelled-popup-request'
       ) {
-        toast.error('Authentication failed. Please try again.');
+        toast.error('Authentication failed. Please try again');
       }
     }
   };
@@ -63,10 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await signOut(auth);
-      toast.success('Successfully logged out.');
+      toast.success('Successfully logged out');
     } catch (error) {
       console.error('Logout failed:', error);
-      toast.error('Failed to log out.');
+      toast.error('Failed to log out');
     }
   };
 

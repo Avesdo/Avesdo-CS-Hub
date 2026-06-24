@@ -566,7 +566,7 @@ export default function SettingsDraft() {
     const deletedName =
       typeof deletedItem === 'string' ? deletedItem : deletedItem?.name || 'Unknown';
     const displayField = fieldDisplayNames[field] || field;
-    const msg = `${displayField} '${deletedName}' archived.`;
+    const msg = `${displayField} '${deletedName}' archived`;
 
     debouncedSaveSettings(newSettings, msg);
     setDeletingItem(null);
@@ -611,7 +611,7 @@ export default function SettingsDraft() {
     }
 
     const displayField = fieldDisplayNames[field] || field;
-    const msg = `New ${displayField}: ${name} added.`;
+    const msg = `New ${displayField}: ${name} added`;
 
     debouncedSaveSettings(newSettings, msg);
     setNewForm({ ...newForm, [field]: {} });

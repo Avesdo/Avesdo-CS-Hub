@@ -34,14 +34,15 @@ import {
   addAutoLog,
   deleteProjectRecord,
   updateServiceRecord,
+  addProjectAutoLog,
 } from '../../api/dbService';
 
 // Tabs
-import ProjectOverviewTab from './projectProfile/ProjectOverviewTab';
+import ProjectFeaturesTab from './projectProfile/ProjectFeaturesTab';
 import ProjectOnboardingTab from './projectProfile/ProjectOnboardingTab';
 import ProjectHealthTab from './projectProfile/ProjectHealthTab';
 import ProjectServicesTab from './projectProfile/ProjectServicesTab';
-import { NotesTab } from '../ui/NotesTab';
+import { TimelineTab } from '../ui/TimelineTab';
 
 import { Select } from '../ui/Select';
 import { DatePicker } from '../ui/DatePicker';
@@ -148,8 +149,8 @@ export default function ProjectProfileModal() {
       await updateProjectRecord(
         { ...project, name: newName },
         {
-          successMsg: `Project Name successfully updated to '${newName}'.`,
-          errorMsg: `Failed to update Project Name to '${newName}'.`,
+          successMsg: `Project Name successfully updated to '${newName}'`,
+          errorMsg: `Failed to update Project Name to '${newName}'`,
         },
         `Project name updated from "${oldName}" to "${newName}"`,
         user?.name
@@ -218,8 +219,8 @@ export default function ProjectProfileModal() {
         ...updates
       },
       {
-        successMsg: `Status successfully updated for '${project?.name}'.`,
-        errorMsg: `Failed to update status for '${project?.name}'.`,
+        successMsg: `Status successfully updated for '${project?.name}'`,
+        errorMsg: `Failed to update status for '${project?.name}'`,
       },
       logMsg,
       user?.name
@@ -242,8 +243,8 @@ export default function ProjectProfileModal() {
     await updateProjectRecord(
       { ...project, assignee: val },
       {
-        successMsg: `Account Manager successfully assigned for '${project.name}'.`,
-        errorMsg: `Failed to assign Account Manager for '${project.name}'.`,
+        successMsg: `Account Manager successfully assigned for '${project.name}'`,
+        errorMsg: `Failed to assign Account Manager for '${project.name}'`,
       },
       `Assignee changed from ${oldVal} to ${val}`,
       user?.name
@@ -278,7 +279,7 @@ export default function ProjectProfileModal() {
 
       await updateProjectRecord(
         { ...project, ...updates },
-        { successMsg: `Updated successfully.`, errorMsg: `Failed to update.` },
+        { successMsg: `Updated successfully`, errorMsg: `Failed to update` },
         actionLog,
         user?.name
       );
@@ -348,8 +349,8 @@ export default function ProjectProfileModal() {
         salesMarketingClients: newSMNames,
       },
       {
-        successMsg: `Attached Clients successfully updated for '${project.name}'.`,
-        errorMsg: `Failed to update Attached Clients for '${project.name}'.`,
+        successMsg: `Attached Clients successfully updated for '${project.name}'`,
+        errorMsg: `Failed to update Attached Clients for '${project.name}'`,
       },
       logMsg,
       user?.name
@@ -380,7 +381,8 @@ export default function ProjectProfileModal() {
   const handleDelete = async () => {
     if (!project) return;
     try {
-      await deleteProjectRecord(project.id, project.name);
+      await deleteProjectRecord(project.id, project.name, user?.name || 'System');
+      await addProjectAutoLog(project.id, `Project "${project.name}" archived`, user?.name || 'System');
 
       if (project.clientIds) {
         await Promise.all(
@@ -412,7 +414,7 @@ export default function ProjectProfileModal() {
     { id: 'health', label: 'Health & Trends', icon: Activity },
     { id: 'overview', label: 'Features', icon: LayoutDashboard },
     { id: 'services', label: 'Services', icon: Layers },
-    { id: 'notes', label: 'Activity Logs', icon: FileText },
+    { id: 'notes', label: 'Timeline', icon: FileText },
   ];
 
   if (!project && isOpen) return null;
@@ -898,17 +900,17 @@ export default function ProjectProfileModal() {
                         transition={{ duration: 0.2 }}
                         className="h-full"
                       >
-                        {activeTab === 'overview' && <ProjectOverviewTab project={project} />}
+                        {activeTab === 'overview' && <ProjectFeaturesTab project={project} />}
                         {activeTab === 'onboarding' && <ProjectOnboardingTab project={project} />}
                         {activeTab === 'health' && <ProjectHealthTab project={project} />}
                         {activeTab === 'services' && <ProjectServicesTab project={project} />}
                         {activeTab === 'notes' && project && (
-                          <NotesTab
+                          <TimelineTab
                             notes={project.notes || []}
                             onSaveNotes={async (updatedNotes: any[]) => {
                               await updateProjectRecord({ ...project, notes: updatedNotes } as any, {
-                                successMsg: 'Activity logs saved.',
-                                errorMsg: 'Failed to save logs.',
+                                successMsg: 'Timeline saved.',
+                                errorMsg: 'Failed to save timeline.',
                               });
                             }}
                           />

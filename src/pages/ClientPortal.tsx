@@ -389,7 +389,7 @@ export default function ClientPortal() {
   if (viewState === 'csat_intercept') {
     const template = getTemplate('onboardingCsat');
     return (
-      <div className="min-h-screen bg-slate-50 py-12 px-4 flex flex-col">
+      <div className="min-h-screen bg-white py-12 px-4 flex flex-col">
         <div className="max-w-3xl mx-auto w-full">
           <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-500">
             <div className="bg-gradient-to-r from-[#009bc2] to-[#00bdd9] p-10 text-center text-white">
@@ -479,7 +479,7 @@ export default function ClientPortal() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-slate-50 font-sans"
+      className="min-h-screen bg-white font-sans"
     >
       <div className="relative overflow-hidden bg-slate-50 border-b border-slate-200">
         {/* Soft Mesh Gradient Background */}
@@ -656,14 +656,14 @@ export default function ClientPortal() {
                   </h3>
                   <p className="text-sm text-slate-500 line-clamp-1">{form.desc}</p>
                   
-                  {(dataNode?.submittedAt || (dataNode?.updatedAt && dataNode?.status !== 'Draft')) && (
+                  {(dataNode?.submittedAt || (dataNode?.updatedAt && (form.id === 'deliverables' || dataNode?.status !== 'Draft'))) && (
                     <div className="flex flex-row items-center flex-wrap gap-2 mt-2.5">
                       {isCompleted ? (
                         <>
                           <span className="inline-block text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 w-fit">
                             Completed: {new Date(dataNode.submittedAt || dataNode.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </span>
-                          {dataNode?.status !== 'Draft' && dataNode?.updatedAt && dataNode.updatedAt !== dataNode.submittedAt && (!dataNode?.submittedAt || new Date(dataNode.updatedAt) > new Date(dataNode.submittedAt)) && (
+                          {dataNode?.updatedAt && dataNode.updatedAt !== dataNode.submittedAt && (!dataNode?.submittedAt || new Date(dataNode.updatedAt) > new Date(dataNode.submittedAt)) && (
                             <span className="inline-block text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 w-fit">
                               Updated: {new Date(dataNode.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>

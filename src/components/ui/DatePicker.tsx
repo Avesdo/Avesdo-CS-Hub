@@ -179,13 +179,13 @@ export function DatePicker({
       <Popover.Portal>
         <Popover.Content
           sideOffset={5}
-          className="w-72 bg-white border border-border rounded-xl shadow-xl z-[99999] p-4 animate-in fade-in zoom-in-95 duration-200"
+          className="w-72 bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-[99999] p-4 animate-in fade-in zoom-in-95 duration-200"
         >
           <div className="text-sm font-semibold text-muted-foreground mb-2">{label}</div>
           <input
             type="text"
             placeholder="e.g. Dec 25, 2026 or 12/25/2026"
-            className="w-full mb-4 px-3 py-2 border border-input rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-center"
+            className="w-full mb-4 px-3 py-2 border border-input rounded-md text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/50 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors"
             value={localDateStr}
             onChange={(e) => setLocalDateStr(e.target.value)}
             onKeyDown={(e) => {

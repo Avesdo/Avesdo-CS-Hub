@@ -688,7 +688,7 @@ export default function ProjectTracker() {
       await Promise.all(updatePromises);
 
       toast.dismiss(loadingToast);
-      toast.success(`Successfully updated ${projs.length} projects.`, { duration: 5000 });
+      toast.success(`Successfully updated ${projs.length} projects`, { duration: 5000 });
     } catch (err: any) {
       toast.dismiss(loadingToast);
       toast.error(`Failed to update projects: ${err.message}`, { duration: 5000 });

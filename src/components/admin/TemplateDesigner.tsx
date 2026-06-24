@@ -768,7 +768,7 @@ export default function TemplateDesigner() {
         { ...settings, templates: { ...templates, [activeTemplateId]: { ...activeTemplate, fields, sections } } } as any,
         { silent: true }
       );
-      toast.success(`${activeTemplate.name} template saved successfully!`);
+      toast.success(`${activeTemplate.name} template saved successfully`);
     } catch (e) {
       toast.error('Failed to save template');
     }
@@ -929,7 +929,7 @@ export default function TemplateDesigner() {
                     template={{ ...activeTemplate, fields } as any} 
                     initialValues={{}} 
                     onSubmit={() => {
-                      toast.success('Preview submitted successfully!');
+                      toast.success('Preview submitted successfully');
                       setShowPreview(false);
                     }} 
                     onCancel={() => setShowPreview(false)}

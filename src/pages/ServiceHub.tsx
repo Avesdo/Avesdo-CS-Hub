@@ -79,30 +79,30 @@ const ServiceRow = React.memo(({
                           className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
                           onClick={() => openDrawer('service', s.id)}
                         >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2">
+                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2 w-[35%] sm:w-[30%] lg:w-[25%]">
                             <TruncatedText
                               text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground w-full group-hover:text-primary transition-colors"
+                              className="font-bold text-[13px] text-foreground w-full min-w-[180px] group-hover:text-primary transition-colors"
                             />
                           </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0">
+                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0 hidden md:table-cell max-w-0 w-[15%]">
                             <TruncatedText
                               text={s.projectName || 'No Project'}
                               className="w-full"
                             />
                           </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium">
+                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium max-w-0 w-[15%]">
                             <TruncatedText
                               text={s.clientName || s.clients?.join(', ') || 'No Client'}
                               className="w-full"
                             />
                           </td>
-                          <td className="px-6 py-2">
+                          <td className="px-6 py-2 hidden lg:table-cell">
                             <div className="flex justify-center">
                               {getTypeBadgeIconOnly(s.type, settings)}
                             </div>
                           </td>
-                          <td className="px-6 py-2">
+                          <td className="px-6 py-2 hidden xl:table-cell">
                             <div className="flex gap-1 flex-wrap">
                               {s.managers && s.managers.length > 0 ? (
                                 s.managers.map((m: string, idx: number) => (
@@ -834,10 +834,10 @@ export default function ServiceHub() {
           >
             {useMemo(
               () => (
-                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1200px]">
+                <table className="w-full text-left bg-white border-separate border-spacing-0">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="w-[20%] group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -854,7 +854,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[18%] group/th px-6 py-2 border-b border-border border-l-0">
+                      <th className="w-[15%] group/th px-6 py-2 border-b border-border border-l-0 hidden md:table-cell">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -871,7 +871,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[16%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[15%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -888,7 +888,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[10%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[10%] group/th px-6 py-2 border-b border-border hidden lg:table-cell">
                         <div className="flex items-center justify-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -904,7 +904,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[12%] group/th px-6 py-2 border-b border-border hidden xl:table-cell">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"

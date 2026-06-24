@@ -131,7 +131,7 @@ const ClientRow = React.memo(({
                               className="w-full group-hover:text-primary transition-colors"
                             />
                           </td>
-                          <td className="px-6 py-2 text-muted-foreground border-l-0">
+                          <td className="px-6 py-2 text-muted-foreground border-l-0 hidden md:table-cell">
                             {(c as any).clientType ? (
                               getSettingBadge('clientTypes', (c as any).clientType, settings)
                             ) : (
@@ -155,7 +155,7 @@ const ClientRow = React.memo(({
                             </div>
                           </td>
                           <td
-                            className="px-6 py-2 relative group/projects"
+                            className="px-6 py-2 relative group/projects hidden sm:table-cell"
                             onClick={(e) => {
                               e.stopPropagation();
                               openDrawer('client', c.clientId, { targetTab: 'projects' });
@@ -254,7 +254,7 @@ const ClientRow = React.memo(({
                             </div>
                           </td>
                           <td
-                            className="px-6 py-2 text-muted-foreground"
+                            className="px-6 py-2 text-muted-foreground hidden lg:table-cell"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <div className="inline-block relative">
@@ -340,7 +340,12 @@ const ClientRow = React.memo(({
       const client = clients.find((c) => c.clientId === clientId);
       if (!client) return;
       try {
-        await updateClientRecord({ ...client, accountManager: managerName }, { silent: true });
+        const oldManager = client.accountManager || 'Unassigned';
+        await updateClientRecord(
+          { ...client, accountManager: managerName },
+          { silent: true },
+          `Manager changed from ${oldManager} to ${managerName || 'Unassigned'}`
+        );
         toast.success(`Updated manager for ${client.companyName}`);
       } catch (err) {
         toast.error('Failed to update manager');
@@ -967,7 +972,7 @@ const ClientRow = React.memo(({
               }
             }}
           >
-                <table className="w-full text-left bg-white border-separate border-spacing-0 table-fixed min-w-[1000px]">
+                <table className="w-full text-left bg-white border-separate border-spacing-0">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
                       <th className="w-[30%] sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
@@ -987,7 +992,7 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="w-[15%] border-b border-border px-6 py-2 group/th">
+                      <th className="w-[15%] border-b border-border px-6 py-2 hidden md:table-cell group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
@@ -1019,7 +1024,7 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="w-[20%] border-b border-border px-6 py-2 group/th">
+                      <th className="w-[20%] border-b border-border px-6 py-2 hidden sm:table-cell group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
@@ -1035,7 +1040,7 @@ const ClientRow = React.memo(({
                           />
                         </div>
                       </th>
-                      <th className="w-[15%] border-b border-border px-6 py-2 group/th">
+                      <th className="w-[15%] border-b border-border px-6 py-2 hidden lg:table-cell group/th">
                         <div className="flex items-center">
                           <div
                             className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"

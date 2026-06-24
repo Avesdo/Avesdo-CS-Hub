@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   PlusCircle,
   CheckCircle2,
+  FileText,
 } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -22,7 +23,7 @@ import {
 } from '../../api/dbService';
 
 import ServiceDetailsTab from './service/ServiceDetailsTab';
-import { NotesTab } from '../ui/NotesTab';
+import { TimelineTab } from '../ui/TimelineTab';
 import { Select } from '../ui/Select';
 import { Tooltip } from '../ui/Tooltip';
 
@@ -200,7 +201,7 @@ export default function ServiceDrawer() {
     if (!service) return;
     setIsConfirmingDelete(false);
     try {
-      await deleteServiceRecord(service.id, service.name || 'Record');
+      await deleteServiceRecord(service.id, service.name || 'Record', user?.name || 'System');
 
       if (service.clientIds) {
         for (const cid of service.clientIds) {
@@ -227,7 +228,7 @@ export default function ServiceDrawer() {
 
   const tabs = [
     { id: 'details', label: 'Overview' },
-    { id: 'notes', label: 'Activity Logs' },
+    { id: 'notes', label: 'Timeline', icon: FileText },
   ] as const;
 
   const drawerIndex = activeDrawers.findIndex((d) => d.type === 'service');
@@ -403,17 +404,16 @@ export default function ServiceDrawer() {
 
         <div className="flex-1 overflow-y-auto p-6 custom-thin-scroll bg-white">
           {activeTab === 'details' && <ServiceDetailsTab service={service} />}
-          {activeTab === 'notes' && (
-            <NotesTab
-              notes={service?.notes || []}
+          {activeTab === 'notes' && service && (
+            <TimelineTab
+              notes={service.notes || []}
               onSaveNotes={async (updatedNotes) => {
-                if (!service) return;
                 await updateServiceRecord({ ...service, notes: updatedNotes } as any, {
-                  successMsg: `Note successfully added for '${service.name}'.`,
-                  errorMsg: `Failed to add note for '${service.name}'.`,
+                  successMsg: `Timeline updated for '${service.name}'.`,
+                  errorMsg: `Failed to update timeline for '${service.name}'.`,
                 });
               }}
-              emptyStateMessage="Be the first to add a note to this service."
+              emptyStateMessage="Be the first to add a note or make changes to generate system logs."
             />
           )}
         </div>

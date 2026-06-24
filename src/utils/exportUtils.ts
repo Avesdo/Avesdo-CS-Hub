@@ -141,7 +141,7 @@ export const universalExportCSV = (
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  toast.success('Export Complete', `${filename} has been downloaded.`);
+  toast.success('Export Complete', `${filename} has been downloaded`);
 };
 
 export const exportFormToCSV = (formName: string, projectData: any, formData: any, template?: any) => {
@@ -247,7 +247,7 @@ export const exportFormToCSV = (formName: string, projectData: any, formData: an
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  toast.success('Export Complete', `${filename} has been downloaded.`);
+  toast.success('Export Complete', `${filename} has been downloaded`);
 };
 
 export const exportAllFormResponsesToCSV = (formName: string, formKey: string, projects: any[], isDeliverables = false, template?: any) => {
@@ -332,5 +332,5 @@ export const exportAllFormResponsesToCSV = (formName: string, formKey: string, p
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  toast.success('Export Complete', `${filename} has been downloaded.`);
+  toast.success('Export Complete', `${filename} has been downloaded`);
 };

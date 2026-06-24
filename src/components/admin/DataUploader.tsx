@@ -213,7 +213,7 @@ export function DataUploader() {
       }
 
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
-      toast.success('Compilation successful!');
+      toast.success('Compilation successful');
       
       // Reset forms
       setSatisfactionFile({ file: null, parsedData: null, error: null });
@@ -237,7 +237,7 @@ export function DataUploader() {
     accept: string = ".csv"
   ) => {
     return (
-      <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 hover:bg-slate-50 transition-colors flex flex-col items-center justify-center text-center group cursor-pointer h-32">
+      <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 hover:bg-primary/5 hover:border-primary/50 transition-colors flex flex-col items-center justify-center text-center group cursor-pointer h-32">
         <input 
           type="file" 
           accept={accept}
@@ -313,7 +313,7 @@ export function DataUploader() {
               setIsCompiling(true);
               const { generateDailyHealthSnapshots } = await import('../../api/snapshotService');
               await generateDailyHealthSnapshots();
-              toast.success('Snapshots generated successfully!');
+              toast.success('Snapshots generated successfully');
             } catch (err: any) {
               toast.error('Failed to generate snapshots: ' + err.message);
             } finally {
