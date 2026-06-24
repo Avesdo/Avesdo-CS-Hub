@@ -8,9 +8,9 @@ import React, {
 } from 'react';
 
 export type DrawerType =
-  | 'client'
   | 'project'
   | 'service'
+  | 'client'
   | 'dashDrilldown'
   | 'unscheduledProjects'
   | null;

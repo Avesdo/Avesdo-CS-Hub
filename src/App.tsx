@@ -8,6 +8,9 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 // Components
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import ServiceProfileModal from './components/modals/ServiceProfileModal';
+import ClientProfileModal from './components/modals/ClientProfileModal';
+import ProjectProfileModal from './components/modals/ProjectProfileModal';
 import GlobalOverlays from './components/GlobalOverlays';
 import { GlobalToaster } from './components/GlobalToaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -84,6 +87,9 @@ function MainLayout() {
     <SyncWrapper>
       <UIProvider>
         <ErrorBoundary>
+          <ProjectProfileModal />
+          <ServiceProfileModal />
+          <ClientProfileModal />
           <GlobalOverlays />
         </ErrorBoundary>
         <GlobalToaster />
