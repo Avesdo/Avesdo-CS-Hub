@@ -91,7 +91,7 @@ const ContactInputPill = ({ value, onChange, onBlur }: any) => (
 );
 
 export default function ServiceProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer } = useUI();
   const services = useAppStore(state => state.services);
   const settings = useAppStore(state => state.settings);
   const user = useAppStore(state => state.user);
@@ -437,11 +437,11 @@ export default function ServiceProfileModal() {
             <Dialog.Content
               onEscapeKeyDown={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawer?.type === 'service') closeDrawer();
               }}
               onInteractOutside={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawer?.type === 'service') closeDrawer();
               }}
               asChild
             >

@@ -436,11 +436,11 @@ export default function ProjectProfileModal() {
             <Dialog.Content
               onEscapeKeyDown={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
               }}
               onInteractOutside={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
               }}
               asChild
             >

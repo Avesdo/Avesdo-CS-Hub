@@ -66,7 +66,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
 };
 
 export default function ClientProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer } = useUI();
   const clients = useAppStore(state => state.clients);
   const settings = useAppStore(state => state.settings);
   const projects = useAppStore(state => state.projects);
@@ -293,11 +293,11 @@ export default function ClientProfileModal() {
             <Dialog.Content
               onEscapeKeyDown={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawer?.type === 'client') closeDrawer();
               }}
               onInteractOutside={(e) => {
                 e.preventDefault();
-                closeDrawer();
+                if (activeDrawer?.type === 'client') closeDrawer();
               }}
               asChild
             >
