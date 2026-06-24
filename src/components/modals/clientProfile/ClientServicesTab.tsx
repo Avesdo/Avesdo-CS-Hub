@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Briefcase, Plus, DollarSign, Target, Clock, AlertCircle } from 'lucide-react';
+import { Briefcase, Plus, DollarSign, Target, Clock, AlertCircle, User } from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
-import { getSettingBadge } from '../../../utils/uiUtils';
+import { getSafeHex, hexToRgba, renderIcon } from '../../../utils/uiUtils';
 
 interface ClientServicesTabProps {
   client: any;
@@ -174,84 +174,122 @@ export default function ClientServicesTab({ client }: ClientServicesTabProps) {
         </div>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
+      {/* Services List */}
+      <div className="flex flex-col space-y-3" id="pd-services-list">
         <AnimatePresence mode="popLayout">
-          {displayedServices.length > 0 ? (
-            displayedServices.map((svc, idx) => {
-              const val = parseCurrency(svc.price || svc.cost || svc.value || 0);
+          {displayedServices.length === 0 ? (
+            <motion.div 
+              key="empty-state"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="border border-dashed border-slate-200 rounded-2xl bg-slate-50/50 px-6 py-16 flex flex-col items-center justify-center text-center"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center mb-4">
+                <Briefcase className="w-7 h-7 text-slate-300" />
+              </div>
+              <h4 className="text-[15px] font-bold text-slate-700 tracking-tight">No Services Found</h4>
+              <p className="text-[13px] text-slate-500 mt-1 max-w-[280px]">
+                There are no {filter !== 'All' ? filter.toLowerCase() : ''} services attached to this client. Click 'Add Service' to log one.
+              </p>
+            </motion.div>
+          ) : (
+            displayedServices.map((s: any, idx: number) => {
+              // Resolve dynamic color and icon based on settings.serviceTypes definition
+              const serviceTypeDef = settings?.serviceTypes?.find((item: any) => item.name === s.type) || {};
+              const hex = getSafeHex(serviceTypeDef.color, 'slate');
+              const IconElement = serviceTypeDef.icon ? renderIcon(serviceTypeDef.icon, 'w-5 h-5') : <Briefcase className="w-5 h-5" />;
+
               return (
                 <motion.div
-                  key={svc.id}
+                  key={s.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2, delay: idx * 0.05 }}
-                  className="group relative bg-white border border-slate-200/60 rounded-xl p-5 hover:shadow-lg hover:border-primary/40 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
-                  onClick={() => openDrawer('service', svc.id)}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.2, delay: idx * 0.02 }}
+                  whileHover={{ y: -2 }}
+                  onClick={() => openDrawer('service', s.id, { targetTab: 'details' })}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 bg-white border border-slate-200/60 rounded-xl shadow-sm hover:border-primary/40 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 cursor-pointer group gap-4"
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1 min-w-0 pr-4">
-                      <h4 className="text-[15px] font-bold text-slate-900 truncate group-hover:text-primary transition-colors">
-                        {svc.name}
-                      </h4>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">{svc.projectName || 'Client Level Service'}</p>
+                  {/* Left Side: Icon & Details */}
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
+                      style={{
+                        backgroundColor: hexToRgba(hex, 0.08),
+                        color: hex,
+                      }}
+                    >
+                      {IconElement}
                     </div>
-                    <div className="shrink-0 flex items-center gap-2">
-                      {getSettingBadge('serviceTypes', svc.type || 'Additional', settings)}
-                    </div>
-                  </div>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-slate-900 text-[15px] tracking-tight group-hover:text-primary transition-colors duration-200">
+                          {s.name}
+                        </span>
+                        
+                        {/* Status Badge */}
+                        {s.type === 'Additional' && (() => {
+                          const displayStatus = s.outcome && s.outcome !== 'Pending' ? s.outcome : s.status || s.outcome;
+                          if (!displayStatus) return null;
 
-                  <div className="flex items-center gap-4 text-xs font-medium text-slate-500 mb-4 bg-slate-50/80 rounded-lg p-2 px-3 border border-slate-100">
-                    <div className="flex items-center gap-1.5 min-w-[100px]">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{svc.date || 'No Date'}</span>
-                    </div>
-                    {val > 0 && (
-                      <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4">
-                        <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="font-semibold text-slate-700">{formatCurrency(val)} <span className="text-slate-400 font-normal">Value</span></span>
+                          const statusDef = settings?.settingsData?.find(
+                            (item: any) => (item.category === 'ServiceOutcome' || item.category === 'ServiceStatus') && item.name === displayStatus
+                          );
+
+                          if (statusDef) {
+                            const statusHex = getSafeHex(statusDef.color, 'slate');
+                            return (
+                              <span
+                                className="px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0 transition-colors"
+                                style={{ backgroundColor: hexToRgba(statusHex, 0.08), color: statusHex }}
+                              >
+                                {renderIcon(statusDef.icon, 'w-3 h-3')}
+                                <span className="text-[11px] font-bold tracking-wide">{displayStatus}</span>
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="px-2 py-0.5 text-[11px] font-bold tracking-wide rounded-md bg-slate-100 text-slate-600">
+                              {displayStatus}
+                            </span>
+                          );
+                        })()}
                       </div>
-                    )}
+                      
+                      {/* Sub-details */}
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
+                          {s.projectName || 'Client Level Service'}
+                        </span>
+                        <div className="w-1 h-1 rounded-full bg-slate-300"></div>
+                        <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          {s.manager || s.owner || s.assignedTo || 'Unassigned'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-xs font-semibold text-primary">View Details</span>
-                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                      <ChevronRight className="w-4 h-4 text-primary" />
-                    </div>
+                  {/* Right Side: Financials & Dates */}
+                  <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
+                    {s.type !== 'Included' ? (
+                      <span className="font-extrabold text-slate-900 text-lg tracking-tight">
+                        {formatCurrency(s.price || s.cost || s.value || 0)}
+                      </span>
+                    ) : (
+                      <span className="font-semibold text-slate-400 text-sm tracking-wide">Included</span>
+                    )}
+                    <span className="text-[12px] font-medium text-slate-400 mt-0.5 flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      {s.dateStr || 'TBD'}
+                    </span>
                   </div>
                 </motion.div>
               );
             })
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="col-span-full py-20 bg-slate-50/50 rounded-2xl border border-slate-200 border-dashed flex flex-col items-center justify-center text-center"
-            >
-              <div className="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mb-4">
-                <Briefcase className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-slate-700 font-semibold mb-1">No Services Found</h3>
-              <p className="text-slate-500 text-sm mb-6 max-w-sm">
-                We couldn't find any services matching your current filter.
-              </p>
-              <button
-                onClick={() => openModal('addService')}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-200 hover:border-primary/50 hover:text-primary rounded-lg font-semibold text-sm transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                Add Service
-              </button>
-            </motion.div>
           )}
         </AnimatePresence>
       </div>
     </div>
   );
 }
-
-const ChevronRight = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="9 18 15 12 9 6"></polyline></svg>
-);

@@ -12,8 +12,9 @@ import {
   Search,
   LayoutDashboard,
   Activity,
+  Briefcase,
   Layers,
-  FileText,
+  History,
   AlertTriangle
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
@@ -269,8 +270,8 @@ export default function ClientProfileModal() {
   const navItems = [
     { id: 'health', label: 'Health & Trends', icon: Activity },
     { id: 'projects', label: 'Projects', icon: LayoutDashboard },
-    { id: 'services', label: 'Services', icon: Layers },
-    { id: 'notes', label: 'Timeline', icon: FileText },
+    { id: 'services', label: 'Services', icon: Briefcase },
+    { id: 'notes', label: 'Timeline Log', icon: History },
   ];
 
   if (!client && isOpen) return null;

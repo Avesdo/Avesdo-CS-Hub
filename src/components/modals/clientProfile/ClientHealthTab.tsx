@@ -409,13 +409,13 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 <Zap className="w-4 h-4" />
               </div>
               <span className="text-sm font-bold text-slate-700 tracking-tight">Platform Engagement</span>
-              <UITooltip content={<span className="text-xs">Aggregated volume of core platform events and workflows across projects.</span>}>
+              <UITooltip content={<span className="text-xs">Aggregated volume of core platform events and workflows across active projects.</span>}>
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
               </UITooltip>
             </div>
             <div className="flex flex-col mb-1">
               <span className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(opVal)}`}>{opVal}</span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">Aggregated platform engagement</span>
+              <span className="text-[11px] font-medium text-slate-500 mt-1">Average engagement score</span>
             </div>
           </div>
           <div className="mt-3 relative z-10">
@@ -434,13 +434,13 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 <Users className="w-4 h-4" />
               </div>
               <span className="text-sm font-bold text-slate-700 tracking-tight">Active Users</span>
-              <UITooltip content={<span className="text-xs">Growth in unique monthly active users.</span>}>
+              <UITooltip content={<span className="text-xs">The average volume of unique users successfully logging in across the client's project portfolio.</span>}>
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
               </UITooltip>
             </div>
             <div className="flex flex-col mb-1">
               <span className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(usrVal)}`}>{usrVal}</span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">Aggregated user volume</span>
+              <span className="text-[11px] font-medium text-slate-500 mt-1">Average active user score</span>
             </div>
           </div>
           <div className="mt-3 relative z-10">
@@ -459,13 +459,13 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 <Blocks className="w-4 h-4" />
               </div>
               <span className="text-sm font-bold text-slate-700 tracking-tight">Feature Adoption</span>
-              <UITooltip content={<span className="text-xs">Average breadth of platform features toggled on.</span>}>
+              <UITooltip content={<span className="text-xs">The average breadth of platform features and modules toggled on across all active projects.</span>}>
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
               </UITooltip>
             </div>
             <div className="flex flex-col mb-1">
               <span className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(fPct)}`}>{fPct}%</span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">Average feature utilization</span>
+              <span className="text-[11px] font-medium text-slate-500 mt-1">Average adoption score</span>
             </div>
           </div>
           <div className="mt-3 relative z-10">
@@ -484,13 +484,15 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 <DollarSign className="w-4 h-4" />
               </div>
               <span className="text-sm font-bold text-slate-700 tracking-tight">Financial Standing</span>
-              <UITooltip content={<span className="text-xs">Evaluates outstanding invoices aggregated across projects.</span>}>
+              <UITooltip content={<span className="text-xs">Average financial health based on outstanding invoices across active projects.</span>}>
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
               </UITooltip>
             </div>
             <div className="flex flex-col mb-1">
               <span className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(finVal)}`}>{finVal}</span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">Aggregated financial health</span>
+              <span className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${(healthResult as any).details?.invoiceStatus === 'Overdue 60+ Days' || (healthResult as any).details?.invoiceStatus === 'Suspended' ? 'text-red-500' : 'text-slate-500'}`}>
+                Invoice status: {(healthResult as any).details?.invoiceStatus || 'Current'}
+              </span>
             </div>
           </div>
           <div className="mt-3 relative z-10">
@@ -509,7 +511,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 <Smile className="w-4 h-4" />
               </div>
               <span className="text-sm font-bold text-slate-700 tracking-tight">Client Sentiment</span>
-              <UITooltip content={<span className="text-xs">Aggregated satisfaction scores from surveys.</span>}>
+              <UITooltip content={<span className="text-xs">The overall satisfaction and sentiment of the client, combining implementation feedback and ongoing support.</span>}>
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
               </UITooltip>
             </div>
@@ -517,7 +519,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <span className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(csatVal)}`}>{csatVal}</span>
               <div className="flex items-center justify-between mt-1 min-h-[20px]">
                 <span className="text-[11px] font-medium text-slate-500">
-                  Aggregated CSAT score
+                  OB: {(healthResult as any).details?.avgProjectCsat !== 'N/A' ? Math.round((healthResult as any).details.avgProjectCsat as number) : 'N/A'} | Sup: {(healthResult as any).details?.supportCsat}
                 </span>
               </div>
             </div>
