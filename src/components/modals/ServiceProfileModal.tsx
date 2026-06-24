@@ -514,7 +514,7 @@ export default function ServiceProfileModal() {
                           onChange={async (val, str) => {
                             if (!service) return;
                             await updateServiceRecord(
-                              { ...service, dateVal: val, dateStr: str },
+                              { ...service, dateVal: val as number | undefined, dateStr: str },
                               { successMsg: 'Completion date updated.', errorMsg: 'Failed to update date.' },
                               `Completion Date updated to ${str}`,
                               user?.name
