@@ -25,7 +25,7 @@ export const ColumnFilter = ({
       searchable={searchable}
       trigger={
         <button
-          className={`p-1 rounded transition-opacity ${selected.length > 0 ? 'opacity-100 text-primary bg-primary/10' : 'opacity-0 group-hover/th:opacity-100 text-slate-400 hover:bg-slate-200'}`}
+          className={`p-1 rounded transition-opacity ${selected.length > 0 ? 'opacity-100 text-primary bg-primary/5 border border-primary/10 shadow-sm' : 'opacity-0 group-hover/th:opacity-100 text-slate-400 hover:bg-slate-200'}`}
         >
           <Filter className="w-3.5 h-3.5" />
         </button>
@@ -173,7 +173,7 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className={`p-1 rounded opacity-0 group-hover/th:opacity-100 transition-opacity ${dateRange ? 'opacity-100 text-primary bg-primary/10' : 'text-slate-400 hover:bg-slate-200'}`}
+            className={`p-1 rounded opacity-0 group-hover/th:opacity-100 transition-opacity ${dateRange ? 'opacity-100 text-primary bg-primary/5 border border-primary/10 shadow-sm' : 'text-slate-400 hover:bg-slate-200'}`}
           >
             <Filter className="w-3.5 h-3.5" />
           </button>

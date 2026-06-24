@@ -19,5 +19,10 @@ service cloud.firestore {
       allow read, write: if isAvesdoEmployee();
       allow create: if !isAvesdoEmployee();
     }
+
+    match /settings/{document=**} {
+      allow read: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+    }
   }
 }

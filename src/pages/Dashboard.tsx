@@ -927,7 +927,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
           
           {/* TOP: Segmented Distribution Bar */}
-          <div className="p-4 pb-2 border-b border-border bg-slate-50 flex flex-col gap-2">
+          <div className="p-4 pb-2 border-b border-border bg-white/95 backdrop-blur-md flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-base font-semibold tracking-tight text-foreground">Client Health</div>
@@ -1119,7 +1119,7 @@ export default function Dashboard() {
 
           {/* Project Delivery Hub */}
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
-          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
             <div className="flex flex-col min-w-0">
               <div className="text-base font-semibold tracking-tight text-foreground">
                 Project Delivery
@@ -1276,7 +1276,7 @@ export default function Dashboard() {
 
           {/* Feature Adoption */}
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
-          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+          <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
             <div className="flex flex-col pr-4 min-w-0">
               <div className="text-base font-semibold tracking-tight text-foreground truncate" title="Feature Adoption">
                 Feature Adoption
@@ -1373,7 +1373,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-5 lg:absolute lg:inset-0">
           {/* Manager Workload */}
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
-          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+          <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
             <div className="text-base font-semibold tracking-tight text-foreground">
               Manager Workload
             </div>
@@ -1474,7 +1474,7 @@ export default function Dashboard() {
 
           {/* Upcoming Activity */}
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md min-h-[300px] lg:min-h-0 lg:flex-1 overflow-hidden">
-            <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+            <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
               <div className="flex flex-col">
                 <div className="text-base font-semibold tracking-tight text-foreground">
                   Upcoming Activity
@@ -1489,7 +1489,7 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex-1 overflow-auto custom-thin-scroll bg-slate-50/30">
+            <div className="flex-1 overflow-auto custom-thin-scroll bg-white">
               <div className="p-5 flex flex-col relative min-h-full z-0">
                 {/* vertical timeline line */}
                 {upcomingActivity.length > 0 && (
@@ -1605,7 +1605,7 @@ export default function Dashboard() {
           </div>
           {/* Recent Activity */}
           <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md min-h-[400px] lg:min-h-0 lg:flex-1 overflow-hidden">
-          <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-slate-50 shrink-0">
+          <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
             <div className="flex flex-col">
               <div className="text-base font-semibold tracking-tight text-foreground">
                 Recent Activity
@@ -1620,7 +1620,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <div className="flex-1 overflow-auto custom-thin-scroll bg-slate-50/30">
+          <div className="flex-1 overflow-auto custom-thin-scroll bg-white">
             <div className="p-5 flex flex-col relative min-h-full z-0">
               {/* vertical timeline line */}
             {recentActivity.length > 0 && (

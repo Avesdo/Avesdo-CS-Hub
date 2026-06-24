@@ -506,8 +506,8 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
 
         {useMemo(() => (
         <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
-          <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-            <th className="sticky left-0 z-[160] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
+          <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+            <th className="sticky left-0 z-[160] bg-white/95 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
               <div className="flex items-center w-full">
                 <div className={`flex-shrink-0 flex items-center mr-2 transition-opacity duration-200 ${selectedRows.length > 0 ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-100'}`}>
                   <div className="relative group/cb flex items-center justify-center">

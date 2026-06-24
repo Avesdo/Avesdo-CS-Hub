@@ -836,8 +836,8 @@ export default function ServiceHub() {
               () => (
                 <table className="w-full text-left bg-white border-separate border-spacing-0">
                   <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
-                    <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-slate-50/90 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                    <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-white/95 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"

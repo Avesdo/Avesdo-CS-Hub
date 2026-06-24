@@ -29,10 +29,7 @@ export default function ClientPortal() {
     async function loadData() {
       if (!projectId) return;
       try {
-        const [projSnap, settingsSnap] = await Promise.all([
-          getDoc(doc(db, 'projects', projectId)),
-          getDoc(doc(db, 'settings', 'global_config'))
-        ]);
+        const projSnap = await getDoc(doc(db, 'projects', projectId));
 
         if (projSnap.exists()) {
           setProject({ id: projSnap.id, ...projSnap.data() } as Project);
@@ -40,8 +37,14 @@ export default function ClientPortal() {
           setError('Project not found or link is invalid.');
         }
 
-        if (settingsSnap.exists()) {
-          setSettings(settingsSnap.data() as Settings);
+        try {
+          const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
+          if (settingsSnap.exists()) {
+            setSettings(settingsSnap.data() as Settings);
+          }
+        } catch (settingsErr) {
+          console.warn('Failed to load global settings:', settingsErr);
+          // Non-fatal, we can still show the portal
         }
       } catch (err) {
         console.error(err);

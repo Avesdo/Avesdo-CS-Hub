@@ -500,7 +500,7 @@ export default function AddProjectModal() {
               <button
                 onClick={handleSubmit(onSubmit)}
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-0.5 hover:shadow-lg shadow-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-8 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                className="group inline-flex items-center justify-center rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-8 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
               >
                 {isSubmitting ? 'Creating...' : 'Create Project'}
               </button>

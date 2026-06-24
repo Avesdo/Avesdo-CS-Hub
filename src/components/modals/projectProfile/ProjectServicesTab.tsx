@@ -271,7 +271,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
                         {formatCurrency(s.price || s.cost || s.value || 0)}
                       </span>
                     ) : (
-                      <span className="font-bold text-slate-400 text-sm tracking-wide uppercase">Included</span>
+                      <span className="font-semibold text-slate-400 text-sm tracking-wide">Included</span>
                     )}
                     <span className="text-[12px] font-medium text-slate-400 mt-0.5 flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
