@@ -765,6 +765,8 @@ export default function ProjectProfileModal() {
                                   await updateProjectRecord(
                                     { ...project, teamworkLink } as any,
                                     { successMsg: 'Teamwork link updated.', errorMsg: 'Failed to update Teamwork link.' },
+                                    `Teamwork Link updated to ${teamworkLink}`,
+                                    user?.name
                                   );
                                 }
                                 setEditingTeamworkLink(false);
@@ -775,6 +777,8 @@ export default function ProjectProfileModal() {
                                     await updateProjectRecord(
                                       { ...project, teamworkLink: e.currentTarget.value } as any,
                                       { successMsg: 'Teamwork link updated.', errorMsg: 'Failed to update Teamwork link.' },
+                                      `Teamwork Link updated to ${e.currentTarget.value}`,
+                                      user?.name
                                     );
                                   }
                                   setEditingTeamworkLink(false);
