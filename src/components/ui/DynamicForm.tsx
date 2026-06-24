@@ -435,9 +435,8 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
 
   return (
     <form onSubmit={handleSubmit(handleFinalSubmit)} className="flex flex-col h-full bg-white relative">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 sm:px-8 custom-thin-scroll space-y-6">
       {visiblePages.length > 1 && (
-        <div className="flex items-center gap-1.5 mb-8">
+        <div className="flex items-center gap-1.5 px-6 sm:px-8 pt-8 pb-4 bg-white/95 backdrop-blur-md z-10 shrink-0 border-b border-slate-100/50">
           {visiblePages.map((_, idx) => (
             <div key={idx} className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden shadow-inner">
               <motion.div 
@@ -450,6 +449,7 @@ export function DynamicForm({ template, initialValues = {}, onSubmit, onCancel, 
           ))}
         </div>
       )}
+      <div ref={scrollRef} className={`flex-1 overflow-y-auto px-6 sm:px-8 ${visiblePages.length > 1 ? 'pt-4 pb-8' : 'py-8'} custom-thin-scroll space-y-6`}>
 
       <AnimatePresence mode="wait">
         <motion.div

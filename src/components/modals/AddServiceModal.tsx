@@ -114,6 +114,7 @@ export default function AddServiceModal() {
   const watchType = watch('type');
   const watchSelectedClient = watch('selectedClient');
   const watchSelectedProjects = watch('selectedProjects');
+  const watchServiceNames = watch('serviceNames');
 
   // Pre-fill context if opened from a specific drawer
   
@@ -122,6 +123,26 @@ export default function AddServiceModal() {
       setValue('price', '0', { shouldValidate: true });
     }
   }, [watchType, setValue]);
+
+  // Auto-populate Service Value based on selected services
+  useEffect(() => {
+    if (!settings?.services || !watchServiceNames || watchServiceNames.length === 0) {
+      return;
+    }
+
+    let totalValue = 0;
+    watchServiceNames.forEach((name: string) => {
+      const s = settings.services.find((x: any) => x.name === name);
+      if (s && s.price) {
+        totalValue += Number(s.price) || 0;
+      }
+    });
+
+    if (totalValue > 0) {
+      const formattedTotal = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalValue);
+      setValue('serviceValue', formattedTotal, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [watchServiceNames, settings?.services, setValue]);
 
   const availableProjects = useMemo(() => {
     const defaultOption = { id: 'none', name: 'None (Client Level)' };

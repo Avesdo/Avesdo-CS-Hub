@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,7 +14,8 @@ import {
   Layers,
   Target,
   Briefcase,
-  Calendar
+  Calendar,
+  Building
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUI } from '../../context/UIContext';
@@ -31,6 +32,7 @@ import {
 import ServiceDetailsTab from './service/ServiceDetailsTab';
 import { TimelineTab } from '../ui/TimelineTab';
 import { Select } from '../ui/Select';
+import { MultiSelect } from '../ui/MultiSelect';
 import { Tooltip } from '../ui/Tooltip';
 import { DatePicker } from '../ui/DatePicker';
 
@@ -93,6 +95,8 @@ export default function ServiceProfileModal() {
   const services = useAppStore(state => state.services);
   const settings = useAppStore(state => state.settings);
   const user = useAppStore(state => state.user);
+  const clients = useAppStore(state => state.clients);
+  const projects = useAppStore(state => state.projects);
 
   const [activeTab, setActiveTab] = useState<'details' | 'notes'>('details');
   const [isEditingName, setIsEditingName] = useState(false);
@@ -129,6 +133,78 @@ export default function ServiceProfileModal() {
       setIsConfirmingDelete(false);
     }
   }, [service]);
+
+  const clientOptions = useMemo(() => {
+    return clients
+      .map((c) => ({ value: c.clientId || c.id, label: c.companyName || c.name }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [clients]);
+
+  const availableProjects = useMemo(() => {
+    const defaultOption = { id: 'none', name: 'None (Client Level)' };
+    const clientId = service?.clientIds?.[0];
+    if (!clientId) return [defaultOption];
+    
+    const client = clients.find(c => c.clientId === clientId || c.id === clientId);
+    if (!client) return [defaultOption];
+
+    const filtered = projects.filter(
+      (p) => p.clientIds?.includes(clientId) || p.clients?.includes(client.companyName || client.name)
+    ).sort((a, b) => a.name.localeCompare(b.name));
+    
+    return [defaultOption, ...filtered];
+  }, [service?.clientIds, clients, projects]);
+
+  const projectOptions = useMemo(() => {
+    return availableProjects.map((p) => ({ value: p.id, label: p.name }));
+  }, [availableProjects]);
+
+  const handleUpdateClient = async (vals: string[]) => {
+    if (!service) return;
+    const clientId = vals[vals.length - 1] || '';
+    const currentClientId = service.clientIds?.[0] || '';
+    if (clientId === currentClientId) return;
+
+    const client = clients.find((c) => c.clientId === clientId || c.id === clientId);
+    const clientName = client?.companyName || client?.name || '';
+    const oldClientName = service.clientName || 'None';
+    
+    await updateServiceRecord(
+      { 
+        ...service, 
+        clientIds: client ? [clientId] : [], 
+        clients: client ? [clientName] : [],
+        clientName: clientName,
+        projectIds: [],
+        projectId: 'N/A',
+        projectName: 'N/A'
+      },
+      { successMsg: 'Client successfully updated.', errorMsg: 'Failed to update client.' },
+      `Service Client changed from ${oldClientName} to ${clientName || 'None'}`,
+      user?.name
+    );
+  };
+
+  const handleUpdateProject = async (vals: string[]) => {
+    if (!service) return;
+    const projectIds = vals.filter(id => id !== 'none');
+    
+    const projectObjs = projects.filter(p => projectIds.includes(p.id));
+    const projectNames = projectObjs.length > 0 ? projectObjs.map(p => p.name).join(', ') : 'N/A';
+    const oldProjectName = service.projectName || 'None';
+
+    await updateServiceRecord(
+      {
+        ...service,
+        projectIds: projectIds,
+        projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A',
+        projectName: projectNames
+      },
+      { successMsg: 'Project successfully updated.', errorMsg: 'Failed to update project.' },
+      `Service Project changed from ${oldProjectName} to ${projectNames || 'None'}`,
+      user?.name
+    );
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -534,8 +610,34 @@ export default function ServiceProfileModal() {
                     <div className="h-px bg-slate-200/60 w-full" />
 
                     <div className="flex flex-col gap-3">
-                      <ReadOnlyPill label="Client" value={clientNames} icon={Layers} />
-                      <ReadOnlyPill label="Project" value={projectName} icon={FileText} />
+                      <MultiSelect
+                        values={service?.clientIds?.[0] ? [service.clientIds[0]] : []}
+                        options={clientOptions}
+                        onChange={handleUpdateClient}
+                        searchable
+                        searchPlaceholder="Search Clients..."
+                        trigger={
+                          <TokenTrigger
+                            label="Client"
+                            value={clientNames}
+                            icon={Building}
+                          />
+                        }
+                      />
+                      <MultiSelect
+                        values={service?.projectIds || (service?.projectId && service.projectId !== 'N/A' ? [service.projectId] : [])}
+                        options={projectOptions}
+                        onChange={handleUpdateProject}
+                        searchable
+                        searchPlaceholder="Search Projects..."
+                        trigger={
+                          <TokenTrigger
+                            label="Project"
+                            value={projectName}
+                            icon={FileText}
+                          />
+                        }
+                      />
                       <ContactInputPill
                         value={contactNameDraft}
                         onChange={(e: any) => setContactNameDraft(e.target.value)}

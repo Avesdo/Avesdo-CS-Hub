@@ -46,7 +46,7 @@ function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2" align="end" sideOffset={8}>
+      <PopoverContent className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2" align="end" sideOffset={8}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
           <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
           <div className="flex items-center gap-3">
@@ -85,20 +85,29 @@ function NotificationBell() {
               {notifications.map(n => (
                 <div 
                   key={n.id} 
-                  className={`px-4 py-3 hover:bg-primary/5 transition-colors cursor-pointer flex gap-3 ${!n.read ? 'bg-primary/[0.03]' : ''}`}
+                  className={`group relative px-4 py-3 hover:bg-primary/5 transition-colors cursor-pointer flex items-start gap-3 ${!n.read ? 'bg-primary/[0.03]' : ''}`}
                   onClick={() => markNotificationAsRead(n.id)}
                 >
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`} />
-                  <div>
-                    <p className="text-sm text-foreground">
+                  <div className="flex-1 pr-6">
+                    <p className="text-sm text-foreground leading-tight">
                       <span className="font-semibold">{n.projectName}</span>{' '}
                       {n.type === 'submission' ? 'submitted' : 'updated'}{' '}
                       <span className="font-medium">{n.formName}</span>.
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1.5 font-medium">
                       {format(new Date(n.createdAt), 'MMM d, yyyy')}
                     </p>
                   </div>
+                  {!n.read && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); markNotificationAsRead(n.id); }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-primary/10 text-primary transition-all"
+                      title="Mark as read"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
