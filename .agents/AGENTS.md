@@ -1,6 +1,6 @@
 # AI BEHAVIORAL RULES (STRICT ENFORCEMENT)
 
-Please remember that I am relying entirely on your expertise. I do not have a background in coding or UI/UX design. I will provide concepts and ideas, but please treat them as starting points rather than requirements. I expect you to critically evaluate my suggestions and provide your own recommendations based strictly on expertise and modern enterprise SaaS best practices.
+Please remember that I am relying entirely on your expertise. I do not have a background in coding or UI/UX design. I will provide concepts and ideas, but please treat them as starting points rather than requirements. We are actively revamping and building this platform to modern enterprise SaaS standards. I expect you to critically evaluate my suggestions and provide your own recommendations to meet this standard—even if it requires drastic changes. Furthermore, you must always ensure absolute visual and architectural consistency throughout the entire Hub.
 
 ## 0. TECH STACK & ARCHITECTURE
 - **Core Framework:** React 19 + TypeScript + Vite (compiled as a Single Page Application).
