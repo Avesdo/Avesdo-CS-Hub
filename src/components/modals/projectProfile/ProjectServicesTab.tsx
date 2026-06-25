@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Briefcase, Plus, DollarSign, Target, Clock, AlertCircle, User } from 'lucide-react';
+import { Briefcase, Plus, DollarSign, Target, Clock, AlertCircle, User, Search } from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import { getSafeHex, hexToRgba, renderIcon } from '../../../utils/uiUtils';
@@ -15,6 +15,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
   const settings = useAppStore(state => state.settings);
   const { openDrawer, openModal } = useUI();
   const [filter, setFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const projectServices = useMemo(() => {
     return services
@@ -30,8 +31,13 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
   }, [services, project]);
 
   const displayedServices = useMemo(() => {
-    return projectServices.filter((s) => filter === 'All' || s.type === filter);
-  }, [projectServices, filter]);
+    let result = projectServices;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((s: any) => s.name?.toLowerCase().includes(q) || s.clientName?.toLowerCase().includes(q));
+    }
+    return result.filter((s: any) => filter === 'All' || s.type === filter);
+  }, [projectServices, filter, searchQuery]);
 
   const filterTabs = useMemo(() => {
     const types = settings?.serviceTypes?.map((t: any) => t.name) || ['Included', 'Additional'];
@@ -141,8 +147,8 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
         </motion.div>
       </div>
 
-      {/* Glassmorphic Filter Tabs */}
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-2 pb-4">
+      {/* Glassmorphic Filter Tabs & Search */}
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-2 pb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="inline-flex bg-slate-100/80 p-1 rounded-xl shadow-inner overflow-x-auto custom-thin-scroll max-w-full">
           {filterTabs.map((t) => {
             const isActive = filter === t;
@@ -165,6 +171,17 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
               </button>
             );
           })}
+        </div>
+        
+        <div className="relative w-full sm:w-64 shrink-0">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search services..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl pl-9 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-400"
+          />
         </div>
       </div>
 

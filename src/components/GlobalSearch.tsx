@@ -120,7 +120,7 @@ export default function GlobalSearch() {
   const hasMore = totalMatches > totalResults;
 
   const allResults = [
-    ...matchedClients.map((c) => ({ type: 'client' as const, id: c.id })),
+    ...matchedClients.map((c) => ({ type: 'client' as const, id: c.clientId || c.id })),
     ...matchedProjects.map((p) => ({ type: 'project' as const, id: p.id })),
     ...matchedServices.map((s) => ({ type: 'service' as const, id: s.id })),
   ];
@@ -223,10 +223,10 @@ export default function GlobalSearch() {
                       globalItemIndex++;
                       return (
                         <div
-                          key={c.id}
+                          key={c.clientId || c.id}
                           role="option"
                           aria-selected={isSelected}
-                          onClick={() => handleResultClick('client', c.id)}
+                          onClick={() => handleResultClick('client', c.clientId || c.id)}
                           className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors group active:scale-95 ${isSelected ? 'bg-accent' : 'hover:bg-accent'}`}
                         >
                           <div className="flex flex-col overflow-hidden">

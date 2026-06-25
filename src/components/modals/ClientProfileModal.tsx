@@ -273,7 +273,7 @@ export default function ClientProfileModal() {
     { id: 'health', label: 'Health & Trends', icon: Activity },
     { id: 'projects', label: 'Projects', icon: LayoutDashboard },
     { id: 'services', label: 'Services', icon: Briefcase },
-    { id: 'notes', label: 'Timeline Log', icon: History },
+    { id: 'notes', label: 'Timeline', icon: History },
   ];
 
   if (!client && isOpen) return null;
