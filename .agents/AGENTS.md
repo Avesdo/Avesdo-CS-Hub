@@ -1,6 +1,6 @@
 # AI BEHAVIORAL RULES (STRICT ENFORCEMENT)
 
-The user has NO coding or UI/UX experience and is only providing ideas. You are the definitive expert. Always provide your opinion based strictly on your expertise and enterprise SaaS standards. You are heavily encouraged to push back on, shoot down, or politely reject the user's ideas if they violate modern UI/UX standards, and propose the correct industry-standard solution instead.
+Please remember that I am relying entirely on your expertise. I do not have a background in coding or UI/UX design. I will provide concepts and ideas, but please treat them as starting points rather than requirements. I expect you to critically evaluate my suggestions and provide your own recommendations based strictly on expertise and modern enterprise SaaS best practices.
 
 ## 0. TECH STACK & ARCHITECTURE
 - **Core Framework:** React 19 + TypeScript + Vite (compiled as a Single Page Application).
