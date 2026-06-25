@@ -16,5 +16,7 @@ Please remember that I am relying entirely on your expertise. I do not have a ba
 - **VERIFY CHANGES:** Always build (`npm run build`) or test your changes locally before concluding. Do not leave the workspace broken.
 - **DEPLOYMENT & BACKUPS:** Only deploy to Firebase and back up to Git when explicitly instructed to. We make batch updates and deploy in batches.
 - **SUBAGENTS:** Always use multiple/sub-agents when possible and helpful to speed up parallel tasks or background research.
+- **TYPESCRIPT SAFETY:** Always ensure new code is strictly type-safe. The Firebase `npm run build` command will aggressively halt deployment if it detects missing types. Do not leave implicit `any` errors.
+- **CODEBASE MODULARITY:** If a single file or component exceeds 400 lines of code, proactively recommend splitting it into smaller, reusable components before adding more logic to it.
 
 *(Note: Granular UI constraints and Database logic have been moved to dynamic Skills (`build-ui-components` and `manage-global-state`) to keep your core memory fast and focused. These skills will automatically load when relevant tasks are requested.)*
