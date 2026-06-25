@@ -85,29 +85,20 @@ export default function Sidebar() {
 
         <div className="px-3 flex flex-col gap-1">
           <NavLink
-            to="/admin"
+            to="/settings"
             className={({ isActive }) =>
               `flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
             }
           >
             <div className="flex items-center gap-3">
-              <Shield className="w-4 h-4" />
-              <span>Admin Hub</span>
+              <Settings className="w-4 h-4" />
+              <span>Settings</span>
             </div>
             {pendingAliasesCount > 0 && (
               <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full animate-in zoom-in">
                 {pendingAliasesCount}
               </span>
             )}
-          </NavLink>
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
-            }
-          >
-            <Settings className="w-4 h-4" />
-            <span>Settings</span>
           </NavLink>
         </div>
 

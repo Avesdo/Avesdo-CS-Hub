@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
-import { UploadCloud, CheckCircle2, AlertCircle, Play, FileText, Database } from 'lucide-react';
+import { UploadCloud, CheckCircle2, AlertCircle, Play, FileText, Database, CircleDashed } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { doc, updateDoc, collection, writeBatch, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, collection, writeBatch, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import { toast } from '../../utils/toast';
 
@@ -15,6 +15,7 @@ type FileState = {
 export function DataUploader() {
   const projects = useAppStore(state => state.projects);
   const clients = useAppStore(state => state.clients);
+  const user = useAppStore(state => state.user);
 
   const [satisfactionFile, setSatisfactionFile] = useState<FileState>({ file: null, parsedData: null, error: null });
   const [sessionsFile, setSessionsFile] = useState<FileState>({ file: null, parsedData: null, error: null });
@@ -23,32 +24,47 @@ export function DataUploader() {
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileResult, setCompileResult] = useState<{ updated: number; intakes: number } | null>(null);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'satisfaction' | 'sessions' | 'views') => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    if (!file.name.endsWith('.csv')) {
-      toast.error('Only CSV files are supported.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const result = Papa.parse(text, { header: true, skipEmptyLines: true });
-        
-        if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: result.data, error: null });
-        if (type === 'sessions') setSessionsFile({ file, parsedData: result.data, error: null });
-        if (type === 'views') setViewsFile({ file, parsedData: result.data, error: null });
-        
-      } catch (err: any) {
-        if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: null, error: err.message });
-        if (type === 'sessions') setSessionsFile({ file, parsedData: null, error: err.message });
-        if (type === 'views') setViewsFile({ file, parsedData: null, error: err.message });
+    files.forEach(file => {
+      if (!file.name.endsWith('.csv')) {
+        toast.error(`${file.name} is not a CSV file.`);
+        return;
       }
-    };
-    reader.readAsText(file);
+
+      // Guess type based on file name
+      let type: 'satisfaction' | 'sessions' | 'views' | null = null;
+      if (file.name.toLowerCase().includes('satisfaction') || file.name.toLowerCase().includes('customer')) {
+        type = 'satisfaction';
+      } else if (file.name.toLowerCase().includes('sessions')) {
+        type = 'sessions';
+      } else if (file.name.toLowerCase().includes('views')) {
+        type = 'views';
+      } else {
+        toast.error(`Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', or 'views'.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const text = event.target?.result as string;
+          const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+          
+          if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: result.data, error: null });
+          if (type === 'sessions') setSessionsFile({ file, parsedData: result.data, error: null });
+          if (type === 'views') setViewsFile({ file, parsedData: result.data, error: null });
+          
+        } catch (err: any) {
+          if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: null, error: err.message });
+          if (type === 'sessions') setSessionsFile({ file, parsedData: null, error: err.message });
+          if (type === 'views') setViewsFile({ file, parsedData: null, error: err.message });
+        }
+      };
+      reader.readAsText(file);
+    });
   };
 
   const getAvg = (row: any) => {
@@ -70,6 +86,7 @@ export function DataUploader() {
     let updateCount = 0;
     let aliasesAdded = 0;
     const batch = writeBatch(db);
+    const autoProcessedMap = new Map();
 
     try {
       const aliasesSnapshot = await getDocs(collection(db, 'aliases'));
@@ -85,9 +102,19 @@ export function DataUploader() {
         for (const id of Array.from(uniqueIDs)) {
           let targetProject = projects.find(p => p.developmentId && p.developmentId + '_prod' === id);
           if (!targetProject) {
-            const aliasMatch = aliases.find((a: any) => a.rawName === id && a.status === 'resolved' && a.type === 'project');
+            const aliasMatch = aliases.find((a: any) => a.rawName === id && (a.status === 'resolved' || a.status === 'verified') && a.type === 'project');
             if (aliasMatch) {
               targetProject = projects.find(p => p.id === aliasMatch.targetId);
+              if (targetProject) {
+                autoProcessedMap.set(aliasMatch.id, {
+                  id: aliasMatch.id,
+                  type: 'project',
+                  rawName: aliasMatch.rawName,
+                  targetId: aliasMatch.targetId,
+                  targetName: targetProject.name,
+                  timestamp: new Date().getTime()
+                });
+              }
             }
           }
 
@@ -177,9 +204,19 @@ export function DataUploader() {
 
             let targetClient = clients.find(c => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase());
             if (!targetClient) {
-              const aliasMatch = aliases.find((a: any) => a.rawName === rawName && a.status === 'resolved' && a.type === 'client');
+              const aliasMatch = aliases.find((a: any) => a.rawName === rawName && (a.status === 'resolved' || a.status === 'verified') && a.type === 'client');
               if (aliasMatch) {
                 targetClient = clients.find(c => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId);
+                if (targetClient) {
+                  autoProcessedMap.set(aliasMatch.id, {
+                    id: aliasMatch.id,
+                    type: 'client',
+                    rawName: aliasMatch.rawName,
+                    targetId: aliasMatch.targetId,
+                    targetName: targetClient.companyName || targetClient.name,
+                    timestamp: new Date().getTime()
+                  });
+                }
               }
             }
 
@@ -212,6 +249,25 @@ export function DataUploader() {
         await batch.commit();
       }
 
+      // Save upload log to system_logs
+      const logId = crypto.randomUUID();
+      const filesUploaded = [
+        satisfactionFile.file?.name,
+        sessionsFile.file?.name,
+        viewsFile.file?.name
+      ].filter(Boolean).join(', ');
+
+      await setDoc(doc(db, 'system_logs', logId), {
+        id: logId,
+        action: 'Data Compiler Run',
+        entityType: 'Upload',
+        entityId: 'upload',
+        entityName: `Files: ${filesUploaded}`,
+        timestamp: new Date().getTime(),
+        author: user?.name || user?.email || 'System',
+        autoProcessed: Array.from(autoProcessedMap.values())
+      });
+
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
       toast.success('Compilation successful');
       
@@ -228,51 +284,10 @@ export function DataUploader() {
     }
   };
 
-  const isReadyToCompile = satisfactionFile.parsedData || (sessionsFile.parsedData && viewsFile.parsedData);
-
-  const renderDropzone = (
-    title: string,
-    fileState: FileState,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-    accept: string = ".csv"
-  ) => {
-    return (
-      <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 hover:bg-primary/5 hover:border-primary/50 transition-colors flex flex-col items-center justify-center text-center group cursor-pointer h-32">
-        <input 
-          type="file" 
-          accept={accept}
-          onChange={onChange}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-        />
-        {fileState.file ? (
-          <>
-            <CheckCircle2 className="w-8 h-8 text-green-500 mb-2" />
-            <span className="text-sm font-medium text-slate-800">{fileState.file.name}</span>
-            <span className="text-xs text-slate-500">{fileState.parsedData?.length || 0} rows parsed</span>
-          </>
-        ) : (
-          <>
-            <UploadCloud className="w-8 h-8 text-slate-400 mb-2 group-hover:text-primary transition-colors" />
-            <span className="text-sm font-medium text-slate-600">{title}</span>
-            <span className="text-xs text-slate-400 mt-1">Click or drag CSV here</span>
-          </>
-        )}
-      </div>
-    );
-  };
+  const isReadyToCompile = satisfactionFile.parsedData || sessionsFile.parsedData || viewsFile.parsedData;
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-          <Database className="w-6 h-6" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Data Compiler</h2>
-          <p className="text-sm text-slate-500">Upload your CSV exports to automatically update Firestore metrics.</p>
-        </div>
-      </div>
-
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {compileResult && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3">
           <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
@@ -285,65 +300,100 @@ export function DataUploader() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-border p-6 space-y-6">
-        <div>
-          <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-400" />
-            Customer Satisfaction
-          </h3>
-          {renderDropzone('Satisfaction Report - Customer.csv', satisfactionFile, (e) => handleFileUpload(e, 'satisfaction'))}
-        </div>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-6 space-y-6">
+          {/* Upload Section Group */}
+          <div>
+            {/* Single Row Sleek Modern Box */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="relative flex-1 group h-12">
+                <input 
+                  type="file" 
+                  accept=".csv"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                  title="Drag & Drop CSV files here or click to browse"
+                />
+                <div className="flex items-center justify-start px-4 gap-2 h-full bg-slate-50 border border-slate-200 border-dashed rounded-lg text-sm font-medium text-slate-600 transition-all group-hover:border-primary/50 group-hover:bg-slate-100 group-hover:text-primary shadow-sm hover:border-solid">
+                  <UploadCloud className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+                  Drop or Select CSV Data Files
+                </div>
+              </div>
+              
+              <button
+                disabled={!isReadyToCompile || isCompiling}
+                onClick={runCompiler}
+                className="flex items-center justify-center gap-2 px-8 h-12 bg-[#7dd3fc] text-white font-semibold text-sm rounded-lg hover:bg-[#38bdf8] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95 shrink-0"
+              >
+                {isCompiling ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Compiling...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-current" />
+                    Run Compiler
+                  </>
+                )}
+              </button>
+            </div>
 
-        <div className="border-t border-slate-100 pt-6">
-          <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-400" />
-            Userpilot Analytics (Requires Both)
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderDropzone('Userpilot_Sessions Started.csv', sessionsFile, (e) => handleFileUpload(e, 'sessions'))}
-            {renderDropzone('Userpilot_Page Views.csv', viewsFile, (e) => handleFileUpload(e, 'views'))}
+            {/* Note about filenames required */}
+            <p className="text-[11px] text-slate-400 px-1 mt-1.5">
+              <strong>Required CSV Filenames:</strong> To automatically parse your data, ensure your filenames contain the corresponding keywords: 
+              <span className="font-medium text-slate-500 mx-1">"satisfaction"</span> (or "customer"), 
+              <span className="font-medium text-slate-500 mx-1">"sessions"</span>, and 
+              <span className="font-medium text-slate-500 ml-1">"views"</span>.
+            </p>
           </div>
+
+          {/* Three fields tracking progress */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            {[
+              { key: 'satisfaction', label: 'Happyfox Support CSAT', data: satisfactionFile },
+              { key: 'sessions', label: 'Userpilot Sessions', data: sessionsFile },
+              { key: 'views', label: 'Userpilot Page Views', data: viewsFile }
+            ].map((f) => (
+              <div key={f.key} className="flex items-center gap-2.5 px-3 py-2 rounded-xl border border-slate-200 bg-white shadow-sm transition-all">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${f.data.parsedData ? 'bg-emerald-50' : f.data.error ? 'bg-red-50' : 'bg-slate-50 border border-slate-200 border-dashed'}`}>
+                  {f.data.parsedData ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : f.data.error ? (
+                    <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                  ) : (
+                    <FileText className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-bold truncate transition-colors leading-tight ${f.data.file ? 'text-slate-800' : 'text-slate-400'}`}>
+                    {f.label}
+                  </p>
+                  {(f.data.parsedData || f.data.error || f.data.file) && (
+                    <div className="mt-0.5">
+                      {f.data.parsedData ? (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                          {f.data.parsedData.length} rows parsed
+                        </span>
+                      ) : f.data.error ? (
+                        <span className="text-[10px] font-medium text-red-600 truncate block" title={f.data.error}>
+                          Error parsing file
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-slate-500 truncate block">
+                          {f.data.file?.name}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
-      </div>
-
-      <div className="flex justify-between items-center mt-8 pt-8 border-t border-slate-200">
-        <button
-          onClick={async () => {
-            try {
-              setIsCompiling(true);
-              const { generateDailyHealthSnapshots } = await import('../../api/snapshotService');
-              await generateDailyHealthSnapshots();
-              toast.success('Snapshots generated successfully');
-            } catch (err: any) {
-              toast.error('Failed to generate snapshots: ' + err.message);
-            } finally {
-              setIsCompiling(false);
-            }
-          }}
-          disabled={isCompiling}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200 disabled:opacity-50 transition-colors"
-        >
-          <Database className="w-4 h-4" />
-          Force Generate Daily Snapshots
-        </button>
-
-        <button
-          disabled={!isReadyToCompile || isCompiling}
-          onClick={runCompiler}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95"
-        >
-          {isCompiling ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-[#00bdd9] rounded-full animate-spin" />
-              Compiling Data...
-            </>
-          ) : (
-            <>
-              <Play className="w-5 h-5" />
-              Run Compiler
-            </>
-          )}
-        </button>
       </div>
     </div>
   );

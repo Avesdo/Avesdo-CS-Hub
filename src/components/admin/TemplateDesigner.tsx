@@ -43,7 +43,8 @@ import {
   ChevronUp,
   ChevronDown,
   Eye,
-  X
+  X,
+  LayoutTemplate
 } from 'lucide-react';
 import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
@@ -97,14 +98,14 @@ export interface Template {
 
 export const FIELD_PALETTE_CATEGORIES = [
   {
-    title: 'FORMATTING',
+    title: 'Formatting',
     items: [
       { type: 'page_break', label: 'Page', icon: FileBox },
       { type: 'header', label: 'Header', icon: Heading1 },
     ]
   },
   {
-    title: 'QUESTIONS',
+    title: 'Questions',
     items: [
       { type: 'text', label: 'Single-line text', icon: Type },
       { type: 'long_text', label: 'Multi-line text', icon: AlignLeft },
@@ -129,16 +130,17 @@ const getFieldMeta = (type: FieldType) => {
 function renderLogicUI(field: any, index: number, otherFields: any[], handleUpdateField: (idx: number, updates: any) => void) {
   if (!field.logicEnabled) return null;
   return (
-           <div className="bg-[#fcfcff] border border-primary/10 rounded-xl p-4 mt-0 space-y-4">
-             <div className="flex flex-wrap items-center gap-2.5">
-               <span className="text-[14px] font-semibold text-slate-800">if</span>
+           <div className="bg-sky-50/50 border border-sky-100 rounded-xl p-4 mt-2 space-y-4 relative overflow-hidden group/logic">
+             <div className="absolute left-0 top-0 bottom-0 w-1 bg-sky-400 opacity-70" />
+             <div className="flex flex-wrap items-center gap-2.5 pl-2 relative z-10">
+               <span className="text-[13px] font-bold text-sky-700">If</span>
                <Select
                  dropdownWidth="w-[280px] sm:w-[350px]"
                  value={field.dependsOn?.fieldId || ''}
                  onChange={(val) => handleUpdateField(index, { dependsOn: { condition: 'equals', value: '', action: 'show', ...field.dependsOn, fieldId: val }})}
                  options={otherFields.map((f: any) => ({ label: <span className="block break-words whitespace-normal leading-tight">{f.label || 'Unnamed Question'}</span>, value: f.id }))}
                  trigger={
-                   <div className="flex items-center justify-between min-h-[36px] py-1.5 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm w-full max-w-[280px]">
+                   <div className="flex items-center justify-between min-h-[36px] py-1.5 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-sky-200 hover:shadow-sm transition-all w-full max-w-[280px]">
                      <span className="whitespace-normal break-words text-left line-clamp-2 text-slate-700 leading-tight">{field.dependsOn?.fieldId ? (otherFields.find((f: any) => f.id === field.dependsOn?.fieldId)?.label || 'Unnamed') : <span className="text-slate-400 font-normal">Question...</span>}</span>
                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                    </div>
@@ -160,7 +162,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                    { label: 'is greater than or equals (>=)', value: 'greater_than_or_equals' },
                  ]}
                  trigger={
-                   <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[120px]">
+                   <div className="flex items-center justify-between h-9 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-sky-200 hover:shadow-sm transition-all min-w-[120px]">
                      <span className="truncate">
                        {field.dependsOn?.condition === 'not_equals' ? 'is not' :
                         field.dependsOn?.condition === 'is_any_of' ? 'is any of' :
@@ -194,7 +196,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                          onChange={(vals) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: vals }})}
                          options={(depField.options || []).map((opt: string, optIdx: number) => ({ label: opt, value: opt }))}
                          trigger={
-                           <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[140px] max-w-[300px]">
+                           <div className="flex items-center justify-between h-9 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-sky-200 hover:shadow-sm transition-all min-w-[140px] max-w-[300px]">
                              <span className="truncate">{valuesArray.length > 0 ? valuesArray.join(', ') : <span className="text-slate-400 font-normal">Select values...</span>}</span>
                              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                            </div>
@@ -209,7 +211,7 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                        onChange={(val) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: val }})}
                        options={(depField.options || []).map((opt: string, optIdx: number) => ({ label: opt, value: opt }))}
                        trigger={
-                         <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[140px]">
+                         <div className="flex items-center justify-between h-9 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-sky-200 hover:shadow-sm transition-all min-w-[140px]">
                            <span className="truncate">{typeof currentVal === 'string' && currentVal ? currentVal : <span className="text-slate-400 font-normal">Value...</span>}</span>
                            <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                          </div>
@@ -218,20 +220,14 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                    );
                  }
                  return (
-                    <input type="text" value={field.dependsOn?.value !== undefined ? field.dependsOn.value : ''} onChange={(e) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: ['less_than_or_equals', 'greater_than_or_equals'].includes(field.dependsOn!.condition) ? Number(e.target.value) : e.target.value }})} className="h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 outline-none focus:border-primary shadow-sm flex-1 min-w-[120px] placeholder:text-slate-400 placeholder:font-normal" placeholder="Answer..." />
+                    <input type="text" value={field.dependsOn?.value !== undefined ? field.dependsOn.value : ''} onChange={(e) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', action: 'show', ...field.dependsOn!, value: ['less_than_or_equals', 'greater_than_or_equals'].includes(field.dependsOn!.condition) ? Number(e.target.value) : e.target.value }})} className="h-9 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 outline-none focus:border-sky-300 focus:shadow-sm flex-1 min-w-[120px] placeholder:text-slate-400 placeholder:font-normal transition-all" placeholder="Answer..." />
                  );
                })()}
                
-               <button onClick={() => handleUpdateField(index, { dependsOn: null, logicEnabled: false })} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors ml-auto"><Trash2 className="w-[18px] h-[18px]" /></button>
              </div>
-             <div className="flex items-center gap-2 pl-6">
-               <button className="text-[13px] font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-1.5">
-                 <Plus className="w-4 h-4" /> Add condition group
-               </button>
-               <Info className="w-[14px] h-[14px] text-slate-400" />
-             </div>
-             <div className="flex flex-wrap items-center gap-2.5 pt-2">
-               <span className="text-[14px] font-semibold text-slate-800">then</span>
+             
+             <div className="flex flex-wrap items-center gap-2.5 pt-3 pl-2 border-t border-sky-100/50 mt-2 relative z-10">
+               <span className="text-[13px] font-bold text-sky-700">Then</span>
                <Select
                  value={field.dependsOn?.action || 'show'}
                  onChange={(val) => handleUpdateField(index, { dependsOn: { fieldId: '', condition: 'equals', value: '', ...field.dependsOn, action: val as any }})}
@@ -240,13 +236,12 @@ function renderLogicUI(field: any, index: number, otherFields: any[], handleUpda
                    { label: field.type === 'page_break' ? 'Skip this page' : 'Hide this question', value: 'hide' },
                  ]}
                  trigger={
-                   <div className="flex items-center justify-between h-9 rounded-md border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[180px]">
+                   <div className="flex items-center justify-between h-9 rounded-md border border-white bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-sky-200 hover:shadow-sm transition-all min-w-[180px]">
                      <span className="truncate">{field.dependsOn?.action === 'hide' ? field.type === 'page_break' ? 'Skip this page' : 'Hide this question' : field.type === 'page_break' ? 'Show this page' : 'Show this question'}</span>
                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                    </div>
                  }
                />
-               <Info className="w-[14px] h-[14px] text-slate-400 ml-1" />
              </div>
            </div>
   );
@@ -377,63 +372,86 @@ function SortableFieldItem({ field, index, fields, handleUpdateField, handleRemo
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={`bg-white border rounded-xl overflow-hidden shadow-sm transition-all relative ${isDragging ? 'border-primary ring-2 ring-primary/20 shadow-lg' : 'border-slate-200 hover:border-slate-300'}`}>
+    <div ref={setNodeRef} style={style} className={`bg-white border rounded-2xl shadow-sm transition-all relative group/field ${isDragging ? 'border-primary ring-2 ring-primary/20 shadow-lg scale-[1.01] z-50' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'}`}>
       
-      <div className="p-5 flex flex-col gap-4 relative group/card">
-        {/* Top Row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-primary">
-            <Icon className="w-[18px] h-[18px] opacity-80" />
-            <span className="text-[13px] font-bold text-slate-800">{meta.label}</span>
+      {/* Top Hover Action Bar */}
+      <div className="absolute right-3 -top-4 flex items-center gap-1.5 opacity-0 group-hover/field:opacity-100 transition-all transform translate-y-1 group-hover/field:translate-y-0 bg-white border border-slate-200 shadow-sm rounded-lg p-1 z-20">
+        
+        {/* Required */}
+        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-2 py-1 rounded transition-colors">
+          <div className={`w-7 h-4 rounded-full relative transition-colors ${field.required ? 'bg-primary' : 'bg-slate-300'}`}>
+            <div className={`absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${field.required ? 'translate-x-[12px]' : 'translate-x-0'}`} />
+            <input type="checkbox" className="hidden" checked={field.required || false} onChange={e => handleUpdateField(index, { required: e.target.checked })} />
           </div>
-          <div className="flex items-center gap-4">
-            {/* Grip Icon */}
-            <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 transition-colors">
-              <GripVertical className="w-[18px] h-[18px]" />
-            </div>
-            {/* Logic Toggle */}
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <div className={`w-8 h-[18px] rounded-full relative transition-colors ${field.logicEnabled ? 'bg-primary' : 'bg-slate-200 group-hover:bg-slate-300'}`}>
-                <div className={`absolute top-0.5 left-0.5 w-[14px] h-[14px] bg-white rounded-full transition-transform shadow-sm ${field.logicEnabled ? 'translate-x-[14px]' : 'translate-x-0'}`} />
-                <input type="checkbox" className="hidden" checked={field.logicEnabled || false} onChange={e => {
-                   const enabled = e.target.checked;
-                   handleUpdateField(index, { logicEnabled: enabled, dependsOn: enabled ? { fieldId: '', condition: 'equals', value: '' } : null });
-                }} />
-              </div>
-              <span className="text-[13px] font-semibold text-slate-700">Logic</span>
-            </label>
+          <span className="text-[11px] font-bold text-slate-500">Required</span>
+        </label>
+
+        <div className="w-px h-4 bg-slate-200" />
+        
+        {/* Logic */}
+        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-2 py-1 rounded transition-colors">
+          <div className={`w-7 h-4 rounded-full relative transition-colors ${field.logicEnabled ? 'bg-sky-500' : 'bg-slate-300'}`}>
+            <div className={`absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${field.logicEnabled ? 'translate-x-[12px]' : 'translate-x-0'}`} />
+            <input type="checkbox" className="hidden" checked={field.logicEnabled || false} onChange={e => {
+               const enabled = e.target.checked;
+               handleUpdateField(index, { logicEnabled: enabled, dependsOn: enabled ? { fieldId: '', condition: 'equals', value: '' } : null });
+            }} />
           </div>
+          <span className="text-[11px] font-bold text-slate-500">Logic</span>
+        </label>
+
+        <div className="w-px h-4 bg-slate-200" />
+
+        <button onClick={() => handleDuplicateField && handleDuplicateField(index)} className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded transition-colors" title="Duplicate">
+          <Copy className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={() => handleRemoveField(index)} className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Delete">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="flex relative">
+        {/* Left Drag Handle */}
+        <div {...attributes} {...listeners} className="w-8 flex items-center justify-center bg-slate-50/50 hover:bg-slate-100 border-r border-slate-100 rounded-l-2xl cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 transition-colors shrink-0">
+          <GripVertical className="w-[18px] h-[18px]" />
         </div>
 
-        {renderLogicUI(field, index, otherFields, handleUpdateField)}
-
-        {/* Main Inputs */}
-        <div className="bg-white border border-slate-200 rounded-md px-3 pb-2 pt-5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all relative">
-          <label className="absolute top-1.5 left-3 text-[10px] font-bold text-slate-500">Question {field.required ? '*' : ''}</label>
-          <input type="text" value={field.label} onChange={(e) => handleUpdateField(index, { label: e.target.value })} className="w-full text-[14px] font-medium text-slate-900 outline-none bg-transparent placeholder:text-slate-400 placeholder:font-normal" placeholder={field.type === 'header' ? 'Section Header' : `New ${meta.label}`} />
-        </div>
-
-        {/* Description (Optional) */}
-        {field.description !== undefined ? (
-           <div className="bg-white border border-slate-200 rounded-md focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 overflow-hidden transition-all">
-             <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100">
-               <span className="text-[10px] font-bold text-slate-500 tracking-wider">Description</span>
+        {/* Card Content */}
+        <div className="p-5 flex-1 flex flex-col gap-3">
+          
+          {/* Main Inputs Header */}
+          <div className="flex items-center gap-3">
+             <div className="p-2 rounded-lg bg-slate-100 text-slate-500 shrink-0">
+               <Icon className="w-4 h-4" />
              </div>
-             <RichTextEditor 
-               content={field.description} 
-               onChange={(content) => handleUpdateField(index, { description: content })} 
-               placeholder="Add a description..." 
-             />
-           </div>
-        ) : (
-           <button onClick={() => handleUpdateField(index, { description: '' })} className="text-[12px] font-semibold text-slate-500 hover:text-primary transition-colors text-left flex items-center gap-1.5 w-max">
-             <Plus className="w-3.5 h-3.5" /> Add description
-           </button>
-        )}
+             <div className="flex-1 bg-white">
+                <input type="text" value={field.label} onChange={(e) => handleUpdateField(index, { label: e.target.value })} className="w-full text-[15px] font-bold text-slate-900 outline-none bg-transparent placeholder:text-slate-400 pb-1 border-b border-transparent focus:border-primary transition-colors" placeholder={field.type === 'header' ? 'Section Header' : `New ${meta.label} Question`} />
+             </div>
+          </div>
+
+          {renderLogicUI(field, index, otherFields, handleUpdateField)}
+
+          {/* Description (Optional) */}
+          {field.description !== undefined ? (
+             <div className="bg-white border border-slate-200 rounded-md focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 overflow-hidden transition-all mt-1">
+               <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100">
+                 <span className="text-[10px] font-bold text-slate-500 tracking-wider">Description</span>
+               </div>
+               <RichTextEditor 
+                 content={field.description} 
+                 onChange={(content) => handleUpdateField(index, { description: content })} 
+                 placeholder="Add a description..." 
+               />
+             </div>
+          ) : (
+             <button onClick={() => handleUpdateField(index, { description: '' })} className="text-[12px] font-semibold text-slate-400 hover:text-primary transition-colors text-left flex items-center gap-1.5 w-max opacity-0 group-hover/field:opacity-100 mt-1">
+               <Plus className="w-3.5 h-3.5" /> Add description
+             </button>
+          )}
 
         {/* Options for select/radio/checkbox */}
         {['select', 'radio', 'checkbox'].includes(field.type) && (
-           <div className="mt-4 space-y-3 pl-1">
+           <div className="mt-3 space-y-2 pl-1">
              {(field.options || []).map((opt: string, optIdx: number) => (
                <div 
                  key={optIdx} 
@@ -465,11 +483,11 @@ function SortableFieldItem({ field, index, fields, handleUpdateField, handleRemo
                    setDragEnabledIdx(null);
                  }}
                >
-                 <div className="flex items-center gap-0.5 w-full">
+                 <div className="flex items-center gap-0.5 w-full group/opt">
                    <div 
                      onMouseEnter={() => setDragEnabledIdx(optIdx)}
                      onMouseLeave={() => setDragEnabledIdx(null)}
-                     className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 transition-colors p-1"
+                     className="cursor-grab active:cursor-grabbing text-slate-200 hover:text-slate-500 transition-colors p-1"
                    >
                      <GripVertical className="w-4 h-4" />
                    </div>
@@ -477,13 +495,13 @@ function SortableFieldItem({ field, index, fields, handleUpdateField, handleRemo
                      const newOptions = [...(field.options || [])];
                      newOptions[optIdx] = e.target.value;
                      handleUpdateField(index, { options: newOptions });
-                   }} className="w-full text-[14px] font-medium text-slate-700 outline-none bg-transparent border-b border-slate-200 focus:border-primary pb-1.5" placeholder={`Option ${optIdx + 1}`} />
+                   }} className="w-full text-[14px] font-medium text-slate-700 outline-none bg-transparent border-b border-transparent hover:border-slate-200 focus:border-primary pb-1 transition-colors" placeholder={`Option ${optIdx + 1}`} />
                  </div>
                  <button onClick={() => {
                    const newOptions = [...(field.options || [])];
                    newOptions.splice(optIdx, 1);
                    handleUpdateField(index, { options: newOptions });
-                 }} className="p-1 text-slate-400 hover:text-red-500 transition-colors ml-1"><Trash2 className="w-[18px] h-[18px]" /></button>
+                 }} className="p-1 text-slate-300 hover:text-red-500 transition-colors ml-1 opacity-0 group-hover/field:opacity-100"><Trash2 className="w-4 h-4" /></button>
                </div>
              ))}
              {field.allowOther && (
@@ -494,45 +512,22 @@ function SortableFieldItem({ field, index, fields, handleUpdateField, handleRemo
                    <button onClick={() => handleUpdateField(index, { allowOther: false })} className="p-1 text-slate-400 hover:text-red-500 transition-colors ml-1" title="Remove 'Other'"><Trash2 className="w-[18px] h-[18px]" /></button>
                 </div>
              )}
-             <div className="flex items-center gap-2 pt-3">
-               <button onClick={() => handleUpdateField(index, { options: [...(field.options || []), ''] })} className="text-[13px] font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-1.5 w-max">
-                 <Plus className="w-4 h-4" /> Add option
+             <div className="flex items-center gap-2 pt-2 opacity-0 group-hover/field:opacity-100 transition-opacity pl-7">
+               <button onClick={() => handleUpdateField(index, { options: [...(field.options || []), ''] })} className="text-[12px] font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-1 w-max">
+                 <Plus className="w-3.5 h-3.5" /> Option
                </button>
                {!field.allowOther && (
                  <>
-                   <span className="text-[13px] text-slate-400 mx-1">or</span>
-                   <button onClick={() => handleUpdateField(index, { allowOther: true })} className="text-[13px] font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-1.5 w-max">
-                     <Plus className="w-4 h-4" /> Add "Other"
+                   <span className="text-[12px] font-bold text-slate-300 mx-1">Or</span>
+                   <button onClick={() => handleUpdateField(index, { allowOther: true })} className="text-[12px] font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-1 w-max">
+                     <Plus className="w-3.5 h-3.5" /> "Other"
                    </button>
                  </>
                )}
-               <div className="flex-1" />
-               <button className="text-[13px] font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-1.5 w-max ml-auto hidden">
-                 <Plus className="w-4 h-4" /> Add default value
-               </button>
              </div>
            </div>
         )}
-
-
-        {/* Bottom Actions Row */}
-        <div className="flex items-center justify-between pt-5 mt-1 border-t border-slate-100">
-           <label className="flex items-center gap-2.5 cursor-pointer group">
-             <div className={`w-8 h-[18px] rounded-full relative transition-colors ${field.required ? 'bg-primary' : 'bg-slate-200 group-hover:bg-slate-300'}`}>
-               <div className={`absolute top-0.5 left-0.5 w-[14px] h-[14px] bg-white rounded-full transition-transform shadow-sm ${field.required ? 'translate-x-[14px]' : 'translate-x-0'}`} />
-               <input type="checkbox" className="hidden" checked={field.required} onChange={e => handleUpdateField(index, { required: e.target.checked })} />
-             </div>
-             <span className="text-[13px] font-semibold text-slate-700">Required</span>
-           </label>
-           
-           <div className="flex items-center gap-4">
-             <button onClick={() => handleDuplicateField && handleDuplicateField(index)} className="p-1 text-slate-400 hover:text-slate-700 transition-colors" title="Duplicate">
-               <Copy className="w-[18px] h-[18px]" />
-             </button>
-             <button onClick={() => handleRemoveField(index)} className="p-1 text-slate-400 hover:text-red-500 transition-colors" title="Delete">
-               <Trash2 className="w-[18px] h-[18px]" />
-             </button>
-           </div>
+        
         </div>
       </div>
     </div>
@@ -776,7 +771,7 @@ export default function TemplateDesigner() {
 
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden animate-in fade-in duration-300">
-      <div className="p-4 border-b border-border bg-slate-50 flex items-center justify-between shrink-0">
+      <div className="p-4 bg-white flex items-center justify-between shrink-0 z-10 relative">
         <h2 className="text-lg font-semibold text-slate-800">Template Designer</h2>
         <div className="flex items-center gap-3">
           <button onClick={() => setShowPreview(true)} className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -790,24 +785,54 @@ export default function TemplateDesigner() {
 
       <div className="flex flex-1 overflow-hidden flex-col md:flex-row min-h-0">
         {/* Left Sidebar: Templates */}
-        <div className="w-full md:w-64 border-r border-border bg-slate-50/50 overflow-y-auto shrink-0 custom-thin-scroll">
-          <div className="p-4 space-y-1">
-            {sortedTemplates.map((tpl) => (
-              <button key={tpl.id} onClick={() => setActiveTemplateId(tpl.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-colors text-left outline-none ${activeTemplateId === tpl.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-slate-200/50 hover:text-foreground'}`}>
-                {tpl.type === 'form' ? <FileText className="w-4 h-4 opacity-70" /> : <CheckSquare className="w-4 h-4 opacity-70" />}
-                {tpl.name}
-              </button>
-            ))}
+        <div className="w-full md:w-64 border-r border-slate-200 bg-white overflow-y-auto shrink-0 custom-thin-scroll z-10 relative shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
+          <div className="p-4 space-y-6">
+            
+            {/* Checklists Group */}
+            <div>
+               <div className="px-3 mb-2 flex items-center gap-2">
+                 <CheckSquare className="w-4 h-4 text-slate-400" />
+                 <h4 className="text-[12px] font-bold text-slate-500">Checklists</h4>
+               </div>
+              <div className="space-y-0.5">
+                {sortedTemplates.filter(t => t.type === 'checklist').map((tpl) => (
+                  <button key={tpl.id} onClick={() => setActiveTemplateId(tpl.id)} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-semibold transition-all outline-none relative overflow-hidden ${activeTemplateId === tpl.id ? 'bg-white text-primary shadow-sm ring-1 ring-slate-200/50' : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900'}`}>
+                    {activeTemplateId === tpl.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
+                    {tpl.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Forms Group */}
+            <div>
+               <div className="px-3 mb-2 flex items-center gap-2">
+                 <FileText className="w-4 h-4 text-slate-400" />
+                 <h4 className="text-[12px] font-bold text-slate-500">Forms</h4>
+               </div>
+              <div className="space-y-0.5">
+                {sortedTemplates.filter(t => t.type === 'form').map((tpl) => (
+                  <button key={tpl.id} onClick={() => setActiveTemplateId(tpl.id)} className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-semibold transition-all outline-none relative overflow-hidden ${activeTemplateId === tpl.id ? 'bg-white text-primary shadow-sm ring-1 ring-slate-200/50' : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900'}`}>
+                    {activeTemplateId === tpl.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
+                    {tpl.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
 
         {/* Center: Builder Canvas */}
-        <div className="flex-1 overflow-y-auto p-6 bg-[#fcfcff] custom-thin-scroll">
-          <div className="max-w-3xl space-y-6 mx-auto">
+        <div className="flex-1 overflow-y-auto p-6 bg-[#f4f6f8] relative custom-thin-scroll">
+          {/* Subtle dot pattern overlay for canvas feel */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+          
+          <div className="max-w-3xl space-y-6 mx-auto relative z-10">
             <div className="flex flex-wrap gap-4 items-center justify-between pb-4 border-b border-border">
               <div>
-                <h3 className="text-lg font-semibold text-foreground tracking-tight">{activeTemplate.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
+                <h3 className="text-lg font-semibold text-slate-800 tracking-tight">{activeTemplate.name}</h3>
+                <p className="text-sm text-slate-500 mt-1">
                   {activeTemplate.type === 'form' ? 'Define the questions and conditional logic for this form.' : 'Group deliverables into sections conditionally based on project features.'}
                 </p>
               </div>
@@ -816,10 +841,11 @@ export default function TemplateDesigner() {
             {/* Checklist Builder */}
             {activeTemplate.type === 'checklist' && (
               sections.length === 0 ? (
-                <div className="bg-slate-50 border border-dashed border-border rounded-xl p-12 text-center flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4"><FolderOpen className="w-6 h-6 text-primary" /></div>
-                  <h4 className="text-base font-medium text-foreground">No sections yet</h4>
-                  <button onClick={handleAddSection} className="mt-4 bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-md text-sm font-medium transition-colors">Add First Section</button>
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-5"><FolderOpen className="w-8 h-8 text-slate-400" /></div>
+                  <h4 className="text-lg font-bold text-slate-800">No sections yet</h4>
+                  <p className="text-slate-500 mt-2 max-w-sm mb-6">Start building your deliverable checklist by adding a section.</p>
+                  <button onClick={handleAddSection} className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm">Add First Section</button>
                 </div>
               ) : (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
@@ -837,10 +863,11 @@ export default function TemplateDesigner() {
             {/* Form Builder */}
             {activeTemplate.type === 'form' && (
               fields.length === 0 ? (
-                <div className="bg-slate-50 border border-dashed border-border rounded-xl p-12 text-center flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4"><SettingsIcon className="w-6 h-6 text-primary" /></div>
-                  <h4 className="text-base font-medium text-foreground">No fields yet</h4>
-                  <button onClick={() => handleAddField('text')} className="mt-4 bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-md text-sm font-medium transition-colors">Add First Field</button>
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-5"><LayoutTemplate className="w-8 h-8 text-slate-400" /></div>
+                  <h4 className="text-lg font-bold text-slate-800">Start your form</h4>
+                  <p className="text-slate-500 mt-2 max-w-sm mb-6">Drag and drop fields from the right palette, or add a standard question to begin.</p>
+                  <button onClick={() => handleAddField('text')} className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm">Add First Field</button>
                 </div>
               ) : (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleFieldDragEnd}>
@@ -858,19 +885,19 @@ export default function TemplateDesigner() {
             {/* Add buttons at the bottom */}
             {activeTemplate.type === 'checklist' && sections.length > 0 && (
               <div className="pt-4 pb-12">
-                <button onClick={handleAddSection} className="flex items-center justify-center gap-2 text-slate-500 hover:text-primary hover:bg-slate-50 px-6 py-3.5 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/30 transition-all font-medium text-sm w-full">
-                  <FolderOpen className="w-4 h-4" /> Add Another Section
+                <button onClick={handleAddSection} className="flex items-center justify-center gap-2 text-slate-500 bg-white hover:text-primary hover:bg-slate-50 px-6 py-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/40 hover:shadow-sm transition-all font-semibold text-[14px] w-full group">
+                  <FolderOpen className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" /> Add Another Section
                 </button>
               </div>
             )}
             
             {activeTemplate.type === 'form' && fields.length > 0 && (
               <div className="pt-4 pb-12 flex gap-4">
-                <button onClick={() => handleAddField('text')} className="flex-1 flex items-center justify-center gap-2 text-slate-500 hover:text-primary hover:bg-slate-50 px-6 py-3.5 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/30 transition-all font-medium text-sm">
-                  <Plus className="w-4 h-4" /> Add Question
+                <button onClick={() => handleAddField('text')} className="flex-1 flex items-center justify-center gap-2 text-slate-500 bg-white hover:text-primary hover:bg-slate-50 px-6 py-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/40 hover:shadow-sm transition-all font-semibold text-[14px] group">
+                  <Plus className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" /> Add Question
                 </button>
-                <button onClick={() => handleAddField('page_break')} className="flex-1 flex items-center justify-center gap-2 text-slate-500 hover:text-primary hover:bg-slate-50 px-6 py-3.5 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/30 transition-all font-medium text-sm">
-                  <FileBox className="w-4 h-4" /> Add Page
+                <button onClick={() => handleAddField('page_break')} className="flex-1 flex items-center justify-center gap-2 text-slate-500 bg-white hover:text-primary hover:bg-slate-50 px-6 py-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/40 hover:shadow-sm transition-all font-semibold text-[14px] group">
+                  <FileBox className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" /> Add Page Break
                 </button>
               </div>
             )}
@@ -879,21 +906,21 @@ export default function TemplateDesigner() {
 
         {/* Right Sidebar: Field Palette (Only for Forms) */}
         {activeTemplate.type === 'form' && (
-          <div className="w-full md:w-64 border-l border-border bg-white overflow-y-auto shrink-0 custom-thin-scroll">
-            <div className="p-5 space-y-6">
+          <div className="w-full md:w-64 border-l border-slate-200 bg-white overflow-y-auto shrink-0 custom-thin-scroll z-10 relative shadow-[-4px_0_24px_-12px_rgba(0,0,0,0.05)]">
+            <div className="p-5 space-y-8">
               {FIELD_PALETTE_CATEGORIES.map((category) => (
-                <div key={category.title} className="space-y-2.5">
-                  <h4 className="text-[12px] font-bold tracking-wide text-slate-400">{category.title}</h4>
-                  <div className="space-y-1">
+                <div key={category.title} className="space-y-3">
+                  <h4 className="text-[12px] font-bold text-slate-400">{category.title}</h4>
+                  <div className="grid grid-cols-1 gap-1.5">
                     {category.items.map((item) => {
                       const Icon = item.icon;
                       return (
                         <button
                           key={item.type}
                           onClick={() => handleAddField(item.type as FieldType)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition-colors group text-left"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:shadow-md text-slate-600 hover:text-slate-900 transition-all group text-left"
                         >
-                          <div className="p-1.5 rounded-md bg-slate-100 group-hover:bg-white border border-transparent group-hover:border-slate-200 group-hover:shadow-sm transition-all text-slate-500 group-hover:text-primary">
+                          <div className="p-1.5 rounded-lg bg-white border border-slate-200 shadow-sm text-slate-400 group-hover:text-primary transition-colors">
                             <Icon className="w-4 h-4" />
                           </div>
                           <span className="text-[13px] font-semibold">{item.label}</span>

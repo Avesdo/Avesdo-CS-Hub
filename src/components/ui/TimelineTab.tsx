@@ -195,7 +195,7 @@ export function TimelineTab({
             {Object.keys(groupedNotes).map((dateHeader) => (
               <div key={dateHeader} className="relative">
                 {/* Date Group Header */}
-                <div className="sticky top-[-10px] z-30 -ml-[19px] mb-6 flex items-center">
+                <div className="sticky top-0 z-30 -ml-[19px] mb-6 flex items-center pt-2">
                   <div className="bg-slate-50 px-3 py-1 rounded-full border border-slate-200/60 shadow-sm text-[12px] font-semibold text-slate-600 tracking-wide relative -left-[19px]">
                     {dateHeader}
                   </div>

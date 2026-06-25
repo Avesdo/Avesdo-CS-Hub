@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAvesdoEmployee() {
+      return request.auth != null && request.auth.token.email.matches('.*@avesdo[.]com$');
+    }
+    match /{document=**} {
+      allow read, write: if isAvesdoEmployee();
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+      allow update: if !isAvesdoEmployee() 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase']);
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if isAvesdoEmployee();
+      allow create: if !isAvesdoEmployee();
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+      allow update: if !isAvesdoEmployee() 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase']);
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if isAvesdoEmployee();
+      allow create: if !isAvesdoEmployee();
+    }
+
+    match /settings/{document=**} {
+      allow read: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+    }
+  }
+}
