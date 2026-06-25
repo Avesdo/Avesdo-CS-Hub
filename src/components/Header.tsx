@@ -8,8 +8,10 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { format } from 'date-fns';
+import { useUI } from '../context/UIContext';
 
 function NotificationBell() {
+  const { openDrawer } = useUI();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -86,7 +88,13 @@ function NotificationBell() {
                 <div 
                   key={n.id} 
                   className={`group relative px-4 py-3 hover:bg-primary/5 transition-colors cursor-pointer flex items-start gap-3 ${!n.read ? 'bg-primary/[0.03]' : ''}`}
-                  onClick={() => markNotificationAsRead(n.id)}
+                  onClick={() => {
+                    markNotificationAsRead(n.id);
+                    if (n.projectId) {
+                      openDrawer('project', n.projectId);
+                      setIsOpen(false);
+                    }
+                  }}
                 >
                   <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`} />
                   <div className="flex-1 pr-6">

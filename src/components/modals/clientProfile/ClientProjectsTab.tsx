@@ -220,7 +220,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             </motion.div>
           ) : (
             displayedProjects.map((proj, idx) => {
-              const statusDef = settings?.statuses?.find((s: any) => s.name === (proj.status || proj.projectStatus)) || {};
+              const statusDef = settings?.statuses?.find((s: any) => s.name === (proj.status || proj.projectStatus)) || ({} as any);
               const hex = getSafeHex(statusDef.color, 'slate');
 
               return (
