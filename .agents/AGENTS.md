@@ -13,6 +13,8 @@ Please remember that I am relying entirely on your expertise. I do not have a ba
 ## 1. COMMUNICATION & WORKFLOW
 - **NO CODING JARGON:** Explain your actions and plans in simple, non-technical English.
 - **LIVE SERVER:** Automatically run `npm run dev` in the background whenever the user might need to view the app locally.
-- **VERIFY CHANGES:** Always build (`npm run build`) or test your changes before concluding. Do not leave the workspace broken.
+- **VERIFY CHANGES:** Always build (`npm run build`) or test your changes locally before concluding. Do not leave the workspace broken.
+- **DEPLOYMENT & BACKUPS:** Only deploy to Firebase and back up to Git when explicitly instructed to. We make batch updates and deploy in batches.
+- **SUBAGENTS:** Always use multiple/sub-agents when possible and helpful to speed up parallel tasks or background research.
 
 *(Note: Granular UI constraints and Database logic have been moved to dynamic Skills (`build-ui-components` and `manage-global-state`) to keep your core memory fast and focused. These skills will automatically load when relevant tasks are requested.)*
