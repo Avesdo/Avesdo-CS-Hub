@@ -65,3 +65,23 @@ When building or modifying UI components, you MUST adhere to the following estab
 
 13. **Floating Action Bars**:
     - Must use `bg-white/95 backdrop-blur-md` with `rounded-2xl` and a deep shadow (`shadow-[0_8px_30px_rgb(0,0,0,0.12)]`). Use `whitespace-nowrap` on interactive buttons.
+
+14. **Split-Pane Profile Modals**:
+    - **Architecture**: Use a split-pane layout with a Left Sidebar (`bg-slate-50 border-r w-[280px]`) for persistent metadata, and a right pane for content.
+    - **Navigation**: Use a sleek horizontal sticky header spanning the right pane (`bg-white/95 backdrop-blur-md sticky top-0 z-40`), using Framer Motion `layoutId` for smooth active tab underlines.
+    - **Inline Edits**: Hide inline "Edit" actions by default and reveal them on hover (`group/name hover:opacity-100`). Use auto-resizing textareas for titles instead of fixed inputs.
+    - **Destructive Actions**: Rename dangerous actions (e.g., Delete) to "Archive". Use left-aligned ghost buttons (`text-slate-400 hover:bg-red-50 hover:text-red-500`) at the bottom of the sidebar to prevent accidental clicks.
+
+15. **Profile Inner Tabs & Nested Data**:
+    - Replicate premium KPI tiles (e.g., Total Projects) using context-appropriate Lucide icons inside inner tabs.
+    - Inject a persistent, rounded Search box directly to the right of the sticky glassmorphic tab switcher for instant local filtering.
+    - **Exclusion Logic**: Completely exclude inactive/Cancelled items from aggregate KPI counts and lifecycle tabs (like "Closed"), but explicitly retain them in the "All" tab.
+    - Synchronize nested list cards with dynamic badges and resolve date timestamps gracefully with an "Unscheduled" fallback.
+
+16. **Unsaved Changes Protection**:
+    - Build custom inline discard overlays instead of native `window.confirm`.
+    - Use a frosted glass backdrop (`backdrop-blur-sm`) covering the modal content with a Framer Motion bounce-in prompt card.
+    - Intercept Radix UI `onInteractOutside` and `onEscapeKeyDown` to route through the custom dirty check logic rather than force-closing.
+
+17. **Toolbar Spacing Math**:
+    - To perfectly center an `ActiveFilterBar` vertically between top View Controls and the bottom Table Grid, the toolbar container MUST use `gap-3` and `pb-3`, while the subsequent Table wrapper MUST have `mt-0`. This guarantees a symmetrical `0.75rem` spacing.
