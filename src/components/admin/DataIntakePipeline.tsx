@@ -14,6 +14,7 @@ import {
   X,
   Check,
   Ban,
+  User,
 } from 'lucide-react';
 import { toast } from '../../utils/toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -111,18 +112,28 @@ export function DataIntakePipeline() {
           >
             <div className="flex items-center justify-between gap-4 p-4">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <Tooltip content={alias.type.charAt(0).toUpperCase() + alias.type.slice(1)}>
+                <Tooltip
+                  content={
+                    alias.contextName === 'Satisfaction Report'
+                      ? 'User to Client Mapping'
+                      : alias.type.charAt(0).toUpperCase() + alias.type.slice(1)
+                  }
+                >
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 
                       ${
-                        alias.type === 'client'
-                          ? 'bg-blue-50 text-blue-600 border border-blue-100'
-                          : alias.type === 'project'
-                            ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
-                            : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        alias.contextName === 'Satisfaction Report'
+                          ? 'bg-amber-50 text-amber-600 border border-amber-100'
+                          : alias.type === 'client'
+                            ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                            : alias.type === 'project'
+                              ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                              : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                       }`}
                   >
-                    {alias.type === 'client' ? (
+                    {alias.contextName === 'Satisfaction Report' ? (
+                      <User className="w-5 h-5" />
+                    ) : alias.type === 'client' ? (
                       <Building2 className="w-5 h-5" />
                     ) : alias.type === 'project' ? (
                       <Home className="w-5 h-5" />
