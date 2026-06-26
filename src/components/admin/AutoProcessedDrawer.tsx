@@ -282,7 +282,7 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
                 </button>
               </div>
             </div>
-          ))}
+          })}
           {filteredAutoProcessed.length === 0 && (
             <div className="text-center py-12 text-slate-500 text-sm">
               {searchQuery ? 'No matching corrections found.' : 'No auto-processed corrections to review.'}
