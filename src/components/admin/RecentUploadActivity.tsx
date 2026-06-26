@@ -37,9 +37,14 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-xs font-bold text-slate-900 leading-none">{log.action}</p>
+                    <p 
+                      className="text-xs font-bold text-slate-900 leading-none truncate max-w-[200px]"
+                      title={log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.action}
+                    >
+                      {log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.action}
+                    </p>
                     <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded truncate max-w-[140px]">
-                      {log.entityName}
+                      {log.entityName?.startsWith('Files: ') ? 'Data Import' : log.entityName}
                     </span>
                   </div>
                   <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[10px] text-muted-foreground">
