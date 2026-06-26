@@ -151,6 +151,7 @@ export function DataUploader() {
                   rawName: aliasMatch.rawName,
                   targetId: aliasMatch.targetId,
                   targetName: targetProject.name,
+                  contextName: aliasMatch.contextName,
                   timestamp: new Date().getTime(),
                 });
               }
@@ -268,6 +269,7 @@ export function DataUploader() {
                     rawName: aliasMatch.rawName,
                     targetId: aliasMatch.targetId,
                     targetName: targetClient.companyName || targetClient.name,
+                    contextName: aliasMatch.contextName,
                     timestamp: new Date().getTime(),
                   });
                 }
