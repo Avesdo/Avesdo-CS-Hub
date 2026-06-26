@@ -368,18 +368,27 @@ export function DataUploader() {
       
       const formattedEntityName = uploadedTypes.join(', ');
 
-      await setDoc(doc(db, 'system_logs', logId), {
+      const logData = {
         id: logId,
         action: 'Data Import',
         entityType: 'Upload',
         entityId: 'upload',
-        entityName: formattedEntityName,
+        entityName: formattedEntityName || 'Multiple Files',
         timestamp: new Date().getTime(),
         author: user?.name || user?.email || 'System',
-        autoProcessed: Array.from(autoProcessedMap.values()),
+        autoProcessed: Array.from(autoProcessedMap.values()).map(item => ({
+          ...item,
+          targetName: item.targetName || 'Unknown',
+          contextName: item.contextName || 'Unknown',
+        })),
         updatedMetrics: updateCount,
         sentForReview: aliasesAdded,
-      });
+      };
+
+      // Strip any lingering undefined values to prevent Firebase crash
+      const sanitizedLogData = JSON.parse(JSON.stringify(logData));
+
+      await setDoc(doc(db, 'system_logs', logId), sanitizedLogData);
 
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
       toast.success('Compilation successful');

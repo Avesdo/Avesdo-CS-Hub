@@ -795,8 +795,8 @@ export async function resolveAlias(
       await updateDoc(doc(db, 'aliases', aliasId), { status: 'verified', targetId: newId });
       toast.success('Alias mapped to a new entity');
     } else if (action === 'reject') {
-      await deleteDoc(doc(db, 'aliases', aliasId));
-      toast.success('Alias suggestion rejected and deleted');
+      await updateDoc(doc(db, 'aliases', aliasId), { status: 'ignored' });
+      toast.success('Alias ignored and will not be prompted again');
     }
     return { success: true };
   } catch (err) {
