@@ -12,6 +12,7 @@ import ServiceProfileModal from './components/modals/ServiceProfileModal';
 import ClientProfileModal from './components/modals/ClientProfileModal';
 import ProjectProfileModal from './components/modals/ProjectProfileModal';
 import GlobalOverlays from './components/GlobalOverlays';
+import { AppLoadingSkeleton } from './components/ui/Skeleton';
 import { GlobalToaster } from './components/GlobalToaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -40,7 +41,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center w-full h-screen bg-white">
-        <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -67,16 +68,7 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
   }, [ready, settings]);
 
   if (!ready.settings || !ready.clients || !ready.projects || !ready.services || !ready.aliases) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
-          <p className="text-sm font-semibold text-slate-600 animate-pulse">
-            Loading Application Data...
-          </p>
-        </div>
-      </div>
-    );
+    return <AppLoadingSkeleton />;
   }
 
   return <>{children}</>;
@@ -109,7 +101,7 @@ function MainLayout() {
                   <React.Suspense
                     fallback={
                       <div className="flex items-center justify-center w-full h-full">
-                        <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+                        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                       </div>
                     }
                   >
@@ -146,7 +138,7 @@ export default function App() {
               <React.Suspense
                 fallback={
                   <div className="flex items-center justify-center w-full h-screen bg-white">
-                    <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+                    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                   </div>
                 }
               >
@@ -160,7 +152,7 @@ export default function App() {
               <React.Suspense
                 fallback={
                   <div className="flex items-center justify-center w-full h-screen bg-slate-50">
-                    <div className="w-8 h-8 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
+                    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                   </div>
                 }
               >

@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import { Project, Settings } from '../types';
 import { DynamicForm } from '../components/ui/DynamicForm';
+import { ClientPortalSkeleton } from '../components/ui/Skeleton';
 import DeliverablesGrid from '../components/ui/DeliverablesGrid';
 import { createNotification, sendEmailAlert } from '../utils/notificationUtils';
 import { ClipboardList, CheckCircle2, ShieldCheck, FileText, ChevronRight, Award, ChevronLeft, ExternalLink, Mail, Phone, Lock, AlertCircle } from 'lucide-react';
@@ -66,14 +67,7 @@ export default function ClientPortal() {
   }, [searchParams]);
 
   if (loading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-[#00bdd9]/20 border-t-[#00bdd9] rounded-full animate-spin"></div>
-          <p className="text-sm font-semibold text-slate-600 animate-pulse">Loading Portal...</p>
-        </div>
-      </div>
-    );
+    return <ClientPortalSkeleton />;
   }
 
   if (error || !project) {
@@ -342,8 +336,8 @@ export default function ClientPortal() {
                 <div className="flex items-center gap-4 mt-1 flex-wrap">
                   <p className="text-sm text-slate-500 font-medium">Project: <span className="text-slate-800">{project.name}</span></p>
                   {isSubmitting && activeFormType === 'deliverables' && (
-                    <span className="text-[11px] font-bold text-[#00bdd9] flex items-center gap-1.5 animate-pulse">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00bdd9]" /> Auto-saving...
+                    <span className="text-[11px] font-bold text-primary flex items-center gap-1.5 animate-pulse">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" /> Auto-saving...
                     </span>
                   )}
                 </div>
@@ -395,7 +389,7 @@ export default function ClientPortal() {
       <div className="min-h-screen bg-white py-12 px-4 flex flex-col">
         <div className="max-w-3xl mx-auto w-full">
           <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-500">
-            <div className="bg-gradient-to-r from-[#009bc2] to-[#00bdd9] p-10 text-center text-white">
+            <div className="bg-primary p-10 text-center text-white">
               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 shadow-inner">
                 <CheckCircle2 className="w-10 h-10 text-white drop-shadow-md" />
               </div>
@@ -454,8 +448,8 @@ export default function ClientPortal() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
         <div className="bg-white p-10 rounded-3xl shadow-xl text-center max-w-md w-full mx-4 border border-slate-200 animate-in zoom-in-95 duration-500">
-          <div className="w-20 h-20 bg-[#00bdd9]/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-            <CheckCircle2 className="w-10 h-10 text-[#00bdd9]" />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <CheckCircle2 className="w-10 h-10 text-primary" />
           </div>
           <h2 className="text-2xl font-bold text-slate-800 mb-3">{successTitle}</h2>
           <p className="text-slate-600 mb-8">{successMsg}</p>
@@ -465,7 +459,7 @@ export default function ClientPortal() {
               setActiveFormType(null); 
               window.history.replaceState({}, '', window.location.pathname);
             }}
-            className="w-full bg-[#00bdd9] hover:bg-[#00a7c2] text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200 shadow-sm"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200 shadow-sm"
           >
             Return to Dashboard
           </button>
@@ -487,8 +481,8 @@ export default function ClientPortal() {
       <div className="relative overflow-hidden bg-slate-50 border-b border-slate-200">
         {/* Soft Mesh Gradient Background */}
         <div className="absolute inset-0 bg-white/50 z-0 pointer-events-none"></div>
-        <div className="absolute top-[-20%] left-[10%] w-[50%] h-[150%] bg-[#00bdd9]/5 blur-[100px] rounded-full pointer-events-none z-0"></div>
-        <div className="absolute bottom-[-20%] right-[10%] w-[40%] h-[120%] bg-[#00bdd9]/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+        <div className="absolute top-[-20%] left-[10%] w-[50%] h-[150%] bg-primary/5 blur-[100px] rounded-full pointer-events-none z-0"></div>
+        <div className="absolute bottom-[-20%] right-[10%] w-[40%] h-[120%] bg-primary/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
         {/* Header Bar */}
         <div className="relative z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 shadow-sm">
@@ -510,7 +504,7 @@ export default function ClientPortal() {
         <div className="max-w-6xl mx-auto px-6 relative z-10 pb-16 pt-14">
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-900 tracking-tight leading-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009bc2] to-[#00bdd9]">{project.name}</span> Workspace
+              <span className="text-primary">{project.name}</span> Workspace
             </h1>
             <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
               Manage your implementation requirements and track QA and certification progress.
@@ -635,8 +629,8 @@ export default function ClientPortal() {
                   setViewState('form');
                 }}
                 disabled={isLocked}
-                className={`flex items-center text-left p-6 bg-white border border-slate-200 rounded-2xl transition-all duration-300 relative overflow-hidden shadow-sm ${
-                  isLocked ? 'opacity-70 grayscale cursor-not-allowed' : 'hover:border-primary/40 hover:shadow-xl group'
+                className={`flex items-center text-left p-6 bg-white border rounded-2xl transition-all duration-300 relative overflow-hidden shadow-sm ${
+                  isLocked ? 'opacity-70 grayscale cursor-not-allowed border-slate-200' : 'border-slate-200 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 group'
                 }`}
               >
                 {isCompleted && !isLocked && (
