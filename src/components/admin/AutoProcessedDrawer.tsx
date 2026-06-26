@@ -3,6 +3,7 @@ import { X, Undo2, CheckSquare, Square, Trash2, Search, ArrowRight } from 'lucid
 import { db } from '../../api/firebase';
 import { updateDoc, doc, writeBatch } from 'firebase/firestore';
 import { toast } from '../../utils/toast';
+import { TruncatedText } from '../ui/TruncatedText';
 
 interface AutoProcessedDrawerProps {
   isOpen: boolean;
@@ -21,7 +22,15 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
       setSelected(new Set());
       setSearchQuery('');
     }
-  }, [isOpen, log]);
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, log, onClose]);
 
   if (!isOpen || !log) return null;
 
@@ -99,8 +108,14 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex justify-end bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-[500px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 z-[130]">
+    <div 
+      className="fixed inset-0 z-[120] flex justify-end bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
+      onClick={onClose}
+    >
+      <div 
+        className="w-[500px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 z-[130]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Two-tone aesthetic header with blurred gradient aura */}
         <div className="relative px-6 py-5 border-b border-slate-200 flex flex-col bg-slate-50 overflow-hidden">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
@@ -200,13 +215,17 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
                   <span className="text-[10px] font-bold capitalize tracking-wider text-slate-400 w-12 shrink-0">
                     {item.type}
                   </span>
-                  <span className="text-[13px] font-semibold text-slate-800 truncate max-w-[140px]" title={item.rawName}>
-                    {item.rawName}
-                  </span>
+                  <TruncatedText
+                    text={item.rawName}
+                    className="text-[13px] font-semibold text-slate-800"
+                    containerClassName="max-w-[140px]"
+                  />
                   <ArrowRight className="w-3 h-3 text-slate-300 shrink-0" />
-                  <span className="text-[13px] text-slate-600 truncate max-w-[140px]" title={item.targetName}>
-                    {item.targetName}
-                  </span>
+                  <TruncatedText
+                    text={item.targetName}
+                    className="text-[13px] text-slate-600"
+                    containerClassName="max-w-[140px]"
+                  />
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2">
