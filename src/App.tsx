@@ -12,7 +12,7 @@ import ServiceProfileModal from './components/modals/ServiceProfileModal';
 import ClientProfileModal from './components/modals/ClientProfileModal';
 import ProjectProfileModal from './components/modals/ProjectProfileModal';
 import GlobalOverlays from './components/GlobalOverlays';
-import { AppLoadingSkeleton } from './components/ui/Skeleton';
+import { AppLoadingSkeleton, ClientPortalSkeleton } from './components/ui/Skeleton';
 import { GlobalToaster } from './components/GlobalToaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -150,11 +150,7 @@ export default function App() {
             path="/portal/:projectId"
             element={
               <React.Suspense
-                fallback={
-                  <div className="flex items-center justify-center w-full h-screen bg-slate-50">
-                    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  </div>
-                }
+                fallback={<ClientPortalSkeleton />}
               >
                 <ClientPortal />
               </React.Suspense>

@@ -109,11 +109,11 @@ export function AppLoadingSkeleton() {
   return (
     <div className="flex h-screen w-screen bg-slate-50 overflow-hidden">
       {/* Sidebar Skeleton */}
-      <div className="w-64 bg-slate-900 flex-shrink-0 flex flex-col p-4">
-        <Skeleton className="h-8 w-32 bg-slate-800 mb-8" />
+      <div className="w-64 bg-white flex-shrink-0 flex flex-col p-4 border-r border-slate-200">
+        <Skeleton className="h-8 w-32 mb-8" />
         <div className="space-y-2">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <Skeleton key={i} className="h-10 w-full bg-slate-800 rounded-lg" />
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
           ))}
         </div>
       </div>
