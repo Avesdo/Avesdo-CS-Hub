@@ -196,7 +196,7 @@ export default function AddProjectModal() {
       }
 
       const newProject: Project = {
-        id: `P-${new Date().getTime()}-${Math.floor(Math.random() * 1000)}`,
+        id: `P-${Date.now()}-${crypto.randomUUID().substring(0, 4)}`,
         name: data.name.trim(),
         developerIds: matchedDevs.map((c) => c.clientId || c.id),
         developers: matchedDevs.map((c) => c.companyName || c.name),
