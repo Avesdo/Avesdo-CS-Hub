@@ -34,18 +34,17 @@ function NotificationBell() {
       <PopoverTrigger asChild>
         <Button 
           variant="outline" 
-          size="icon" 
-          className="relative group bg-white hover:bg-slate-50 border-slate-200/60 text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm transition-all duration-300 rounded-full h-10 w-10"
+          className="relative group bg-white hover:bg-slate-50 border-slate-200/60 text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm transition-all duration-300 rounded-full h-10 px-3 flex items-center gap-2"
         >
-          <Bell className="w-[1.15rem] h-[1.15rem] transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
           {unreadCount > 0 && (
             <Badge 
               variant="destructive" 
-              className="absolute -top-1.5 -right-1.5 flex h-[22px] min-w-[22px] px-1.5 items-center justify-center text-xs font-black animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.85)] border-2 border-white rounded-full"
+              className="flex h-[24px] min-w-[24px] px-2 items-center justify-center text-sm font-black shadow-[0_0_15px_rgba(239,68,68,0.5)] rounded-full animate-in zoom-in"
             >
               {unreadCount}
             </Badge>
           )}
+          <Bell className="w-[1.25rem] h-[1.25rem] transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2" align="end" sideOffset={8}>

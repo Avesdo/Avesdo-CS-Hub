@@ -39,7 +39,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 );
 
 export default function AddClientModal() {
-  const { isModalOpen, closeModal, openDrawer } = useUI();
+  const { isModalOpen, closeModal, openDrawer, activeModals } = useUI();
   const settings = useAppStore(state => state.settings);
   const clients = useAppStore(state => state.clients);
   const user = useAppStore(state => state.user);
@@ -65,6 +65,9 @@ export default function AddClientModal() {
   });
 
   const isOpen = isModalOpen('addClient');
+  const modalIndex = activeModals.indexOf('addClient');
+  const overlayZ = 120 + (modalIndex >= 0 ? modalIndex * 20 : 0);
+  const contentZ = 130 + (modalIndex >= 0 ? modalIndex * 20 : 0);
 
   
   
@@ -146,17 +149,25 @@ export default function AddClientModal() {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay 
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+          style={{ zIndex: overlayZ }}
+        />
         <Dialog.Content 
           onInteractOutside={(e) => {
             e.preventDefault();
-            handleClose(false);
+            if (activeModals[activeModals.length - 1] === 'addClient') {
+              handleClose(false);
+            }
           }}
           onEscapeKeyDown={(e) => {
             e.preventDefault();
-            handleClose(false);
+            if (activeModals[activeModals.length - 1] === 'addClient') {
+              handleClose(false);
+            }
           }}
-          className="fixed left-[50%] top-[50%] z-[10000] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300">
+          style={{ zIndex: contentZ }}
+          className="fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300">
           <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
               type="button"

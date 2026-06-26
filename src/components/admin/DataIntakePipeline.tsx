@@ -99,7 +99,7 @@ export function DataIntakePipeline() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    <span className="text-xs font-bold tracking-wider text-slate-400">
                       {alias.type} Merge
                     </span>
                     {alias.contextName && (

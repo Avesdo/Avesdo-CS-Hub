@@ -555,7 +555,7 @@ export async function updateServiceRecord(
 
 export async function deleteClientRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
-    await updateDoc(doc(db, 'clients', id), { isArchived: true });
+    await updateDoc(doc(db, 'clients', id), { isArchived: true, archivedAt: new Date().getTime() });
     await addGlobalLog('Archived record', 'Client', id, name, author);
     toast.success(`'${name}' successfully archived`);
     return { success: true };
@@ -567,7 +567,7 @@ export async function deleteClientRecord(id: string, name: string = 'Record', au
 
 export async function deleteProjectRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
-    await updateDoc(doc(db, 'projects', id), { isArchived: true });
+    await updateDoc(doc(db, 'projects', id), { isArchived: true, archivedAt: new Date().getTime() });
     await addGlobalLog('Archived record', 'Project', id, name, author);
     toast.success(`'${name}' successfully archived`);
     return { success: true };
@@ -579,7 +579,7 @@ export async function deleteProjectRecord(id: string, name: string = 'Record', a
 
 export async function deleteServiceRecord(id: string, name: string = 'Record', author: string = 'System') {
   try {
-    await updateDoc(doc(db, 'services', id), { isArchived: true });
+    await updateDoc(doc(db, 'services', id), { isArchived: true, archivedAt: new Date().getTime() });
     await addGlobalLog('Archived record', 'Service', id, name, author);
     toast.success(`'${name}' successfully archived`);
     return { success: true };
@@ -589,6 +589,8 @@ export async function deleteServiceRecord(id: string, name: string = 'Record', a
   }
 }
 
+// --- HARD DELETE ---
+
 export async function restoreRecord(
   collectionName: string,
   id: string,
@@ -597,7 +599,7 @@ export async function restoreRecord(
   author: string = 'System'
 ) {
   try {
-    await updateDoc(doc(db, collectionName, id), { isArchived: false });
+    await updateDoc(doc(db, collectionName, id), { isArchived: false, archivedAt: null });
     
     let entityType: any = 'System';
     if (collectionName === 'clients') entityType = 'Client';

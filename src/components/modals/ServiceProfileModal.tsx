@@ -93,7 +93,7 @@ const ContactInputPill = ({ value, onChange, onBlur }: any) => (
 export default function ServiceProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUI();
   const stackIndex = activeDrawers.findIndex(d => d.type === 'service');
-  const zIndexBase = 10000 + (stackIndex >= 0 ? stackIndex * 10 : 0);
+  const zIndexBase = 100 + (Math.max(0, stackIndex) * 20);
   const services = useAppStore(state => state.services);
   const settings = useAppStore(state => state.settings);
   const user = useAppStore(state => state.user);
@@ -433,7 +433,7 @@ export default function ServiceProfileModal() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm"
                 style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
@@ -693,7 +693,7 @@ export default function ServiceProfileModal() {
                 {/* RIGHT PANE: Main Content */}
                 <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
                   {/* Decorative Aura */}
-                  <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-primary/[0.03] blur-3xl rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+
 
                   {/* Close Button overlay */}
                   <div className="absolute top-4 right-4 z-50">

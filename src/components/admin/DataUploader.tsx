@@ -324,7 +324,7 @@ export function DataUploader() {
               <button
                 disabled={!isReadyToCompile || isCompiling}
                 onClick={runCompiler}
-                className="flex items-center justify-center gap-2 px-8 h-12 bg-[#7dd3fc] text-white font-semibold text-sm rounded-lg hover:bg-[#38bdf8] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95 shrink-0"
+                className="flex items-center justify-center gap-2 px-8 h-12 bg-primary text-white font-semibold text-sm rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95 shrink-0"
               >
                 {isCompiling ? (
                   <>

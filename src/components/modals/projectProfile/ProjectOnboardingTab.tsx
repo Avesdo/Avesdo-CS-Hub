@@ -286,10 +286,10 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   };
 
   return (
-    <div className="space-y-8 pb-10" ref={popRef}>
+    <div className="pb-10" ref={popRef}>
       
       {/* 1. Top Section: Global Setup & Links */}
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="flex flex-col gap-3 sticky -top-10 z-30 bg-white pt-10 pb-6 px-10 -mx-10 -mt-10 shadow-[0_10px_20px_-15px_rgba(0,0,0,0.1)] border-b border-slate-100">
         {/* Client Portal Link */}
         <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -341,11 +341,9 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             <FileText className="w-3.5 h-3.5" /> View KYC
           </button>
         </div>
-      </div>
 
-      {/* 2. Middle Section: The Implementation Timeline */}
-      <div className="flex flex-col">
-        <div className="flex flex-col gap-4 mb-8">
+        {/* 2. Middle Section Header (Now Sticky) */}
+        <div className="flex flex-col gap-4 mt-6">
           <h3 className="text-lg font-bold text-slate-900">Implementation Timeline</h3>
           
           {/* Funnel Progress Bar */}
@@ -436,7 +434,10 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             </div>
           </div>
         </div>
+      </div>
 
+      {/* 3. Scrolling Timeline Nodes */}
+      <div className="flex flex-col mt-8">
         <div className="relative ml-4 border-l-2 border-slate-200 space-y-8 pl-8 py-2">
           {MILESTONES.map((milestone, index) => {
             const isProjectSetup = milestone.id === 'Project Setup';
@@ -562,8 +563,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
       {/* KYC Modal */}
       <Dialog.Root open={isKycModalOpen} onOpenChange={setIsKycModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[9999] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-white rounded-2xl shadow-2xl z-[10000] overflow-hidden flex flex-col max-h-[85vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
+          <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[120] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-white rounded-2xl shadow-2xl z-[130] overflow-hidden flex flex-col max-h-[85vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">

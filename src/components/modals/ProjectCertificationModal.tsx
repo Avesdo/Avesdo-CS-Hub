@@ -66,8 +66,8 @@ export default function ProjectCertificationModal({ project, onClose }: ProjectC
   return (
     <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[99999] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-6xl h-[95vh] bg-slate-50 flex flex-col rounded-2xl shadow-2xl z-[100000] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
+        <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[120] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-6xl h-[95vh] bg-slate-50 flex flex-col rounded-2xl shadow-2xl z-[130] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
         <div className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between flex-wrap gap-4 shrink-0 sticky top-0 z-40">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Project Certification</h2>

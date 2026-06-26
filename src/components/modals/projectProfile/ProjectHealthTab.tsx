@@ -142,7 +142,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
     datasets: [
       {
         data: optimizedHistory.map((h) => h.score),
-        borderColor: '#00bdd9', // brand primary
+        borderColor: '#0ea5e9', // brand primary
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -154,7 +154,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         },
         borderWidth: 2,
         pointBackgroundColor: '#fff',
-        pointBorderColor: '#00bdd9',
+        pointBorderColor: '#0ea5e9',
         pointBorderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 6,
@@ -361,11 +361,11 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                     style={{ transform: `rotate(${180 * (normalizedScore / 100)}deg)`, transformOrigin: '100px 100px' }}
                   >
                     {/* Pulsing ring behind dot */}
-                    <circle cx="20" cy="100" r="14" fill="#00bdd9" fillOpacity="0.1" />
+                    <circle cx="20" cy="100" r="14" fill="currentColor" className="text-primary/10" />
                     {/* Main Dot Outer Shell */}
-                    <circle cx="20" cy="100" r="10" fill="#ffffff" stroke="#00bdd9" strokeWidth="3" className="drop-shadow-md" />
+                    <circle cx="20" cy="100" r="10" fill="#ffffff" stroke="currentColor" strokeWidth="3" className="drop-shadow-md text-primary" />
                     {/* Main Dot Inner Core */}
-                    <circle cx="20" cy="100" r="4" fill="#00bdd9" />
+                    <circle cx="20" cy="100" r="4" fill="currentColor" className="text-primary" />
                   </g>
                 </svg>
                 

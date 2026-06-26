@@ -18,6 +18,7 @@ import {
   User,
   Target,
   AlertCircle,
+  AlertTriangle,
   Palette,
   LayoutTemplate,
   FileText,
@@ -38,6 +39,7 @@ import {
   Pipette
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import {
   saveSettings,
   bulkUpdateProjects,
@@ -228,7 +230,7 @@ function CustomPicker({
                 
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex-1 flex flex-col gap-1">
-                    <label className="text-[10px] font-semibold text-slate-400 uppercase">Hex</label>
+                    <label className="text-[10px] font-semibold text-slate-400">Hex</label>
                     <div className="relative">
                       <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">#</span>
                       <input 
@@ -255,7 +257,7 @@ function CustomPicker({
                     const rgb = hexToRgb(value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b');
                     return ['r', 'g', 'b'].map((channel) => (
                       <div key={channel} className="flex flex-col gap-1">
-                        <label className="text-[10px] font-semibold text-slate-400 uppercase">{channel}</label>
+                        <label className="text-[10px] font-semibold text-slate-400">{channel}</label>
                         <input 
                           type="number" 
                           min="0" 
@@ -1442,6 +1444,7 @@ export default function SettingsDraft() {
     const isConfirming = confirmArchiveDeleteId === item.id;
     const name = item.companyName || item.name || (typeof item === 'string' ? item : 'Unknown');
     const type = item._archiveType;
+    const archivedAt = item.archivedAt ? new Date(item.archivedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : null;
 
     const isSetting = !!item._category;
     const onDelete = isSetting
@@ -1459,41 +1462,49 @@ export default function SettingsDraft() {
       : () => handleRestoreRecordLocal(item._collection, item._originalItem);
 
     let iconContent = <ArchiveRestore className="w-4 h-4" />;
-    let iconBg = 'bg-slate-100 text-slate-600';
+    let iconBg = 'bg-slate-100 text-slate-600 border-slate-200';
+    let typeBadge = 'bg-slate-100 text-slate-600 border-slate-200';
     if (type === 'Client') {
       iconContent = <Building2 className="w-4 h-4" />;
-      iconBg = 'bg-blue-100 text-blue-600';
+      iconBg = 'bg-blue-50 text-blue-600 border-blue-100';
+      typeBadge = 'bg-blue-50/50 text-blue-700 border-blue-200/60';
     } else if (type === 'Project') {
       iconContent = <Home className="w-4 h-4" />;
-      iconBg = 'bg-indigo-100 text-indigo-600';
+      iconBg = 'bg-indigo-50 text-indigo-600 border-indigo-100';
+      typeBadge = 'bg-indigo-50/50 text-indigo-700 border-indigo-200/60';
     } else if (type === 'Service') {
       iconContent = <Briefcase className="w-4 h-4" />;
-      iconBg = 'bg-emerald-100 text-emerald-600';
+      iconBg = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+      typeBadge = 'bg-emerald-50/50 text-emerald-700 border-emerald-200/60';
     } else if (isSetting) {
       iconContent = <SettingsIcon className="w-4 h-4" />;
-      iconBg = 'bg-slate-100 text-slate-600';
+      iconBg = 'bg-slate-50 text-slate-600 border-slate-100';
+      typeBadge = 'bg-slate-50/50 text-slate-700 border-slate-200/60';
     }
 
     return (
       <div
         key={item.id}
-        className="flex flex-col p-4 hover:bg-slate-50 transition-colors relative group"
+        className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 hover:border-slate-300 hover:shadow-sm transition-all relative group flex flex-col"
       >
         {isConfirming ? (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex items-center justify-between px-6 z-20 animate-in fade-in duration-200">
-            <div className="flex items-center gap-3 text-sm font-semibold text-destructive">
-              <AlertCircle className="w-5 h-5" /> Permanently delete "{name}"?
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:px-6 z-20 animate-in fade-in duration-200 border border-red-200 shadow-sm gap-4">
+            <div className="flex items-center gap-3 text-sm font-bold text-red-700">
+              <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+              </div>
+              Permanently delete "{name}"?
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setConfirmArchiveDeleteId(null)}
-                className="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
+                className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors shadow-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={onDelete}
-                className="px-3 py-1.5 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-md transition-colors shadow-sm"
+                className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-red-600/20"
               >
                 Delete Forever
               </button>
@@ -1501,47 +1512,83 @@ export default function SettingsDraft() {
           </div>
         ) : null}
 
-        <div className="flex items-start gap-4">
-          <div
-            className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${iconBg}`}
-          >
-            {iconContent}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-slate-900 leading-snug">{name}</p>
-                <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <span className="font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md capitalize text-xs">
-                    {type}
-                  </span>
-                  {type === 'Project' && item.clients?.length > 0 && (
-                    <span>{item.clients.join(', ')}</span>
+        <div className="flex items-start justify-between gap-4">
+          {/* Left Side: Icon & Details */}
+          <div className="flex items-start gap-4 min-w-0 flex-1">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm ${iconBg}`}
+            >
+              {iconContent}
+            </div>
+            <div className="min-w-0 pt-0.5 pr-2">
+              <h4 className="text-sm font-bold text-slate-900 truncate">{name}</h4>
+              {(isSetting || type === 'Project' || type === 'Service') && (
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {isSetting && (
+                    <span className={`px-2 py-0.5 rounded-md border text-[11px] font-bold capitalize tracking-wide ${typeBadge}`}>
+                      {type.toLowerCase()}
+                    </span>
                   )}
+                  
+                  {/* Metadata */}
+                  {(type === 'Project' && item.clients?.length > 0) && (
+                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      Client: {item.clients.join(', ')}
+                    </span>
+                  )}
+                  
                   {type === 'Service' && (
-                    <span>
-                      {item.clients?.length > 0 ? item.clients.join(', ') : 'No Client'}{' '}
-                      {item.projectName && item.projectName !== 'N/A'
-                        ? `• ${item.projectName}`
-                        : ''}
+                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      {item.clients?.length > 0 ? item.clients.join(', ') : 'No Client'}
+                      {item.projectName && item.projectName !== 'N/A' && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-slate-300" />
+                          {item.projectName}
+                        </>
+                      )}
                     </span>
                   )}
                 </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+              )}
+            </div>
+          </div>
+
+          {/* Right Side: Date & Actions */}
+          <div className="flex items-center gap-3 shrink-0 h-10">
+            {/* The Date (always visible) */}
+            <div className="flex flex-col items-end transition-all">
+               {archivedAt ? (
+                  <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                     <ArchiveRestore className="w-3.5 h-3.5 text-slate-400" />
+                     {archivedAt}
+                  </span>
+                ) : (
+                  <span className="text-xs font-medium text-slate-400 italic bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    Legacy Record
+                  </span>
+                )}
+            </div>
+
+            {/* Actions (visible on hover but taking space) */}
+            <div className="flex items-center gap-1.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+              <UITooltip content="Restore Record">
                 <button
                   onClick={onRestore}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                  className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200 focus:outline-none"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" /> Restore
+                  <RotateCcw className="w-4 h-4" />
                 </button>
+              </UITooltip>
+              <UITooltip content="Permanently Delete">
                 <button
                   onClick={() => setConfirmArchiveDeleteId(item.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-50 text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 focus:outline-none"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                  <Trash2 className="w-4 h-4" />
                 </button>
-              </div>
+              </UITooltip>
             </div>
           </div>
         </div>
@@ -1586,6 +1633,7 @@ export default function SettingsDraft() {
                 _category: category,
                 _idx: idx,
                 _isSettingsData: isSettingsData,
+                archivedAt: item.archivedAt || null,
               });
             });
           }
@@ -1602,9 +1650,18 @@ export default function SettingsDraft() {
     }
 
     return (
-      <div className="max-w-5xl mx-auto animate-in fade-in duration-300">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex gap-2 overflow-x-auto py-2 px-2 -mx-2 sm:px-2 sm:-mx-2 hide-scrollbar shrink-0">
+      <div className="animate-in fade-in duration-300 w-full max-w-5xl h-full flex flex-col relative z-10">
+        <div className="space-y-4 mb-8 shrink-0">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight">Archives</h3>
+            <p className="text-sm text-slate-500 mt-0.5 max-w-2xl">
+              Manage deleted records and settings. Restoring an item will return it to active use.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 shrink-0">
+          <div className="relative flex items-center bg-slate-100/80 p-1 rounded-xl shadow-inner shrink-0">
             {[
               { id: 'all', label: 'All', icon: Grid },
               { id: 'clients', label: 'Clients', icon: Building2 },
@@ -1615,41 +1672,52 @@ export default function SettingsDraft() {
               <button
                 key={f.id}
                 onClick={() => setArchiveTab(f.id as any)}
-                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-all active:scale-95 hover:-translate-y-1 hover:shadow-md shadow-sm whitespace-nowrap border focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                className={`relative flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 whitespace-nowrap ${
                   archiveTab === f.id
-                    ? 'bg-white text-foreground border-border'
-                    : 'bg-muted text-muted-foreground border-transparent hover:text-foreground hover:bg-accent hover:border-border'
+                    ? 'text-primary'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                {archiveTab === f.id && (
+                  <motion.div
+                    layoutId="archiveFilterIndicator"
+                    className="absolute inset-0 bg-white rounded-lg shadow-sm border border-slate-200/60 -z-10"
+                    initial={false}
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
                 <f.icon
-                  className={`w-4 h-4 ${archiveTab === f.id ? 'text-primary' : 'opacity-70'}`}
+                  className={`w-4 h-4 ${archiveTab === f.id ? 'text-primary' : 'text-slate-400'}`}
                 />{' '}
                 {f.label}
               </button>
             ))}
           </div>
-          <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative w-full sm:w-64 shrink-0">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search archives..."
               value={archiveSearch}
               onChange={(e) => setArchiveSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+              className="w-full bg-slate-50/50 hover:bg-slate-50 border border-transparent focus:bg-white focus:border-primary/50 rounded-xl pl-9 pr-4 py-2 text-sm outline-none focus:ring-4 focus:ring-primary/10 transition-all shadow-sm placeholder:text-slate-400"
             />
           </div>
         </div>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+        <div className="flex-1 overflow-y-auto custom-thin-scroll pb-8 -mx-2 px-2">
           {itemsToRender.length === 0 ? (
-            <div className="p-12 text-center flex flex-col items-center">
-              <ArchiveRestore className="w-8 h-8 text-slate-300 mb-3" />
-              <p className="text-sm font-medium text-slate-500">
-                No archived records found matching search.
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-16 text-center flex flex-col items-center justify-center h-64">
+              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 border border-slate-100 shadow-sm">
+                <ArchiveRestore className="w-6 h-6 text-slate-400" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-800 mb-1">No archived records</h3>
+              <p className="text-sm font-medium text-slate-500 max-w-sm">
+                There are currently no items matching your search criteria in the archives.
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-border/50">
+            <div className="space-y-3">
               {itemsToRender.map((item) => renderArchiveRow(item))}
             </div>
           )}
@@ -1857,7 +1925,7 @@ export default function SettingsDraft() {
                         label: 'Platform Engagement',
                         key: 'opActivity',
                         val: projectWeights.opActivity,
-                        color: '#00c2cb',
+                        color: '#0ea5e9',
                         tooltip: 'Usage of core platform features.'
                       },
                       {
@@ -1922,7 +1990,7 @@ export default function SettingsDraft() {
                     <DonutChart 
                       total={totalProjectWeights}
                       data={[
-                        { name: 'Platform Engagement', value: projectWeights.opActivity, color: '#00c2cb' },
+                        { name: 'Platform Engagement', value: projectWeights.opActivity, color: '#0ea5e9' },
                         { name: 'Feature Adoption', value: projectWeights.featAdoption, color: '#0284c7' },
                         { name: 'Financial Standing', value: projectWeights.financial || 0, color: '#3b82f6' },
                         { name: 'Active Users', value: projectWeights.userVol, color: '#6366f1' },
@@ -1937,7 +2005,7 @@ export default function SettingsDraft() {
                     <button
                       onClick={handleSaveScoring}
                       disabled={totalProjectWeights !== 100}
-                      className="bg-[#00c2cb] text-white px-5 h-9 rounded text-sm font-bold hover:bg-[#00aeb6] flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Save Weights
                     </button>
@@ -1978,7 +2046,7 @@ export default function SettingsDraft() {
                 <div className="mt-6 flex justify-end items-center">
                   <button
                     onClick={handleSaveScoring}
-                    className="bg-[#00c2cb] text-white px-5 h-9 rounded text-sm font-bold hover:bg-[#00aeb6] flex items-center gap-2 shadow-sm transition-all active:scale-95"
+                    className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
                   >
                     Save Thresholds
                   </button>

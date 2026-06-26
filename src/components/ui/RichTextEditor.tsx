@@ -111,18 +111,20 @@ const MenuBar = ({ editor }: { editor: any }) => {
   );
 };
 
-const extensions = [
-  StarterKit,
-  Link.configure({
-    openOnClick: false,
-    HTMLAttributes: {
-      class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
-    },
-  }),
-];
-
 export function RichTextEditor({ content, onChange, placeholder = 'Write an internal note or update...', disabled = false }: RichTextEditorProps) {
   const [localContent, setLocalContent] = useState(content);
+
+  const extensions = React.useMemo(() => [
+    StarterKit.configure({
+      link: false,
+    }),
+    Link.configure({
+      openOnClick: false,
+      HTMLAttributes: {
+        class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
+      },
+    }),
+  ], []);
 
   const editor = useEditor({
     extensions,

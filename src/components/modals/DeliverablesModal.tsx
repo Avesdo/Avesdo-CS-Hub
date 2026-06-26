@@ -120,11 +120,11 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
   return (
     <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[10010] bg-slate-900/40 backdrop-blur-sm transition-opacity" />
+        <Dialog.Overlay className="fixed inset-0 z-[120] bg-black/40 backdrop-blur-sm transition-opacity" />
         <Dialog.Content 
           onEscapeKeyDown={(e) => { e.preventDefault(); onClose(); }}
           onInteractOutside={(e) => { e.preventDefault(); onClose(); }}
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10020] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[130] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
         >
           {/* Modal Container */}
           <div className="relative w-full h-full bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">

@@ -78,7 +78,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
 export default function ProjectProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
   const stackIndex = activeDrawers.findIndex(d => d.type === 'project');
-  const zIndexBase = 10000 + (stackIndex >= 0 ? stackIndex * 10 : 0);
+  const zIndexBase = 100 + (Math.max(0, stackIndex) * 20);
   const projects = useAppStore(state => state.projects);
   const settings = useAppStore(state => state.settings);
   const clients = useAppStore(state => state.clients);
@@ -432,7 +432,7 @@ export default function ProjectProfileModal() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm"
                 style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
