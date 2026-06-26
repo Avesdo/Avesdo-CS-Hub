@@ -19,7 +19,11 @@ import {
 import { toast } from '../../utils/toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function DataIntakePipeline() {
+interface DataIntakePipelineProps {
+  onPendingCountChange?: (count: number) => void;
+}
+
+export function DataIntakePipeline({ onPendingCountChange }: DataIntakePipelineProps = {}) {
   const projects = useAppStore((state) => state.projects);
   const clients = useAppStore((state) => state.clients);
   const services = useAppStore((state) => state.services);
@@ -34,6 +38,9 @@ export function DataIntakePipeline() {
     try {
       const data = await getPendingAliases();
       setPendingAliases(data);
+      if (onPendingCountChange) {
+        onPendingCountChange(data.length);
+      }
     } catch (e) {
       toast.error('Failed to load pending aliases');
     } finally {

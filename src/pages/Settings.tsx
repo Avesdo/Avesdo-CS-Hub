@@ -652,6 +652,7 @@ export default function SettingsDraft() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [viewingUploadLog, setViewingUploadLog] = useState<any | null>(null);
+  const [pendingAliasCount, setPendingAliasCount] = useState(0);
 
   // --- ARCHIVES STATE ---
   const [archiveTab, setArchiveTab] = useState<
@@ -2456,15 +2457,20 @@ export default function SettingsDraft() {
                   <div className="xl:col-span-2 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                        <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                           Action Required
+                          {pendingAliasCount > 0 && (
+                            <span className="bg-red-500 text-white px-2 py-0.5 rounded-full text-xs shadow-sm">
+                              {pendingAliasCount}
+                            </span>
+                          )}
                         </h3>
                         <p className="text-sm text-slate-500 mt-0.5">
                           Review and manually map unrecognized incoming data.
                         </p>
                       </div>
                     </div>
-                    <DataIntakePipeline />
+                    <DataIntakePipeline onPendingCountChange={setPendingAliasCount} />
                   </div>
 
                   {/* Right Column (col-span-1) */}
