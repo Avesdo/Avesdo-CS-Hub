@@ -322,6 +322,8 @@ export function DataUploader() {
         timestamp: new Date().getTime(),
         author: user?.name || user?.email || 'System',
         autoProcessed: Array.from(autoProcessedMap.values()),
+        updatedMetrics: updateCount,
+        sentForReview: aliasesAdded,
       });
 
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
