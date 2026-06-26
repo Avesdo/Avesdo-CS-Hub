@@ -59,11 +59,6 @@ export function DataIntakePipeline() {
       if (action === 'correct' || action === 'create_new') {
         setCorrectingAliasId(null);
         setCorrectionTargetId('');
-        toast.success('Alias mapped successfully');
-      } else if (action === 'approve') {
-        toast.success('Alias approved');
-      } else if (action === 'reject') {
-        toast.success('Alias ignored');
       }
       loadAliases();
     } catch (e) {
