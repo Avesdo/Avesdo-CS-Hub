@@ -313,12 +313,19 @@ export function DataUploader() {
         .filter(Boolean)
         .join(', ');
 
+      let uploadedTypes = [];
+      if (satisfactionFile.file) uploadedTypes.push('Happyfox Support CSAT');
+      if (sessionsFile.file) uploadedTypes.push('Userpilot Sessions');
+      if (viewsFile.file) uploadedTypes.push('Userpilot Page Views');
+      
+      const formattedEntityName = uploadedTypes.join(', ');
+
       await setDoc(doc(db, 'system_logs', logId), {
         id: logId,
-        action: 'Data Compiler Run',
+        action: 'Data Import',
         entityType: 'Upload',
         entityId: 'upload',
-        entityName: `Files: ${filesUploaded}`,
+        entityName: formattedEntityName,
         timestamp: new Date().getTime(),
         author: user?.name || user?.email || 'System',
         autoProcessed: Array.from(autoProcessedMap.values()),

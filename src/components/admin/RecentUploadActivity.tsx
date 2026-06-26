@@ -39,9 +39,9 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                   <div className="flex flex-wrap items-center gap-2">
                     <p 
                       className="text-xs font-bold text-slate-900 leading-snug line-clamp-2"
-                      title={log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.action}
+                      title={log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.entityName}
                     >
-                      {log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.action}
+                      {log.entityName?.startsWith('Files: ') ? log.entityName.replace('Files: ', '') : log.entityName}
                     </p>
                   </div>
                   <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[10px] text-muted-foreground">
