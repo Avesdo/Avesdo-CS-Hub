@@ -143,7 +143,11 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
               <Search className="absolute left-3 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search processed items..."
+                placeholder={
+                  (log?.entityName || '').includes('Satisfaction Report')
+                    ? 'Search by user or client...'
+                    : 'Search by alias or target...'
+                }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all shadow-sm placeholder:text-slate-400"
