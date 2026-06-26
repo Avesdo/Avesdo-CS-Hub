@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Undo2, CheckSquare, Square, Trash2, Search, ArrowRight } from 'lucide-react';
+import { X, Undo2, CheckSquare, Square, Trash2, Search, ArrowRight, Building2, Home, Briefcase } from 'lucide-react';
 import { db } from '../../api/firebase';
 import { updateDoc, doc, writeBatch } from 'firebase/firestore';
 import { toast } from '../../utils/toast';
 import { TruncatedText } from '../ui/TruncatedText';
+import { Tooltip } from '../ui/Tooltip';
 
 interface AutoProcessedDrawerProps {
   isOpen: boolean;
@@ -212,9 +213,26 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
                   )}
                 </button>
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[10px] font-bold capitalize tracking-wider text-slate-400 w-12 shrink-0">
-                    {item.type}
-                  </span>
+                  <Tooltip content={item.type.charAt(0).toUpperCase() + item.type.slice(1)}>
+                    <div
+                      className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 
+                        ${
+                          item.type === 'client'
+                            ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                            : item.type === 'project'
+                              ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                              : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        }`}
+                    >
+                      {item.type === 'client' ? (
+                        <Building2 className="w-3 h-3" />
+                      ) : item.type === 'project' ? (
+                        <Home className="w-3 h-3" />
+                      ) : (
+                        <Briefcase className="w-3 h-3" />
+                      )}
+                    </div>
+                  </Tooltip>
                   <TruncatedText
                     text={item.rawName}
                     className="text-[13px] font-semibold text-slate-800"
