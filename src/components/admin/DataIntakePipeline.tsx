@@ -107,7 +107,7 @@ export function DataIntakePipeline() {
         return (
           <div
             key={alias.id}
-            className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col"
+            className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col"
           >
             <div className="flex items-center justify-between gap-4 p-4">
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -155,6 +155,7 @@ export function DataIntakePipeline() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
                       exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
                       className="flex items-center gap-2"
                     >
                       <button
@@ -177,6 +178,7 @@ export function DataIntakePipeline() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
                       exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
                       className="flex items-center gap-2"
                     >
                       <div className="w-[250px] bg-white rounded-lg shadow-sm border border-slate-200">
