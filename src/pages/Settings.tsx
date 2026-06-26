@@ -634,6 +634,7 @@ export default function SettingsDraft() {
   const archivedClients = useAppStore((state) => state.archivedClients);
   const archivedProjects = useAppStore((state) => state.archivedProjects);
   const archivedServices = useAppStore((state) => state.archivedServices);
+  const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
 
   const getTemplate = (formName: string) => {
     let templateId = Object.keys(settings?.templates || {}).find(
@@ -2134,11 +2135,18 @@ export default function SettingsDraft() {
                     transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
-                <div className="flex items-center gap-3 relative z-10">
-                  <tab.icon
-                    className={`w-4 h-4 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`}
-                  />
-                  <span>{tab.label}</span>
+                <div className="flex items-center gap-3 relative z-10 w-full justify-between">
+                  <div className="flex items-center gap-3">
+                    <tab.icon
+                      className={`w-4 h-4 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`}
+                    />
+                    <span>{tab.label}</span>
+                  </div>
+                  {tab.id === 'pipeline' && pendingAliasesCount > 0 && (
+                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full animate-in zoom-in">
+                      {pendingAliasesCount}
+                    </span>
+                  )}
                 </div>
               </button>
             );
