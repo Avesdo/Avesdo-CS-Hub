@@ -493,7 +493,11 @@ export const ClientHealthTab = React.memo(({ client, healthResult: propsHealthRe
                 {opVal}
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                Average engagement score
+                {(healthResult as any).details?.eventCount !== undefined && (healthResult as any).details?.avgDistinctFeatures !== undefined
+                  ? `${(healthResult as any).details.avgDistinctFeatures} avg. features used  •  ${(healthResult as any).details.eventCount.toLocaleString()} total logged events`
+                  : (healthResult as any).details?.eventCount !== undefined
+                    ? `${(healthResult as any).details.eventCount.toLocaleString()} total logged events`
+                    : 'Platform engagement unavailable'}
               </span>
             </div>
           </div>

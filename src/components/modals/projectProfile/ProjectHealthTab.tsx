@@ -554,9 +554,11 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 {opVal}
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {project?.eventCount
-                  ? `${project.eventCount.toLocaleString()} logged events`
-                  : 'Logged events unavailable'}
+                {project?.eventCount !== undefined && project?.distinctFeatures !== undefined
+                  ? `${project.distinctFeatures} features used  •  ${project.eventCount.toLocaleString()} total logged events`
+                  : project?.eventCount !== undefined
+                    ? `${project.eventCount.toLocaleString()} total logged events`
+                    : 'Platform engagement unavailable'}
               </span>
             </div>
           </div>
@@ -601,7 +603,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 {usrVal}
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {project?.activeUserCount
+                {project?.activeUserCount !== undefined
                   ? `${project.activeUserCount.toLocaleString()} users  •  ${project.avgSessions || 0} avg. sessions/user`
                   : 'Active users unavailable'}
               </span>

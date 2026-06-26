@@ -77,7 +77,7 @@ import { DataIntakePipeline } from '../components/admin/DataIntakePipeline';
 import { RecentUploadActivity } from '../components/admin/RecentUploadActivity';
 import { AuditLogViewer } from '../components/admin/AuditLogViewer';
 import { DataExportHub } from '../components/admin/DataExportHub';
-import { AutoProcessedDrawer } from '../components/admin/AutoProcessedDrawer';
+import { AutoProcessedModal } from '../components/admin/AutoProcessedModal';
 
 const ICONS = [
   'Activity',
@@ -670,12 +670,19 @@ export default function SettingsDraft() {
     setLoadingLogs(false);
   };
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     if (activeTab === 'audit' || activeTab === 'pipeline') {
       loadLogs();
     }
+    
+    const handlePipelineUpdated = () => {
+      if (activeTab === 'audit' || activeTab === 'pipeline') {
+        loadLogs();
+      }
+    };
+    
+    window.addEventListener('pipeline-updated', handlePipelineUpdated);
+    return () => window.removeEventListener('pipeline-updated', handlePipelineUpdated);
   }, [activeTab]);
 
   // Functions moved up
@@ -2498,7 +2505,7 @@ export default function SettingsDraft() {
               />
             )}
 
-            <AutoProcessedDrawer
+            <AutoProcessedModal
               isOpen={!!viewingUploadLog}
               onClose={() => setViewingUploadLog(null)}
               log={viewingUploadLog}

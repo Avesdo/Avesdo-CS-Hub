@@ -23,6 +23,8 @@ export interface ClientHealthResult {
     supportCsat: any | 'N/A';
     activeUserCount: number;
     avgSessions: number;
+    avgDistinctFeatures: number;
+    eventCount: number;
   };
 }
 
@@ -203,6 +205,8 @@ export function calculateClientHealth(
       supportCsat: 'N/A',
       activeUserCount: 0,
       avgSessions: 0,
+      avgDistinctFeatures: 0,
+      eventCount: 0,
     },
   };
 
@@ -237,6 +241,9 @@ export function calculateClientHealth(
   let totalActiveUserCount = 0;
   let totalAvgSessions = 0;
   let sessionProjectCount = 0;
+  let totalEventCount = 0;
+  let totalDistinctFeatures = 0;
+  let opActivityProjectCount = 0;
 
   activeProjects.forEach((p) => {
     const pHealth = calculateProjectHealth(p, settings);
@@ -251,6 +258,13 @@ export function calculateClientHealth(
     if (typeof p.avgSessions === 'number') {
       totalAvgSessions += p.avgSessions;
       sessionProjectCount++;
+    }
+    if (typeof p.eventCount === 'number') {
+      totalEventCount += p.eventCount;
+    }
+    if (typeof p.distinctFeatures === 'number') {
+      totalDistinctFeatures += p.distinctFeatures;
+      opActivityProjectCount++;
     }
 
     if (typeof pHealth.csat === 'number') {
@@ -325,6 +339,14 @@ export function calculateClientHealth(
     totalScore = 'N/A';
   }
 
+  const avgSessionsFinal = sessionProjectCount > 0 
+    ? Math.round((totalAvgSessions / sessionProjectCount) * 10) / 10
+    : 0;
+
+  const avgDistinctFeaturesFinal = opActivityProjectCount > 0
+    ? Math.round((totalDistinctFeatures / opActivityProjectCount) * 10) / 10
+    : 0;
+
   return {
     totalScore,
     opActivity: Math.round(avgOpActivity),
@@ -338,7 +360,9 @@ export function calculateClientHealth(
       avgProjectCsat,
       supportCsat: supportCsatData !== undefined ? supportCsatData : supportCsat,
       activeUserCount: totalActiveUserCount,
-      avgSessions: sessionProjectCount > 0 ? Math.round((totalAvgSessions / sessionProjectCount) * 10) / 10 : 0,
+      avgSessions: avgSessionsFinal,
+      avgDistinctFeatures: avgDistinctFeaturesFinal,
+      eventCount: totalEventCount,
     },
   };
 }

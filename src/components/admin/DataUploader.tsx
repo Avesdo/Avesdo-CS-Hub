@@ -113,6 +113,7 @@ export function DataUploader() {
     setCompileResult(null);
     let updateCount = 0;
     let aliasesAdded = 0;
+    let totalParsed = 0;
     const batch = writeBatch(db);
     const autoProcessedMap = new Map();
 
@@ -124,6 +125,7 @@ export function DataUploader() {
       if (sessionsFile.parsedData && viewsFile.parsedData) {
         const sessionsData = sessionsFile.parsedData;
         const viewsData = viewsFile.parsedData;
+        totalParsed += sessionsData.length + viewsData.length;
 
         const uniqueIDs = new Set(
           [...sessionsData.map((r) => String(r.ID)), ...viewsData.map((r) => String(r.ID))].filter(
@@ -219,7 +221,8 @@ export function DataUploader() {
               targetProject.opActivity !== opActivityScore ||
               targetProject.activeUserCount !== activeUsersCount ||
               targetProject.eventCount !== totalPageViews ||
-              targetProject.avgSessions !== avgSessions
+              targetProject.avgSessions !== avgSessions ||
+              targetProject.distinctFeatures !== distinctFeatures
             ) {
               await updateDoc(doc(db, 'projects', targetProject.id), {
                 userVol: userVolScore,
@@ -227,6 +230,7 @@ export function DataUploader() {
                 activeUserCount: activeUsersCount,
                 eventCount: totalPageViews,
                 avgSessions: avgSessions,
+                distinctFeatures: distinctFeatures,
               });
               updateCount++;
             }
@@ -249,100 +253,137 @@ export function DataUploader() {
 
       // 2. Process Satisfaction Report
       if (satisfactionFile.parsedData) {
-        const aggregatedCsat = new Map<string, any>();
+        const clientCsatMap = new Map<string, any>();
+        const unmatchedNames = new Set<string>();
 
         for (const row of satisfactionFile.parsedData) {
           const feedbackReceived = parseInt(row['Feedback Received'], 10) || 0;
           if (feedbackReceived > 0) {
-            const rawName = row['Customer Name'] || 'Unknown Customer';
+            totalParsed++;
+            const rawName = row['Customer Name'] || row['Company'] || row['Client'] || 'Unknown Customer';
+            const userName = row['Contact Name'] || row['Contact'] || row['Name'] || row['User Name'] || row['User'] || row['Customer'] || row['Requester'] || row['Customer Name'] || rawName || 'Unknown User';
             const happy = parseInt(row['Happy'], 10) || 0;
             const neutral = parseInt(row['Neutral'] || row['Passive'], 10) || 0;
-            const unhappy = parseInt(row['Unhappy'] || row['Detractor'], 10) || 0;
+            const unhappy = parseInt(row['Unhappy'] || row['Detractor'] || row['Sad'], 10) || 0;
 
-            if (!aggregatedCsat.has(rawName)) {
-              aggregatedCsat.set(rawName, { feedback: 0, happy: 0, neutral: 0, unhappy: 0 });
+            let targetClient = clients.find(
+              (c) => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase()
+            );
+
+            if (!targetClient) {
+              const aliasMatch = aliases.find(
+                (a: any) =>
+                  a.rawName === rawName &&
+                  (a.status === 'resolved' || a.status === 'verified') &&
+                  a.type === 'client'
+              );
+              if (aliasMatch) {
+                targetClient = clients.find(
+                  (c) => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId
+                );
+                if (targetClient) {
+                  autoProcessedMap.set(aliasMatch.id, {
+                    id: aliasMatch.id,
+                    type: 'client',
+                    rawName: aliasMatch.rawName,
+                    targetId: aliasMatch.targetId,
+                    targetName: targetClient.companyName || targetClient.name,
+                    contextName: aliasMatch.contextName,
+                    timestamp: new Date().getTime(),
+                  });
+                }
+              }
             }
-            const existing = aggregatedCsat.get(rawName);
-            existing.feedback += feedbackReceived;
-            existing.happy += happy;
-            existing.neutral += neutral;
-            existing.unhappy += unhappy;
+
+            if (targetClient) {
+              const clientId = targetClient.clientId || targetClient.id;
+              if (!clientCsatMap.has(clientId)) {
+                clientCsatMap.set(clientId, {
+                  client: targetClient,
+                  feedback: 0,
+                  happy: 0,
+                  neutral: 0,
+                  unhappy: 0,
+                  users: {}
+                });
+              }
+              const clientData = clientCsatMap.get(clientId);
+              clientData.feedback += feedbackReceived;
+              clientData.happy += happy;
+              clientData.neutral += neutral;
+              clientData.unhappy += unhappy;
+
+              if (!clientData.users[userName]) {
+                clientData.users[userName] = { happy: 0, neutral: 0, unhappy: 0, total: 0 };
+              }
+              clientData.users[userName].happy += happy;
+              clientData.users[userName].neutral += neutral;
+              clientData.users[userName].unhappy += unhappy;
+              clientData.users[userName].total += feedbackReceived;
+            } else {
+              unmatchedNames.add(rawName);
+            }
           }
         }
 
-        for (const [rawName, data] of aggregatedCsat.entries()) {
-          const csat = Math.round((data.happy / data.feedback) * 100);
+        // Now save the aggregated data per client
+        for (const [clientId, data] of clientCsatMap.entries()) {
+          const csat = data.feedback > 0 ? Math.round((data.happy / data.feedback) * 100) : 0;
           
-          let targetClient = clients.find(
-            (c) => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase()
-          );
-          if (!targetClient) {
-            const aliasMatch = aliases.find(
-              (a: any) =>
-                a.rawName === rawName &&
-                (a.status === 'resolved' || a.status === 'verified') &&
-                a.type === 'client'
-            );
-            if (aliasMatch) {
-              targetClient = clients.find(
-                (c) => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId
-              );
-              if (targetClient) {
-                autoProcessedMap.set(aliasMatch.id, {
-                  id: aliasMatch.id,
-                  type: 'client',
-                  rawName: aliasMatch.rawName,
-                  targetId: aliasMatch.targetId,
-                  targetName: targetClient.companyName || targetClient.name,
-                  contextName: aliasMatch.contextName,
-                  timestamp: new Date().getTime(),
-                });
-              }
-            }
+          const usersArray = Object.keys(data.users).map(name => ({
+            name,
+            happy: data.users[name].happy,
+            neutral: data.users[name].neutral,
+            unhappy: data.users[name].unhappy,
+            total: data.users[name].total
+          }));
+          
+          const targetClient = data.client;
+          const supportCsatObj = {
+            score: csat,
+            totalUsers: data.feedback,
+            promoters: data.happy,
+            passives: data.neutral,
+            detractors: data.unhappy,
+            users: usersArray
+          };
+          
+          // Compare existing to save writes
+          const existingObj = targetClient.supportCsat;
+          let needsUpdate = false;
+          if (!existingObj) needsUpdate = true;
+          else if (
+            existingObj.score !== csat ||
+            existingObj.totalUsers !== data.feedback ||
+            existingObj.promoters !== data.happy ||
+            existingObj.passives !== data.neutral ||
+            existingObj.detractors !== data.unhappy ||
+            JSON.stringify(existingObj.users) !== JSON.stringify(usersArray)
+          ) {
+            needsUpdate = true;
           }
 
-          if (targetClient) {
-            const supportCsatObj = {
-              score: csat,
-              totalUsers: data.feedback,
-              promoters: data.happy,
-              passives: data.neutral,
-              detractors: data.unhappy
-            };
-            
-            // Compare existing to save writes
-            const existingObj = targetClient.supportCsat;
-            let needsUpdate = false;
-            if (!existingObj) needsUpdate = true;
-            else {
-              if (existingObj.score !== supportCsatObj.score || 
-                  existingObj.totalUsers !== supportCsatObj.totalUsers ||
-                  existingObj.promoters !== supportCsatObj.promoters ||
-                  existingObj.passives !== supportCsatObj.passives ||
-                  existingObj.detractors !== supportCsatObj.detractors) {
-                needsUpdate = true;
-              }
-            }
+          if (needsUpdate) {
+            await updateDoc(doc(db, 'clients', clientId), {
+              supportCsat: supportCsatObj,
+            });
+            updateCount++;
+          }
+        }
 
-            if (needsUpdate) {
-              await updateDoc(doc(db, 'clients', targetClient.clientId || targetClient.id), {
-                supportCsat: supportCsatObj,
-              });
-              updateCount++;
-            }
-          } else {
-            const aliasExists = aliases.some((a: any) => a.rawName === rawName);
-            if (!aliasExists) {
-              const newAliasRef = doc(collection(db, 'aliases'));
-              batch.set(newAliasRef, {
-                type: 'client',
-                rawName: rawName,
-                targetId: '',
-                status: 'pending_approval',
-                contextName: 'Satisfaction Report',
-              });
-              aliasesAdded++;
-            }
+        // Process unmatched names for aliases
+        for (const rawName of unmatchedNames) {
+          const aliasExists = aliases.some((a: any) => a.rawName === rawName);
+          if (!aliasExists) {
+            const newAliasRef = doc(collection(db, 'aliases'));
+            batch.set(newAliasRef, {
+              type: 'client',
+              rawName: rawName,
+              targetId: '',
+              status: 'pending_approval',
+              contextName: 'Satisfaction Report',
+            });
+            aliasesAdded++;
           }
         }
       }
@@ -383,6 +424,7 @@ export function DataUploader() {
         })),
         updatedMetrics: updateCount,
         sentForReview: aliasesAdded,
+        totalParsed: totalParsed,
       };
 
       // Strip any lingering undefined values to prevent Firebase crash
@@ -417,9 +459,9 @@ export function DataUploader() {
           <div>
             <h3 className="text-sm font-semibold text-green-800">Compilation Complete!</h3>
             <p className="text-sm text-green-700 mt-1">
-              Updated <strong>{compileResult.updated}</strong> target metrics and pushed{' '}
+              Successfully aggregated data and updated <strong>{compileResult.updated}</strong> target records. Pushed{' '}
               <strong>{compileResult.intakes}</strong> unrecognized entries to the Data Intake
-              pipeline.
+              pipeline for your review.
             </p>
           </div>
         </div>

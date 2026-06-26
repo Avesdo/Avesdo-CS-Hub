@@ -69,10 +69,19 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                   <span className="flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                     <span className="font-bold text-slate-700">
-                      {log.updatedMetrics !== undefined ? log.updatedMetrics : log.autoProcessed?.length || 0}
+                      {log.totalParsed !== undefined ? log.totalParsed : (log.updatedMetrics !== undefined ? log.updatedMetrics : log.autoProcessed?.length || 0)}
                     </span>{' '}
-                    updated
+                    {log.totalParsed !== undefined ? 'processed' : 'updated'}
                   </span>
+                  {log.totalParsed !== undefined && (
+                    <span className="flex items-center gap-1">
+                      <Database className="w-3 h-3 text-blue-500" />
+                      <span className="font-bold text-slate-700">
+                        {log.updatedMetrics}
+                      </span>{' '}
+                      targets
+                    </span>
+                  )}
                   <span className="flex items-center gap-1">
                     <AlertCircle className="w-3 h-3 text-amber-500" />
                     <span className="font-bold text-slate-700">{log.sentForReview || 0}</span>{' '}
