@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Undo2, CheckSquare, Square, Trash2 } from 'lucide-react';
+import { X, Undo2, CheckSquare, Square, Trash2, Search, ArrowRight } from 'lucide-react';
 import { db } from '../../api/firebase';
 import { updateDoc, doc, writeBatch } from 'firebase/firestore';
 import { toast } from '../../utils/toast';
@@ -14,23 +14,30 @@ interface AutoProcessedDrawerProps {
 export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProcessedDrawerProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       setSelected(new Set());
+      setSearchQuery('');
     }
   }, [isOpen, log]);
 
   if (!isOpen || !log) return null;
 
   const autoProcessed = log.autoProcessed || [];
-  const allSelected = autoProcessed.length > 0 && selected.size === autoProcessed.length;
+  const filteredAutoProcessed = autoProcessed.filter((item: any) =>
+    (item.rawName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.targetName || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const allSelected = filteredAutoProcessed.length > 0 && selected.size === filteredAutoProcessed.length;
 
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(autoProcessed.map((i: any) => i.id)));
+      setSelected(new Set(filteredAutoProcessed.map((i: any) => i.id)));
     }
   };
 
@@ -113,103 +120,116 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
           </p>
         </div>
 
-        {/* Bulk Actions Bar */}
-        <div className="px-6 py-3 border-b border-slate-200 bg-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleSelectAll}
-              className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900"
-            >
-              {allSelected ? (
-                <CheckSquare className="w-4 h-4 text-primary" />
-              ) : (
-                <Square className="w-4 h-4" />
-              )}
-              Select All
-            </button>
-            {selected.size > 0 && (
-              <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                {selected.size} selected
-              </span>
+        {/* Search & Bulk Actions Bar */}
+        <div className="flex flex-col border-b border-slate-200 bg-white">
+          <div className="px-4 py-3 flex items-center gap-2 border-b border-slate-100">
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              placeholder="Search by original or mapped name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 text-sm outline-none placeholder:text-slate-400"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="p-1 text-slate-400 hover:text-slate-600">
+                <X className="w-3 h-3" />
+              </button>
             )}
           </div>
+          <div className="px-4 py-2 flex items-center justify-between bg-slate-50/50">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleSelectAll}
+                className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900"
+              >
+                {allSelected ? (
+                  <CheckSquare className="w-4 h-4 text-primary" />
+                ) : (
+                  <Square className="w-4 h-4" />
+                )}
+                Select All
+              </button>
+              {selected.size > 0 && (
+                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  {selected.size} selected
+                </span>
+              )}
+            </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              disabled={isProcessing || selected.size === 0}
-              onClick={() => handleUndo(Array.from(selected))}
-              className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-sm font-medium rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <Undo2 className="w-4 h-4" />
-              Undo Selection
-            </button>
-            <button
-              disabled={isProcessing || selected.size === 0}
-              onClick={() => handleDismiss(Array.from(selected))}
-              className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-700 text-sm font-medium rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <Trash2 className="w-4 h-4" />
-              Dismiss
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={isProcessing || selected.size === 0}
+                onClick={() => handleUndo(Array.from(selected))}
+                className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-[11px] font-bold rounded shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <Undo2 className="w-3 h-3" />
+                Undo
+              </button>
+              <button
+                disabled={isProcessing || selected.size === 0}
+                onClick={() => handleDismiss(Array.from(selected))}
+                className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-700 text-[11px] font-bold rounded shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <Trash2 className="w-3 h-3" />
+                Dismiss
+              </button>
+            </div>
           </div>
         </div>
 
         {/* List of items */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-thin-scroll bg-slate-50/50">
-          {autoProcessed.map((item: any) => (
+        <div className="flex-1 overflow-y-auto bg-white custom-thin-scroll">
+          {filteredAutoProcessed.map((item: any) => (
             <div
               key={item.id}
-              className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 shadow-sm hover:border-primary/30 transition-all group"
+              className="flex items-center justify-between px-4 py-2 border-b border-slate-100 hover:bg-slate-50 group transition-colors"
             >
-              <button
-                onClick={() => toggleSelect(item.id)}
-                className="mt-1 flex-shrink-0 text-slate-400 hover:text-primary"
-              >
-                {selected.has(item.id) ? (
-                  <CheckSquare className="w-5 h-5 text-primary" />
-                ) : (
-                  <Square className="w-5 h-5" />
-                )}
-              </button>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-bold capitalize tracking-wider text-slate-400">
-                      {item.type} mapping
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-800 mt-0.5 break-words">
-                      "{item.rawName}"
-                    </h4>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => handleUndo([item.id])}
-                      className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
-                      title="Undo Individual"
-                    >
-                      <Undo2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDismiss([item.id])}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                      title="Dismiss Individual"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-                  Automatically mapped to{' '}
-                  <span className="font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
-                    "{item.targetName}"
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => toggleSelect(item.id)}
+                  className="flex-shrink-0 text-slate-400 hover:text-primary transition-colors"
+                >
+                  {selected.has(item.id) ? (
+                    <CheckSquare className="w-4 h-4 text-primary" />
+                  ) : (
+                    <Square className="w-4 h-4" />
+                  )}
+                </button>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] font-bold capitalize tracking-wider text-slate-400 w-12 shrink-0">
+                    {item.type}
                   </span>
-                </p>
+                  <span className="text-[13px] font-semibold text-slate-800 truncate max-w-[140px]" title={item.rawName}>
+                    {item.rawName}
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-300 shrink-0" />
+                  <span className="text-[13px] text-slate-600 truncate max-w-[140px]" title={item.targetName}>
+                    {item.targetName}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2">
+                <button
+                  onClick={() => handleUndo([item.id])}
+                  className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                  title="Undo Individual"
+                >
+                  <Undo2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDismiss([item.id])}
+                  className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                  title="Dismiss Individual"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
           ))}
-          {autoProcessed.length === 0 && (
+          {filteredAutoProcessed.length === 0 && (
             <div className="text-center py-12 text-slate-500 text-sm">
-              No more auto-processed corrections left to review.
+              {searchQuery ? 'No matching corrections found.' : 'No auto-processed corrections to review.'}
             </div>
           )}
         </div>
