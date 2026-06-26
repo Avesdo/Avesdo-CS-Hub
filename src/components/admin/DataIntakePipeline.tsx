@@ -135,10 +135,11 @@ export function DataIntakePipeline() {
                   <TruncatedText
                     text={alias.rawName}
                     className="text-sm font-semibold text-slate-800"
+                    containerClassName="min-w-0 max-w-[250px]"
                   />
                   <div className="hidden sm:flex flex-wrap items-center gap-2">
                     {prettySource && (
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md shrink-0">
                         Source: {prettySource}
                       </span>
                     )}
