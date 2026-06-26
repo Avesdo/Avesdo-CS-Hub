@@ -38,6 +38,10 @@ export function DataIntakePipeline() {
 
   useEffect(() => {
     loadAliases();
+    
+    const handleUpdate = () => loadAliases();
+    window.addEventListener('pipeline-updated', handleUpdate);
+    return () => window.removeEventListener('pipeline-updated', handleUpdate);
   }, []);
 
   const handleResolveAlias = async (

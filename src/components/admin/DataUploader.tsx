@@ -326,6 +326,7 @@ export function DataUploader() {
 
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
       toast.success('Compilation successful');
+      window.dispatchEvent(new Event('pipeline-updated'));
 
       // Reset forms
       setSatisfactionFile({ file: null, parsedData: null, error: null });
