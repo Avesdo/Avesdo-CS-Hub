@@ -1,5 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Briefcase, Plus, DollarSign, Target, Clock, AlertCircle, User, Search } from 'lucide-react';
+import {
+  Briefcase,
+  Plus,
+  DollarSign,
+  Target,
+  Clock,
+  AlertCircle,
+  User,
+  Search,
+} from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import { getSafeHex, hexToRgba, renderIcon } from '../../../utils/uiUtils';
@@ -11,8 +20,8 @@ interface ProjectServicesTabProps {
 }
 
 export default function ProjectServicesTab({ project }: ProjectServicesTabProps) {
-  const services = useAppStore(state => state.services);
-  const settings = useAppStore(state => state.settings);
+  const services = useAppStore((state) => state.services);
+  const settings = useAppStore((state) => state.settings);
   const { openDrawer, openModal } = useUI();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,7 +43,9 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
     let result = projectServices;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter((s: any) => s.name?.toLowerCase().includes(q) || s.clientName?.toLowerCase().includes(q));
+      result = result.filter(
+        (s: any) => s.name?.toLowerCase().includes(q) || s.clientName?.toLowerCase().includes(q)
+      );
     }
     return result.filter((s: any) => filter === 'All' || s.type === filter);
   }, [projectServices, filter, searchQuery]);
@@ -55,7 +66,11 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
 
   const formatCurrency = (val: any) => {
     const num = parseCurrency(val);
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(num);
   };
 
   // --- Derived Metrics ---
@@ -64,7 +79,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
     let inc = 0;
     let add = 0;
 
-    projectServices.forEach(s => {
+    projectServices.forEach((s) => {
       if (s.type === 'Included') {
         inc++;
       } else {
@@ -78,7 +93,6 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
 
   return (
     <div className="flex flex-col space-y-6">
-      
       {/* Header & Quick Actions */}
       <div className="flex justify-between items-center mb-1">
         <div>
@@ -102,8 +116,10 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
       {/* Top-Level Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Total Value Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           whileHover={{ y: -4, scale: 1.01 }}
           className="relative overflow-hidden bg-white border border-slate-200/60 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300 group flex flex-col justify-between"
         >
@@ -112,19 +128,27 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
             <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
               <DollarSign className="w-5 h-5" />
             </div>
-            <UITooltip content={<span className="text-xs">Total revenue generated from additional services.</span>}>
+            <UITooltip
+              content={
+                <span className="text-xs">Total revenue generated from additional services.</span>
+              }
+            >
               <AlertCircle className="w-4 h-4 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
             </UITooltip>
           </div>
           <div className="relative z-10">
             <h3 className="text-slate-500 text-sm font-medium">Total Value</h3>
-            <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{formatCurrency(totalAdditionalValue)}</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+              {formatCurrency(totalAdditionalValue)}
+            </p>
           </div>
         </motion.div>
 
         {/* Total Services Count Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           whileHover={{ y: -4, scale: 1.01 }}
           className="relative overflow-hidden bg-white border border-slate-200/60 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 group flex flex-col justify-between"
         >
@@ -133,15 +157,23 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
             <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
               <Target className="w-5 h-5" />
             </div>
-            <UITooltip content={<span className="text-xs">Total volume of services attached to this project.</span>}>
+            <UITooltip
+              content={
+                <span className="text-xs">Total volume of services attached to this project.</span>
+              }
+            >
               <AlertCircle className="w-4 h-4 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
             </UITooltip>
           </div>
           <div className="relative z-10">
             <h3 className="text-slate-500 text-sm font-medium">Total Services</h3>
             <div className="flex items-end gap-3 mt-1">
-              <p className="text-3xl font-bold text-slate-900 tracking-tight">{projectServices.length}</p>
-              <p className="text-xs text-slate-500 font-medium pb-1.5">{includedCount} Included • {additionalCount} Additional</p>
+              <p className="text-3xl font-bold text-slate-900 tracking-tight">
+                {projectServices.length}
+              </p>
+              <p className="text-xs text-slate-500 font-medium pb-1.5">
+                {includedCount} Included • {additionalCount} Additional
+              </p>
             </div>
           </div>
         </motion.div>
@@ -164,7 +196,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
                   <motion.div
                     layoutId="serviceFilterTab"
                     className="absolute inset-0 bg-white rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.08)] pointer-events-none"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}
                 <span className="relative z-20">{t}</span>
@@ -172,7 +204,7 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
             );
           })}
         </div>
-        
+
         <div className="relative w-full sm:w-64 shrink-0">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -189,25 +221,35 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
       <div className="flex flex-col space-y-3" id="pd-services-list">
         <AnimatePresence mode="popLayout">
           {displayedServices.length === 0 ? (
-            <motion.div 
+            <motion.div
               key="empty-state"
-              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               className="border border-dashed border-slate-200 rounded-2xl bg-slate-50/50 px-6 py-16 flex flex-col items-center justify-center text-center"
             >
               <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center mb-4">
                 <Briefcase className="w-7 h-7 text-slate-300" />
               </div>
-              <h4 className="text-[15px] font-bold text-slate-700 tracking-tight">No Services Found</h4>
+              <h4 className="text-[15px] font-bold text-slate-700 tracking-tight">
+                No Services Found
+              </h4>
               <p className="text-[13px] text-slate-500 mt-1 max-w-[280px]">
-                There are no {filter !== 'All' ? filter.toLowerCase() : ''} services attached to this project. Click 'Add Service' to log one.
+                There are no {filter !== 'All' ? filter.toLowerCase() : ''} services attached to
+                this project. Click 'Add Service' to log one.
               </p>
             </motion.div>
           ) : (
             displayedServices.map((s: any, idx: number) => {
               // Resolve dynamic color and icon based on settings.serviceTypes definition
-              const serviceTypeDef = settings?.serviceTypes?.find((item: any) => item.name === s.type) || {};
+              const serviceTypeDef =
+                settings?.serviceTypes?.find((item: any) => item.name === s.type) || {};
               const hex = getSafeHex(serviceTypeDef.color, 'slate');
-              const IconElement = serviceTypeDef.icon ? renderIcon(serviceTypeDef.icon, 'w-5 h-5') : <Briefcase className="w-5 h-5" />;
+              const IconElement = serviceTypeDef.icon ? (
+                renderIcon(serviceTypeDef.icon, 'w-5 h-5')
+              ) : (
+                <Briefcase className="w-5 h-5" />
+              );
 
               return (
                 <motion.div
@@ -237,36 +279,48 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
                         <span className="font-bold text-slate-900 text-[15px] tracking-tight group-hover:text-primary transition-colors duration-200">
                           {s.name}
                         </span>
-                        
+
                         {/* Status Badge */}
-                        {s.type === 'Additional' && (() => {
-                          const displayStatus = s.outcome && s.outcome !== 'Pending' ? s.outcome : s.status || s.outcome;
-                          if (!displayStatus) return null;
+                        {s.type === 'Additional' &&
+                          (() => {
+                            const displayStatus =
+                              s.outcome && s.outcome !== 'Pending'
+                                ? s.outcome
+                                : s.status || s.outcome;
+                            if (!displayStatus) return null;
 
-                          const statusDef = settings?.settingsData?.find(
-                            (item: any) => (item.category === 'ServiceOutcome' || item.category === 'ServiceStatus') && item.name === displayStatus
-                          );
+                            const statusDef = settings?.settingsData?.find(
+                              (item: any) =>
+                                (item.category === 'ServiceOutcome' ||
+                                  item.category === 'ServiceStatus') &&
+                                item.name === displayStatus
+                            );
 
-                          if (statusDef) {
-                            const statusHex = getSafeHex(statusDef.color, 'slate');
+                            if (statusDef) {
+                              const statusHex = getSafeHex(statusDef.color, 'slate');
+                              return (
+                                <span
+                                  className="px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0 transition-colors"
+                                  style={{
+                                    backgroundColor: hexToRgba(statusHex, 0.08),
+                                    color: statusHex,
+                                  }}
+                                >
+                                  {renderIcon(statusDef.icon, 'w-3 h-3')}
+                                  <span className="text-[11px] font-bold tracking-wide">
+                                    {displayStatus}
+                                  </span>
+                                </span>
+                              );
+                            }
                             return (
-                              <span
-                                className="px-2 py-0.5 rounded-md flex items-center gap-1.5 shrink-0 transition-colors"
-                                style={{ backgroundColor: hexToRgba(statusHex, 0.08), color: statusHex }}
-                              >
-                                {renderIcon(statusDef.icon, 'w-3 h-3')}
-                                <span className="text-[11px] font-bold tracking-wide">{displayStatus}</span>
+                              <span className="px-2 py-0.5 text-[11px] font-bold tracking-wide rounded-md bg-slate-100 text-slate-600">
+                                {displayStatus}
                               </span>
                             );
-                          }
-                          return (
-                            <span className="px-2 py-0.5 text-[11px] font-bold tracking-wide rounded-md bg-slate-100 text-slate-600">
-                              {displayStatus}
-                            </span>
-                          );
-                        })()}
+                          })()}
                       </div>
-                      
+
                       {/* Sub-details */}
                       <div className="flex items-center gap-3 mt-1.5">
                         <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
@@ -288,7 +342,9 @@ export default function ProjectServicesTab({ project }: ProjectServicesTabProps)
                         {formatCurrency(s.price || s.cost || s.value || 0)}
                       </span>
                     ) : (
-                      <span className="font-semibold text-slate-400 text-sm tracking-wide">Included</span>
+                      <span className="font-semibold text-slate-400 text-sm tracking-wide">
+                        Included
+                      </span>
                     )}
                     <span className="text-[12px] font-medium text-slate-400 mt-0.5 flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />

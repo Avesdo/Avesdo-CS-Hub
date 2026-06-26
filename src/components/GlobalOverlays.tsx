@@ -15,9 +15,9 @@ export default function GlobalOverlays() {
   const [mountedModals, setMountedModals] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (isModalOpen('addClient')) setMountedModals(p => ({ ...p, addClient: true }));
-    if (isModalOpen('addProject')) setMountedModals(p => ({ ...p, addProject: true }));
-    if (isModalOpen('addService')) setMountedModals(p => ({ ...p, addService: true }));
+    if (isModalOpen('addClient')) setMountedModals((p) => ({ ...p, addClient: true }));
+    if (isModalOpen('addProject')) setMountedModals((p) => ({ ...p, addProject: true }));
+    if (isModalOpen('addService')) setMountedModals((p) => ({ ...p, addService: true }));
   }, [isModalOpen]);
 
   return (
@@ -26,7 +26,7 @@ export default function GlobalOverlays() {
       {mountedModals.addClient && <AddClientModal />}
       {mountedModals.addProject && <AddProjectModal />}
       {mountedModals.addService && <AddServiceModal />}
-      
+
       {/* Drawers - Safe to conditionally mount because UIContext keeps them 'open' for 300ms while closing */}
       {isDrawerOpen('dashDrilldown') && <DashDrilldownDrawer />}
       {isDrawerOpen('unscheduledProjects') && <UnscheduledProjectsDrawer />}

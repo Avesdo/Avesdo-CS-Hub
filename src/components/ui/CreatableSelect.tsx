@@ -37,7 +37,7 @@ export const CreatableSelect: React.FC<CreatableSelectProps> = ({
 
   const filteredOptions = useMemo(() => {
     let result = options.filter((o) => o.toLowerCase().includes(value.toLowerCase()));
-    
+
     result = [...result].sort((a, b) => {
       const aSelected = a === value;
       const bSelected = b === value;

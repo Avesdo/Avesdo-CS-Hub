@@ -1,6 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, ChevronDown, Check, Tag, User, AlignLeft, Building, Layers, DollarSign, AlertTriangle } from 'lucide-react';
+import {
+  X,
+  ChevronDown,
+  Check,
+  Tag,
+  User,
+  AlignLeft,
+  Building,
+  Layers,
+  DollarSign,
+  AlertTriangle,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -62,9 +73,13 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
     onClick={onClick}
     className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
   >
-    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    {Icon && (
+      <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
+    )}
     <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
-    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+    <span
+      className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}
+    >
       {value || 'Select'}
     </span>
     <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -73,10 +88,10 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 
 export default function AddServiceModal() {
   const { activeModals, isModalOpen, closeModal, activeDrawer, openDrawer } = useUI();
-  const clients = useAppStore(state => state.clients);
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
+  const clients = useAppStore((state) => state.clients);
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -113,15 +128,14 @@ export default function AddServiceModal() {
     },
   });
 
-
   const watchType = watch('type');
   const watchSelectedClient = watch('selectedClient');
   const watchSelectedProjects = watch('selectedProjects');
   const watchServiceNames = watch('serviceNames');
 
   // Pre-fill context if opened from a specific drawer
-  
-    useEffect(() => {
+
+  useEffect(() => {
     if (watchType === 'Included') {
       setValue('price', '0', { shouldValidate: true });
     }
@@ -142,7 +156,10 @@ export default function AddServiceModal() {
     });
 
     if (totalValue > 0) {
-      const formattedTotal = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalValue);
+      const formattedTotal = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(totalValue);
       setValue('serviceValue', formattedTotal, { shouldValidate: true, shouldDirty: true });
     }
   }, [watchServiceNames, settings?.services, setValue]);
@@ -152,11 +169,13 @@ export default function AddServiceModal() {
     if (!watchSelectedClient) return [defaultOption];
     const client = clients.find((c) => (c.clientId || c.id) === watchSelectedClient);
     if (!client) return [defaultOption];
-    const filtered = projects.filter(
-      (p) =>
-        p.clientIds?.includes(client.clientId || client.id) ||
-        p.clients?.includes(client.companyName || client.name)
-    ).sort((a, b) => a.name.localeCompare(b.name));
+    const filtered = projects
+      .filter(
+        (p) =>
+          p.clientIds?.includes(client.clientId || client.id) ||
+          p.clients?.includes(client.companyName || client.name)
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
     return [defaultOption, ...filtered];
   }, [watchSelectedClient, clients, projects]);
 
@@ -173,7 +192,10 @@ export default function AddServiceModal() {
     [settings?.serviceTypes]
   );
   const clientOptions = useMemo(
-    () => clients.map((c) => ({ value: c.clientId || c.id, label: c.companyName || c.name })).sort((a, b) => a.label.localeCompare(b.label)),
+    () =>
+      clients
+        .map((c) => ({ value: c.clientId || c.id, label: c.companyName || c.name }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [clients]
   );
   const managerOptions = useMemo(
@@ -182,7 +204,6 @@ export default function AddServiceModal() {
     [settings?.managers]
   );
 
-  
   const handleClose = (force?: boolean | any) => {
     const isForced = force === true;
     if (!isForced && isDirty) {
@@ -284,11 +305,11 @@ export default function AddServiceModal() {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
-        <Dialog.Overlay 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+        <Dialog.Overlay
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
           style={{ zIndex: overlayZ }}
         />
-        <Dialog.Content 
+        <Dialog.Content
           onInteractOutside={(e) => {
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addService') {
@@ -302,7 +323,8 @@ export default function AddServiceModal() {
             }
           }}
           style={{ zIndex: contentZ }}
-          className={`fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen || isAddProjectOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}>
+          className={`fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen || isAddProjectOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}
+        >
           <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
               type="button"
@@ -315,12 +337,20 @@ export default function AddServiceModal() {
 
           <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6"
+              >
                 {globalError}
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
               <Controller
                 name="serviceNames"
                 control={control}
@@ -335,15 +365,24 @@ export default function AddServiceModal() {
               />
               <AnimatePresence>
                 {errors.serviceNames && (
-                  <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-sm mt-2 font-medium ml-2">
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="text-destructive text-sm mt-2 font-medium ml-2"
+                  >
                     {errors.serviceNames.message}
                   </motion.p>
                 )}
               </AnimatePresence>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-col gap-4 mb-10">
-              
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col gap-4 mb-10"
+            >
               {/* Row 1: Type, Invoice Value, Service Value */}
               <div className="flex items-start gap-3">
                 <div className="flex flex-col gap-1">
@@ -355,12 +394,28 @@ export default function AddServiceModal() {
                         value={field.value}
                         options={typeOptions}
                         onChange={field.onChange}
-                        trigger={<TokenTrigger label="Type" value={field.value} icon={Tag} error={errors.type} />}
+                        trigger={
+                          <TokenTrigger
+                            label="Type"
+                            value={field.value}
+                            icon={Tag}
+                            error={errors.type}
+                          />
+                        }
                       />
                     )}
                   />
                   <AnimatePresence>
-                    {errors.type && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.type.message}</motion.span>}
+                    {errors.type && (
+                      <motion.span
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-destructive text-[11px] font-medium ml-2"
+                      >
+                        {errors.type.message}
+                      </motion.span>
+                    )}
                   </AnimatePresence>
                 </div>
 
@@ -370,9 +425,13 @@ export default function AddServiceModal() {
                       name="price"
                       control={control}
                       render={({ field }) => (
-                        <div className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.price ? 'border-destructive' : 'border-slate-200'}`}>
+                        <div
+                          className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.price ? 'border-destructive' : 'border-slate-200'}`}
+                        >
                           <DollarSign className="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors mr-2 shrink-0" />
-                          <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">Invoice Value:</span>
+                          <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">
+                            Invoice Value:
+                          </span>
                           <input
                             type="text"
                             value={field.value || ''}
@@ -381,7 +440,10 @@ export default function AddServiceModal() {
                               const num = parseFloat((field.value || '').replace(/,/g, ''));
                               if (!isNaN(num)) {
                                 field.onChange(
-                                  new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num)
+                                  new Intl.NumberFormat('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }).format(num)
                                 );
                               }
                             }}
@@ -392,7 +454,16 @@ export default function AddServiceModal() {
                       )}
                     />
                     <AnimatePresence>
-                      {errors.price && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.price.message}</motion.span>}
+                      {errors.price && (
+                        <motion.span
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="text-destructive text-[11px] font-medium ml-2"
+                        >
+                          {errors.price.message}
+                        </motion.span>
+                      )}
                     </AnimatePresence>
                   </div>
                 )}
@@ -402,9 +473,13 @@ export default function AddServiceModal() {
                     name="serviceValue"
                     control={control}
                     render={({ field }) => (
-                      <div className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.serviceValue ? 'border-destructive' : 'border-slate-200'}`}>
+                      <div
+                        className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 ${errors.serviceValue ? 'border-destructive' : 'border-slate-200'}`}
+                      >
                         <DollarSign className="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors mr-2 shrink-0" />
-                        <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">Service Value:</span>
+                        <span className="text-[13px] font-medium text-slate-500 mr-2 whitespace-nowrap">
+                          Service Value:
+                        </span>
                         <input
                           type="text"
                           value={field.value || ''}
@@ -413,7 +488,10 @@ export default function AddServiceModal() {
                             const num = parseFloat((field.value || '').replace(/,/g, ''));
                             if (!isNaN(num)) {
                               field.onChange(
-                                new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num)
+                                new Intl.NumberFormat('en-US', {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(num)
                               );
                             }
                           }}
@@ -424,7 +502,16 @@ export default function AddServiceModal() {
                     )}
                   />
                   <AnimatePresence>
-                    {errors.serviceValue && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.serviceValue.message}</motion.span>}
+                    {errors.serviceValue && (
+                      <motion.span
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-destructive text-[11px] font-medium ml-2"
+                      >
+                        {errors.serviceValue.message}
+                      </motion.span>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
@@ -458,7 +545,16 @@ export default function AddServiceModal() {
                     )}
                   />
                   <AnimatePresence>
-                    {errors.selectedClient && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedClient.message}</motion.span>}
+                    {errors.selectedClient && (
+                      <motion.span
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-destructive text-[11px] font-medium ml-2"
+                      >
+                        {errors.selectedClient.message}
+                      </motion.span>
+                    )}
                   </AnimatePresence>
                 </div>
 
@@ -480,8 +576,8 @@ export default function AddServiceModal() {
                               field.value.length === 1
                                 ? availableProjects.find((p) => p.id === field.value[0])?.name || ''
                                 : field.value.length > 1
-                                ? `${field.value.length} Projects`
-                                : ''
+                                  ? `${field.value.length} Projects`
+                                  : ''
                             }
                             icon={Layers}
                             error={errors.selectedProjects}
@@ -491,7 +587,16 @@ export default function AddServiceModal() {
                     )}
                   />
                   <AnimatePresence>
-                    {errors.selectedProjects && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedProjects.message}</motion.span>}
+                    {errors.selectedProjects && (
+                      <motion.span
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-destructive text-[11px] font-medium ml-2"
+                      >
+                        {errors.selectedProjects.message}
+                      </motion.span>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
@@ -519,24 +624,54 @@ export default function AddServiceModal() {
                     )}
                   />
                   <AnimatePresence>
-                    {errors.assignees && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.assignees.message}</motion.span>}
+                    {errors.assignees && (
+                      <motion.span
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-destructive text-[11px] font-medium ml-2"
+                      >
+                        {errors.assignees.message}
+                      </motion.span>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
             </motion.div>
 
-
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col gap-3"
+            >
               <AnimatePresence mode="popLayout">
                 {!showContact ? (
-                  <motion.div key="contact-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowContact(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap">
-                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Contact</span>
+                  <motion.div
+                    key="contact-btn"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowContact(true)}
+                      className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap"
+                    >
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">
+                        + Add Contact
+                      </span>
                     </button>
                   </motion.div>
                 ) : (
-                  <motion.div key="contact-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden pt-1 pb-2">
+                  <motion.div
+                    key="contact-editor"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden pt-1 pb-2"
+                  >
                     <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
                       <User className="w-3.5 h-3.5 mr-1.5" /> Client Contact Name
                     </label>
@@ -558,13 +693,31 @@ export default function AddServiceModal() {
 
               <AnimatePresence mode="popLayout">
                 {!showNote ? (
-                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap">
-                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                  <motion.div
+                    key="note-btn"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowNote(true)}
+                      className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none whitespace-nowrap"
+                    >
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">
+                        + Add Initial Note
+                      </span>
                     </button>
                   </motion.div>
                 ) : (
-                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden pb-2">
+                  <motion.div
+                    key="note-editor"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden pb-2"
+                  >
                     <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
                       <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
                     </label>
@@ -616,7 +769,7 @@ export default function AddServiceModal() {
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
@@ -625,16 +778,18 @@ export default function AddServiceModal() {
                     <AlertTriangle className="w-6 h-6 text-red-500" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
-                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <p className="text-sm text-slate-500 mb-6">
+                    You have unsaved changes. If you close this now, your data will be lost.
+                  </p>
                   <div className="flex gap-3 w-full">
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setShowDiscardConfirm(false)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
                     >
                       Keep Editing
                     </button>
-                    <button 
+                    <button
                       type="button"
                       onClick={() => handleClose(true)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
@@ -659,7 +814,7 @@ export default function AddServiceModal() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
                   className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
                 >
                   <Check className="w-12 h-12 text-green-600 stroke-[3]" />

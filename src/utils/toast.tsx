@@ -9,7 +9,8 @@ const ToastContent = ({ title, message }: { title: string; message?: string }) =
   </div>
 );
 
-const baseToastClass = '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl';
+const baseToastClass =
+  '!bg-white/95 !backdrop-blur-md border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl';
 
 export const toast = {
   success: (title: string, message?: string) =>

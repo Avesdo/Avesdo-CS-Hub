@@ -11,7 +11,7 @@ export function useUrlState<T>(
   }
 ): [T, (val: T | ((prev: T) => T)) => void] {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [state, setState] = useState<T>(() => {
     const param = searchParams.get(key);
     if (param !== null) {
@@ -29,10 +29,19 @@ export function useUrlState<T>(
     (newVal: T | ((prev: T) => T)) => {
       setState((prev) => {
         const resolved = typeof newVal === 'function' ? (newVal as (prev: T) => T)(prev) : newVal;
-        
-        let isDefault = resolved === initialValue || resolved === null || resolved === undefined || resolved === '';
-        if (Array.isArray(resolved) && resolved.length === 0 && Array.isArray(initialValue) && initialValue.length === 0) {
-           isDefault = true;
+
+        let isDefault =
+          resolved === initialValue ||
+          resolved === null ||
+          resolved === undefined ||
+          resolved === '';
+        if (
+          Array.isArray(resolved) &&
+          resolved.length === 0 &&
+          Array.isArray(initialValue) &&
+          initialValue.length === 0
+        ) {
+          isDefault = true;
         }
 
         setSearchParams(
@@ -47,7 +56,7 @@ export function useUrlState<T>(
           },
           { replace: options?.replace ?? true }
         );
-        
+
         return resolved;
       });
     },

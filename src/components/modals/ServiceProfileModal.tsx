@@ -15,7 +15,7 @@ import {
   Target,
   Briefcase,
   Calendar,
-  Building
+  Building,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUI } from '../../context/UIContext';
@@ -43,22 +43,35 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
       type="button"
       onClick={onClick}
       className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 active:scale-95 w-full justify-between ${
-        error ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20' : 
-        isSuspended ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20' : 
-        'bg-white border-slate-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20'
+        error
+          ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20'
+          : isSuspended
+            ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20'
+            : 'bg-white border-slate-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20'
       } ${className}`}
     >
       <div className="flex items-center truncate">
-        {Icon && <Icon className={`w-4 h-4 transition-colors mr-2 shrink-0 ${isSuspended ? 'text-red-500 group-hover:text-red-600' : 'text-slate-400 group-hover:text-primary'}`} />}
-        <span className={`text-[13px] font-medium mr-2 ${isSuspended ? 'text-red-600/80' : 'text-slate-500'}`}>{label}:</span>
-        <span className={`text-[13px] font-semibold truncate ${
-          isSuspended ? 'text-red-700' :
-          value ? 'text-slate-900' : 'text-slate-400'
-        }`}>
+        {Icon && (
+          <Icon
+            className={`w-4 h-4 transition-colors mr-2 shrink-0 ${isSuspended ? 'text-red-500 group-hover:text-red-600' : 'text-slate-400 group-hover:text-primary'}`}
+          />
+        )}
+        <span
+          className={`text-[13px] font-medium mr-2 ${isSuspended ? 'text-red-600/80' : 'text-slate-500'}`}
+        >
+          {label}:
+        </span>
+        <span
+          className={`text-[13px] font-semibold truncate ${
+            isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'
+          }`}
+        >
           {value || 'Select'}
         </span>
       </div>
-      <ChevronDown className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`} />
+      <ChevronDown
+        className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`}
+      />
     </button>
   );
 };
@@ -68,13 +81,21 @@ const ReadOnlyPill = ({ label, value, icon: Icon }: any) => (
     <div className="flex items-center w-full">
       {Icon && <Icon className="w-4 h-4 text-slate-400 mr-2 shrink-0" />}
       <span className="text-[13px] font-medium mr-2 text-slate-500 shrink-0">{label}:</span>
-      <span className="text-[13px] font-semibold truncate text-slate-700 flex-1 min-w-0" title={value || 'N/A'}>{value || 'N/A'}</span>
+      <span
+        className="text-[13px] font-semibold truncate text-slate-700 flex-1 min-w-0"
+        title={value || 'N/A'}
+      >
+        {value || 'N/A'}
+      </span>
     </div>
   </div>
 );
 
 const ContactInputPill = ({ value, onChange, onBlur }: any) => (
-  <div className="flex items-center h-10 px-4 rounded-full border border-slate-200 bg-white hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-sm w-full transition-all cursor-text" onClick={(e) => (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()}>
+  <div
+    className="flex items-center h-10 px-4 rounded-full border border-slate-200 bg-white hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-sm w-full transition-all cursor-text"
+    onClick={(e) => (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()}
+  >
     <div className="flex items-center w-full">
       <User className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
       <span className="text-[13px] font-medium mr-2 text-slate-500 shrink-0">Contact:</span>
@@ -92,13 +113,13 @@ const ContactInputPill = ({ value, onChange, onBlur }: any) => (
 
 export default function ServiceProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUI();
-  const stackIndex = activeDrawers.findIndex(d => d.type === 'service');
-  const zIndexBase = 100 + (Math.max(0, stackIndex) * 20);
-  const services = useAppStore(state => state.services);
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
-  const clients = useAppStore(state => state.clients);
-  const projects = useAppStore(state => state.projects);
+  const stackIndex = activeDrawers.findIndex((d) => d.type === 'service');
+  const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
+  const services = useAppStore((state) => state.services);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
+  const clients = useAppStore((state) => state.clients);
+  const projects = useAppStore((state) => state.projects);
 
   const [activeTab, setActiveTab] = useState<'details' | 'notes'>('details');
   const [isEditingName, setIsEditingName] = useState(false);
@@ -146,14 +167,17 @@ export default function ServiceProfileModal() {
     const defaultOption = { id: 'none', name: 'None (Client Level)' };
     const clientId = service?.clientIds?.[0];
     if (!clientId) return [defaultOption];
-    
-    const client = clients.find(c => c.clientId === clientId || c.id === clientId);
+
+    const client = clients.find((c) => c.clientId === clientId || c.id === clientId);
     if (!client) return [defaultOption];
 
-    const filtered = projects.filter(
-      (p) => p.clientIds?.includes(clientId) || p.clients?.includes(client.companyName || client.name)
-    ).sort((a, b) => a.name.localeCompare(b.name));
-    
+    const filtered = projects
+      .filter(
+        (p) =>
+          p.clientIds?.includes(clientId) || p.clients?.includes(client.companyName || client.name)
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
+
     return [defaultOption, ...filtered];
   }, [service?.clientIds, clients, projects]);
 
@@ -170,16 +194,16 @@ export default function ServiceProfileModal() {
     const client = clients.find((c) => c.clientId === clientId || c.id === clientId);
     const clientName = client?.companyName || client?.name || '';
     const oldClientName = service.clientName || 'None';
-    
+
     await updateServiceRecord(
-      { 
-        ...service, 
-        clientIds: client ? [clientId] : [], 
+      {
+        ...service,
+        clientIds: client ? [clientId] : [],
         clients: client ? [clientName] : [],
         clientName: clientName,
         projectIds: [],
         projectId: 'N/A',
-        projectName: 'N/A'
+        projectName: 'N/A',
       },
       { successMsg: 'Client successfully updated.', errorMsg: 'Failed to update client.' },
       `Service Client changed from ${oldClientName} to ${clientName || 'None'}`,
@@ -189,10 +213,10 @@ export default function ServiceProfileModal() {
 
   const handleUpdateProject = async (vals: string[]) => {
     if (!service) return;
-    const projectIds = vals.filter(id => id !== 'none');
-    
-    const projectObjs = projects.filter(p => projectIds.includes(p.id));
-    const projectNames = projectObjs.length > 0 ? projectObjs.map(p => p.name).join(', ') : 'N/A';
+    const projectIds = vals.filter((id) => id !== 'none');
+
+    const projectObjs = projects.filter((p) => projectIds.includes(p.id));
+    const projectNames = projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A';
     const oldProjectName = service.projectName || 'None';
 
     await updateServiceRecord(
@@ -200,7 +224,7 @@ export default function ServiceProfileModal() {
         ...service,
         projectIds: projectIds,
         projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A',
-        projectName: projectNames
+        projectName: projectNames,
       },
       { successMsg: 'Project successfully updated.', errorMsg: 'Failed to update project.' },
       `Service Project changed from ${oldProjectName} to ${projectNames || 'None'}`,
@@ -413,7 +437,9 @@ export default function ServiceProfileModal() {
   if (!service && isOpen) return null;
 
   const getStatusIcon = (statusName: string) => {
-    const s = settings?.settingsData?.find((x: any) => x.category === 'ServiceStatus' && x.name === statusName);
+    const s = settings?.settingsData?.find(
+      (x: any) => x.category === 'ServiceStatus' && x.name === statusName
+    );
     const iconName = s?.icon;
     if (!iconName) return Activity;
     const IconMatch = Object.entries(LucideIcons).find(
@@ -437,7 +463,10 @@ export default function ServiceProfileModal() {
                 style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
-            <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: zIndexBase }}>
+            <div
+              className="fixed inset-0 flex items-center justify-center pointer-events-none"
+              style={{ zIndex: zIndexBase }}
+            >
               <Dialog.Content
                 onEscapeKeyDown={(e) => {
                   e.preventDefault();
@@ -454,320 +483,350 @@ export default function ServiceProfileModal() {
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                  transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
                   className="w-[95vw] max-w-5xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex pointer-events-auto"
                 >
-                {/* LEFT SIDEBAR */}
-                <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
-                  <div className="p-6 pb-4">
-                    {isEditingName ? (
-                      <div className="flex items-start justify-between rounded-xl -mx-3 px-3 py-2 bg-slate-100/50">
-                        <textarea
-                          ref={(el) => {
-                            if (el) {
-                              el.style.height = 'auto';
-                              el.style.height = el.scrollHeight + 'px';
-                            }
-                          }}
-                          onInput={(e) => {
-                            e.currentTarget.style.height = 'auto';
-                            e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-                          }}
-                          value={editNameValue}
-                          onChange={(e) => setEditNameValue(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleUpdateName();
-                            }
-                            if (e.key === 'Escape') {
-                              setEditNameValue(service?.name || '');
-                              setIsEditingName(false);
-                            }
-                          }}
-                          autoFocus
-                          rows={1}
-                          className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
-                        />
-                        <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUpdateName();
+                  {/* LEFT SIDEBAR */}
+                  <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
+                    <div className="p-6 pb-4">
+                      {isEditingName ? (
+                        <div className="flex items-start justify-between rounded-xl -mx-3 px-3 py-2 bg-slate-100/50">
+                          <textarea
+                            ref={(el) => {
+                              if (el) {
+                                el.style.height = 'auto';
+                                el.style.height = el.scrollHeight + 'px';
+                              }
                             }}
-                            className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
-                            title="Save"
-                          >
-                            <Check className="w-5 h-5 stroke-[2.5]" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditNameValue(service?.name || '');
-                              setIsEditingName(false);
+                            onInput={(e) => {
+                              e.currentTarget.style.height = 'auto';
+                              e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
                             }}
-                            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
-                            title="Cancel"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
-                        onClick={() => setIsEditingName(true)}
-                      >
-                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
-                          {service?.name || 'Unnamed Service'}
-                        </h2>
-                        <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto custom-thin-scroll px-6 pb-6 flex flex-col gap-5">
-                    <div className="flex flex-col gap-3">
-                      <div>
-                        <Select
-                          options={(settings?.serviceTypes || []).map((s: any) => ({ label: s.name, value: s.name }))}
-                          value={service?.type || 'Unknown'}
-                          onChange={(val) => handleUpdateType(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Type"
-                              value={service?.type || 'Unknown'}
-                              icon={Briefcase}
-                            />
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Select
-                          options={(settings?.managers?.map((m: any) => m.name) || []).map((o: string) => ({ label: o, value: o }))}
-                          value={service?.manager || ''}
-                          onChange={(val) => handleUpdateManager(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Manager"
-                              value={service?.manager || 'Unassigned'}
-                              icon={User}
-                            />
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Select
-                          options={(settings?.settingsData || [])
-                            .filter((s: any) => s.category === 'ServiceStatus')
-                            .map((s: any) => ({ label: s.name, value: s.name }))}
-                          value={service?.status || 'Unknown'}
-                          onChange={(val) => handleUpdateStatus(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Status"
-                              value={service?.status || 'Unknown'}
-                              icon={getStatusIcon(service?.status || 'Unknown')}
-                            />
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Select
-                          options={(settings?.settingsData || [])
-                            .filter((s: any) => s.category === 'ServiceOutcome')
-                            .map((s: any) => ({ label: s.name, value: s.name }))}
-                          value={service?.outcome || 'Unknown'}
-                          onChange={(val) => handleUpdateOutcome(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Outcome"
-                              value={service?.outcome || 'Unknown'}
-                              icon={Target}
-                            />
-                          }
-                        />
-                      </div>
-                      <div className="w-full">
-                        <DatePicker
-                          value={service?.dateVal}
-                          onChange={async (val, str) => {
-                            if (!service) return;
-                            await updateServiceRecord(
-                              { ...service, dateVal: val as any, dateStr: str },
-                              { successMsg: 'Completion date updated.', errorMsg: 'Failed to update date.' },
-                              `Completion Date updated to ${str}`,
-                              user?.name
-                            );
-                          }}
-                          trigger={
-                            <TokenTrigger
-                              label="Completion"
-                              value={service?.dateVal ? new Date(service.dateVal).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No Date'}
-                              icon={Calendar}
-                            />
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="h-px bg-slate-200/60 w-full" />
-
-                    <div className="flex flex-col gap-3">
-                      <MultiSelect
-                        values={service?.clientIds?.[0] ? [service.clientIds[0]] : []}
-                        options={clientOptions}
-                        onChange={handleUpdateClient}
-                        searchable
-                        searchPlaceholder="Search Clients..."
-                        trigger={
-                          <TokenTrigger
-                            label="Client"
-                            value={clientNames}
-                            icon={Building}
+                            value={editNameValue}
+                            onChange={(e) => setEditNameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleUpdateName();
+                              }
+                              if (e.key === 'Escape') {
+                                setEditNameValue(service?.name || '');
+                                setIsEditingName(false);
+                              }
+                            }}
+                            autoFocus
+                            rows={1}
+                            className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
-                        }
-                      />
-                      <MultiSelect
-                        values={service?.projectIds || (service?.projectId && service.projectId !== 'N/A' ? [service.projectId] : [])}
-                        options={projectOptions}
-                        onChange={handleUpdateProject}
-                        searchable
-                        searchPlaceholder="Search Projects..."
-                        trigger={
-                          <TokenTrigger
-                            label="Project"
-                            value={projectName}
-                            icon={FileText}
-                          />
-                        }
-                      />
-                      <ContactInputPill
-                        value={contactNameDraft}
-                        onChange={(e: any) => setContactNameDraft(e.target.value)}
-                        onBlur={async () => {
-                          if (!service || contactNameDraft === service.contactName) return;
-                          await updateServiceRecord(
-                            { ...service, contactName: contactNameDraft },
-                            { successMsg: 'Client Contact Name updated.', errorMsg: 'Failed to update contact.' },
-                            `Contact Name updated to ${contactNameDraft}`,
-                            user?.name
-                          );
-                        }}
-                      />
-                    </div>
-
-                    {/* Danger Zone */}
-                    <div className="pt-4 mt-auto border-t border-slate-200/60">
-                      {isConfirmingDelete ? (
-                        <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                          <p className="text-[11px] font-medium text-red-600 text-center">Archive this service?</p>
-                          <div className="flex gap-2">
+                          <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
                             <button
-                              onClick={() => setIsConfirmingDelete(false)}
-                              className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUpdateName();
+                              }}
+                              className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
+                              title="Save"
                             >
-                              Cancel
+                              <Check className="w-5 h-5 stroke-[2.5]" />
                             </button>
                             <button
-                              onClick={handleConfirmDelete}
-                              className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditNameValue(service?.name || '');
+                                setIsEditingName(false);
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
+                              title="Cancel"
                             >
-                              Archive
+                              <X className="w-5 h-5" />
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => setIsConfirmingDelete(true)}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
+                        <div
+                          className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
+                          onClick={() => setIsEditingName(true)}
                         >
-                          <LucideIcons.Archive className="w-4 h-4" />
-                          Archive Service
-                        </button>
+                          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
+                            {service?.name || 'Unnamed Service'}
+                          </h2>
+                          <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                        </div>
                       )}
                     </div>
-                  </div>
-                </div>
 
-                {/* RIGHT PANE: Main Content */}
-                <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
-                  {/* Decorative Aura */}
-
-
-                  {/* Close Button overlay */}
-                  <div className="absolute top-4 right-4 z-50">
-                    <button
-                      onClick={closeDrawer}
-                      className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
-                      title="Close"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* Horizontal Tabs Header */}
-                  <div className="flex px-8 pt-4 pb-0 border-b border-slate-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 pr-16 overflow-x-auto custom-thin-scroll">
-                    <div className="flex gap-6">
-                      {[
-                        { id: 'details', label: 'Financials', icon: LucideIcons.CircleDollarSign },
-                        { id: 'notes', label: 'Timeline', icon: LucideIcons.FileText }
-                      ].map((item) => {
-                        const Icon = item.icon;
-                        const isActive = activeTab === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as any)}
-                            className={`relative flex items-center gap-2 pb-4 pt-2 transition-colors ${
-                              isActive ? 'text-primary font-bold' : 'text-slate-500 hover:text-slate-700 font-medium'
-                            }`}
-                          >
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
-                            <span className="text-[13px] whitespace-nowrap tracking-wide">{item.label}</span>
-                            {isActive && (
-                              <motion.div
-                                layoutId="activeHorizontalTabService"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                                initial={false}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll px-6 pb-6 flex flex-col gap-5">
+                      <div className="flex flex-col gap-3">
+                        <div>
+                          <Select
+                            options={(settings?.serviceTypes || []).map((s: any) => ({
+                              label: s.name,
+                              value: s.name,
+                            }))}
+                            value={service?.type || 'Unknown'}
+                            onChange={(val) => handleUpdateType(val)}
+                            trigger={
+                              <TokenTrigger
+                                label="Type"
+                                value={service?.type || 'Unknown'}
+                                icon={Briefcase}
                               />
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Select
+                            options={(settings?.managers?.map((m: any) => m.name) || []).map(
+                              (o: string) => ({ label: o, value: o })
                             )}
+                            value={service?.manager || ''}
+                            onChange={(val) => handleUpdateManager(val)}
+                            trigger={
+                              <TokenTrigger
+                                label="Manager"
+                                value={service?.manager || 'Unassigned'}
+                                icon={User}
+                              />
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Select
+                            options={(settings?.settingsData || [])
+                              .filter((s: any) => s.category === 'ServiceStatus')
+                              .map((s: any) => ({ label: s.name, value: s.name }))}
+                            value={service?.status || 'Unknown'}
+                            onChange={(val) => handleUpdateStatus(val)}
+                            trigger={
+                              <TokenTrigger
+                                label="Status"
+                                value={service?.status || 'Unknown'}
+                                icon={getStatusIcon(service?.status || 'Unknown')}
+                              />
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Select
+                            options={(settings?.settingsData || [])
+                              .filter((s: any) => s.category === 'ServiceOutcome')
+                              .map((s: any) => ({ label: s.name, value: s.name }))}
+                            value={service?.outcome || 'Unknown'}
+                            onChange={(val) => handleUpdateOutcome(val)}
+                            trigger={
+                              <TokenTrigger
+                                label="Outcome"
+                                value={service?.outcome || 'Unknown'}
+                                icon={Target}
+                              />
+                            }
+                          />
+                        </div>
+                        <div className="w-full">
+                          <DatePicker
+                            value={service?.dateVal}
+                            onChange={async (val, str) => {
+                              if (!service) return;
+                              await updateServiceRecord(
+                                { ...service, dateVal: val as any, dateStr: str },
+                                {
+                                  successMsg: 'Completion date updated.',
+                                  errorMsg: 'Failed to update date.',
+                                },
+                                `Completion Date updated to ${str}`,
+                                user?.name
+                              );
+                            }}
+                            trigger={
+                              <TokenTrigger
+                                label="Completion"
+                                value={
+                                  service?.dateVal
+                                    ? new Date(service.dateVal).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })
+                                    : 'No Date'
+                                }
+                                icon={Calendar}
+                              />
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="h-px bg-slate-200/60 w-full" />
+
+                      <div className="flex flex-col gap-3">
+                        <MultiSelect
+                          values={service?.clientIds?.[0] ? [service.clientIds[0]] : []}
+                          options={clientOptions}
+                          onChange={handleUpdateClient}
+                          searchable
+                          searchPlaceholder="Search Clients..."
+                          trigger={
+                            <TokenTrigger label="Client" value={clientNames} icon={Building} />
+                          }
+                        />
+                        <MultiSelect
+                          values={
+                            service?.projectIds ||
+                            (service?.projectId && service.projectId !== 'N/A'
+                              ? [service.projectId]
+                              : [])
+                          }
+                          options={projectOptions}
+                          onChange={handleUpdateProject}
+                          searchable
+                          searchPlaceholder="Search Projects..."
+                          trigger={
+                            <TokenTrigger label="Project" value={projectName} icon={FileText} />
+                          }
+                        />
+                        <ContactInputPill
+                          value={contactNameDraft}
+                          onChange={(e: any) => setContactNameDraft(e.target.value)}
+                          onBlur={async () => {
+                            if (!service || contactNameDraft === service.contactName) return;
+                            await updateServiceRecord(
+                              { ...service, contactName: contactNameDraft },
+                              {
+                                successMsg: 'Client Contact Name updated.',
+                                errorMsg: 'Failed to update contact.',
+                              },
+                              `Contact Name updated to ${contactNameDraft}`,
+                              user?.name
+                            );
+                          }}
+                        />
+                      </div>
+
+                      {/* Danger Zone */}
+                      <div className="pt-4 mt-auto border-t border-slate-200/60">
+                        {isConfirmingDelete ? (
+                          <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                            <p className="text-[11px] font-medium text-red-600 text-center">
+                              Archive this service?
+                            </p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setIsConfirmingDelete(false)}
+                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={handleConfirmDelete}
+                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                              >
+                                Archive
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setIsConfirmingDelete(true)}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
+                          >
+                            <LucideIcons.Archive className="w-4 h-4" />
+                            Archive Service
                           </button>
-                        );
-                      })}
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Scrollable Content Area */}
-                  <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative z-0">
-                    <AnimatePresence mode="popLayout">
-                      <motion.div
-                        key={activeTab}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="w-full"
+                  {/* RIGHT PANE: Main Content */}
+                  <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
+                    {/* Decorative Aura */}
+
+                    {/* Close Button overlay */}
+                    <div className="absolute top-4 right-4 z-50">
+                      <button
+                        onClick={closeDrawer}
+                        className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
+                        title="Close"
                       >
-                        {activeTab === 'details' && <ServiceDetailsTab service={service} />}
-                        {activeTab === 'notes' && service && (
-                          <TimelineTab
-                            notes={service.notes || []}
-                            onSaveNotes={async (updatedNotes) => {
-                              await updateServiceRecord({ ...service, notes: updatedNotes } as any, {
-                                successMsg: `Timeline updated for '${service.name}'.`,
-                                errorMsg: `Failed to update timeline for '${service.name}'.`,
-                              });
-                            }}
-                            emptyStateMessage="Be the first to add a note or make changes to generate system logs."
-                          />
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Horizontal Tabs Header */}
+                    <div className="flex px-8 pt-4 pb-0 border-b border-slate-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 pr-16 overflow-x-auto custom-thin-scroll">
+                      <div className="flex gap-6">
+                        {[
+                          {
+                            id: 'details',
+                            label: 'Financials',
+                            icon: LucideIcons.CircleDollarSign,
+                          },
+                          { id: 'notes', label: 'Timeline', icon: LucideIcons.FileText },
+                        ].map((item) => {
+                          const Icon = item.icon;
+                          const isActive = activeTab === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => setActiveTab(item.id as any)}
+                              className={`relative flex items-center gap-2 pb-4 pt-2 transition-colors ${
+                                isActive
+                                  ? 'text-primary font-bold'
+                                  : 'text-slate-500 hover:text-slate-700 font-medium'
+                              }`}
+                            >
+                              <Icon
+                                className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`}
+                              />
+                              <span className="text-[13px] whitespace-nowrap tracking-wide">
+                                {item.label}
+                              </span>
+                              {isActive && (
+                                <motion.div
+                                  layoutId="activeHorizontalTabService"
+                                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
+                                  initial={false}
+                                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Scrollable Content Area */}
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative z-0">
+                      <AnimatePresence mode="popLayout">
+                        <motion.div
+                          key={activeTab}
+                          layout
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="w-full"
+                        >
+                          {activeTab === 'details' && <ServiceDetailsTab service={service} />}
+                          {activeTab === 'notes' && service && (
+                            <TimelineTab
+                              notes={service.notes || []}
+                              onSaveNotes={async (updatedNotes) => {
+                                await updateServiceRecord(
+                                  { ...service, notes: updatedNotes } as any,
+                                  {
+                                    successMsg: `Timeline updated for '${service.name}'.`,
+                                    errorMsg: `Failed to update timeline for '${service.name}'.`,
+                                  }
+                                );
+                              }}
+                              emptyStateMessage="Be the first to add a note or make changes to generate system logs."
+                            />
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
-                </div>
                 </motion.div>
               </Dialog.Content>
             </div>

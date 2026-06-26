@@ -1,16 +1,8 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 
-export function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-slate-200/60", className)}
-      {...props}
-    />
-  );
+export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('animate-pulse rounded-md bg-slate-200/60', className)} {...props} />;
 }
 
 // Higher-order skeleton layouts for specific pages
@@ -72,8 +64,11 @@ export function ClientPortalSkeleton() {
       <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-20 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 flex flex-col space-y-6 relative ml-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="flex items-center p-6 bg-white border border-slate-200 rounded-2xl shadow-sm h-[110px]">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="flex items-center p-6 bg-white border border-slate-200 rounded-2xl shadow-sm h-[110px]"
+              >
                 <Skeleton className="w-14 h-14 rounded-2xl shrink-0 mr-6" />
                 <div className="flex-1 space-y-2.5">
                   <Skeleton className="h-5 w-48" />
@@ -112,12 +107,12 @@ export function AppLoadingSkeleton() {
       <div className="w-64 bg-white flex-shrink-0 flex flex-col p-4 border-r border-slate-200">
         <Skeleton className="h-8 w-32 mb-8" />
         <div className="space-y-2">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <Skeleton key={i} className="h-10 w-full rounded-lg" />
           ))}
         </div>
       </div>
-      
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full bg-slate-50">
         <div className="h-16 bg-white border-b border-slate-200 flex items-center px-6 justify-between shrink-0">

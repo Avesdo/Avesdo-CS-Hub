@@ -7,7 +7,12 @@ interface CsatInterceptViewProps {
   project: Project;
   template: any;
   isSubmitting: boolean;
-  onSaveForm: (data: any, autoSave?: boolean, overrideStatus?: string, overrideFormType?: string) => Promise<void>;
+  onSaveForm: (
+    data: any,
+    autoSave?: boolean,
+    overrideStatus?: string,
+    overrideFormType?: string
+  ) => Promise<void>;
   setActiveFormType: (type: string) => void;
 }
 
@@ -16,7 +21,7 @@ export function CsatInterceptView({
   template,
   isSubmitting,
   onSaveForm,
-  setActiveFormType
+  setActiveFormType,
 }: CsatInterceptViewProps) {
   return (
     <div className="min-h-screen bg-white py-12 px-4 flex flex-col">
@@ -28,10 +33,11 @@ export function CsatInterceptView({
             </div>
             <h2 className="text-3xl font-extrabold mb-3 drop-shadow-sm">Project Certified!</h2>
             <p className="text-white/90 max-w-xl mx-auto text-lg opacity-90">
-              Congratulations on successfully completing your Project Certification. Please take a moment to provide feedback on your onboarding experience.
+              Congratulations on successfully completing your Project Certification. Please take a
+              moment to provide feedback on your onboarding experience.
             </p>
           </div>
-          
+
           <div className="p-2 md:p-8">
             {!template ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -39,7 +45,9 @@ export function CsatInterceptView({
                   <FileText className="w-8 h-8 text-slate-300" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-700 mb-1">Template Unavailable</h3>
-                <p className="text-sm text-slate-500 max-w-[250px]">The requested form template could not be found or is inactive.</p>
+                <p className="text-sm text-slate-500 max-w-[250px]">
+                  The requested form template could not be found or is inactive.
+                </p>
               </div>
             ) : (
               <DynamicForm
@@ -53,7 +61,7 @@ export function CsatInterceptView({
                   setActiveFormType('onboardingCsat');
                   onSaveForm(data, false, 'In Progress', 'onboardingCsat');
                 }}
-                submitLabel={isSubmitting ? "Submitting Feedback..." : "Submit Feedback"}
+                submitLabel={isSubmitting ? 'Submitting Feedback...' : 'Submit Feedback'}
                 readOnly={false}
               />
             )}

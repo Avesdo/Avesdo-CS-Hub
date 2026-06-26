@@ -23,7 +23,7 @@ import {
   Target,
   Settings,
   Link as LinkIcon,
-  Edit2
+  Edit2,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUI } from '../../context/UIContext';
@@ -55,36 +55,49 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
       type="button"
       onClick={onClick}
       className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 active:scale-95 hover:shadow-md focus:ring-2 w-full justify-between ${
-        error ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20' : 
-        isSuspended ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20' : 
-        'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20'
+        error
+          ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20'
+          : isSuspended
+            ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20'
+            : 'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20'
       } ${className}`}
     >
       <div className="flex items-center truncate">
-        {Icon && <Icon className={`w-4 h-4 transition-colors mr-2 shrink-0 ${isSuspended ? 'text-red-500 group-hover:text-red-600' : 'text-slate-400 group-hover:text-primary'}`} />}
-        <span className={`text-[13px] font-medium mr-2 ${isSuspended ? 'text-red-600/80' : 'text-slate-500'}`}>{label}:</span>
-        <span className={`text-[13px] font-semibold truncate ${
-          isSuspended ? 'text-red-700' :
-          value ? 'text-slate-900' : 'text-slate-400'
-        }`}>
+        {Icon && (
+          <Icon
+            className={`w-4 h-4 transition-colors mr-2 shrink-0 ${isSuspended ? 'text-red-500 group-hover:text-red-600' : 'text-slate-400 group-hover:text-primary'}`}
+          />
+        )}
+        <span
+          className={`text-[13px] font-medium mr-2 ${isSuspended ? 'text-red-600/80' : 'text-slate-500'}`}
+        >
+          {label}:
+        </span>
+        <span
+          className={`text-[13px] font-semibold truncate ${
+            isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'
+          }`}
+        >
           {value || 'Select'}
         </span>
       </div>
-      <ChevronDown className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`} />
+      <ChevronDown
+        className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`}
+      />
     </button>
   );
 };
 
 export default function ProjectProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
-  const stackIndex = activeDrawers.findIndex(d => d.type === 'project');
-  const zIndexBase = 100 + (Math.max(0, stackIndex) * 20);
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
-  const clients = useAppStore(state => state.clients);
-  const user = useAppStore(state => state.user);
-  const services = useAppStore(state => state.services);
-  
+  const stackIndex = activeDrawers.findIndex((d) => d.type === 'project');
+  const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
+  const clients = useAppStore((state) => state.clients);
+  const user = useAppStore((state) => state.user);
+  const services = useAppStore((state) => state.services);
+
   const [activeTab, setActiveTab] = useState<
     'overview' | 'onboarding' | 'health' | 'services' | 'notes'
   >('overview');
@@ -198,7 +211,13 @@ export default function ProjectProfileModal() {
     const logMsg = `Status changed from ${oldVal} to ${val}`;
     const updates: any = {
       status: val as 'Active' | 'On Hold' | 'Completed' | 'Churned' | 'Pipeline' | 'Cancelled',
-      projectStatus: val as 'Active' | 'On Hold' | 'Completed' | 'Churned' | 'Pipeline' | 'Cancelled',
+      projectStatus: val as
+        | 'Active'
+        | 'On Hold'
+        | 'Completed'
+        | 'Churned'
+        | 'Pipeline'
+        | 'Cancelled',
     };
 
     if (oldVal === 'Onboarding' && val === 'Active') {
@@ -218,7 +237,7 @@ export default function ProjectProfileModal() {
     await updateProjectRecord(
       {
         ...project,
-        ...updates
+        ...updates,
       },
       {
         successMsg: `Status successfully updated for '${project?.name}'`,
@@ -258,7 +277,7 @@ export default function ProjectProfileModal() {
     try {
       const updates: any = { [field]: value };
       let actionLog = '';
-      
+
       if (field === 'releaseDateVal') {
         if (value) {
           const parsed = new Date(value);
@@ -384,12 +403,21 @@ export default function ProjectProfileModal() {
     if (!project) return;
     try {
       await deleteProjectRecord(project.id, project.name, user?.name || 'System');
-      await addProjectAutoLog(project.id, `Project "${project.name}" archived`, user?.name || 'System');
+      await addProjectAutoLog(
+        project.id,
+        `Project "${project.name}" archived`,
+        user?.name || 'System'
+      );
 
       if (project.clientIds) {
         await Promise.all(
           project.clientIds.map(async (cid: string) => {
-            await addAutoLog(cid, `Project "${project.name}" was deleted.`, user?.name || 'System', true);
+            await addAutoLog(
+              cid,
+              `Project "${project.name}" was deleted.`,
+              user?.name || 'System',
+              true
+            );
           })
         );
       }
@@ -436,7 +464,10 @@ export default function ProjectProfileModal() {
                 style={{ zIndex: zIndexBase - 1 }}
               />
             </Dialog.Overlay>
-            <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: zIndexBase }}>
+            <div
+              className="fixed inset-0 flex items-center justify-center pointer-events-none"
+              style={{ zIndex: zIndexBase }}
+            >
               <Dialog.Content
                 onEscapeKeyDown={(e) => {
                   e.preventDefault();
@@ -453,282 +484,339 @@ export default function ProjectProfileModal() {
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                  transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
                   className="w-[95vw] max-w-6xl min-h-[760px] max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex pointer-events-auto"
                 >
-                {/* LEFT SIDEBAR: Persistent Control Center */}
-                <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
-                  {/* Header */}
-                  <div className="p-6 pb-4">
-                    {isEditingName ? (
-                      <div className="flex items-start justify-between rounded-xl -mx-3 px-3 py-2 bg-slate-100/50">
-                        <textarea
-                          ref={(el) => {
-                            if (el) {
-                              el.style.height = 'auto';
-                              el.style.height = el.scrollHeight + 'px';
-                            }
-                          }}
-                          onInput={(e) => {
-                            e.currentTarget.style.height = 'auto';
-                            e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-                          }}
-                          value={editNameValue}
-                          onChange={(e) => setEditNameValue(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleUpdateName();
-                            }
-                            if (e.key === 'Escape') {
-                              setEditNameValue(project?.name || '');
-                              setIsEditingName(false);
-                            }
-                          }}
-                          autoFocus
-                          rows={1}
-                          className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
-                        />
-                        <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUpdateName();
+                  {/* LEFT SIDEBAR: Persistent Control Center */}
+                  <div className="w-[320px] bg-slate-50/80 border-r border-slate-200/60 flex flex-col shrink-0">
+                    {/* Header */}
+                    <div className="p-6 pb-4">
+                      {isEditingName ? (
+                        <div className="flex items-start justify-between rounded-xl -mx-3 px-3 py-2 bg-slate-100/50">
+                          <textarea
+                            ref={(el) => {
+                              if (el) {
+                                el.style.height = 'auto';
+                                el.style.height = el.scrollHeight + 'px';
+                              }
                             }}
-                            className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
-                            title="Save"
-                          >
-                            <Check className="w-5 h-5 stroke-[2.5]" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditNameValue(project?.name || '');
-                              setIsEditingName(false);
+                            onInput={(e) => {
+                              e.currentTarget.style.height = 'auto';
+                              e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
                             }}
-                            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
-                            title="Cancel"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
-                        onClick={() => setIsEditingName(true)}
-                      >
-                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
-                          {project?.name || 'Unnamed Project'}
-                        </h2>
-                        <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto custom-thin-scroll px-6 pb-6 flex flex-col gap-5">
-                    {/* Top Priority: Metadata Tokens */}
-                    <div className="flex flex-col gap-3">
-                      {(() => {
-                        const getStatusIcon = (statusName: string) => {
-                          const s = settings?.statuses?.find((x: any) => x.name === statusName);
-                          const iconName = s?.icon;
-                          if (!iconName) return Activity;
-                          const IconMatch = Object.entries(LucideIcons).find(
-                            ([key]) => key.toLowerCase() === iconName.toLowerCase().replace(/-/g, '')
-                          )?.[1] as any;
-                          return IconMatch || Activity;
-                        };
-
-                        return (
-                          <>
-                            <div>
-                        <Select
-                          options={(settings?.statuses || []).map((s: any) => ({ label: s.name, value: s.name }))}
-                          value={project?.projectStatus || 'Active'}
-                          onChange={(val) => handleUpdateStatus(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Status"
-                              value={project?.projectStatus || 'Active'}
-                              icon={getStatusIcon(project?.projectStatus || 'Active')}
-                            />
-                          }
-                        />
-                      </div>
-
-                      <div>
-                        <Select
-                          options={(settings?.managers?.map((m: any) => m.name) || []).map((o: string) => ({ label: o, value: o }))}
-                          value={project?.assignee || ''}
-                          onChange={(val) => handleUpdateManager(val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Manager"
-                              value={project?.assignee || 'Unassigned'}
-                              icon={User}
-                            />
-                          }
-                        />
-                      </div>
-
-                      <div>
-                        <DatePicker
-                          value={project?.releaseDateVal}
-                          onChange={(val) => handleUpdateGeneric('releaseDateVal', val)}
-                          trigger={
-                            <TokenTrigger
-                              label="Release"
-                              value={project?.releaseDateVal ? new Date(project.releaseDateVal).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No Date'}
-                              icon={Calendar}
-                            />
-                          }
-                        />
-                      </div>
-
-                          </>
-                        );
-                      })()}
-
-                      <div className="relative group/input mt-1">
-                        <label className="sr-only">Live Units</label>
-                        <div className="relative transition-transform duration-200 group-hover/input:translate-x-1">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                             <Building className="w-4 h-4 text-slate-400 group-hover/input:text-primary transition-colors" />
-                             <span className="text-[13px] font-medium text-slate-500">Units:</span>
-                          </div>
-                          <input
-                            type="number"
-                            className="w-[140px] h-10 rounded-full border border-slate-200 bg-white pl-[84px] pr-4 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-[13px] font-semibold text-slate-900 transition-all hover:border-primary/50 hover:shadow-md"
-                            defaultValue={project?.units || 0}
-                            onBlur={(e) => handleUpdateGeneric('units', parseInt(e.target.value) || 0)}
-                            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                            value={editNameValue}
+                            onChange={(e) => setEditNameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleUpdateName();
+                              }
+                              if (e.key === 'Escape') {
+                                setEditNameValue(project?.name || '');
+                                setIsEditingName(false);
+                              }
+                            }}
+                            autoFocus
+                            rows={1}
+                            className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
+                          <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUpdateName();
+                              }}
+                              className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
+                              title="Save"
+                            >
+                              <Check className="w-5 h-5 stroke-[2.5]" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditNameValue(project?.name || '');
+                                setIsEditingName(false);
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
+                              title="Cancel"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div
+                          className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
+                          onClick={() => setIsEditingName(true)}
+                        >
+                          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
+                            {project?.name || 'Unnamed Project'}
+                          </h2>
+                          <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                        </div>
+                      )}
                     </div>
 
-                    {/* Entities Links */}
-                    <div className="flex flex-col gap-6 pt-6 border-t border-slate-200/60">
-                      {/* Developer Clients */}
-                      <div className="flex flex-col gap-2 group/dev-clients">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-bold text-slate-500 tracking-wider">Developer Clients</span>
-                          <Popover.Root open={popoverOpen === 'devClients'} onOpenChange={(o) => setPopoverOpen(o ? 'devClients' : null)}>
-                            <Popover.Trigger asChild>
-                              <button className="opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
-                                <Pencil className="w-3 h-3" />
-                                Edit
-                              </button>
-                            </Popover.Trigger>
-                            <Popover.Content side="right" sideOffset={12} className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]">
-                              <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-                                <Search className="w-4 h-4 text-slate-400 ml-2" />
-                                <input
-                                  type="text"
-                                  placeholder="Search developers..."
-                                  className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
-                                  value={clientSearch}
-                                  onChange={(e) => setClientSearch(e.target.value)}
-                                  autoFocus
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll px-6 pb-6 flex flex-col gap-5">
+                      {/* Top Priority: Metadata Tokens */}
+                      <div className="flex flex-col gap-3">
+                        {(() => {
+                          const getStatusIcon = (statusName: string) => {
+                            const s = settings?.statuses?.find((x: any) => x.name === statusName);
+                            const iconName = s?.icon;
+                            if (!iconName) return Activity;
+                            const IconMatch = Object.entries(LucideIcons).find(
+                              ([key]) =>
+                                key.toLowerCase() === iconName.toLowerCase().replace(/-/g, '')
+                            )?.[1] as any;
+                            return IconMatch || Activity;
+                          };
+
+                          return (
+                            <>
+                              <div>
+                                <Select
+                                  options={(settings?.statuses || []).map((s: any) => ({
+                                    label: s.name,
+                                    value: s.name,
+                                  }))}
+                                  value={project?.projectStatus || 'Active'}
+                                  onChange={(val) => handleUpdateStatus(val)}
+                                  trigger={
+                                    <TokenTrigger
+                                      label="Status"
+                                      value={project?.projectStatus || 'Active'}
+                                      icon={getStatusIcon(project?.projectStatus || 'Active')}
+                                    />
+                                  }
                                 />
                               </div>
-                              <div className="overflow-y-auto p-1 custom-thin-scroll">
-                                {filteredClients
-                                  .filter((c) => c.clientType === 'Developer' || !c.clientType)
-                                  .map((c) => {
-                                    const isSelected = project?.developerIds?.includes(c.clientId || c.id) || project?.clientIds?.includes(c.clientId || c.id);
-                                    return (
-                                      <button
-                                        key={c.clientId || c.id}
-                                        onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName)}
-                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
-                                      >
-                                        <span className="truncate text-left">{c.companyName}</span>
-                                        {isSelected && <Check className="w-4 h-4 shrink-0" />}
-                                      </button>
-                                    );
-                                  })}
+
+                              <div>
+                                <Select
+                                  options={(settings?.managers?.map((m: any) => m.name) || []).map(
+                                    (o: string) => ({ label: o, value: o })
+                                  )}
+                                  value={project?.assignee || ''}
+                                  onChange={(val) => handleUpdateManager(val)}
+                                  trigger={
+                                    <TokenTrigger
+                                      label="Manager"
+                                      value={project?.assignee || 'Unassigned'}
+                                      icon={User}
+                                    />
+                                  }
+                                />
                               </div>
-                            </Popover.Content>
-                          </Popover.Root>
-                        </div>
-                        {project?.developers && project.developers.length > 0 ? (
-                          <div className="flex flex-col gap-1.5">
-                            {project.developers.map((cName: string, i: number) => (
-                              <div key={i} className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm">
-                                <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                <span className="truncate">{cName}</span>
+
+                              <div>
+                                <DatePicker
+                                  value={project?.releaseDateVal}
+                                  onChange={(val) => handleUpdateGeneric('releaseDateVal', val)}
+                                  trigger={
+                                    <TokenTrigger
+                                      label="Release"
+                                      value={
+                                        project?.releaseDateVal
+                                          ? new Date(project.releaseDateVal).toLocaleDateString(
+                                              'en-US',
+                                              { month: 'short', day: 'numeric', year: 'numeric' }
+                                            )
+                                          : 'No Date'
+                                      }
+                                      icon={Calendar}
+                                    />
+                                  }
+                                />
                               </div>
-                            ))}
+                            </>
+                          );
+                        })()}
+
+                        <div className="relative group/input mt-1">
+                          <label className="sr-only">Live Units</label>
+                          <div className="relative transition-transform duration-200 group-hover/input:translate-x-1">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                              <Building className="w-4 h-4 text-slate-400 group-hover/input:text-primary transition-colors" />
+                              <span className="text-[13px] font-medium text-slate-500">Units:</span>
+                            </div>
+                            <input
+                              type="number"
+                              className="w-[140px] h-10 rounded-full border border-slate-200 bg-white pl-[84px] pr-4 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-[13px] font-semibold text-slate-900 transition-all hover:border-primary/50 hover:shadow-md"
+                              defaultValue={project?.units || 0}
+                              onBlur={(e) =>
+                                handleUpdateGeneric('units', parseInt(e.target.value) || 0)
+                              }
+                              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                            />
                           </div>
-                        ) : (
-                          <span className="text-[12px] italic text-slate-400 px-1">None attached</span>
-                        )}
+                        </div>
                       </div>
 
-                      {/* Sales & Marketing Clients */}
-                      <div className="flex flex-col gap-2 group/sm-clients">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-bold text-slate-500 tracking-wider">Sales & Marketing Clients</span>
-                          <Popover.Root open={popoverOpen === 'smClients'} onOpenChange={(o) => setPopoverOpen(o ? 'smClients' : null)}>
-                            <Popover.Trigger asChild>
-                              <button className="opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
-                                <Pencil className="w-3 h-3" />
-                                Edit
-                              </button>
-                            </Popover.Trigger>
-                            <Popover.Content side="right" sideOffset={12} className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]">
-                              <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-                                <Search className="w-4 h-4 text-slate-400 ml-2" />
-                                <input
-                                  type="text"
-                                  placeholder="Search sales & marketing..."
-                                  className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
-                                  value={clientSearch}
-                                  onChange={(e) => setClientSearch(e.target.value)}
-                                  autoFocus
-                                />
-                              </div>
-                              <div className="overflow-y-auto p-1 custom-thin-scroll">
-                                {filteredClients
-                                  .filter((c) => c.clientType === 'Sales & Marketing')
-                                  .map((c) => {
-                                    const isSelected = project?.salesMarketingIds?.includes(c.clientId || c.id) || project?.clientIds?.includes(c.clientId || c.id);
-                                    return (
-                                      <button
-                                        key={c.clientId || c.id}
-                                        onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName)}
-                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
-                                      >
-                                        <span className="truncate text-left">{c.companyName}</span>
-                                        {isSelected && <Check className="w-4 h-4 shrink-0" />}
-                                      </button>
-                                    );
-                                  })}
-                              </div>
-                            </Popover.Content>
-                          </Popover.Root>
-                        </div>
-                        {project?.salesMarketingClients && project.salesMarketingClients.length > 0 ? (
-                          <div className="flex flex-col gap-1.5">
-                            {project.salesMarketingClients.map((cName: string, i: number) => (
-                              <div key={i} className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm">
-                                <Target className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                <span className="truncate">{cName}</span>
-                              </div>
-                            ))}
+                      {/* Entities Links */}
+                      <div className="flex flex-col gap-6 pt-6 border-t border-slate-200/60">
+                        {/* Developer Clients */}
+                        <div className="flex flex-col gap-2 group/dev-clients">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-bold text-slate-500 tracking-wider">
+                              Developer Clients
+                            </span>
+                            <Popover.Root
+                              open={popoverOpen === 'devClients'}
+                              onOpenChange={(o) => setPopoverOpen(o ? 'devClients' : null)}
+                            >
+                              <Popover.Trigger asChild>
+                                <button className="opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
+                                  <Pencil className="w-3 h-3" />
+                                  Edit
+                                </button>
+                              </Popover.Trigger>
+                              <Popover.Content
+                                side="right"
+                                sideOffset={12}
+                                className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                              >
+                                <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+                                  <Search className="w-4 h-4 text-slate-400 ml-2" />
+                                  <input
+                                    type="text"
+                                    placeholder="Search developers..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
+                                    value={clientSearch}
+                                    onChange={(e) => setClientSearch(e.target.value)}
+                                    autoFocus
+                                  />
+                                </div>
+                                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                                  {filteredClients
+                                    .filter((c) => c.clientType === 'Developer' || !c.clientType)
+                                    .map((c) => {
+                                      const isSelected =
+                                        project?.developerIds?.includes(c.clientId || c.id) ||
+                                        project?.clientIds?.includes(c.clientId || c.id);
+                                      return (
+                                        <button
+                                          key={c.clientId || c.id}
+                                          onClick={() =>
+                                            toggleClientArrayItem(c.clientId || c.id, c.companyName)
+                                          }
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                        >
+                                          <span className="truncate text-left">
+                                            {c.companyName}
+                                          </span>
+                                          {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </Popover.Content>
+                            </Popover.Root>
                           </div>
-                        ) : (
-                          <span className="text-[12px] italic text-slate-400 px-1">None attached</span>
-                        )}
+                          {project?.developers && project.developers.length > 0 ? (
+                            <div className="flex flex-col gap-1.5">
+                              {project.developers.map((cName: string, i: number) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
+                                >
+                                  <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                  <span className="truncate">{cName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[12px] italic text-slate-400 px-1">
+                              None attached
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Sales & Marketing Clients */}
+                        <div className="flex flex-col gap-2 group/sm-clients">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-bold text-slate-500 tracking-wider">
+                              Sales & Marketing Clients
+                            </span>
+                            <Popover.Root
+                              open={popoverOpen === 'smClients'}
+                              onOpenChange={(o) => setPopoverOpen(o ? 'smClients' : null)}
+                            >
+                              <Popover.Trigger asChild>
+                                <button className="opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
+                                  <Pencil className="w-3 h-3" />
+                                  Edit
+                                </button>
+                              </Popover.Trigger>
+                              <Popover.Content
+                                side="right"
+                                sideOffset={12}
+                                className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                              >
+                                <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+                                  <Search className="w-4 h-4 text-slate-400 ml-2" />
+                                  <input
+                                    type="text"
+                                    placeholder="Search sales & marketing..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
+                                    value={clientSearch}
+                                    onChange={(e) => setClientSearch(e.target.value)}
+                                    autoFocus
+                                  />
+                                </div>
+                                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                                  {filteredClients
+                                    .filter((c) => c.clientType === 'Sales & Marketing')
+                                    .map((c) => {
+                                      const isSelected =
+                                        project?.salesMarketingIds?.includes(c.clientId || c.id) ||
+                                        project?.clientIds?.includes(c.clientId || c.id);
+                                      return (
+                                        <button
+                                          key={c.clientId || c.id}
+                                          onClick={() =>
+                                            toggleClientArrayItem(c.clientId || c.id, c.companyName)
+                                          }
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                        >
+                                          <span className="truncate text-left">
+                                            {c.companyName}
+                                          </span>
+                                          {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </Popover.Content>
+                            </Popover.Root>
+                          </div>
+                          {project?.salesMarketingClients &&
+                          project.salesMarketingClients.length > 0 ? (
+                            <div className="flex flex-col gap-1.5">
+                              {project.salesMarketingClients.map((cName: string, i: number) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
+                                >
+                                  <Target className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                  <span className="truncate">{cName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[12px] italic text-slate-400 px-1">
+                              None attached
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
                       {/* Project Links (Avesdo ID & Teamwork) */}
                       <div className="flex flex-col gap-4 mt-2">
                         <div className="flex flex-col gap-2">
-                          <span className="text-[11px] font-bold text-slate-500 tracking-wider mb-1">Avesdo Development ID</span>
+                          <span className="text-[11px] font-bold text-slate-500 tracking-wider mb-1">
+                            Avesdo Development ID
+                          </span>
                           <div>
                             <input
                               type="text"
@@ -740,11 +828,14 @@ export default function ProjectProfileModal() {
                                 try {
                                   await updateProjectRecord(
                                     { ...project, developmentId: val },
-                                    { successMsg: `Avesdo ID updated to ${val}`, errorMsg: `Failed to update ID.` },
+                                    {
+                                      successMsg: `Avesdo ID updated to ${val}`,
+                                      errorMsg: `Failed to update ID.`,
+                                    },
                                     `Avesdo ID updated to ${val}`,
                                     user?.name
                                   );
-                                } catch(err) {}
+                                } catch (err) {}
                               }}
                               onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
                               placeholder="e.g. 123"
@@ -768,7 +859,10 @@ export default function ProjectProfileModal() {
                                 if (teamworkLink !== (project?.teamworkLink || '')) {
                                   await updateProjectRecord(
                                     { ...project, teamworkLink } as any,
-                                    { successMsg: 'Teamwork link updated.', errorMsg: 'Failed to update Teamwork link.' },
+                                    {
+                                      successMsg: 'Teamwork link updated.',
+                                      errorMsg: 'Failed to update Teamwork link.',
+                                    },
                                     `Teamwork Link updated to ${teamworkLink}`,
                                     user?.name
                                   );
@@ -780,7 +874,10 @@ export default function ProjectProfileModal() {
                                   if (teamworkLink !== (project?.teamworkLink || '')) {
                                     await updateProjectRecord(
                                       { ...project, teamworkLink: e.currentTarget.value } as any,
-                                      { successMsg: 'Teamwork link updated.', errorMsg: 'Failed to update Teamwork link.' },
+                                      {
+                                        successMsg: 'Teamwork link updated.',
+                                        errorMsg: 'Failed to update Teamwork link.',
+                                      },
                                       `Teamwork Link updated to ${e.currentTarget.value}`,
                                       user?.name
                                     );
@@ -798,16 +895,23 @@ export default function ProjectProfileModal() {
                             <div className="flex items-center gap-2 w-full rounded-xl border border-slate-200/60 bg-white px-3 py-2 shadow-sm transition-all group">
                               {project?.teamworkLink ? (
                                 <a
-                                  href={project.teamworkLink.match(/^https?:\/\//) ? project.teamworkLink : `https://${project.teamworkLink}`}
+                                  href={
+                                    project.teamworkLink.match(/^https?:\/\//)
+                                      ? project.teamworkLink
+                                      : `https://${project.teamworkLink}`
+                                  }
                                   target="_blank"
                                   rel="noreferrer"
                                   className="flex-1 text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline truncate"
                                   title={project.teamworkLink}
                                 >
-                                  Open Link <LucideIcons.ExternalLink className="w-3 h-3 inline-block ml-0.5 mb-0.5" />
+                                  Open Link{' '}
+                                  <LucideIcons.ExternalLink className="w-3 h-3 inline-block ml-0.5 mb-0.5" />
                                 </a>
                               ) : (
-                                <span className="flex-1 text-[13px] text-slate-400 italic">None</span>
+                                <span className="flex-1 text-[13px] text-slate-400 italic">
+                                  None
+                                </span>
                               )}
                               <button
                                 onClick={() => setEditingTeamworkLink(true)}
@@ -821,113 +925,123 @@ export default function ProjectProfileModal() {
                         </div>
                       </div>
 
-                    {/* Danger Zone */}
-                    <div className="pt-4 mt-auto border-t border-slate-200/60">
-                      {isConfirmingDelete ? (
-                        <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                          <p className="text-[11px] font-medium text-red-600 text-center">Archive this project?</p>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setIsConfirmingDelete(false)}
-                              className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleDelete}
-                              className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
-                            >
-                              Archive
-                            </button>
+                      {/* Danger Zone */}
+                      <div className="pt-4 mt-auto border-t border-slate-200/60">
+                        {isConfirmingDelete ? (
+                          <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                            <p className="text-[11px] font-medium text-red-600 text-center">
+                              Archive this project?
+                            </p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setIsConfirmingDelete(false)}
+                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={handleDelete}
+                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                              >
+                                Archive
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setIsConfirmingDelete(true)}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
-                        >
-                          <LucideIcons.Archive className="w-4 h-4" />
-                          Archive Project
-                        </button>
-                      )}
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* RIGHT PANE: Main Content */}
-                <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
-                  {/* Close Button overlay */}
-                  <div className="absolute top-4 right-4 z-50">
-                    <button
-                      onClick={closeDrawer}
-                      className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* Horizontal Tabs Header */}
-                  <div className="flex px-8 pt-4 pb-0 border-b border-slate-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 pr-16 overflow-x-auto custom-thin-scroll">
-                    <div className="flex gap-6">
-                      {navItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = activeTab === item.id;
-                        return (
+                        ) : (
                           <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id as any)}
-                            className={`relative flex items-center gap-2 pb-4 pt-2 transition-colors ${
-                              isActive ? 'text-primary font-bold' : 'text-slate-500 hover:text-slate-700 font-medium'
-                            }`}
+                            onClick={() => setIsConfirmingDelete(true)}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
                           >
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
-                            <span className="text-[13px] whitespace-nowrap tracking-wide">{item.label}</span>
-                            {isActive && (
-                              <motion.div
-                                layoutId="activeHorizontalTab"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                                initial={false}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                              />
-                            )}
+                            <LucideIcons.Archive className="w-4 h-4" />
+                            Archive Project
                           </button>
-                        );
-                      })}
+                        )}
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Scrollable Content Area */}
-                  <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative">
-                    <AnimatePresence mode="popLayout">
-                      <motion.div
-                        key={activeTab}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="w-full"
+
+                  {/* RIGHT PANE: Main Content */}
+                  <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
+                    {/* Close Button overlay */}
+                    <div className="absolute top-4 right-4 z-50">
+                      <button
+                        onClick={closeDrawer}
+                        className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
                       >
-                        {activeTab === 'overview' && <ProjectFeaturesTab project={project} />}
-                        {activeTab === 'onboarding' && <ProjectOnboardingTab project={project} />}
-                        {activeTab === 'health' && <ProjectHealthTab project={project} />}
-                        {activeTab === 'services' && <ProjectServicesTab project={project} />}
-                        {activeTab === 'notes' && project && (
-                          <TimelineTab
-                            notes={project.notes || []}
-                            onSaveNotes={async (updatedNotes: any[]) => {
-                              await updateProjectRecord({ ...project, notes: updatedNotes } as any, {
-                                successMsg: 'Timeline saved.',
-                                errorMsg: 'Failed to save timeline.',
-                              });
-                            }}
-                          />
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Horizontal Tabs Header */}
+                    <div className="flex px-8 pt-4 pb-0 border-b border-slate-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 pr-16 overflow-x-auto custom-thin-scroll">
+                      <div className="flex gap-6">
+                        {navItems.map((item) => {
+                          const Icon = item.icon;
+                          const isActive = activeTab === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => setActiveTab(item.id as any)}
+                              className={`relative flex items-center gap-2 pb-4 pt-2 transition-colors ${
+                                isActive
+                                  ? 'text-primary font-bold'
+                                  : 'text-slate-500 hover:text-slate-700 font-medium'
+                              }`}
+                            >
+                              <Icon
+                                className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-slate-400'}`}
+                              />
+                              <span className="text-[13px] whitespace-nowrap tracking-wide">
+                                {item.label}
+                              </span>
+                              {isActive && (
+                                <motion.div
+                                  layoutId="activeHorizontalTab"
+                                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
+                                  initial={false}
+                                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Scrollable Content Area */}
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative">
+                      <AnimatePresence mode="popLayout">
+                        <motion.div
+                          key={activeTab}
+                          layout
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="w-full"
+                        >
+                          {activeTab === 'overview' && <ProjectFeaturesTab project={project} />}
+                          {activeTab === 'onboarding' && <ProjectOnboardingTab project={project} />}
+                          {activeTab === 'health' && <ProjectHealthTab project={project} />}
+                          {activeTab === 'services' && <ProjectServicesTab project={project} />}
+                          {activeTab === 'notes' && project && (
+                            <TimelineTab
+                              notes={project.notes || []}
+                              onSaveNotes={async (updatedNotes: any[]) => {
+                                await updateProjectRecord(
+                                  { ...project, notes: updatedNotes } as any,
+                                  {
+                                    successMsg: 'Timeline saved.',
+                                    errorMsg: 'Failed to save timeline.',
+                                  }
+                                );
+                              }}
+                            />
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
-                </div>
                 </motion.div>
               </Dialog.Content>
             </div>

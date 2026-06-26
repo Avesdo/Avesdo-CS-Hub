@@ -41,9 +41,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-[11px] font-bold shrink-0">
           {selectedCount}
         </span>
-        <span className="text-[13px] font-bold text-slate-700">
-          Projects Selected
-        </span>
+        <span className="text-[13px] font-bold text-slate-700">Projects Selected</span>
       </div>
 
       <div className="flex items-center gap-1">
@@ -62,9 +60,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
               <button
                 className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.assignee ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
-                {pendingUpdates.assignee
-                  ? `Manager: ${pendingUpdates.assignee}`
-                  : 'Manager...'}
+                {pendingUpdates.assignee ? `Manager: ${pendingUpdates.assignee}` : 'Manager...'}
               </button>
             }
           />

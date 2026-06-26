@@ -133,8 +133,8 @@ export function DatePicker({
             isSelected
               ? 'bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-sm'
               : isToday
-              ? 'font-bold text-primary bg-primary/5'
-              : 'text-foreground'
+                ? 'font-bold text-primary bg-primary/5'
+                : 'text-foreground'
           }`}
         >
           {day}
@@ -162,12 +162,16 @@ export function DatePicker({
       }}
     >
       <Popover.Trigger asChild>
-        <div className={`relative popover-container ${trigger ? 'inline-block' : 'block w-full'} ${className}`}>
+        <div
+          className={`relative popover-container ${trigger ? 'inline-block' : 'block w-full'} ${className}`}
+        >
           {trigger ? (
             <div className="w-fit">{trigger}</div>
           ) : (
             <div className="flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 cursor-pointer transition-all duration-200">
-              <span className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <span
+                className={`font-semibold ${value ? 'text-foreground' : 'text-muted-foreground'}`}
+              >
                 {displayStr}
               </span>
               <Calendar className="w-4 h-4 text-muted-foreground" />

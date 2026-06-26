@@ -7,17 +7,19 @@ interface PortalSuccessViewProps {
 }
 
 export function PortalSuccessView({ activeFormType, onNavigate }: PortalSuccessViewProps) {
-  let successTitle = "Thank You!";
-  let successMsg = "Your submission has been received. We appreciate your partnership!";
-  
+  const successTitle = 'Thank You!';
+  let successMsg = 'Your submission has been received. We appreciate your partnership!';
+
   if (activeFormType === 'onboardingCsat') {
-    successMsg = "Thank you for your valuable feedback. We truly appreciate your partnership!";
+    successMsg = 'Thank you for your valuable feedback. We truly appreciate your partnership!';
   } else if (activeFormType === 'survey') {
-    successMsg = "Your onboarding survey has been successfully submitted. We will review the details shortly to begin configuration.";
+    successMsg =
+      'Your onboarding survey has been successfully submitted. We will review the details shortly to begin configuration.';
   } else if (activeFormType === 'clientQA') {
-    successMsg = "Your quality assurance review has been submitted. Our team will review your feedback and reach out shortly.";
+    successMsg =
+      'Your quality assurance review has been submitted. Our team will review your feedback and reach out shortly.';
   } else if (activeFormType === 'certification') {
-    successMsg = "Your project certification has been successfully updated.";
+    successMsg = 'Your project certification has been successfully updated.';
   }
 
   return (

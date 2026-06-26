@@ -140,8 +140,7 @@ export function mapAppState(state: AppState, authUser: any | null): AppState {
         assignee: primaryManager,
         clients: resolvedIds
           .map(
-            (id: string) =>
-              state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
+            (id: string) => state.clients.find((c) => c.clientId === id || c.id === id)?.companyName
           )
           .filter(Boolean) as string[],
         clientName:

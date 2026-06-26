@@ -1,5 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { Layers, Plus, DollarSign, Target, Clock, AlertCircle, User, Calendar, Briefcase, Building2, Search } from 'lucide-react';
+import {
+  Layers,
+  Plus,
+  DollarSign,
+  Target,
+  Clock,
+  AlertCircle,
+  User,
+  Calendar,
+  Briefcase,
+  Building2,
+  Search,
+} from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
 import { useUI } from '../../../context/UIContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,8 +23,8 @@ interface ClientProjectsTabProps {
 }
 
 export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
   const { openDrawer, openModal } = useUI();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,31 +36,38 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
       .sort((a, b) => b.updatedAt - a.updatedAt);
   }, [projects, client]);
 
-  const { totalProjects, onboardingCount, activeCount, closedCount, hasSuspended, totalUnits } = useMemo(() => {
-    let ob = 0;
-    let act = 0;
-    let cls = 0;
-    let suspended = false;
-    let units = 0;
-    let totalProj = 0;
+  const { totalProjects, onboardingCount, activeCount, closedCount, hasSuspended, totalUnits } =
+    useMemo(() => {
+      let ob = 0;
+      let act = 0;
+      let cls = 0;
+      let suspended = false;
+      let units = 0;
+      let totalProj = 0;
 
-    clientProjects.forEach(p => {
-      const status = p.status || p.projectStatus;
-      units += parseInt(p.units as any) || 0;
-      
-      if (status === 'Cancelled') return;
-      
-      totalProj++;
-      if (status === 'Onboarding') ob++;
-      else if (status === 'Active' || status === 'Suspended') {
-        act++;
-        if (status === 'Suspended') suspended = true;
-      }
-      else if (['Closed', 'Completed', 'Lost', 'Churned'].includes(status)) cls++;
-    });
+      clientProjects.forEach((p) => {
+        const status = p.status || p.projectStatus;
+        units += parseInt(p.units as any) || 0;
 
-    return { totalProjects: totalProj, onboardingCount: ob, activeCount: act, closedCount: cls, hasSuspended: suspended, totalUnits: units };
-  }, [clientProjects]);
+        if (status === 'Cancelled') return;
+
+        totalProj++;
+        if (status === 'Onboarding') ob++;
+        else if (status === 'Active' || status === 'Suspended') {
+          act++;
+          if (status === 'Suspended') suspended = true;
+        } else if (['Closed', 'Completed', 'Lost', 'Churned'].includes(status)) cls++;
+      });
+
+      return {
+        totalProjects: totalProj,
+        onboardingCount: ob,
+        activeCount: act,
+        closedCount: cls,
+        hasSuspended: suspended,
+        totalUnits: units,
+      };
+    }, [clientProjects]);
 
   const filterTabs = useMemo(() => {
     const tabs = ['All', 'Onboarding', 'Active', 'Closed'];
@@ -58,15 +77,15 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
 
   const displayedProjects = useMemo(() => {
     let result = clientProjects;
-    
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(p => p.name?.toLowerCase().includes(q));
+      result = result.filter((p) => p.name?.toLowerCase().includes(q));
     }
 
     return result.filter((p) => {
       const status = p.status || p.projectStatus;
-      
+
       if (filter === 'All') return true;
       if (filter === 'Closed') return ['Closed', 'Completed', 'Lost', 'Churned'].includes(status);
       if (filter === 'Active') return status === 'Active';
@@ -87,12 +106,15 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
 
   const formatCurrency = (val: any) => {
     const num = parseCurrency(val);
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(num);
   };
 
   return (
     <div className="flex flex-col space-y-6">
-      
       {/* Header & Quick Actions */}
       <div className="flex justify-between items-center mb-1">
         <div>
@@ -116,8 +138,10 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
       {/* Top-Level Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Total Projects Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           whileHover={{ y: -4, scale: 1.01 }}
           className="relative overflow-hidden bg-white border border-slate-200/60 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all duration-300 group flex flex-col justify-between"
         >
@@ -126,7 +150,13 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
               <Building2 className="w-5 h-5" />
             </div>
-            <UITooltip content={<span className="text-xs">Total number of projects for this client across all statuses.</span>}>
+            <UITooltip
+              content={
+                <span className="text-xs">
+                  Total number of projects for this client across all statuses.
+                </span>
+              }
+            >
               <AlertCircle className="w-4 h-4 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
             </UITooltip>
           </div>
@@ -134,14 +164,18 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             <h3 className="text-slate-500 text-sm font-medium">Total Projects</h3>
             <div className="flex items-end gap-3 mt-1">
               <p className="text-3xl font-bold text-slate-900 tracking-tight">{totalProjects}</p>
-              <p className="text-xs text-slate-500 font-medium pb-1.5">{onboardingCount} Onboarding • {activeCount} Active • {closedCount} Closed</p>
+              <p className="text-xs text-slate-500 font-medium pb-1.5">
+                {onboardingCount} Onboarding • {activeCount} Active • {closedCount} Closed
+              </p>
             </div>
           </div>
         </motion.div>
 
         {/* Total Units Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           whileHover={{ y: -4, scale: 1.01 }}
           className="relative overflow-hidden bg-white border border-slate-200/60 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 group flex flex-col justify-between"
         >
@@ -150,13 +184,17 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
               <Layers className="w-5 h-5" />
             </div>
-            <UITooltip content={<span className="text-xs">Total volume of units across all projects.</span>}>
+            <UITooltip
+              content={<span className="text-xs">Total volume of units across all projects.</span>}
+            >
               <AlertCircle className="w-4 h-4 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
             </UITooltip>
           </div>
           <div className="relative z-10">
             <h3 className="text-slate-500 text-sm font-medium">Total Units</h3>
-            <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{new Intl.NumberFormat('en-US').format(totalUnits)}</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+              {new Intl.NumberFormat('en-US').format(totalUnits)}
+            </p>
           </div>
         </motion.div>
       </div>
@@ -180,7 +218,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
                   <motion.div
                     layoutId="clientProjectFilter"
                     className="absolute inset-0 bg-white rounded-lg shadow-sm"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}
                 <span className="relative z-10">{t}</span>
@@ -188,7 +226,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
             );
           })}
         </div>
-        
+
         <div className="relative w-full sm:w-64 shrink-0">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -205,22 +243,30 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
       <div className="flex flex-col space-y-3 pb-8">
         <AnimatePresence mode="popLayout">
           {displayedProjects.length === 0 ? (
-            <motion.div 
+            <motion.div
               key="empty-state"
-              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               className="border border-dashed border-slate-200 rounded-2xl bg-slate-50/50 px-6 py-16 flex flex-col items-center justify-center text-center"
             >
               <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center mb-4">
                 <Layers className="w-7 h-7 text-slate-300" />
               </div>
-              <h4 className="text-[15px] font-bold text-slate-700 tracking-tight">No Projects Found</h4>
+              <h4 className="text-[15px] font-bold text-slate-700 tracking-tight">
+                No Projects Found
+              </h4>
               <p className="text-[13px] text-slate-500 mt-1 max-w-[280px]">
-                There are no {filter !== 'All' ? filter.toLowerCase() : ''} projects attached to this client. Click 'Add Project' to create one.
+                There are no {filter !== 'All' ? filter.toLowerCase() : ''} projects attached to
+                this client. Click 'Add Project' to create one.
               </p>
             </motion.div>
           ) : (
             displayedProjects.map((proj, idx) => {
-              const statusDef = settings?.statuses?.find((s: any) => s.name === (proj.status || proj.projectStatus)) || ({} as any);
+              const statusDef =
+                settings?.statuses?.find(
+                  (s: any) => s.name === (proj.status || proj.projectStatus)
+                ) || ({} as any);
               const hex = getSafeHex(statusDef.color, 'slate');
 
               return (
@@ -244,18 +290,22 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
                         color: hex,
                       }}
                     >
-                      {statusDef.icon ? renderIcon(statusDef.icon, 'w-5 h-5') : <Layers className="w-5 h-5" />}
+                      {statusDef.icon ? (
+                        renderIcon(statusDef.icon, 'w-5 h-5')
+                      ) : (
+                        <Layers className="w-5 h-5" />
+                      )}
                     </div>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-slate-900 text-[15px] tracking-tight group-hover:text-primary transition-colors duration-200">
                           {proj.name}
                         </span>
-                        
+
                         {/* Implementation Status Badge */}
                         {getSettingBadge('phases', proj.onboardingPhase || 'Phase 1', settings)}
                       </div>
-                      
+
                       {/* Sub-details */}
                       <div className="flex items-center gap-3 mt-1.5">
                         <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
@@ -275,14 +325,26 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
                     <span className="font-bold text-slate-800 text-[14px] tracking-tight flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-slate-400" />
                       {(() => {
-                        const dateVal = proj.releaseDateVal || (proj.releaseDate ? new Date(proj.releaseDate).getTime() : 0);
-                        return dateVal ? new Date(dateVal).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unscheduled';
+                        const dateVal =
+                          proj.releaseDateVal ||
+                          (proj.releaseDate ? new Date(proj.releaseDate).getTime() : 0);
+                        return dateVal
+                          ? new Date(dateVal).toLocaleDateString([], {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : 'Unscheduled';
                       })()}
                     </span>
-                    
+
                     {(proj.status === 'Onboarding' || proj.projectStatus === 'Onboarding') && (
                       <div className="mt-1.5">
-                        {getSettingBadge('timelines', proj.timelineStatus || 'Not Started', settings)}
+                        {getSettingBadge(
+                          'timelines',
+                          proj.timelineStatus || 'Not Started',
+                          settings
+                        )}
                       </div>
                     )}
                   </div>
@@ -295,4 +357,3 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
     </div>
   );
 }
-

@@ -47,7 +47,7 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
   const removeItemsFromLog = async (idsToRemove: string[]) => {
     const updatedList = autoProcessed.filter((i: any) => !idsToRemove.includes(i.id));
     await updateDoc(doc(db, 'system_logs', log.id), {
-      autoProcessed: updatedList
+      autoProcessed: updatedList,
     });
     onUpdate();
     if (updatedList.length === 0) {
@@ -64,7 +64,7 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
         batch.update(doc(db, 'aliases', id), { status: 'pending_approval' });
       }
       await batch.commit();
-      
+
       await removeItemsFromLog(idsToUndo);
       toast.success(`Successfully undone ${idsToUndo.length} item(s)`);
       setSelected(new Set());
@@ -94,7 +94,6 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
   return (
     <div className="fixed inset-0 z-[120] flex justify-end bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="w-[500px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 z-[130]">
-        
         {/* Two-tone aesthetic header with blurred gradient aura */}
         <div className="relative px-6 py-5 border-b border-slate-200 flex flex-col bg-slate-50 overflow-hidden">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
@@ -102,11 +101,16 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
             <div className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
               <h2 className="text-lg font-bold text-slate-800">Auto-Processed Corrections</h2>
             </div>
-            <button onClick={onClose} className="p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 rounded-full transition-colors bg-white/50 border border-slate-200/50">
+            <button
+              onClick={onClose}
+              className="p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 rounded-full transition-colors bg-white/50 border border-slate-200/50"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <p className="relative z-10 text-sm text-slate-500 mt-3">Select items to undo or dismiss from this log.</p>
+          <p className="relative z-10 text-sm text-slate-500 mt-3">
+            Select items to undo or dismiss from this log.
+          </p>
         </div>
 
         {/* Bulk Actions Bar */}
@@ -153,8 +157,14 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
         {/* List of items */}
         <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-thin-scroll bg-slate-50/50">
           {autoProcessed.map((item: any) => (
-            <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 shadow-sm hover:border-primary/30 transition-all group">
-              <button onClick={() => toggleSelect(item.id)} className="mt-1 flex-shrink-0 text-slate-400 hover:text-primary">
+            <div
+              key={item.id}
+              className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 shadow-sm hover:border-primary/30 transition-all group"
+            >
+              <button
+                onClick={() => toggleSelect(item.id)}
+                className="mt-1 flex-shrink-0 text-slate-400 hover:text-primary"
+              >
                 {selected.has(item.id) ? (
                   <CheckSquare className="w-5 h-5 text-primary" />
                 ) : (
@@ -189,7 +199,10 @@ export function AutoProcessedDrawer({ isOpen, onClose, log, onUpdate }: AutoProc
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-                  Automatically mapped to <span className="font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">"{item.targetName}"</span>
+                  Automatically mapped to{' '}
+                  <span className="font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+                    "{item.targetName}"
+                  </span>
                 </p>
               </div>
             </div>

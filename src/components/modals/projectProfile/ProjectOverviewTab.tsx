@@ -9,17 +9,21 @@ interface ProjectOverviewTabProps {
 }
 
 export default React.memo(function ProjectOverviewTab({ project }: ProjectOverviewTabProps) {
-  const user = useAppStore(state => state.user);
+  const user = useAppStore((state) => state.user);
 
   const handleUpdate = async (field: string, value: any) => {
     if (!project || project[field] === value) return;
     try {
       const updates: any = { [field]: value };
-      const fieldName = field === 'avesdoId' ? 'Avesdo ID' : field === 'teamworkLink' ? 'Teamwork Link' : field;
+      const fieldName =
+        field === 'avesdoId' ? 'Avesdo ID' : field === 'teamworkLink' ? 'Teamwork Link' : field;
       const actionLog = `${fieldName} updated to ${value}`;
       await updateProjectRecord(
         { ...project, ...updates },
-        { successMsg: `Updates to '${project.name}' saved successfully`, errorMsg: `Failed to save updates` },
+        {
+          successMsg: `Updates to '${project.name}' saved successfully`,
+          errorMsg: `Failed to save updates`,
+        },
         actionLog,
         user?.name
       );

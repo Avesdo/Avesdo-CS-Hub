@@ -15,7 +15,7 @@ import { Tooltip } from './ui/Tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 export default function Sidebar() {
-  const pendingAliasesCount = useAppStore(state => state.pendingAliasesCount);
+  const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
 

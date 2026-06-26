@@ -7,10 +7,10 @@ import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 
 export default function GlobalSearch() {
-  const clients = useAppStore(state => state.clients);
-  const projects = useAppStore(state => state.projects);
-  const services = useAppStore(state => state.services);
-  const settings = useAppStore(state => state.settings);
+  const clients = useAppStore((state) => state.clients);
+  const projects = useAppStore((state) => state.projects);
+  const services = useAppStore((state) => state.services);
+  const settings = useAppStore((state) => state.settings);
   const { openDrawer, closeDrawer, closeModal, activeDrawers, activeModal } = useUI();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -88,27 +88,39 @@ export default function GlobalSearch() {
   const activeQuery = debouncedQuery.trim();
   const hasEnoughChars = activeQuery.length >= 2;
 
-  const fuseClients = useMemo(() => new Fuse(clients, {
-    keys: ['companyName', 'accountManager'],
-    threshold: 0.4,
-    ignoreLocation: true,
-  }), [clients]);
+  const fuseClients = useMemo(
+    () =>
+      new Fuse(clients, {
+        keys: ['companyName', 'accountManager'],
+        threshold: 0.4,
+        ignoreLocation: true,
+      }),
+    [clients]
+  );
 
-  const fuseProjects = useMemo(() => new Fuse(projects, {
-    keys: ['name', 'assignee', 'clients'],
-    threshold: 0.4,
-    ignoreLocation: true,
-  }), [projects]);
+  const fuseProjects = useMemo(
+    () =>
+      new Fuse(projects, {
+        keys: ['name', 'assignee', 'clients'],
+        threshold: 0.4,
+        ignoreLocation: true,
+      }),
+    [projects]
+  );
 
-  const fuseServices = useMemo(() => new Fuse(services, {
-    keys: ['name', 'clientName', 'invoiceNum'],
-    threshold: 0.4,
-    ignoreLocation: true,
-  }), [services]);
+  const fuseServices = useMemo(
+    () =>
+      new Fuse(services, {
+        keys: ['name', 'clientName', 'invoiceNum'],
+        threshold: 0.4,
+        ignoreLocation: true,
+      }),
+    [services]
+  );
 
-  const cMatches = hasEnoughChars ? fuseClients.search(activeQuery).map(res => res.item) : [];
-  const pMatches = hasEnoughChars ? fuseProjects.search(activeQuery).map(res => res.item) : [];
-  const sMatches = hasEnoughChars ? fuseServices.search(activeQuery).map(res => res.item) : [];
+  const cMatches = hasEnoughChars ? fuseClients.search(activeQuery).map((res) => res.item) : [];
+  const pMatches = hasEnoughChars ? fuseProjects.search(activeQuery).map((res) => res.item) : [];
+  const sMatches = hasEnoughChars ? fuseServices.search(activeQuery).map((res) => res.item) : [];
 
   const matchedClients = viewAll ? cMatches : cMatches.slice(0, 4);
   const matchedProjects = viewAll ? pMatches : pMatches.slice(0, 4);

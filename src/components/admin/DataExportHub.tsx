@@ -8,12 +8,48 @@ interface DataExportHubProps {
 }
 
 const EXPORT_FORMS = [
-  { title: 'Onboarding Survey', key: 'survey', isDeliverables: false, desc: 'Client survey responses', category: 'Surveys' },
-  { title: 'Primary QA', key: 'primaryQA', isDeliverables: false, desc: 'Internal Primary QA form responses', category: 'Quality Assurance' },
-  { title: 'Client QA', key: 'clientQA', isDeliverables: false, desc: 'Client QA review feedback', category: 'Quality Assurance' },
-  { title: 'Secondary QA', key: 'secondaryQA', isDeliverables: false, desc: 'Internal Secondary QA sign-offs', category: 'Quality Assurance' },
-  { title: 'Project Certification', key: 'certification', isDeliverables: false, desc: 'Final Project Certification responses', category: 'Milestones' },
-  { title: 'Onboarding CSAT', key: 'onboardingCsat', isDeliverables: false, desc: 'Client Onboarding CSAT Responses', category: 'Surveys' },
+  {
+    title: 'Onboarding Survey',
+    key: 'survey',
+    isDeliverables: false,
+    desc: 'Client survey responses',
+    category: 'Surveys',
+  },
+  {
+    title: 'Primary QA',
+    key: 'primaryQA',
+    isDeliverables: false,
+    desc: 'Internal Primary QA form responses',
+    category: 'Quality Assurance',
+  },
+  {
+    title: 'Client QA',
+    key: 'clientQA',
+    isDeliverables: false,
+    desc: 'Client QA review feedback',
+    category: 'Quality Assurance',
+  },
+  {
+    title: 'Secondary QA',
+    key: 'secondaryQA',
+    isDeliverables: false,
+    desc: 'Internal Secondary QA sign-offs',
+    category: 'Quality Assurance',
+  },
+  {
+    title: 'Project Certification',
+    key: 'certification',
+    isDeliverables: false,
+    desc: 'Final Project Certification responses',
+    category: 'Milestones',
+  },
+  {
+    title: 'Onboarding CSAT',
+    key: 'onboardingCsat',
+    isDeliverables: false,
+    desc: 'Client Onboarding CSAT Responses',
+    category: 'Surveys',
+  },
 ];
 
 export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTemplate }) => {
@@ -33,12 +69,16 @@ export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTempl
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {EXPORT_FORMS.map((form) => {
           const template = getTemplate(form.title);
-          
+
           // Calculate Entry Count (Rows) based on the exact same logic the exporter uses
           let entryCount = 0;
-          projects.forEach(p => {
+          projects.forEach((p) => {
             const flag = 'has' + form.key.charAt(0).toUpperCase() + form.key.slice(1);
-            const data = form.isDeliverables ? p.deliverables : (form.key === 'onboardingCsat' ? p.health?.onboardingCsat : p.onboarding?.[form.key]);
+            const data = form.isDeliverables
+              ? p.deliverables
+              : form.key === 'onboardingCsat'
+                ? p.health?.onboardingCsat
+                : p.onboarding?.[form.key];
             if (p[flag] || (data && Object.keys(data).length > 0)) {
               entryCount++;
             }
@@ -47,7 +87,10 @@ export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTempl
           const isDownloading = downloading === form.key;
 
           return (
-            <div key={form.key} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col hover:border-slate-300 hover:shadow-sm transition-all group">
+            <div
+              key={form.key}
+              className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col hover:border-slate-300 hover:shadow-sm transition-all group"
+            >
               <div className="flex items-start gap-3.5 mb-2">
                 <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
                   <FileSpreadsheet className="w-5 h-5 text-indigo-500" />
@@ -69,9 +112,10 @@ export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTempl
                   onClick={() => handleExport(form, template)}
                   disabled={isDownloading}
                   className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all
-                    ${isDownloading 
-                      ? 'bg-primary/10 text-primary border border-transparent cursor-wait' 
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 active:scale-95'
+                    ${
+                      isDownloading
+                        ? 'bg-primary/10 text-primary border border-transparent cursor-wait'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 active:scale-95'
                     }`}
                 >
                   {isDownloading ? (

@@ -26,9 +26,9 @@ export function TruncatedText({
       // A highly robust way to check truncation is comparing the raw text width to the container width.
       const textWidth = textRef.current.getBoundingClientRect().width;
       const containerWidth = containerRef.current.getBoundingClientRect().width;
-      
+
       const isActuallyTruncated =
-        containerRef.current.scrollWidth > containerRef.current.clientWidth || 
+        containerRef.current.scrollWidth > containerRef.current.clientWidth ||
         textWidth > containerWidth;
 
       setIsTruncated(isActuallyTruncated);
@@ -51,10 +51,7 @@ export function TruncatedText({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div
-        ref={containerRef}
-        className={`min-w-0 truncate w-full ${className}`}
-      >
+      <div ref={containerRef} className={`min-w-0 truncate w-full ${className}`}>
         <span ref={textRef}>{text}</span>
       </div>
       {isHovered &&

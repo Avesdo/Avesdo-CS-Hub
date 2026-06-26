@@ -10,7 +10,7 @@ interface ServiceDetailsTabProps {
 }
 
 export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
-  const user = useAppStore(state => state.user);
+  const user = useAppStore((state) => state.user);
 
   const handleUpdate = async (
     field: string,
@@ -66,8 +66,6 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
     await updateServiceRecord(payload, { successMsg, errorMsg }, logMsg, user?.name);
   };
-
-
 
   // Price Draft
   const [priceDraft, setPriceDraft] = useState(() =>
@@ -262,14 +260,20 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
   return (
     <div className="flex flex-col space-y-6">
-      {(!service?.type || !service?.status || (!service?.managers?.length && !service?.manager)) && (
+      {(!service?.type ||
+        !service?.status ||
+        (!service?.managers?.length && !service?.manager)) && (
         <div className="px-5 py-4 border border-orange-200/50 bg-orange-50/50 rounded-2xl flex items-start gap-3 shadow-sm">
           <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 mt-0.5">
             <AlertTriangle className="w-4 h-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-orange-800 tracking-tight">Missing Fields</span>
-            <span className="text-xs text-orange-600 font-medium">Please ensure Service Type, Manager, and Status are set in the left sidebar.</span>
+            <span className="text-sm font-semibold text-orange-800 tracking-tight">
+              Missing Fields
+            </span>
+            <span className="text-xs text-orange-600 font-medium">
+              Please ensure Service Type, Manager, and Status are set in the left sidebar.
+            </span>
           </div>
         </div>
       )}
@@ -281,12 +285,15 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
           </div>
           <h2 className="text-xl font-semibold text-slate-800 mb-2">Included service</h2>
           <p className="text-[14px] text-slate-500 max-w-md mx-auto mb-12">
-            This service is included as part of a broader package. Invoicing and commissions are disabled because it does not carry an individual charge.
+            This service is included as part of a broader package. Invoicing and commissions are
+            disabled because it does not carry an individual charge.
           </p>
-          
+
           <div className="w-full max-w-sm mx-auto text-left">
             <div className="group relative">
-              <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">Standard service value</label>
+              <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">
+                Standard service value
+              </label>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-light text-slate-400">$</span>
                 <input
@@ -311,11 +318,13 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                 <LucideIcons.Receipt className="w-5 h-5 text-primary" />
                 Invoicing
               </h3>
-              
+
               <div className="flex flex-col gap-8">
                 {/* Large Editable Number: Invoice Value */}
                 <div className="group relative">
-                  <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">Invoice value</label>
+                  <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">
+                    Invoice value
+                  </label>
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-light text-slate-400">$</span>
                     <input
@@ -332,7 +341,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
                 {/* Standard Editable Number: Service Value */}
                 <div className="group relative">
-                  <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">Service value</label>
+                  <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">
+                    Service value
+                  </label>
                   <div className="flex items-baseline gap-1">
                     <span className="text-lg font-medium text-slate-400">$</span>
                     <input
@@ -351,7 +362,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
             <div className="flex flex-col gap-6">
               <div className="group relative">
-                <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">Invoice number</label>
+                <label className="text-[13px] font-medium text-slate-500 mb-2 block transition-colors group-focus-within:text-primary">
+                  Invoice number
+                </label>
                 <div className="flex items-center gap-2">
                   <LucideIcons.Hash className="w-4 h-4 text-slate-300" />
                   <input
@@ -368,28 +381,50 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
               <div className="flex items-center gap-8 pt-2">
                 <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.invoiceSent ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}>
+                  <div
+                    className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.invoiceSent ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}
+                  >
                     {service?.invoiceSent && <LucideIcons.Check className="w-3.5 h-3.5" />}
                   </div>
                   <input
                     type="checkbox"
                     checked={service?.invoiceSent || false}
-                    onChange={(e) => handleUpdate('invoiceSent', e.target.checked, service?.invoiceSent, 'Invoice Sent')}
+                    onChange={(e) =>
+                      handleUpdate(
+                        'invoiceSent',
+                        e.target.checked,
+                        service?.invoiceSent,
+                        'Invoice Sent'
+                      )
+                    }
                     className="hidden"
                   />
-                  <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Invoice sent</span>
+                  <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
+                    Invoice sent
+                  </span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.invoicePaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}>
+                  <div
+                    className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.invoicePaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}
+                  >
                     {service?.invoicePaid && <LucideIcons.Check className="w-3.5 h-3.5" />}
                   </div>
                   <input
                     type="checkbox"
                     checked={service?.invoicePaid || false}
-                    onChange={(e) => handleUpdate('invoicePaid', e.target.checked, service?.invoicePaid, 'Invoice Paid')}
+                    onChange={(e) =>
+                      handleUpdate(
+                        'invoicePaid',
+                        e.target.checked,
+                        service?.invoicePaid,
+                        'Invoice Paid'
+                      )
+                    }
                     className="hidden"
                   />
-                  <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Invoice paid</span>
+                  <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
+                    Invoice paid
+                  </span>
                 </label>
               </div>
             </div>
@@ -404,12 +439,14 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   Commission
                 </h3>
               </div>
-              
+
               <div className="flex flex-col gap-8">
                 {/* Large Editable Number: Commission Value */}
                 <div className="group relative">
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-[13px] font-medium text-slate-500 transition-colors group-focus-within:text-primary">Commission value</label>
+                    <label className="text-[13px] font-medium text-slate-500 transition-colors group-focus-within:text-primary">
+                      Commission value
+                    </label>
                     <button
                       onClick={autoCalcCommission}
                       className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1 opacity-80 hover:opacity-100"
@@ -436,7 +473,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
 
             <div className="flex flex-col gap-6 pt-2">
               <label className="flex items-center gap-3 cursor-pointer group w-fit">
-                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.commPaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}>
+                <div
+                  className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.commPaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}
+                >
                   {service?.commPaid && <LucideIcons.Check className="w-3.5 h-3.5" />}
                 </div>
                 <input
@@ -445,16 +484,28 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   onChange={(e) => handleCommPaidToggle(e.target.checked)}
                   className="hidden"
                 />
-                <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Commission paid</span>
+                <span className="text-[14px] font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
+                  Commission paid
+                </span>
               </label>
 
               {service?.commPaid && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                  <label className="text-[13px] font-medium text-slate-500 mb-2 block">Payment date</label>
+                  <label className="text-[13px] font-medium text-slate-500 mb-2 block">
+                    Payment date
+                  </label>
                   <div className="w-64">
                     <DatePicker
                       value={service?.commDateVal}
-                      onChange={(val, str) => handleUpdate('commDateVal', val, service?.commDateVal, 'Commission Paid Date', { commDateStr: str })}
+                      onChange={(val, str) =>
+                        handleUpdate(
+                          'commDateVal',
+                          val,
+                          service?.commDateVal,
+                          'Commission Paid Date',
+                          { commDateStr: str }
+                        )
+                      }
                       label="Select date"
                       placeholder="No date set"
                     />

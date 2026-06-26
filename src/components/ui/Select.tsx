@@ -38,9 +38,7 @@ export function Select({
     <div className={`relative inline-block ${className}`}>
       <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger asChild>
-          <div className="cursor-pointer outline-none">
-            {trigger}
-          </div>
+          <div className="cursor-pointer outline-none">{trigger}</div>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content
@@ -58,7 +56,9 @@ export function Select({
                   key={opt.value}
                   value={opt.value}
                   className={`w-full flex items-center justify-between text-left px-3 py-2 text-sm rounded-md transition-colors cursor-pointer outline-none ${
-                    value === opt.value ? 'bg-primary/5 text-primary' : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
+                    value === opt.value
+                      ? 'bg-primary/5 text-primary'
+                      : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                   }`}
                 >
                   <span className="font-medium">{opt.label}</span>

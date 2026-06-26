@@ -12,17 +12,21 @@ interface DeliverablesModalProps {
   onClose: () => void;
 }
 
-const HeaderProgress = ({ template, project }: { template: any, project: any }) => {
+const HeaderProgress = ({ template, project }: { template: any; project: any }) => {
   const { control } = useFormContext();
   const values = useWatch({ control });
-  
+
   let total = 0;
   let completed = 0;
-  
+
   // Count standard items
   const activeFeatures = project?.features || [];
   (template?.sections || []).forEach((sec: any) => {
-    if (!sec.dependsOnFeature || sec.dependsOnFeature.length === 0 || sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))) {
+    if (
+      !sec.dependsOnFeature ||
+      sec.dependsOnFeature.length === 0 ||
+      sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
+    ) {
       sec.items.forEach((item: any) => {
         total++;
         const st = values[item.id]?.status;
@@ -38,15 +42,20 @@ const HeaderProgress = ({ template, project }: { template: any, project: any }) 
   });
 
   const pct = total === 0 ? 0 : (completed / total) * 100;
-  
+
   return (
     <div className="w-full flex flex-col gap-2 px-5 py-4 bg-slate-50 border-t border-slate-100 shadow-inner">
       <div className="flex justify-between items-center text-[13px] font-bold text-slate-600">
         <span>Deliverables Progress</span>
-        <span className="text-primary">{completed} of {total} Completed</span>
+        <span className="text-primary">
+          {completed} of {total} Completed
+        </span>
       </div>
       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60 shadow-inner">
-        <div className="h-full bg-primary rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );
@@ -54,7 +63,7 @@ const HeaderProgress = ({ template, project }: { template: any, project: any }) 
 
 export default function DeliverablesModal({ project, template, onClose }: DeliverablesModalProps) {
   const methods = useForm({
-    defaultValues: project?.deliverables || {}
+    defaultValues: project?.deliverables || {},
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -92,7 +101,11 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       let completed = 0;
       const activeFeatures = project?.features || [];
       (template?.sections || []).forEach((sec: any) => {
-        if (!sec.dependsOnFeature || sec.dependsOnFeature.length === 0 || sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))) {
+        if (
+          !sec.dependsOnFeature ||
+          sec.dependsOnFeature.length === 0 ||
+          sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
+        ) {
           sec.items.forEach((item: any) => {
             total++;
             const st = currentValues[item.id]?.status;
@@ -103,23 +116,26 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       const customs = currentValues._customItems || [];
       total += customs.length;
       customs.forEach((c: any) => {
-        if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(c.status)) completed++;
+        if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(c.status))
+          completed++;
       });
-      
+
       const isComplete = total > 0 && completed === total;
 
       const updatedDeliverables = {
         ...currentValues,
-        submittedAt: isComplete ? (currentValues.submittedAt || now) : currentValues.submittedAt,
+        submittedAt: isComplete ? currentValues.submittedAt || now : currentValues.submittedAt,
         updatedAt: now,
-        status: isComplete ? 'Completed' : 'In Progress'
+        status: isComplete ? 'Completed' : 'In Progress',
       };
-      
-      const toastOptions = silent ? undefined : {
-        successMsg: 'Deliverables saved successfully!',
-        errorMsg: 'Failed to save deliverables.'
-      };
-      
+
+      const toastOptions = silent
+        ? undefined
+        : {
+            successMsg: 'Deliverables saved successfully!',
+            errorMsg: 'Failed to save deliverables.',
+          };
+
       await updateProjectRecord({ ...project, deliverables: updatedDeliverables }, toastOptions);
       lastSavedState.current = JSON.stringify(updatedDeliverables);
       if (!silent) onClose();
@@ -148,43 +164,76 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
     <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[120] bg-black/40 backdrop-blur-sm transition-opacity" />
-        <Dialog.Content 
-          onEscapeKeyDown={(e) => { e.preventDefault(); onClose(); }}
-          onInteractOutside={(e) => { e.preventDefault(); onClose(); }}
+        <Dialog.Content
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            onClose();
+          }}
+          onInteractOutside={(e) => {
+            e.preventDefault();
+            onClose();
+          }}
           className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[130] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
         >
           <FormProvider {...methods}>
             {/* Modal Container */}
             <div className="relative w-full h-full bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
-          
               {/* Header */}
               <div className="flex flex-col border-b border-slate-100 bg-white shrink-0">
                 <div className="flex items-center justify-between px-5 py-3">
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                       <FileText className="w-5 h-5" />
+                      <FileText className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-[18px] font-semibold text-slate-900 tracking-tight">Deliverables Checklist</h2>
+                      <h2 className="text-[18px] font-semibold text-slate-900 tracking-tight">
+                        Deliverables Checklist
+                      </h2>
                       <div className="flex items-center gap-4 mt-1 flex-wrap">
-                        <p className="text-sm text-slate-500">Project: {project?.name || 'Unknown'}</p>
+                        <p className="text-sm text-slate-500">
+                          Project: {project?.name || 'Unknown'}
+                        </p>
                         {isSaving && (
                           <span className="text-[11px] font-bold text-primary flex items-center gap-1.5 animate-pulse">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary" /> Saving...
                           </span>
                         )}
-                        {(project?.deliverables?.submittedAt || project?.deliverables?.updatedAt) && !isSaving && (
-                          <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium px-3 py-0.5 bg-slate-100 rounded-full">
-                            {project?.deliverables?.submittedAt && <span>Completed: {new Date(project?.deliverables.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
-                            {project?.deliverables?.updatedAt && project?.deliverables?.updatedAt !== project?.deliverables?.submittedAt && <span>Updated: {new Date(project?.deliverables.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
-                          </div>
-                        )}
+                        {(project?.deliverables?.submittedAt || project?.deliverables?.updatedAt) &&
+                          !isSaving && (
+                            <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium px-3 py-0.5 bg-slate-100 rounded-full">
+                              {project?.deliverables?.submittedAt && (
+                                <span>
+                                  Completed:{' '}
+                                  {new Date(project?.deliverables.submittedAt).toLocaleDateString(
+                                    'en-US',
+                                    { month: 'short', day: 'numeric', year: 'numeric' }
+                                  )}
+                                </span>
+                              )}
+                              {project?.deliverables?.updatedAt &&
+                                project?.deliverables?.updatedAt !==
+                                  project?.deliverables?.submittedAt && (
+                                  <span>
+                                    Updated:{' '}
+                                    {new Date(project?.deliverables.updatedAt).toLocaleDateString(
+                                      'en-US',
+                                      { month: 'short', day: 'numeric', year: 'numeric' }
+                                    )}
+                                  </span>
+                                )}
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
                     <button
-                      onClick={() => exportFormToCSV('Deliverables Checklist', project, methods.getValues(), { ...template, type: 'checklist' })}
+                      onClick={() =>
+                        exportFormToCSV('Deliverables Checklist', project, methods.getValues(), {
+                          ...template,
+                          type: 'checklist',
+                        })
+                      }
                       className="group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none"
                     >
                       <FileText className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
@@ -194,7 +243,11 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                       onClick={handleCopyLink}
                       className="group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-300 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 hover:-translate-y-0.5"
                     >
-                      {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />}
+                      {copied ? (
+                        <Check className="w-4 h-4 text-emerald-500" />
+                      ) : (
+                        <Copy className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                      )}
                       {copied ? 'Copied!' : 'Copy Client Link'}
                     </button>
                     <button
@@ -205,19 +258,14 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                     </button>
                   </div>
                 </div>
-                
+
                 <HeaderProgress template={template} project={project} />
               </div>
 
               {/* Content Area */}
               <div className="flex-1 min-h-0 flex flex-col">
-                 <DeliverablesGrid
-                    template={template}
-                    project={project}
-                    readOnly={isSaving}
-                 />
+                <DeliverablesGrid template={template} project={project} readOnly={isSaving} />
               </div>
-
             </div>
           </FormProvider>
         </Dialog.Content>

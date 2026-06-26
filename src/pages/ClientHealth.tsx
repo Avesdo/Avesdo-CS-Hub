@@ -79,9 +79,9 @@ const Sparkline = React.memo(({ data }: { data: number[] }) => {
 });
 
 export default function ClientHealth() {
-  const clients = useAppStore(state => state.clients);
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
+  const clients = useAppStore((state) => state.clients);
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
   const { openDrawer, openModal } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
 
@@ -100,196 +100,181 @@ export default function ClientHealth() {
 
   const location = useLocation();
   const [healthHistory, setHealthHistory] = useState<any>({});
-  
 
+  const ClientRow = React.memo(
+    ({
+      c,
+      index,
+      openDrawer,
+      getSettingBadge,
+      settings,
+      getHealthBadge,
+      activeHex,
+      onboardingHex,
 
-  
-const ClientRow = React.memo(({
-  c,
-  index,
-  openDrawer,
-  getSettingBadge,
-  settings,
-  getHealthBadge,
-  activeHex,
-  onboardingHex,
-  
-  hexToRgba,
-  StopProp,
-  Sparkline
-}: any) => {
-  return (
-    <tr
-                          key={c.clientId}
-                          data-index={index}
-                          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
-                          onClick={() => openDrawer('client', c.clientId)} // default to overview
-                        >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
-                            <TruncatedText
-                              text={c.companyName || 'Unnamed Client'}
-                              className="w-full group-hover:text-primary transition-colors"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-muted-foreground border-l-0 hidden md:table-cell">
-                            {(c as any).clientType ? (
-                              getSettingBadge('clientTypes', (c as any).clientType, settings)
-                            ) : (
-                              <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
-                                Unassigned
-                              </span>
-                            )}
-                          </td>
-                          <td
-                            className="px-6 py-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openDrawer('client', c.clientId, { targetTab: 'health' });
-                            }}
-                          >
-                            <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
-                              {getHealthBadge(c.healthScore, settings)}
-                              <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
-                                <Sparkline data={c.trendData} />
-                              </div>
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-2 relative group/projects hidden sm:table-cell"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openDrawer('client', c.clientId, { targetTab: 'projects' });
-                            }}
-                          >
-                            <div className="flex items-center gap-2 p-1 -m-1 rounded hover:bg-slate-50 transition-colors w-fit cursor-pointer">
-                              <div
-                                style={
-                                  c.activeProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(activeHex, 0.1),
-                                        color: activeHex,
-                                        borderColor: hexToRgba(activeHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/active relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.activeProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.activeProjectsCount > 0
-                                      ? { backgroundColor: activeHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.activeProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.activeProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/active:opacity-100 transition-opacity">
-                                  Active Projects
-                                </div>
-                              </div>
+      hexToRgba,
+      StopProp,
+      Sparkline,
+    }: any) => {
+      return (
+        <tr
+          key={c.clientId}
+          data-index={index}
+          className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
+          onClick={() => openDrawer('client', c.clientId)} // default to overview
+        >
+          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors px-6 py-2 font-semibold text-slate-800 border-r-0">
+            <TruncatedText
+              text={c.companyName || 'Unnamed Client'}
+              className="w-full group-hover:text-primary transition-colors"
+            />
+          </td>
+          <td className="px-6 py-2 text-muted-foreground border-l-0 hidden md:table-cell">
+            {(c as any).clientType ? (
+              getSettingBadge('clientTypes', (c as any).clientType, settings)
+            ) : (
+              <span className="text-xs text-slate-400 font-medium bg-slate-100 px-2 py-1 rounded">
+                Unassigned
+              </span>
+            )}
+          </td>
+          <td
+            className="px-6 py-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDrawer('client', c.clientId, { targetTab: 'health' });
+            }}
+          >
+            <div className="flex items-center gap-4 cursor-pointer group/trend p-1 -m-1 rounded hover:bg-slate-100 transition-colors">
+              {getHealthBadge(c.healthScore, settings)}
+              <div className="opacity-80 group-hover/trend:opacity-100 transition-opacity">
+                <Sparkline data={c.trendData} />
+              </div>
+            </div>
+          </td>
+          <td
+            className="px-6 py-2 relative group/projects hidden sm:table-cell"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDrawer('client', c.clientId, { targetTab: 'projects' });
+            }}
+          >
+            <div className="flex items-center gap-2 p-1 -m-1 rounded hover:bg-slate-50 transition-colors w-fit cursor-pointer">
+              <div
+                style={
+                  c.activeProjectsCount > 0
+                    ? {
+                        backgroundColor: hexToRgba(activeHex, 0.1),
+                        color: activeHex,
+                        borderColor: hexToRgba(activeHex, 0.3),
+                      }
+                    : undefined
+                }
+                className={`group/active relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                  c.activeProjectsCount > 0
+                    ? 'shadow-sm'
+                    : 'bg-slate-50 text-slate-400 border-transparent'
+                }`}
+              >
+                <div
+                  style={c.activeProjectsCount > 0 ? { backgroundColor: activeHex } : undefined}
+                  className={`w-1.5 h-1.5 rounded-full ${c.activeProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                />
+                {c.activeProjectsCount}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/active:opacity-100 transition-opacity">
+                  Active Projects
+                </div>
+              </div>
 
-                              <div
-                                style={
-                                  c.onboardingProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(onboardingHex, 0.1),
-                                        color: onboardingHex,
-                                        borderColor: hexToRgba(onboardingHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/onboarding relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.onboardingProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.onboardingProjectsCount > 0
-                                      ? { backgroundColor: onboardingHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.onboardingProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.onboardingProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/onboarding:opacity-100 transition-opacity">
-                                  Onboarding Projects
-                                </div>
-                              </div>
+              <div
+                style={
+                  c.onboardingProjectsCount > 0
+                    ? {
+                        backgroundColor: hexToRgba(onboardingHex, 0.1),
+                        color: onboardingHex,
+                        borderColor: hexToRgba(onboardingHex, 0.3),
+                      }
+                    : undefined
+                }
+                className={`group/onboarding relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                  c.onboardingProjectsCount > 0
+                    ? 'shadow-sm'
+                    : 'bg-slate-50 text-slate-400 border-transparent'
+                }`}
+              >
+                <div
+                  style={
+                    c.onboardingProjectsCount > 0 ? { backgroundColor: onboardingHex } : undefined
+                  }
+                  className={`w-1.5 h-1.5 rounded-full ${c.onboardingProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                />
+                {c.onboardingProjectsCount}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/onboarding:opacity-100 transition-opacity">
+                  Onboarding Projects
+                </div>
+              </div>
 
-                              <div
-                                style={
-                                  c.closedProjectsCount > 0
-                                    ? {
-                                        backgroundColor: hexToRgba(closedHex, 0.1),
-                                        color: closedHex,
-                                        borderColor: hexToRgba(closedHex, 0.3),
-                                      }
-                                    : undefined
-                                }
-                                className={`group/closed relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                                  c.closedProjectsCount > 0
-                                    ? 'shadow-sm'
-                                    : 'bg-slate-50 text-slate-400 border-transparent'
-                                }`}
-                              >
-                                <div
-                                  style={
-                                    c.closedProjectsCount > 0
-                                      ? { backgroundColor: closedHex }
-                                      : undefined
-                                  }
-                                  className={`w-1.5 h-1.5 rounded-full ${c.closedProjectsCount > 0 ? '' : 'bg-slate-300'}`}
-                                />
-                                {c.closedProjectsCount}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/closed:opacity-100 transition-opacity">
-                                  Closed Projects
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-2 text-muted-foreground hidden lg:table-cell"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div className="inline-block relative">
-                              <Select
-                                value={c.accountManager || 'Unassigned'}
-                                options={(settings?.managers?.map((m: any) => m.name) || []).map(
-                                  (m: any) => ({
-                                    label: getSettingBadge('managers', m, settings),
-                                    value: m,
-                                  })
-                                )}
-                                onChange={(val) => handleUpdateManager(c.clientId, val)}
-                                hideCheckmark={true}
-                                trigger={
-                                  <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
-                                    {getSettingBadge('managers', c.accountManager, settings)}
-                                  </div>
-                                }
-                              />
-                            </div>
-                          </td>
-                        </tr>
-    );
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.c === nextProps.c &&
-      prevProps.index === nextProps.index &&
-      prevProps.activeHex === nextProps.activeHex &&
-      prevProps.onboardingHex === nextProps.onboardingHex &&
-      prevProps.settings === nextProps.settings
-    );
-  }
-);
-
+              <div
+                style={
+                  c.closedProjectsCount > 0
+                    ? {
+                        backgroundColor: hexToRgba(closedHex, 0.1),
+                        color: closedHex,
+                        borderColor: hexToRgba(closedHex, 0.3),
+                      }
+                    : undefined
+                }
+                className={`group/closed relative flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
+                  c.closedProjectsCount > 0
+                    ? 'shadow-sm'
+                    : 'bg-slate-50 text-slate-400 border-transparent'
+                }`}
+              >
+                <div
+                  style={c.closedProjectsCount > 0 ? { backgroundColor: closedHex } : undefined}
+                  className={`w-1.5 h-1.5 rounded-full ${c.closedProjectsCount > 0 ? '' : 'bg-slate-300'}`}
+                />
+                {c.closedProjectsCount}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-100 text-slate-800 border border-slate-200 shadow-lg text-sm px-3 py-2 rounded-md whitespace-nowrap z-[100] pointer-events-none font-medium opacity-0 group-hover/closed:opacity-100 transition-opacity">
+                  Closed Projects
+                </div>
+              </div>
+            </div>
+          </td>
+          <td
+            className="px-6 py-2 text-muted-foreground hidden lg:table-cell"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="inline-block relative">
+              <Select
+                value={c.accountManager || 'Unassigned'}
+                options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
+                  label: getSettingBadge('managers', m, settings),
+                  value: m,
+                }))}
+                onChange={(val) => handleUpdateManager(c.clientId, val)}
+                hideCheckmark={true}
+                trigger={
+                  <div className="cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all rounded-full inline-block">
+                    {getSettingBadge('managers', c.accountManager, settings)}
+                  </div>
+                }
+              />
+            </div>
+          </td>
+        </tr>
+      );
+    },
+    (prevProps, nextProps) => {
+      return (
+        prevProps.c === nextProps.c &&
+        prevProps.index === nextProps.index &&
+        prevProps.activeHex === nextProps.activeHex &&
+        prevProps.onboardingHex === nextProps.onboardingHex &&
+        prevProps.settings === nextProps.settings
+      );
+    }
+  );
 
   // Mapping routing state to local tabs
   const getInitialTab = () => {
@@ -408,8 +393,6 @@ const ClientRow = React.memo(({
       return a.localeCompare(b);
     });
   }, [clients, settings]);
-
-
 
   // Calculate Client Enhancements
   const enhancedClients = useMemo(() => {
@@ -669,7 +652,7 @@ const ClientRow = React.memo(({
     if (!scrollContainer) return;
     const scrollTop = scrollContainer.scrollTop;
 
-    setIsScrolled(prev => {
+    setIsScrolled((prev) => {
       if (scrollTop > 40 && !prev) {
         if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
           return true;
@@ -689,7 +672,10 @@ const ClientRow = React.memo(({
 
   const virtualItems = rowVirtualizer.getVirtualItems();
   const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
-  const paddingBottom = virtualItems.length > 0 ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+      : 0;
 
   const activeStatus = settings?.statuses?.find((s: any) => s.name === 'Active');
   const onboardingStatus = settings?.statuses?.find((s: any) => s.name === 'Onboarding');
@@ -706,11 +692,14 @@ const ClientRow = React.memo(({
     if (isActive && !isDefault) {
       return <ArrowUpDown className="w-3.5 h-3.5 text-primary" />;
     }
-    return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />;
+    return (
+      <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+    );
   };
 
   return (
-    <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden"
+    <div
+      className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden"
       onWheel={(e) => {
         if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
           tableScrollRef.current.scrollTop += e.deltaY;
@@ -746,34 +735,36 @@ const ClientRow = React.memo(({
                 <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
               </button>
               <AnimatePresence>
-              {showExportMenu && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
-                >
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Clients', clients, 'All_Clients');
-                    }}
+                {showExportMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
                   >
-                    <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export All
-                  </div>
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Clients', sortedClients, 'Filtered_Clients');
-                    }}
-                  >
-                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export Filtered View
-                  </div>
-                </motion.div>
-              )}
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Clients', clients, 'All_Clients');
+                      }}
+                    >
+                      <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export All
+                    </div>
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Clients', sortedClients, 'Filtered_Clients');
+                      }}
+                    >
+                      <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export Filtered View
+                    </div>
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>
@@ -784,109 +775,115 @@ const ClientRow = React.memo(({
           className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-2 scale-y-100'}`}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-6 py-2">
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            onClick={() => setActiveTab('At Risk')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '50ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-colors duration-500"></div>
-            <div className="flex items-center justify-between mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <AlertCircle className="w-4 h-4" />
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              onClick={() => setActiveTab('At Risk')}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '50ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-colors duration-500"></div>
+              <div className="flex items-center justify-between mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-red-500/10 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    At Risk
+                    <UITooltip
+                      content={`Health score under ${settings?.scoring?.thresholds?.warning || 50}`}
+                    >
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  At Risk
-                  <UITooltip content={`Health score under ${settings?.scoring?.thresholds?.warning || 50}`}>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
-          </motion.div>
+              <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
+            </motion.div>
 
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            onClick={() => setActiveTab('Warning')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '150ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors duration-500"></div>
-            <div className="flex items-center justify-between mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <AlertTriangle className="w-4 h-4" />
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              onClick={() => setActiveTab('Warning')}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '150ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors duration-500"></div>
+              <div className="flex items-center justify-between mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-orange-500/10 text-orange-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Warning
+                    <UITooltip
+                      content={`Health score between ${settings?.scoring?.thresholds?.warning || 50} and ${settings?.scoring?.thresholds?.healthy || 80}`}
+                    >
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Warning
-                  <UITooltip content={`Health score between ${settings?.scoring?.thresholds?.warning || 50} and ${settings?.scoring?.thresholds?.healthy || 80}`}>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
-          </motion.div>
+              <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
+            </motion.div>
 
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            onClick={() => setActiveTab('Healthy')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '250ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
-            <div className="flex items-center justify-between mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              onClick={() => setActiveTab('Healthy')}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '250ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
+              <div className="flex items-center justify-between mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Healthy
+                    <UITooltip
+                      content={`Health score over ${settings?.scoring?.thresholds?.healthy || 80}`}
+                    >
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Healthy
-                  <UITooltip content={`Health score over ${settings?.scoring?.thresholds?.healthy || 80}`}>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
-          </motion.div>
+              <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
+            </motion.div>
 
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            onClick={() => setActiveTab('Active')}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '350ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
-            <div className="flex items-center justify-between mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <Activity className="w-4 h-4" />
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              onClick={() => setActiveTab('Active')}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '350ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
+              <div className="flex items-center justify-between mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <Activity className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Active Clients
+                    <UITooltip content="Clients with active projects">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Active Clients
-                  <UITooltip content="Clients with active projects">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
-          </motion.div>
+              <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
+            </motion.div>
           </div>
         </div>
       </div>
@@ -972,137 +969,136 @@ const ClientRow = React.memo(({
               }
             }}
           >
-                <table className="w-full text-left bg-white border-separate border-spacing-0">
-                  <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
-                    <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="w-[30%] sticky left-0 z-[90] bg-white/95 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
-                        <div className="flex items-center">
-                          <div
-                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"
-                            onClick={() => handleSort('companyName')}
-                          >
-                            Client Name
-                            {renderSortArrow('companyName')}
-                          </div>
-                          <ColumnFilter
-                            options={allCompanyNames}
-                            selected={nameFilter}
-                            onChange={setNameFilter}
-                            searchable={true}
-                          />
-                        </div>
-                      </th>
-                      <th className="w-[15%] border-b border-border px-6 py-2 hidden md:table-cell group/th">
-                        <div className="flex items-center">
-                          <div
-                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
-                            onClick={() => handleSort('type')}
-                          >
-                            Type
-                            {renderSortArrow('type')}
-                          </div>
-                          <ColumnFilter
-                            options={allTypes}
-                            selected={typeFilter}
-                            onChange={setTypeFilter}
-                          />
-                        </div>
-                      </th>
-                      <th className="w-[20%] border-b border-border px-6 py-2 group/th">
-                        <div className="flex items-center">
-                          <div
-                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
-                            onClick={() => handleSort('healthScore')}
-                          >
-                            Health
-                            {renderSortArrow('healthScore')}
-                          </div>
-                          <ColumnFilter
-                            options={['Healthy', 'Warning', 'At Risk']}
-                            selected={healthFilter}
-                            onChange={setHealthFilter}
-                          />
-                        </div>
-                      </th>
-                      <th className="w-[20%] border-b border-border px-6 py-2 hidden sm:table-cell group/th">
-                        <div className="flex items-center">
-                          <div
-                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
-                            onClick={() => handleSort('projectCount')}
-                          >
-                            Projects
-                            {renderSortArrow('projectCount')}
-                          </div>
-                          <ColumnFilter
-                            options={['Active', 'Onboarding', 'Closed']}
-                            selected={projectFilter}
-                            onChange={setProjectFilter}
-                          />
-                        </div>
-                      </th>
-                      <th className="w-[15%] border-b border-border px-6 py-2 hidden lg:table-cell group/th">
-                        <div className="flex items-center">
-                          <div
-                            className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
-                            onClick={() => handleSort('manager')}
-                          >
-                            Manager
-                            {renderSortArrow('manager')}
-                          </div>
-                          <ColumnFilter
-                            options={allManagers}
-                            selected={managerFilter}
-                            onChange={setManagerFilter}
-                          />
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border text-sm relative">
-                    {paddingTop > 0 && (
-                      <tr>
-                        <td colSpan={5} style={{ height: paddingTop, border: 0, padding: 0 }} />
-                      </tr>
-                    )}
-                    {virtualItems.map((virtualRow) => {
-                      const c = sortedClients[virtualRow.index] as any;
-                      if (!c) return null;
-                      return (
-                        <ClientRow
-                          key={c.clientId}
-                          c={c}
-                          index={virtualRow.index}
-                          openDrawer={openDrawer}
-                          getSettingBadge={getSettingBadge}
-                          settings={settings}
-                          getHealthBadge={getHealthBadge}
-                          activeHex={activeHex}
-                          onboardingHex={onboardingHex}
-                          
-                          hexToRgba={hexToRgba}
-                          Sparkline={Sparkline}
-                        />
-                      );
-                    })}
+            <table className="w-full text-left bg-white border-separate border-spacing-0">
+              <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
+                <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                  <th className="w-[30%] sticky left-0 z-[90] bg-white/95 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"
+                        onClick={() => handleSort('companyName')}
+                      >
+                        Client Name
+                        {renderSortArrow('companyName')}
+                      </div>
+                      <ColumnFilter
+                        options={allCompanyNames}
+                        selected={nameFilter}
+                        onChange={setNameFilter}
+                        searchable={true}
+                      />
+                    </div>
+                  </th>
+                  <th className="w-[15%] border-b border-border px-6 py-2 hidden md:table-cell group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleSort('type')}
+                      >
+                        Type
+                        {renderSortArrow('type')}
+                      </div>
+                      <ColumnFilter
+                        options={allTypes}
+                        selected={typeFilter}
+                        onChange={setTypeFilter}
+                      />
+                    </div>
+                  </th>
+                  <th className="w-[20%] border-b border-border px-6 py-2 group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleSort('healthScore')}
+                      >
+                        Health
+                        {renderSortArrow('healthScore')}
+                      </div>
+                      <ColumnFilter
+                        options={['Healthy', 'Warning', 'At Risk']}
+                        selected={healthFilter}
+                        onChange={setHealthFilter}
+                      />
+                    </div>
+                  </th>
+                  <th className="w-[20%] border-b border-border px-6 py-2 hidden sm:table-cell group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleSort('projectCount')}
+                      >
+                        Projects
+                        {renderSortArrow('projectCount')}
+                      </div>
+                      <ColumnFilter
+                        options={['Active', 'Onboarding', 'Closed']}
+                        selected={projectFilter}
+                        onChange={setProjectFilter}
+                      />
+                    </div>
+                  </th>
+                  <th className="w-[15%] border-b border-border px-6 py-2 hidden lg:table-cell group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleSort('manager')}
+                      >
+                        Manager
+                        {renderSortArrow('manager')}
+                      </div>
+                      <ColumnFilter
+                        options={allManagers}
+                        selected={managerFilter}
+                        onChange={setManagerFilter}
+                      />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border text-sm relative">
+                {paddingTop > 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ height: paddingTop, border: 0, padding: 0 }} />
+                  </tr>
+                )}
+                {virtualItems.map((virtualRow) => {
+                  const c = sortedClients[virtualRow.index] as any;
+                  if (!c) return null;
+                  return (
+                    <ClientRow
+                      key={c.clientId}
+                      c={c}
+                      index={virtualRow.index}
+                      openDrawer={openDrawer}
+                      getSettingBadge={getSettingBadge}
+                      settings={settings}
+                      getHealthBadge={getHealthBadge}
+                      activeHex={activeHex}
+                      onboardingHex={onboardingHex}
+                      hexToRgba={hexToRgba}
+                      Sparkline={Sparkline}
+                    />
+                  );
+                })}
 
-                    {paddingBottom > 0 && (
-                      <tr>
-                        <td colSpan={5} style={{ height: paddingBottom, border: 0, padding: 0 }} />
-                      </tr>
-                    )}
-                    {sortedClients.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-4">
-                          <EmptyState
-                            icon={Users}
-                            title="No clients found"
-                            subtitle="Try adjusting your filters or search term."
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                {paddingBottom > 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ height: paddingBottom, border: 0, padding: 0 }} />
+                  </tr>
+                )}
+                {sortedClients.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-4">
+                      <EmptyState
+                        icon={Users}
+                        title="No clients found"
+                        subtitle="Try adjusting your filters or search term."
+                      />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
 
           <TableFooter totalItems={sortedClients.length} label="Total Clients Displayed" />

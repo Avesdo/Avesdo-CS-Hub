@@ -1,6 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { FileText, ClipboardList, CheckCircle2, Award, CalendarClock, ExternalLink, Copy, CheckSquare, ClipboardCheck, UserCheck, ShieldCheck, Pencil, Check, ChevronDown, Plus, ChevronRight, X, Play } from 'lucide-react';
+import {
+  FileText,
+  ClipboardList,
+  CheckCircle2,
+  Award,
+  CalendarClock,
+  ExternalLink,
+  Copy,
+  CheckSquare,
+  ClipboardCheck,
+  UserCheck,
+  ShieldCheck,
+  Pencil,
+  Check,
+  ChevronDown,
+  Plus,
+  ChevronRight,
+  X,
+  Play,
+} from 'lucide-react';
 import { toast } from '../../../utils/toast';
 import PrimaryQAModal from '../../modals/PrimaryQAModal';
 import SecondaryQAModal from '../../modals/SecondaryQAModal';
@@ -21,114 +40,173 @@ interface ProjectOnboardingTabProps {
 }
 
 const MILESTONES = [
-  { 
-    id: 'Not Started', 
+  {
+    id: 'Not Started',
     ids: ['Not Started'],
-    label: 'Not Started', 
+    label: 'Not Started',
     getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean) => {
       if (isCompleted) return 'Project has officially commenced.';
       return 'Internal project setup has not yet begun.';
-    }, 
-    modal: null, 
-    getActionLabel: (hasData: boolean) => '', 
-    badge: '' 
+    },
+    modal: null,
+    getActionLabel: (hasData: boolean) => '',
+    badge: '',
   },
-  { 
-    id: 'Onboarding Survey', 
+  {
+    id: 'Onboarding Survey',
     ids: ['Onboarding Survey Sent', 'Onboarding Survey Received'],
-    label: 'Onboarding Survey', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
-      if (isSubmitted || isCompleted || phase === 'Onboarding Survey Received') return 'Client questionnaire successfully received and recorded.';
+    label: 'Onboarding Survey',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
+      if (isSubmitted || isCompleted || phase === 'Onboarding Survey Received')
+        return 'Client questionnaire successfully received and recorded.';
       if (hasData) return 'Survey dispatched. Awaiting client submission.';
       if (phase === 'Not Started') return 'Change status to Onboarding Survey Sent to begin.';
       return 'Please generate the survey and send the link to the client.';
-    }, 
-    modal: 'survey', 
+    },
+    modal: 'survey',
     getActionLabel: (hasData: boolean, phase: string) => {
       if (phase === 'Not Started' && !hasData) return '';
       return hasData ? 'View Survey' : 'Generate Survey';
     },
-    badge: '' 
+    badge: '',
   },
-  { 
-    id: 'Project Setup', 
+  {
+    id: 'Project Setup',
     ids: ['Setup In Progress', 'Awaiting Inputs'],
-    label: 'Project Setup', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+    label: 'Project Setup',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isCompleted) {
         if (phase === 'Released') return 'Project configuration and deliverables are finalized.';
         return 'Configuration is continuously refined based on QA and client feedback.';
       }
-      if (phase === 'Awaiting Inputs') return 'Setup paused. Awaiting required deliverables from the client.';
+      if (phase === 'Awaiting Inputs')
+        return 'Setup paused. Awaiting required deliverables from the client.';
       if (isPending) {
         if (hasData) return 'Deliverables checklist created. Awaiting configuration to begin.';
         return 'Awaiting client questionnaire before configuration begins.';
       }
       if (!hasData) return 'Please generate the Deliverables Checklist to begin configuration.';
       return 'Actively gathering deliverables and configuring the platform.';
-    }, 
-    modal: 'deliverables', 
-    getActionLabel: (hasData: boolean, phase: string) => hasData ? 'View Checklist' : 'Generate Checklist', 
-    badge: '' 
+    },
+    modal: 'deliverables',
+    getActionLabel: (hasData: boolean, phase: string) =>
+      hasData ? 'View Checklist' : 'Generate Checklist',
+    badge: '',
   },
-  { 
-    id: 'Primary QA', 
-    ids: ['Primary QA'], 
-    label: 'Primary QA', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+  {
+    id: 'Primary QA',
+    ids: ['Primary QA'],
+    label: 'Primary QA',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isCompleted || isSubmitted) return 'Initial internal quality assurance passed.';
       if (hasData) return 'First round of internal quality assurance in progress.';
       if (isPending) return 'Awaiting initial project configuration.';
       return 'Primary QA not started yet.';
-    }, 
-    modal: 'primaryQA', getActionLabel: (hasData: boolean, phase: string) => hasData ? 'View Primary QA' : 'Start Primary QA', badge: 'Internal' 
+    },
+    modal: 'primaryQA',
+    getActionLabel: (hasData: boolean, phase: string) =>
+      hasData ? 'View Primary QA' : 'Start Primary QA',
+    badge: 'Internal',
   },
-  { 
-    id: 'Client QA', 
-    ids: ['Client QA'], 
-    label: 'Client QA', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+  {
+    id: 'Client QA',
+    ids: ['Client QA'],
+    label: 'Client QA',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isCompleted || isSubmitted) return 'Client review completed and feedback collected.';
       if (hasData) return 'Client QA form generated. Client is reviewing the configured platform.';
       if (isPending) return 'Awaiting completion of internal Primary QA.';
       return 'Awaiting generation of Client QA form.';
-    }, 
-    modal: 'clientQA', getActionLabel: (hasData: boolean, phase: string) => hasData ? 'View Client QA' : 'Generate Client QA', badge: 'Client' 
+    },
+    modal: 'clientQA',
+    getActionLabel: (hasData: boolean, phase: string) =>
+      hasData ? 'View Client QA' : 'Generate Client QA',
+    badge: 'Client',
   },
-  { 
-    id: 'Secondary QA', 
-    ids: ['Secondary QA'], 
-    label: 'Secondary QA', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+  {
+    id: 'Secondary QA',
+    ids: ['Secondary QA'],
+    label: 'Secondary QA',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isCompleted || isSubmitted) return 'Final internal quality assurance passed.';
       if (hasData) return 'Final internal review and adjustments in progress.';
       if (isPending) return 'Awaiting completion of Client QA and subsequent updates.';
       return 'Secondary QA not started yet.';
-    }, 
-    modal: 'secondaryQA', getActionLabel: (hasData: boolean, phase: string) => hasData ? 'View Secondary QA' : 'Start Secondary QA', badge: 'Internal' 
+    },
+    modal: 'secondaryQA',
+    getActionLabel: (hasData: boolean, phase: string) =>
+      hasData ? 'View Secondary QA' : 'Start Secondary QA',
+    badge: 'Internal',
   },
-  { 
-    id: 'Project Certification', 
-    ids: ['Project Certification'], 
-    label: 'Project Certification', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+  {
+    id: 'Project Certification',
+    ids: ['Project Certification'],
+    label: 'Project Certification',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isCompleted || isSubmitted) return 'Project officially certified by the client.';
       if (hasData) return 'Certification form generated. Awaiting official client sign-off.';
       if (isPending) return 'Awaiting final internal QA sign-off.';
       return 'Project Certification not generated yet.';
-    }, 
-    modal: 'certification', getActionLabel: (hasData: boolean, phase: string) => hasData ? 'View Certification' : 'Generate Certification', badge: 'Client' 
+    },
+    modal: 'certification',
+    getActionLabel: (hasData: boolean, phase: string) =>
+      hasData ? 'View Certification' : 'Generate Certification',
+    badge: 'Client',
   },
-  { 
-    id: 'Released', 
-    ids: ['Released'], 
-    label: 'Released', 
-    getDescription: (phase: string, isCompleted: boolean, isPending: boolean, hasData: boolean, isSubmitted: boolean) => {
+  {
+    id: 'Released',
+    ids: ['Released'],
+    label: 'Released',
+    getDescription: (
+      phase: string,
+      isCompleted: boolean,
+      isPending: boolean,
+      hasData: boolean,
+      isSubmitted: boolean
+    ) => {
       if (isPending) return 'Project is in progress towards release.';
       return 'Project is live and fully handed over.';
-    }, 
-    modal: null, getActionLabel: (hasData: boolean, phase: string) => '', badge: '' 
-  }
+    },
+    modal: null,
+    getActionLabel: (hasData: boolean, phase: string) => '',
+    badge: '',
+  },
 ];
 
 export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabProps) {
@@ -141,8 +219,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   const [isKycEditing, setIsKycEditing] = useState(false);
   const [kycDraft, setKycDraft] = useState(project?.kycDetails || '');
 
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
 
   useEffect(() => {
     openPopRef.current = openPop;
@@ -171,7 +249,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
     window.addEventListener('keydown', handleEscape, { capture: true });
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
       window.removeEventListener('keydown', handleEscape, { capture: true });
       document.removeEventListener('mousedown', handleClickOutside);
@@ -182,7 +260,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
     if (!project || project[field] === value) return;
     try {
       const updates: any = { [field]: value };
-      
+
       if (field === 'timelineStatus' && value === 'Released') {
         updates.projectStatus = 'Active';
         updates.onboardingPhase = 'Released';
@@ -194,7 +272,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
         const today = new Date();
         updates.releaseDateVal = today.toISOString();
       }
-      
+
       await updateProjectRecord(
         { ...project, ...updates },
         {
@@ -222,12 +300,16 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
   useEffect(() => {
     // Automatically advance phase if survey is received but phase is lagging
-    if (project?.onboarding?.survey?.status === 'Submitted' && (project.onboardingPhase === 'Not Started' || project.onboardingPhase === 'Onboarding Survey Sent')) {
+    if (
+      project?.onboarding?.survey?.status === 'Submitted' &&
+      (project.onboardingPhase === 'Not Started' ||
+        project.onboardingPhase === 'Onboarding Survey Sent')
+    ) {
       handleUpdate('onboardingPhase', 'Onboarding Survey Received');
     }
   }, [project?.onboarding?.survey?.status, project?.onboardingPhase]);
 
-  const currentPhaseIndex = MILESTONES.findIndex(m => m.ids.includes(project?.onboardingPhase));
+  const currentPhaseIndex = MILESTONES.findIndex((m) => m.ids.includes(project?.onboardingPhase));
   const activeIndex = currentPhaseIndex === -1 ? 0 : currentPhaseIndex;
 
   const isReleased = project?.onboardingPhase === 'Released';
@@ -248,7 +330,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
     if (modalId === 'primaryQA') return project?.onboarding?.primaryQA?.status === 'Submitted';
     if (modalId === 'clientQA') return project?.onboarding?.clientQA?.status === 'Submitted';
     if (modalId === 'secondaryQA') return project?.onboarding?.secondaryQA?.status === 'Submitted';
-    if (modalId === 'certification') return project?.onboarding?.certification?.status === 'Submitted';
+    if (modalId === 'certification')
+      return project?.onboarding?.certification?.status === 'Submitted';
     return false;
   };
 
@@ -277,7 +360,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   const hasFormData = (modalId: string | null) => {
     if (!modalId) return false;
     if (modalId === 'survey') return !!project?.onboarding?.survey;
-    if (modalId === 'deliverables') return project?.deliverables && Object.keys(project.deliverables).length > 0;
+    if (modalId === 'deliverables')
+      return project?.deliverables && Object.keys(project.deliverables).length > 0;
     if (modalId === 'primaryQA') return !!project?.onboarding?.primaryQA;
     if (modalId === 'clientQA') return !!project?.onboarding?.clientQA;
     if (modalId === 'secondaryQA') return !!project?.onboarding?.secondaryQA;
@@ -287,7 +371,6 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
   return (
     <div className="pb-10" ref={popRef}>
-      
       {/* 1. Top Section: Global Setup & Links */}
       <div className="flex flex-col gap-3 sticky -top-10 z-30 bg-white pt-10 pb-6 px-10 -mx-10 -mt-10 shadow-[0_10px_20px_-15px_rgba(0,0,0,0.1)] border-b border-slate-100">
         {/* Client Portal Link */}
@@ -298,7 +381,9 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[13px] font-bold text-slate-800">Client Portal Link</span>
-              <span className="text-[12px] font-medium text-slate-500 truncate">{window.location.origin}/portal/{project?.id}</span>
+              <span className="text-[12px] font-medium text-slate-500 truncate">
+                {window.location.origin}/portal/{project?.id}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-4">
@@ -330,8 +415,12 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
               <FileText className="w-4 h-4 text-blue-600" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-slate-800 group-hover:text-blue-700 transition-colors">KYC Details</span>
-              <span className="text-[12px] font-medium text-slate-500">Foundational project knowledge and requirements</span>
+              <span className="text-[13px] font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                KYC Details
+              </span>
+              <span className="text-[12px] font-medium text-slate-500">
+                Foundational project knowledge and requirements
+              </span>
             </div>
           </div>
           <button
@@ -345,20 +434,22 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
         {/* 2. Middle Section Header (Now Sticky) */}
         <div className="flex flex-col gap-4 mt-6">
           <h3 className="text-lg font-bold text-slate-900">Implementation Timeline</h3>
-          
+
           {/* Funnel Progress Bar */}
           <div className="flex flex-col gap-2 mb-2 px-1">
             <div className="flex items-center justify-between text-[13px]">
               <span className="font-semibold text-slate-700">Overall Progress</span>
-              <span className="font-bold text-primary">{completedCount} of {MILESTONES.length} Phases ({progressPercentage}%)</span>
+              <span className="font-bold text-primary">
+                {completedCount} of {MILESTONES.length} Phases ({progressPercentage}%)
+              </span>
             </div>
             <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60 shadow-inner">
-              <motion.div 
+              <motion.div
                 layout
                 className="h-full bg-primary rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
               />
             </div>
           </div>
@@ -371,15 +462,21 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                 onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
                 className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
               >
-                {getSettingBadge('timelines', project?.timelineStatus || 'Not Set', settings, true, false)}
+                {getSettingBadge(
+                  'timelines',
+                  project?.timelineStatus || 'Not Set',
+                  settings,
+                  true,
+                  false
+                )}
               </button>
               <AnimatePresence>
                 {openPop === 'timeline' && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                     className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-50 p-1"
                   >
                     {settings?.timelines?.map((t: any) => (
@@ -405,15 +502,21 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                 onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
                 className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
               >
-                {getSettingBadge('phases', project?.onboardingPhase || 'Not Set', settings, true, false)}
+                {getSettingBadge(
+                  'phases',
+                  project?.onboardingPhase || 'Not Set',
+                  settings,
+                  true,
+                  false
+                )}
               </button>
               <AnimatePresence>
                 {openPop === 'phase' && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                     className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1"
                   >
                     {settings?.phases?.map((p: any) => (
@@ -443,24 +546,27 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             const isProjectSetup = milestone.id === 'Project Setup';
             const isReleased = activeIndex >= MILESTONES.length - 1; // Released is the last index
 
-            const isCompleted = isProjectSetup 
-              ? isReleased 
-              : index < activeIndex;
-              
-            const isActive = isProjectSetup 
-              ? (index === activeIndex || (activeIndex > index && !isReleased))
+            const isCompleted = isProjectSetup ? isReleased : index < activeIndex;
+
+            const isActive = isProjectSetup
+              ? index === activeIndex || (activeIndex > index && !isReleased)
               : index === activeIndex;
-              
+
             const isPending = index > activeIndex;
 
             const hasData = hasFormData(milestone.modal);
             const isSubmitted = isFormSubmitted(milestone.modal);
             const submitDate = getFormSubmitDate(milestone.modal);
             const updateDate = getFormUpdateDate(milestone.modal);
-            const status = milestone.modal ? project?.onboarding?.[milestone.modal as keyof typeof project.onboarding]?.status : undefined;
+            const status = milestone.modal
+              ? project?.onboarding?.[milestone.modal as keyof typeof project.onboarding]?.status
+              : undefined;
 
             return (
-              <div key={milestone.id} className={`relative flex items-start group transition-all duration-300 ${isPending ? 'grayscale' : ''}`}>
+              <div
+                key={milestone.id}
+                className={`relative flex items-start group transition-all duration-300 ${isPending ? 'grayscale' : ''}`}
+              >
                 {/* Node Symbol */}
                 <div className="absolute -left-[49px] top-1 bg-white p-1 rounded-full">
                   {isCompleted ? (
@@ -477,82 +583,126 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                 </div>
 
                 {/* Node Content */}
-                <div className={`flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4 -mt-1 bg-white border border-transparent hover:border-slate-200 rounded-2xl p-3 hover:shadow-sm transition-all -ml-3 ${isPending ? 'opacity-60' : ''}`}>
+                <div
+                  className={`flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4 -mt-1 bg-white border border-transparent hover:border-slate-200 rounded-2xl p-3 hover:shadow-sm transition-all -ml-3 ${isPending ? 'opacity-60' : ''}`}
+                >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <h4 className={`text-[15px] font-bold ${isActive ? 'text-primary' : 'text-slate-800'}`}>{milestone.label}</h4>
+                      <h4
+                        className={`text-[15px] font-bold ${isActive ? 'text-primary' : 'text-slate-800'}`}
+                      >
+                        {milestone.label}
+                      </h4>
                       {milestone.badge && (
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${milestone.badge === 'Internal' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-700'}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${milestone.badge === 'Internal' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-700'}`}
+                        >
                           {milestone.badge}
                         </span>
                       )}
                       {isActive && !isReleased && project?.lastUpdated && (
-                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm ${
-                          getDaysInPhase(project.lastUpdated) > 14 
-                            ? 'bg-red-50 text-red-600 border border-red-200' 
-                            : 'bg-amber-50 text-amber-600 border border-amber-200'
-                        }`}>
-                          ⏱ {getDaysInPhase(project.lastUpdated)} {getDaysInPhase(project.lastUpdated) === 1 ? 'day' : 'days'} in phase
+                        <span
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm ${
+                            getDaysInPhase(project.lastUpdated) > 14
+                              ? 'bg-red-50 text-red-600 border border-red-200'
+                              : 'bg-amber-50 text-amber-600 border border-amber-200'
+                          }`}
+                        >
+                          ⏱ {getDaysInPhase(project.lastUpdated)}{' '}
+                          {getDaysInPhase(project.lastUpdated) === 1 ? 'day' : 'days'} in phase
                         </span>
                       )}
                     </div>
-                    <p className="text-[13px] font-medium text-slate-500">{milestone.getDescription(project?.onboardingPhase, isCompleted, isPending, hasData, isSubmitted)}</p>
+                    <p className="text-[13px] font-medium text-slate-500">
+                      {milestone.getDescription(
+                        project?.onboardingPhase,
+                        isCompleted,
+                        isPending,
+                        hasData,
+                        isSubmitted
+                      )}
+                    </p>
                     <div className="flex items-center gap-3 mt-0.5">
                       {submitDate && (
                         <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                          Completed: {new Date(submitDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          Completed:{' '}
+                          {new Date(submitDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
                         </span>
                       )}
-                      {status !== 'Draft' && updateDate && updateDate !== submitDate && (!submitDate || new Date(updateDate) > new Date(submitDate)) && (
-                        <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                          Updated: {new Date(updateDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      )}
+                      {status !== 'Draft' &&
+                        updateDate &&
+                        updateDate !== submitDate &&
+                        (!submitDate || new Date(updateDate) > new Date(submitDate)) && (
+                          <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                            Updated:{' '}
+                            {new Date(updateDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        )}
                     </div>
                   </div>
 
                   {/* Contextual Action */}
-                  {milestone.modal && milestone.getActionLabel(hasData, project?.onboardingPhase) && (
-                    <div className="shrink-0">
-                      <button
-                        onClick={async () => {
-                          const actionLabel = milestone.getActionLabel(hasData, project?.onboardingPhase);
-                          if (!hasData && (actionLabel.startsWith('Generate') || actionLabel.startsWith('Start'))) {
-                            let updates = {};
-                            if (milestone.modal === 'deliverables') {
-                              updates = { deliverables: {} };
-                            } else {
-                              updates = {
-                                onboarding: {
-                                  ...(project?.onboarding || {}),
-                                  [milestone.modal]: {
-                                    answers: {},
-                                    status: 'Draft',
-                                    createdAt: new Date().toISOString(),
-                                    updatedAt: new Date().toISOString()
-                                  }
-                                }
-                              };
-                            }
-                            await updateProjectRecord(
-                              { ...project, ...updates },
-                              { successMsg: `${milestone.label} generated successfully.` }
+                  {milestone.modal &&
+                    milestone.getActionLabel(hasData, project?.onboardingPhase) && (
+                      <div className="shrink-0">
+                        <button
+                          onClick={async () => {
+                            const actionLabel = milestone.getActionLabel(
+                              hasData,
+                              project?.onboardingPhase
                             );
-                          }
-                          setActiveModal(milestone.modal);
-                        }}
-                        disabled={isPending && !hasData}
-                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all shadow-sm ${
-                          hasData || (!isPending && !isActive)
-                            ? 'bg-white border border-slate-200 text-slate-700 hover:text-primary hover:border-primary/30 hover:bg-slate-50' 
-                            : 'bg-primary text-white hover:bg-primary/90 border border-transparent'
-                        } ${isPending && !hasData ? 'opacity-50 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200' : ''}`}
-                      >
-                        {hasData ? <FileText className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
-                        {milestone.getActionLabel(hasData, project?.onboardingPhase)}
-                      </button>
-                    </div>
-                  )}
+                            if (
+                              !hasData &&
+                              (actionLabel.startsWith('Generate') ||
+                                actionLabel.startsWith('Start'))
+                            ) {
+                              let updates = {};
+                              if (milestone.modal === 'deliverables') {
+                                updates = { deliverables: {} };
+                              } else {
+                                updates = {
+                                  onboarding: {
+                                    ...(project?.onboarding || {}),
+                                    [milestone.modal]: {
+                                      answers: {},
+                                      status: 'Draft',
+                                      createdAt: new Date().toISOString(),
+                                      updatedAt: new Date().toISOString(),
+                                    },
+                                  },
+                                };
+                              }
+                              await updateProjectRecord(
+                                { ...project, ...updates },
+                                { successMsg: `${milestone.label} generated successfully.` }
+                              );
+                            }
+                            setActiveModal(milestone.modal);
+                          }}
+                          disabled={isPending && !hasData}
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all shadow-sm ${
+                            hasData || (!isPending && !isActive)
+                              ? 'bg-white border border-slate-200 text-slate-700 hover:text-primary hover:border-primary/30 hover:bg-slate-50'
+                              : 'bg-primary text-white hover:bg-primary/90 border border-transparent'
+                          } ${isPending && !hasData ? 'opacity-50 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200' : ''}`}
+                        >
+                          {hasData ? (
+                            <FileText className="w-4 h-4" />
+                          ) : (
+                            <ExternalLink className="w-4 h-4" />
+                          )}
+                          {milestone.getActionLabel(hasData, project?.onboardingPhase)}
+                        </button>
+                      </div>
+                    )}
                 </div>
               </div>
             );
@@ -571,8 +721,12 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <Dialog.Title className="text-lg font-bold text-slate-900">KYC Details</Dialog.Title>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">Foundational project knowledge</p>
+                  <Dialog.Title className="text-lg font-bold text-slate-900">
+                    KYC Details
+                  </Dialog.Title>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Foundational project knowledge
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -599,7 +753,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                 </Dialog.Close>
               </div>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto custom-thin-scroll bg-white">
               {isKycEditing ? (
                 <div className="p-0 h-full min-h-[400px]">
@@ -643,17 +797,11 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
       {/* Dedicated Modals */}
       {activeModal === 'primaryQA' && (
-        <PrimaryQAModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <PrimaryQAModal project={project} onClose={() => setActiveModal(null)} />
       )}
-      
+
       {activeModal === 'secondaryQA' && (
-        <SecondaryQAModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <SecondaryQAModal project={project} onClose={() => setActiveModal(null)} />
       )}
 
       {activeModal === 'deliverables' && (
@@ -665,31 +813,19 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
       )}
 
       {activeModal === 'survey' && (
-        <OnboardingSurveyModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <OnboardingSurveyModal project={project} onClose={() => setActiveModal(null)} />
       )}
 
       {activeModal === 'clientQA' && (
-        <ClientQAModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <ClientQAModal project={project} onClose={() => setActiveModal(null)} />
       )}
 
       {activeModal === 'certification' && (
-        <ProjectCertificationModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <ProjectCertificationModal project={project} onClose={() => setActiveModal(null)} />
       )}
 
       {activeModal === 'onboardingCsat' && (
-        <OnboardingCsatFormModal
-          project={project}
-          onClose={() => setActiveModal(null)}
-        />
+        <OnboardingCsatFormModal project={project} onClose={() => setActiveModal(null)} />
       )}
     </div>
   );

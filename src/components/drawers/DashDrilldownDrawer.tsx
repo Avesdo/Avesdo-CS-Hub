@@ -2,19 +2,33 @@ import React, { useEffect, useMemo } from 'react';
 import { X, ChevronRight, User, Calendar, ClipboardCheck, Target } from 'lucide-react';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
-import { getSafeHex, hexToRgba, getSettingBadge, getHealthBadge, renderIcon } from '../../utils/uiUtils';
+import {
+  getSafeHex,
+  hexToRgba,
+  getSettingBadge,
+  getHealthBadge,
+  renderIcon,
+} from '../../utils/uiUtils';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashDrilldownDrawer() {
   const navigate = useNavigate();
   const { isDrawerOpen, getDrawerData, closeDrawer, openDrawer, activeDrawers } = useUI();
-  const clients = useAppStore(state => state.clients);
-  const settings = useAppStore(state => state.settings);
-  const globalProjects = useAppStore(state => state.projects);
+  const clients = useAppStore((state) => state.clients);
+  const settings = useAppStore((state) => state.settings);
+  const globalProjects = useAppStore((state) => state.projects);
 
   const isOpen = isDrawerOpen('dashDrilldown');
   const drawerData = getDrawerData('dashDrilldown');
-  const { title, subtitle, projects, clients: rawClients, contextType, viewAllPath, viewAllState } = drawerData?.data || {};
+  const {
+    title,
+    subtitle,
+    projects,
+    clients: rawClients,
+    contextType,
+    viewAllPath,
+    viewAllState,
+  } = drawerData?.data || {};
 
   const handleProjectClick = (projectId: string) => {
     openDrawer('project', projectId);
@@ -75,12 +89,16 @@ export default function DashDrilldownDrawer() {
         <div className="px-6 py-6 border-b border-border bg-white flex flex-col shrink-0 relative overflow-hidden shadow-sm">
           {/* Subtle background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 z-0"></div>
-          
+
           <div className="flex items-start justify-between relative z-10">
             <div className="flex items-center gap-3 min-w-0 pr-4">
-              <div 
+              <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner"
-                style={{ backgroundColor: bgRgba, color: hexColor, borderColor: hexToRgba(hexColor, 0.2) }}
+                style={{
+                  backgroundColor: bgRgba,
+                  color: hexColor,
+                  borderColor: hexToRgba(hexColor, 0.2),
+                }}
               >
                 {renderIcon(headerIcon, 'w-5 h-5')}
               </div>
@@ -102,18 +120,23 @@ export default function DashDrilldownDrawer() {
           </div>
 
           <div className="mt-6 flex items-center justify-between relative z-10">
-             <span className="text-sm font-semibold text-muted-foreground shrink-0">
-               {projects?.length ? `${projects.length} Projects` : rawClients?.length ? `${rawClients.length} Clients` : '0 Items'}
-             </span>
-             <div className="flex items-center gap-3 flex-1 ml-4">
-               <div className="h-px bg-border flex-1"></div>
-               <button 
-                 onClick={handleViewAll}
-                 className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-0.5 transition-colors shrink-0"
-               >
-                 View all in {viewAllPath === '/clients' ? 'Clients' : 'Projects'} <ChevronRight className="w-3.5 h-3.5" />
-               </button>
-             </div>
+            <span className="text-sm font-semibold text-muted-foreground shrink-0">
+              {projects?.length
+                ? `${projects.length} Projects`
+                : rawClients?.length
+                  ? `${rawClients.length} Clients`
+                  : '0 Items'}
+            </span>
+            <div className="flex items-center gap-3 flex-1 ml-4">
+              <div className="h-px bg-border flex-1"></div>
+              <button
+                onClick={handleViewAll}
+                className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-0.5 transition-colors shrink-0"
+              >
+                View all in {viewAllPath === '/clients' ? 'Clients' : 'Projects'}{' '}
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-5 custom-thin-scroll">
@@ -186,18 +209,14 @@ export default function DashDrilldownDrawer() {
                       </div>
 
                       <div className="flex justify-between items-start mb-1 pr-8">
-                        <h3
-                          className="font-bold text-sm text-foreground group-hover:text-primary transition-colors"
-                        >
+                        <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                           {p.name}
                         </h3>
                       </div>
-                      <p
-                        className="text-xs text-muted-foreground font-medium pr-8"
-                      >
+                      <p className="text-xs text-muted-foreground font-medium pr-8">
                         {clientDisplay || 'Unknown Client'}
                       </p>
-                      
+
                       <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-100 pr-4">
                         <div className="flex flex-col gap-1 items-start justify-center shrink-0">
                           {contextType === 'featureAdoption' ? (
@@ -283,7 +302,8 @@ export default function DashDrilldownDrawer() {
                     const healthyThresh = settings?.scoring?.thresholds?.healthy ?? 80;
                     const warningThresh = settings?.scoring?.thresholds?.warning ?? 50;
                     if (c.healthScore >= healthyThresh) borderLeftClass = 'border-l-lime-500';
-                    else if (c.healthScore >= warningThresh) borderLeftClass = 'border-l-orange-500';
+                    else if (c.healthScore >= warningThresh)
+                      borderLeftClass = 'border-l-orange-500';
                     else borderLeftClass = 'border-l-red-500';
                   }
 
@@ -305,7 +325,7 @@ export default function DashDrilldownDrawer() {
                       <p className="text-xs text-muted-foreground font-medium pr-8">
                         {c.clientType || 'Standard'}
                       </p>
-                      
+
                       <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-100 pr-4">
                         <div className="flex flex-col gap-1 items-start justify-center shrink-0">
                           {getSettingBadge('managers', c.accountManager, settings)}

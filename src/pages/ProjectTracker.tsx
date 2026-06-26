@@ -1,4 +1,12 @@
-import React, { startTransition, useState, useMemo, useRef, useEffect, useCallback, useDeferredValue } from 'react';
+import React, {
+  startTransition,
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+  useDeferredValue,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUrlState } from '../hooks/useUrlState';
@@ -48,9 +56,9 @@ import toast from 'react-hot-toast';
 
 export default function ProjectTracker() {
   const location = useLocation();
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -75,8 +83,8 @@ export default function ProjectTracker() {
     const scrollContainer = tableScrollRef.current;
     if (!scrollContainer) return;
     const scrollTop = scrollContainer.scrollTop;
-    
-    setIsScrolled(prev => {
+
+    setIsScrolled((prev) => {
       if (scrollTop > 40 && !prev) {
         if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
           return true;
@@ -152,8 +160,9 @@ export default function ProjectTracker() {
   };
 
   const setPtFilter = (tabLabel: string) => {
-    startTransition(() => { setActiveTab(tabLabel); });
-
+    startTransition(() => {
+      setActiveTab(tabLabel);
+    });
 
     if (
       tabLabel === 'Actively Onboarding' ||
@@ -176,7 +185,8 @@ export default function ProjectTracker() {
 
   const getDefaultSort = useCallback((tab: string) => {
     if (tab === 'No Due Date' || tab === 'Suspended') return { col: 'name', asc: true };
-    if (tab === 'All Released' || tab === 'All Projects') return { col: 'releaseDateVal', asc: false };
+    if (tab === 'All Released' || tab === 'All Projects')
+      return { col: 'releaseDateVal', asc: false };
     return { col: 'releaseDateVal', asc: true };
   }, []);
 
@@ -639,7 +649,7 @@ export default function ProjectTracker() {
             year: 'numeric',
           });
         }
-        
+
         if (pUpdates.projectStatus === 'Active' && p.projectStatus === 'Onboarding') {
           pUpdates.timelineStatus = 'Released';
           pUpdates.onboardingPhase = 'Released';
@@ -704,7 +714,6 @@ export default function ProjectTracker() {
     [openDrawer]
   );
 
-
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       {/* FIXED HEADER */}
@@ -736,34 +745,36 @@ export default function ProjectTracker() {
               <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
             </button>
             <AnimatePresence>
-            {showExportMenu && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
-              >
-                <div
-                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Projects', projects, 'All_Projects');
-                  }}
+              {showExportMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
                 >
-                  <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export All
-                </div>
-                <div
-                  className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
-                  onClick={() => {
-                    setShowExportMenu(false);
-                    universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
-                  }}
-                >
-                  <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export Filtered View
-                </div>
-              </motion.div>
-            )}
+                  <div
+                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Projects', projects, 'All_Projects');
+                    }}
+                  >
+                    <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                    Export All
+                  </div>
+                  <div
+                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
+                    }}
+                  >
+                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                    Export Filtered View
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>

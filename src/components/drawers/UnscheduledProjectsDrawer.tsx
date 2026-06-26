@@ -6,8 +6,8 @@ import { getSettingBadge } from '../../utils/uiUtils';
 
 export default function UnscheduledProjectsDrawer() {
   const { isDrawerOpen, closeDrawer, openDrawer, activeDrawers } = useUI();
-  const projects = useAppStore(state => state.projects);
-  const settings = useAppStore(state => state.settings);
+  const projects = useAppStore((state) => state.projects);
+  const settings = useAppStore((state) => state.settings);
 
   const isOpen = isDrawerOpen('unscheduledProjects');
 
@@ -45,12 +45,10 @@ export default function UnscheduledProjectsDrawer() {
         <div className="px-6 py-6 border-b border-border bg-white flex flex-col shrink-0 relative overflow-hidden shadow-sm">
           {/* Subtle background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 z-0"></div>
-          
+
           <div className="flex items-start justify-between relative z-10">
             <div className="flex items-center gap-3 min-w-0 pr-4">
-              <div 
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner bg-orange-50 text-orange-500 border-orange-500/20"
-              >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner bg-orange-50 text-orange-500 border-orange-500/20">
                 <Calendar className="w-5 h-5" />
               </div>
               <div className="flex flex-col min-w-0">
@@ -71,15 +69,14 @@ export default function UnscheduledProjectsDrawer() {
           </div>
 
           <div className="mt-6 flex items-center justify-between relative z-10">
-             <span className="text-sm font-semibold text-muted-foreground shrink-0">
-               {unscheduledProjects.length} Projects
-             </span>
-             <div className="flex items-center gap-3 flex-1 ml-4">
-               <div className="h-px bg-border flex-1"></div>
-             </div>
+            <span className="text-sm font-semibold text-muted-foreground shrink-0">
+              {unscheduledProjects.length} Projects
+            </span>
+            <div className="flex items-center gap-3 flex-1 ml-4">
+              <div className="h-px bg-border flex-1"></div>
+            </div>
           </div>
         </div>
-
 
         <div className="flex-1 overflow-y-auto p-5 custom-thin-scroll">
           <div className="flex flex-col gap-3">

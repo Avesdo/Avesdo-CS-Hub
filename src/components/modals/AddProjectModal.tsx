@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Search, ChevronDown, Link as LinkIcon, Check, Calendar, Building, Target, Hash, User, Layers, FileText, AlignLeft, AlertTriangle } from 'lucide-react';
+import {
+  X,
+  Search,
+  ChevronDown,
+  Link as LinkIcon,
+  Check,
+  Calendar,
+  Building,
+  Target,
+  Hash,
+  User,
+  Layers,
+  FileText,
+  AlignLeft,
+  AlertTriangle,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 import { useAppStore } from '../../store/useAppStore';
@@ -52,9 +67,13 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
     onClick={onClick}
     className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
   >
-    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    {Icon && (
+      <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
+    )}
     <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
-    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+    <span
+      className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}
+    >
       {value || 'Select'}
     </span>
     <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -63,10 +82,10 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 
 export default function AddProjectModal() {
   const { activeModal, activeModals, isModalOpen, closeModal, openModal, openDrawer } = useUI();
-  const clients = useAppStore(state => state.clients);
-  const settings = useAppStore(state => state.settings);
-  const projects = useAppStore(state => state.projects);
-  const user = useAppStore(state => state.user);
+  const clients = useAppStore((state) => state.clients);
+  const settings = useAppStore((state) => state.settings);
+  const projects = useAppStore((state) => state.projects);
+  const user = useAppStore((state) => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -102,7 +121,6 @@ export default function AddProjectModal() {
     },
   });
 
-  
   useEffect(() => {
     const handleClientCreated = (e: Event) => {
       const customEvent = e as CustomEvent;
@@ -110,21 +128,26 @@ export default function AddProjectModal() {
       const newClientId = newClient.clientId || newClient.id;
       if (newClient.clientType === 'Developer') {
         const prev = getValues('selectedDevelopers') || [];
-        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
+        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), {
+          shouldValidate: true,
+        });
       } else if (newClient.clientType === 'Sales & Marketing') {
         const prev = getValues('selectedSalesMarketing') || [];
-        setValue('selectedSalesMarketing', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
+        setValue('selectedSalesMarketing', Array.from(new Set([...prev, newClientId])), {
+          shouldValidate: true,
+        });
       } else {
         // Fallback for uncategorized
         const prev = getValues('selectedDevelopers') || [];
-        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), { shouldValidate: true });
+        setValue('selectedDevelopers', Array.from(new Set([...prev, newClientId])), {
+          shouldValidate: true,
+        });
       }
     };
     window.addEventListener('clientCreated', handleClientCreated);
     return () => window.removeEventListener('clientCreated', handleClientCreated);
   }, [getValues, setValue]);
 
-  
   const handleClose = (force?: boolean | any) => {
     const isForced = force === true;
     if (!isForced && isDirty) {
@@ -155,8 +178,12 @@ export default function AddProjectModal() {
     try {
       const allSelectedIds = [...data.selectedDevelopers, ...data.selectedSalesMarketing];
       const matchedClients = clients.filter((c) => allSelectedIds.includes(c.clientId || c.id));
-      const matchedDevs = clients.filter((c) => data.selectedDevelopers.includes(c.clientId || c.id));
-      const matchedSMs = clients.filter((c) => data.selectedSalesMarketing.includes(c.clientId || c.id));
+      const matchedDevs = clients.filter((c) =>
+        data.selectedDevelopers.includes(c.clientId || c.id)
+      );
+      const matchedSMs = clients.filter((c) =>
+        data.selectedSalesMarketing.includes(c.clientId || c.id)
+      );
 
       let finalReleaseDateStr = '';
       const finalReleaseDateVal = data.releaseDateVal || 0;
@@ -254,11 +281,11 @@ export default function AddProjectModal() {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
-        <Dialog.Overlay 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+        <Dialog.Overlay
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
           style={{ zIndex: overlayZ }}
         />
-        <Dialog.Content 
+        <Dialog.Content
           onInteractOutside={(e) => {
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addProject') {
@@ -272,7 +299,8 @@ export default function AddProjectModal() {
             }
           }}
           style={{ zIndex: contentZ }}
-          className={`fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}>
+          className={`fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300 ${isAddClientOpen ? 'blur-[2px] scale-[0.98] brightness-95 pointer-events-none' : ''}`}
+        >
           <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
               type="button"
@@ -285,12 +313,20 @@ export default function AddProjectModal() {
 
           <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <motion.div initial={{opacity: 0, y: -10}} animate={{opacity: 1, y: 0}} className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-destructive text-sm font-semibold bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20 mb-5"
+              >
                 {globalError}
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
               <Controller
                 name="name"
                 control={control}
@@ -305,105 +341,167 @@ export default function AddProjectModal() {
                 )}
               />
               {errors.name && (
-                <p className="text-destructive text-xs font-medium ml-1 mb-4">{errors.name.message}</p>
+                <p className="text-destructive text-xs font-medium ml-1 mb-4">
+                  {errors.name.message}
+                </p>
               )}
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-start gap-3 mb-10">
-              
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-wrap items-start gap-3 mb-10"
+            >
               <div className="flex flex-col gap-1">
                 <Controller
                   name="selectedDevelopers"
                   control={control}
                   render={({ field }) => {
                     const displayValue = field.value.length
-                      ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
+                      ? field.value
+                          .map(
+                            (id) =>
+                              clients.find((c) => c.clientId === id || c.id === id)?.companyName ||
+                              id
+                          )
+                          .join(', ')
                       : '';
                     return (
                       <MultiSelect
                         values={field.value}
-                        options={[...clients].filter((c) => c.clientType === 'Developer' || !c.clientType).sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                        options={[...clients]
+                          .filter((c) => c.clientType === 'Developer' || !c.clientType)
+                          .sort((a, b) =>
+                            (a.companyName || a.name || '').localeCompare(
+                              b.companyName || b.name || ''
+                            )
+                          )
+                          .map((c) => ({
+                            label: c.companyName || c.name,
+                            value: c.clientId || c.id,
+                          }))}
                         onChange={field.onChange}
                         searchable={true}
                         searchPlaceholder="Search developers..."
-                        trigger={<TokenTrigger label="Developer" value={displayValue} icon={Building} error={errors.selectedDevelopers} />}
+                        trigger={
+                          <TokenTrigger
+                            label="Developer"
+                            value={displayValue}
+                            icon={Building}
+                            error={errors.selectedDevelopers}
+                          />
+                        }
                       />
                     );
                   }}
                 />
                 <AnimatePresence>
-                  {errors.selectedDevelopers && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.selectedDevelopers.message}</motion.span>}
+                  {errors.selectedDevelopers && (
+                    <motion.span
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-destructive text-[11px] font-medium ml-2"
+                    >
+                      {errors.selectedDevelopers.message}
+                    </motion.span>
+                  )}
                 </AnimatePresence>
               </div>
-
               <Controller
                 name="selectedSalesMarketing"
                 control={control}
                 render={({ field }) => {
                   const displayValue = field.value.length
-                    ? field.value.map((id) => clients.find((c) => c.clientId === id || c.id === id)?.companyName || id).join(', ')
+                    ? field.value
+                        .map(
+                          (id) =>
+                            clients.find((c) => c.clientId === id || c.id === id)?.companyName || id
+                        )
+                        .join(', ')
                     : '';
                   return (
                     <MultiSelect
                       values={field.value}
-                      options={[...clients].filter((c) => c.clientType === 'Sales & Marketing').sort((a, b) => (a.companyName || a.name || '').localeCompare(b.companyName || b.name || '')).map((c) => ({ label: c.companyName || c.name, value: c.clientId || c.id }))}
+                      options={[...clients]
+                        .filter((c) => c.clientType === 'Sales & Marketing')
+                        .sort((a, b) =>
+                          (a.companyName || a.name || '').localeCompare(
+                            b.companyName || b.name || ''
+                          )
+                        )
+                        .map((c) => ({
+                          label: c.companyName || c.name,
+                          value: c.clientId || c.id,
+                        }))}
                       onChange={field.onChange}
                       searchable={true}
                       searchPlaceholder="Search sales & marketing..."
-                      trigger={<TokenTrigger label="Sales & Mktg" value={displayValue} icon={Target} />}
+                      trigger={
+                        <TokenTrigger label="Sales & Mktg" value={displayValue} icon={Target} />
+                      }
                     />
                   );
                 }}
               />
-
               <div className="w-full m-0 p-0 h-0" /> {/* Force Break to move New Client down */}
-
               <button
                 type="button"
                 onClick={() => openModal('addClient')}
                 className="group flex items-center px-2 py-0.5 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none -mt-5 ml-1"
               >
-                <span className="text-[12px] font-medium text-slate-500 group-hover:text-slate-700 transition-colors">+ New Client</span>
+                <span className="text-[12px] font-medium text-slate-500 group-hover:text-slate-700 transition-colors">
+                  + New Client
+                </span>
               </button>
-
               <div className="w-full" /> {/* Force Break for next row */}
-
               <Controller
                 name="releaseDateVal"
                 control={control}
                 render={({ field }) => {
-                  const dateStr = field.value ? new Date(field.value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                  const dateStr = field.value
+                    ? new Date(field.value).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
+                    : '';
                   return (
                     <DatePicker
                       value={field.value}
                       onChange={field.onChange}
-                      trigger={<TokenTrigger label="Release Date" value={dateStr} icon={Calendar} />}
+                      trigger={
+                        <TokenTrigger label="Release Date" value={dateStr} icon={Calendar} />
+                      }
                     />
                   );
                 }}
               />
-
               <Controller
                 name="assignee"
                 control={control}
                 render={({ field }) => (
                   <Select
                     value={field.value || ''}
-                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({ label: m, value: m }))}
+                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
+                      label: m,
+                      value: m,
+                    }))}
                     onChange={field.onChange}
                     trigger={<TokenTrigger label="Manager" value={field.value} icon={User} />}
                   />
                 )}
               />
-
               <div className="w-full" /> {/* Force Break */}
-
               <div className="flex flex-col gap-1">
                 <Controller
                   name="units"
                   control={control}
                   render={({ field }) => (
-                    <div className={`relative group flex items-center h-10 rounded-full border bg-white shadow-sm transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 hover:shadow-md px-4 overflow-hidden w-[160px] ${errors.units ? 'border-destructive' : 'border-slate-200'}`}>
+                    <div
+                      className={`relative group flex items-center h-10 rounded-full border bg-white shadow-sm transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 hover:border-primary/50 hover:shadow-md px-4 overflow-hidden w-[160px] ${errors.units ? 'border-destructive' : 'border-slate-200'}`}
+                    >
                       <Hash className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
                       <span className="text-[13px] font-medium text-slate-500 mr-2">Units:</span>
                       <input
@@ -416,10 +514,18 @@ export default function AddProjectModal() {
                   )}
                 />
                 <AnimatePresence>
-                  {errors.units && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.units.message}</motion.span>}
+                  {errors.units && (
+                    <motion.span
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-destructive text-[11px] font-medium ml-2"
+                    >
+                      {errors.units.message}
+                    </motion.span>
+                  )}
                 </AnimatePresence>
               </div>
-
               <Controller
                 name="activeFeatures"
                 control={control}
@@ -430,24 +536,52 @@ export default function AddProjectModal() {
                     onChange={field.onChange}
                     searchable={true}
                     searchPlaceholder="Search features..."
-                    trigger={<TokenTrigger label="Features" value={field.value.length ? field.value.join(', ') : ''} icon={Layers} />}
+                    trigger={
+                      <TokenTrigger
+                        label="Features"
+                        value={field.value.length ? field.value.join(', ') : ''}
+                        icon={Layers}
+                      />
+                    }
                   />
                 )}
               />
             </motion.div>
 
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col gap-3"
+            >
               <AnimatePresence mode="popLayout">
                 {!showKYC && (
-                  <motion.div key="kyc-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowKYC(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
-                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add KYC Details</span>
+                  <motion.div
+                    key="kyc-btn"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowKYC(true)}
+                      className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit"
+                    >
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">
+                        + Add KYC Details
+                      </span>
                     </button>
                   </motion.div>
                 )}
                 {showKYC && (
-                  <motion.div key="kyc-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                  <motion.div
+                    key="kyc-editor"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden"
+                  >
                     <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
                       <FileText className="w-3.5 h-3.5 mr-1.5" /> KYC Details
                     </label>
@@ -468,14 +602,32 @@ export default function AddProjectModal() {
                 )}
 
                 {!showNote && (
-                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
-                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                  <motion.div
+                    key="note-btn"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowNote(true)}
+                      className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit"
+                    >
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">
+                        + Add Initial Note
+                      </span>
                     </button>
                   </motion.div>
                 )}
                 {showNote && (
-                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                  <motion.div
+                    key="note-editor"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden"
+                  >
                     <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
                       <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
                     </label>
@@ -526,7 +678,7 @@ export default function AddProjectModal() {
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
@@ -535,16 +687,18 @@ export default function AddProjectModal() {
                     <AlertTriangle className="w-6 h-6 text-red-500" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
-                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <p className="text-sm text-slate-500 mb-6">
+                    You have unsaved changes. If you close this now, your data will be lost.
+                  </p>
                   <div className="flex gap-3 w-full">
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setShowDiscardConfirm(false)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
                     >
                       Keep Editing
                     </button>
-                    <button 
+                    <button
                       type="button"
                       onClick={() => handleClose(true)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
@@ -569,7 +723,7 @@ export default function AddProjectModal() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
                   className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
                 >
                   <Check className="w-12 h-12 text-green-600 stroke-[3]" />

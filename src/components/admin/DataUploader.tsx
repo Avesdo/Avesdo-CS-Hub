@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
-import { UploadCloud, CheckCircle2, AlertCircle, Play, FileText, Database, CircleDashed } from 'lucide-react';
+import {
+  UploadCloud,
+  CheckCircle2,
+  AlertCircle,
+  Play,
+  FileText,
+  Database,
+  CircleDashed,
+} from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { doc, updateDoc, collection, writeBatch, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../../api/firebase';
@@ -13,22 +21,36 @@ type FileState = {
 };
 
 export function DataUploader() {
-  const projects = useAppStore(state => state.projects);
-  const clients = useAppStore(state => state.clients);
-  const user = useAppStore(state => state.user);
+  const projects = useAppStore((state) => state.projects);
+  const clients = useAppStore((state) => state.clients);
+  const user = useAppStore((state) => state.user);
 
-  const [satisfactionFile, setSatisfactionFile] = useState<FileState>({ file: null, parsedData: null, error: null });
-  const [sessionsFile, setSessionsFile] = useState<FileState>({ file: null, parsedData: null, error: null });
-  const [viewsFile, setViewsFile] = useState<FileState>({ file: null, parsedData: null, error: null });
+  const [satisfactionFile, setSatisfactionFile] = useState<FileState>({
+    file: null,
+    parsedData: null,
+    error: null,
+  });
+  const [sessionsFile, setSessionsFile] = useState<FileState>({
+    file: null,
+    parsedData: null,
+    error: null,
+  });
+  const [viewsFile, setViewsFile] = useState<FileState>({
+    file: null,
+    parsedData: null,
+    error: null,
+  });
 
   const [isCompiling, setIsCompiling] = useState(false);
-  const [compileResult, setCompileResult] = useState<{ updated: number; intakes: number } | null>(null);
+  const [compileResult, setCompileResult] = useState<{ updated: number; intakes: number } | null>(
+    null
+  );
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
 
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!file.name.endsWith('.csv')) {
         toast.error(`${file.name} is not a CSV file.`);
         return;
@@ -36,14 +58,19 @@ export function DataUploader() {
 
       // Guess type based on file name
       let type: 'satisfaction' | 'sessions' | 'views' | null = null;
-      if (file.name.toLowerCase().includes('satisfaction') || file.name.toLowerCase().includes('customer')) {
+      if (
+        file.name.toLowerCase().includes('satisfaction') ||
+        file.name.toLowerCase().includes('customer')
+      ) {
         type = 'satisfaction';
       } else if (file.name.toLowerCase().includes('sessions')) {
         type = 'sessions';
       } else if (file.name.toLowerCase().includes('views')) {
         type = 'views';
       } else {
-        toast.error(`Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', or 'views'.`);
+        toast.error(
+          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', or 'views'.`
+        );
         return;
       }
 
@@ -52,13 +79,14 @@ export function DataUploader() {
         try {
           const text = event.target?.result as string;
           const result = Papa.parse(text, { header: true, skipEmptyLines: true });
-          
-          if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: result.data, error: null });
+
+          if (type === 'satisfaction')
+            setSatisfactionFile({ file, parsedData: result.data, error: null });
           if (type === 'sessions') setSessionsFile({ file, parsedData: result.data, error: null });
           if (type === 'views') setViewsFile({ file, parsedData: result.data, error: null });
-          
         } catch (err: any) {
-          if (type === 'satisfaction') setSatisfactionFile({ file, parsedData: null, error: err.message });
+          if (type === 'satisfaction')
+            setSatisfactionFile({ file, parsedData: null, error: err.message });
           if (type === 'sessions') setSessionsFile({ file, parsedData: null, error: err.message });
           if (type === 'views') setViewsFile({ file, parsedData: null, error: err.message });
         }
@@ -90,21 +118,32 @@ export function DataUploader() {
 
     try {
       const aliasesSnapshot = await getDocs(collection(db, 'aliases'));
-      const aliases = aliasesSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as any));
+      const aliases = aliasesSnapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as any);
 
       // 1. Process Userpilot Data
       if (sessionsFile.parsedData && viewsFile.parsedData) {
         const sessionsData = sessionsFile.parsedData;
         const viewsData = viewsFile.parsedData;
 
-        const uniqueIDs = new Set([...sessionsData.map(r => String(r.ID)), ...viewsData.map(r => String(r.ID))].filter(id => id && id !== 'undefined' && id !== 'null_prod'));
+        const uniqueIDs = new Set(
+          [...sessionsData.map((r) => String(r.ID)), ...viewsData.map((r) => String(r.ID))].filter(
+            (id) => id && id !== 'undefined' && id !== 'null_prod'
+          )
+        );
 
         for (const id of Array.from(uniqueIDs)) {
-          let targetProject = projects.find(p => p.developmentId && p.developmentId + '_prod' === id);
+          let targetProject = projects.find(
+            (p) => p.developmentId && p.developmentId + '_prod' === id
+          );
           if (!targetProject) {
-            const aliasMatch = aliases.find((a: any) => a.rawName === id && (a.status === 'resolved' || a.status === 'verified') && a.type === 'project');
+            const aliasMatch = aliases.find(
+              (a: any) =>
+                a.rawName === id &&
+                (a.status === 'resolved' || a.status === 'verified') &&
+                a.type === 'project'
+            );
             if (aliasMatch) {
-              targetProject = projects.find(p => p.id === aliasMatch.targetId);
+              targetProject = projects.find((p) => p.id === aliasMatch.targetId);
               if (targetProject) {
                 autoProcessedMap.set(aliasMatch.id, {
                   id: aliasMatch.id,
@@ -112,14 +151,14 @@ export function DataUploader() {
                   rawName: aliasMatch.rawName,
                   targetId: aliasMatch.targetId,
                   targetName: targetProject.name,
-                  timestamp: new Date().getTime()
+                  timestamp: new Date().getTime(),
                 });
               }
             }
           }
 
           if (targetProject) {
-            const projSessions = sessionsData.filter(r => String(r.ID) === id && r.Email);
+            const projSessions = sessionsData.filter((r) => String(r.ID) === id && r.Email);
             let activeUsersCount = 0;
             let totalSessionsOfActiveUsers = 0;
 
@@ -130,7 +169,8 @@ export function DataUploader() {
                 totalSessionsOfActiveUsers += avgSessions;
               }
             }
-            const avgSessionsPerUser = activeUsersCount > 0 ? totalSessionsOfActiveUsers / activeUsersCount : 0;
+            const avgSessionsPerUser =
+              activeUsersCount > 0 ? totalSessionsOfActiveUsers / activeUsersCount : 0;
 
             let userVolScore = 0;
             if (activeUsersCount >= 5) userVolScore += 50;
@@ -141,7 +181,10 @@ export function DataUploader() {
             else if (avgSessionsPerUser >= 4) userVolScore += 35;
             else if (avgSessionsPerUser >= 1) userVolScore += 15;
 
-            const projViews = viewsData.filter(r => String(r.ID) === id && r['Tagged Page'] && r['Tagged Page'] !== 'Untagged Pages');
+            const projViews = viewsData.filter(
+              (r) =>
+                String(r.ID) === id && r['Tagged Page'] && r['Tagged Page'] !== 'Untagged Pages'
+            );
             let distinctFeatures = 0;
             let totalPageViews = 0;
 
@@ -152,7 +195,9 @@ export function DataUploader() {
                 totalPageViews += avgViews;
               }
             }
-            const untaggedViewsRow = viewsData.find(r => String(r.ID) === id && r['Tagged Page'] === 'Untagged Pages');
+            const untaggedViewsRow = viewsData.find(
+              (r) => String(r.ID) === id && r['Tagged Page'] === 'Untagged Pages'
+            );
             if (untaggedViewsRow) {
               totalPageViews += getAvg(untaggedViewsRow);
             }
@@ -172,7 +217,7 @@ export function DataUploader() {
                 userVol: userVolScore,
                 opActivity: opActivityScore,
                 activeUserCount: activeUsersCount,
-                eventCount: totalPageViews
+                eventCount: totalPageViews,
               });
               updateCount++;
             }
@@ -185,7 +230,7 @@ export function DataUploader() {
                 rawName: id,
                 targetId: '',
                 status: 'pending_approval',
-                contextName: 'Userpilot'
+                contextName: 'Userpilot',
               });
               aliasesAdded++;
             }
@@ -202,11 +247,20 @@ export function DataUploader() {
             const happy = parseInt(row['Happy'], 10) || 0;
             const csat = Math.round((happy / feedbackReceived) * 100);
 
-            let targetClient = clients.find(c => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase());
+            let targetClient = clients.find(
+              (c) => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase()
+            );
             if (!targetClient) {
-              const aliasMatch = aliases.find((a: any) => a.rawName === rawName && (a.status === 'resolved' || a.status === 'verified') && a.type === 'client');
+              const aliasMatch = aliases.find(
+                (a: any) =>
+                  a.rawName === rawName &&
+                  (a.status === 'resolved' || a.status === 'verified') &&
+                  a.type === 'client'
+              );
               if (aliasMatch) {
-                targetClient = clients.find(c => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId);
+                targetClient = clients.find(
+                  (c) => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId
+                );
                 if (targetClient) {
                   autoProcessedMap.set(aliasMatch.id, {
                     id: aliasMatch.id,
@@ -214,7 +268,7 @@ export function DataUploader() {
                     rawName: aliasMatch.rawName,
                     targetId: aliasMatch.targetId,
                     targetName: targetClient.companyName || targetClient.name,
-                    timestamp: new Date().getTime()
+                    timestamp: new Date().getTime(),
                   });
                 }
               }
@@ -223,7 +277,7 @@ export function DataUploader() {
             if (targetClient) {
               if (targetClient.clientCsat !== csat) {
                 await updateDoc(doc(db, 'clients', targetClient.clientId || targetClient.id), {
-                  clientCsat: csat
+                  clientCsat: csat,
                 });
                 updateCount++;
               }
@@ -236,7 +290,7 @@ export function DataUploader() {
                   rawName: rawName,
                   targetId: '',
                   status: 'pending_approval',
-                  contextName: 'Satisfaction Report'
+                  contextName: 'Satisfaction Report',
                 });
                 aliasesAdded++;
               }
@@ -254,8 +308,10 @@ export function DataUploader() {
       const filesUploaded = [
         satisfactionFile.file?.name,
         sessionsFile.file?.name,
-        viewsFile.file?.name
-      ].filter(Boolean).join(', ');
+        viewsFile.file?.name,
+      ]
+        .filter(Boolean)
+        .join(', ');
 
       await setDoc(doc(db, 'system_logs', logId), {
         id: logId,
@@ -265,17 +321,16 @@ export function DataUploader() {
         entityName: `Files: ${filesUploaded}`,
         timestamp: new Date().getTime(),
         author: user?.name || user?.email || 'System',
-        autoProcessed: Array.from(autoProcessedMap.values())
+        autoProcessed: Array.from(autoProcessedMap.values()),
       });
 
       setCompileResult({ updated: updateCount, intakes: aliasesAdded });
       toast.success('Compilation successful');
-      
+
       // Reset forms
       setSatisfactionFile({ file: null, parsedData: null, error: null });
       setSessionsFile({ file: null, parsedData: null, error: null });
       setViewsFile({ file: null, parsedData: null, error: null });
-
     } catch (err: any) {
       console.error(err);
       toast.error('Compiler error: ' + err.message);
@@ -284,7 +339,8 @@ export function DataUploader() {
     }
   };
 
-  const isReadyToCompile = satisfactionFile.parsedData || sessionsFile.parsedData || viewsFile.parsedData;
+  const isReadyToCompile =
+    satisfactionFile.parsedData || sessionsFile.parsedData || viewsFile.parsedData;
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -294,7 +350,9 @@ export function DataUploader() {
           <div>
             <h3 className="text-sm font-semibold text-green-800">Compilation Complete!</h3>
             <p className="text-sm text-green-700 mt-1">
-              Updated <strong>{compileResult.updated}</strong> target metrics and pushed <strong>{compileResult.intakes}</strong> unrecognized entries to the Data Intake pipeline.
+              Updated <strong>{compileResult.updated}</strong> target metrics and pushed{' '}
+              <strong>{compileResult.intakes}</strong> unrecognized entries to the Data Intake
+              pipeline.
             </p>
           </div>
         </div>
@@ -307,12 +365,12 @@ export function DataUploader() {
             {/* Single Row Sleek Modern Box */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="relative flex-1 group h-12">
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   accept=".csv"
                   multiple
                   onChange={handleFileUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   title="Drag & Drop CSV files here or click to browse"
                 />
                 <div className="flex items-center justify-start px-4 gap-2 h-full bg-slate-50 border border-slate-200 border-dashed rounded-lg text-sm font-medium text-slate-600 transition-all group-hover:border-primary/50 group-hover:bg-slate-100 group-hover:text-primary shadow-sm hover:border-solid">
@@ -320,7 +378,7 @@ export function DataUploader() {
                   Drop or Select CSV Data Files
                 </div>
               </div>
-              
+
               <button
                 disabled={!isReadyToCompile || isCompiling}
                 onClick={runCompiler}
@@ -342,9 +400,11 @@ export function DataUploader() {
 
             {/* Note about filenames required */}
             <p className="text-[11px] text-slate-400 px-1 mt-1.5">
-              <strong>Required CSV Filenames:</strong> To automatically parse your data, ensure your filenames contain the corresponding keywords: 
-              <span className="font-medium text-slate-500 mx-1">"satisfaction"</span> (or "customer"), 
-              <span className="font-medium text-slate-500 mx-1">"sessions"</span>, and 
+              <strong>Required CSV Filenames:</strong> To automatically parse your data, ensure your
+              filenames contain the corresponding keywords:
+              <span className="font-medium text-slate-500 mx-1">"satisfaction"</span> (or
+              "customer"),
+              <span className="font-medium text-slate-500 mx-1">"sessions"</span>, and
               <span className="font-medium text-slate-500 ml-1">"views"</span>.
             </p>
           </div>
@@ -354,10 +414,15 @@ export function DataUploader() {
             {[
               { key: 'satisfaction', label: 'Happyfox Support CSAT', data: satisfactionFile },
               { key: 'sessions', label: 'Userpilot Sessions', data: sessionsFile },
-              { key: 'views', label: 'Userpilot Page Views', data: viewsFile }
+              { key: 'views', label: 'Userpilot Page Views', data: viewsFile },
             ].map((f) => (
-              <div key={f.key} className="flex items-center gap-2.5 px-3 py-2 rounded-xl border border-slate-200 bg-white shadow-sm transition-all">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${f.data.parsedData ? 'bg-emerald-50' : f.data.error ? 'bg-red-50' : 'bg-slate-50 border border-slate-200 border-dashed'}`}>
+              <div
+                key={f.key}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl border border-slate-200 bg-white shadow-sm transition-all"
+              >
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${f.data.parsedData ? 'bg-emerald-50' : f.data.error ? 'bg-red-50' : 'bg-slate-50 border border-slate-200 border-dashed'}`}
+                >
                   {f.data.parsedData ? (
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   ) : f.data.error ? (
@@ -366,9 +431,11 @@ export function DataUploader() {
                     <FileText className="w-3.5 h-3.5 text-slate-300" />
                   )}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate transition-colors leading-tight ${f.data.file ? 'text-slate-800' : 'text-slate-400'}`}>
+                  <p
+                    className={`text-sm font-bold truncate transition-colors leading-tight ${f.data.file ? 'text-slate-800' : 'text-slate-400'}`}
+                  >
                     {f.label}
                   </p>
                   {(f.data.parsedData || f.data.error || f.data.file) && (
@@ -378,7 +445,10 @@ export function DataUploader() {
                           {f.data.parsedData.length} rows parsed
                         </span>
                       ) : f.data.error ? (
-                        <span className="text-[10px] font-medium text-red-600 truncate block" title={f.data.error}>
+                        <span
+                          className="text-[10px] font-medium text-red-600 truncate block"
+                          title={f.data.error}
+                        >
                           Error parsing file
                         </span>
                       ) : (
@@ -392,7 +462,6 @@ export function DataUploader() {
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </div>

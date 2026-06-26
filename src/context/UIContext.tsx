@@ -49,16 +49,16 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       const params = new URLSearchParams(window.location.search);
       const drawer = params.get('drawer') as DrawerType;
       const drawerId = params.get('drawerId');
-      
+
       if (drawer) {
         setActiveDrawers((prev) => {
-          if (prev.some(d => d.type === drawer && d.entityId === drawerId)) return prev;
+          if (prev.some((d) => d.type === drawer && d.entityId === drawerId)) return prev;
           return [...prev, { type: drawer, entityId: drawerId || undefined }];
         });
       } else {
         setActiveDrawers((prev) => {
-           if (prev.length === 0) return prev;
-           return [];
+          if (prev.length === 0) return prev;
+          return [];
         });
       }
     };
@@ -71,8 +71,8 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const updateUrl = (drawers: DrawerState[]) => {
     const newUrl = new URL(window.location.href);
-    const visibleDrawers = drawers.filter(d => !d.isClosing);
-    
+    const visibleDrawers = drawers.filter((d) => !d.isClosing);
+
     if (visibleDrawers.length === 0) {
       newUrl.searchParams.delete('drawer');
       newUrl.searchParams.delete('drawerId');
@@ -86,8 +86,6 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
     window.history.pushState({}, '', newUrl.toString());
   };
-
-
 
   const openModal = useCallback((modal: ModalType) => {
     if (modal === null) setActiveModals([]);
@@ -118,11 +116,11 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       if (prev[prev.length - 1].isClosing) return prev; // Already closing
       const copy = [...prev];
       copy[copy.length - 1] = { ...copy[copy.length - 1], isClosing: true };
-      
+
       // Update URL immediately to reflect the drawer that WILL be visible
       const visible = copy.filter((d) => !d.isClosing);
       updateUrl(visible);
-      
+
       return copy;
     });
 
@@ -132,7 +130,6 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
     }, 300);
   }, []);
-
 
   // ESC Listener
   useEffect(() => {

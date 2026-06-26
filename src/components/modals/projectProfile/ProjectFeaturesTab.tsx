@@ -9,8 +9,8 @@ interface ProjectFeaturesTabProps {
 }
 
 export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps) {
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
 
   // Local state for optimistic UI feedback
   const [localFeatures, setLocalFeatures] = useState<string[]>(project?.features || []);
@@ -66,20 +66,37 @@ export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps)
         'Workflows',
         'Reporting',
       ];
-      
+
   const activeCount = featuresList.filter((f: string) => localFeatures.includes(f)).length;
   const totalCount = featuresList.length;
   const pct = totalCount > 0 ? Math.round((activeCount / totalCount) * 100) : 0;
 
   // Gauge colors based on score
   const getGaugeColors = (val: number) => {
-    if (val >= 80) return { stroke: 'stroke-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-600', fill: 'fill-emerald-500' };
-    if (val >= 50) return { stroke: 'stroke-blue-500', bg: 'bg-blue-50', text: 'text-blue-600', fill: 'fill-blue-500' };
-    return { stroke: 'stroke-amber-500', bg: 'bg-amber-50', text: 'text-amber-600', fill: 'fill-amber-500' };
+    if (val >= 80)
+      return {
+        stroke: 'stroke-emerald-500',
+        bg: 'bg-emerald-50',
+        text: 'text-emerald-600',
+        fill: 'fill-emerald-500',
+      };
+    if (val >= 50)
+      return {
+        stroke: 'stroke-blue-500',
+        bg: 'bg-blue-50',
+        text: 'text-blue-600',
+        fill: 'fill-blue-500',
+      };
+    return {
+      stroke: 'stroke-amber-500',
+      bg: 'bg-amber-50',
+      text: 'text-amber-600',
+      fill: 'fill-amber-500',
+    };
   };
 
   const colors = getGaugeColors(pct);
-  
+
   // SVG Semi-Circular progress values
   const radius = 45;
   const circumference = Math.PI * radius; // Half circle
@@ -88,14 +105,16 @@ export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps)
   return (
     <div className="flex flex-col space-y-6">
       {/* Adoption Score Widget */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden bg-white border border-slate-200/60 rounded-2xl shadow-sm"
       >
         {/* Soft Aura Background */}
-        <div className={`absolute -right-20 -top-20 w-64 h-64 ${colors.bg} rounded-full blur-3xl opacity-60 pointer-events-none`}></div>
-        
+        <div
+          className={`absolute -right-20 -top-20 w-64 h-64 ${colors.bg} rounded-full blur-3xl opacity-60 pointer-events-none`}
+        ></div>
+
         <div className="relative p-6 flex flex-col sm:flex-row items-center gap-8">
           {/* Semi-Circular Gauge */}
           <div className="relative shrink-0 flex items-center justify-center w-[120px] h-[70px]">
@@ -117,12 +136,16 @@ export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps)
                 fill="none"
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                transition={{ duration: 1, ease: 'easeOut' }}
                 style={{ strokeDasharray: circumference }}
               />
             </svg>
             <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center flex-col">
-              <span className={`text-2xl font-extrabold tracking-tight ${colors.text} leading-none`}>{pct}%</span>
+              <span
+                className={`text-2xl font-extrabold tracking-tight ${colors.text} leading-none`}
+              >
+                {pct}%
+              </span>
             </div>
           </div>
 
@@ -133,7 +156,10 @@ export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps)
               Platform Adoption
             </h3>
             <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">
-              This project is currently utilizing <strong className="text-slate-700">{activeCount}</strong> out of <strong className="text-slate-700">{totalCount}</strong> tracked platform features. <br className="hidden sm:block" />
+              This project is currently utilizing{' '}
+              <strong className="text-slate-700">{activeCount}</strong> out of{' '}
+              <strong className="text-slate-700">{totalCount}</strong> tracked platform features.{' '}
+              <br className="hidden sm:block" />
               Toggle the features below to keep the platform configuration synced.
             </p>
           </div>
@@ -148,57 +174,60 @@ export default function ProjectFeaturesTab({ project }: ProjectFeaturesTabProps)
           </div>
           <h4 className="text-[14px] font-bold text-slate-700">No Features Configured</h4>
           <p className="text-[13px] text-slate-500 mt-1 max-w-[250px]">
-            There are no platform features defined in your settings. Please configure features to track adoption.
+            There are no platform features defined in your settings. Please configure features to
+            track adoption.
           </p>
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           initial="hidden"
           animate="show"
           variants={{
             hidden: { opacity: 0 },
-            show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            show: { opacity: 1, transition: { staggerChildren: 0.05 } },
           }}
           className="grid grid-cols-1 sm:grid-cols-2 gap-4"
         >
           {featuresList.map((feature: string) => {
             const isActive = localFeatures.includes(feature);
-            
+
             return (
               <motion.div
                 variants={{
                   hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0 }
+                  show: { opacity: 1, y: 0 },
                 }}
                 key={feature}
                 onClick={() => handleToggle(feature)}
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 className={`relative flex items-center p-4 rounded-xl cursor-pointer transition-all duration-300 group select-none shadow-sm border ${
-                  isActive 
-                    ? 'bg-primary/5 border-primary/30 shadow-[0_4px_20px_rgb(14,165,233,0.07)]' 
+                  isActive
+                    ? 'bg-primary/5 border-primary/30 shadow-[0_4px_20px_rgb(14,165,233,0.07)]'
                     : 'bg-white border-slate-200/60 hover:border-slate-300 hover:shadow-md'
                 }`}
               >
                 <div className="flex-1 pr-4">
-                  <span className={`text-[14px] font-semibold tracking-tight transition-colors ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}>
+                  <span
+                    className={`text-[14px] font-semibold tracking-tight transition-colors ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}
+                  >
                     {feature}
                   </span>
                 </div>
-                
+
                 {/* Animated Pill Toggle */}
-                <div 
+                <div
                   className={`shrink-0 w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
                     isActive ? 'bg-primary' : 'bg-slate-200'
                   }`}
                 >
-                  <motion.div 
+                  <motion.div
                     layout
                     className="w-4 h-4 bg-white rounded-full shadow-sm pointer-events-none"
-                    animate={{ 
-                      x: isActive ? 20 : 0 
+                    animate={{
+                      x: isActive ? 20 : 0,
                     }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   />
                 </div>
               </motion.div>

@@ -419,8 +419,8 @@ export async function updateProjectRecord(
 
   let prevProjects: any[] = [];
   let prevArchivedProjects: any[] = [];
-  let prevClients: any[] = [];
-  let prevArchivedClients: any[] = [];
+  const prevClients: any[] = [];
+  const prevArchivedClients: any[] = [];
   try {
     const timeVal = new Date().getTime();
     const snapshot = {
@@ -471,23 +471,27 @@ export async function updateProjectRecord(
     const store = useAppStore.getState();
     prevProjects = [...store.projects];
     prevArchivedProjects = [...store.archivedProjects];
-    const exists = store.projects.some(p => p.id === finalProject.id) || store.archivedProjects.some(p => p.id === finalProject.id);
-    
+    const exists =
+      store.projects.some((p) => p.id === finalProject.id) ||
+      store.archivedProjects.some((p) => p.id === finalProject.id);
+
     if (finalProject.isArchived) {
       store.setAppState({
         ...store,
-        projects: store.projects.filter(p => p.id !== finalProject.id),
-        archivedProjects: exists 
-          ? store.archivedProjects.map(p => p.id === finalProject.id ? finalProject : p)
-          : [...store.archivedProjects, finalProject]
+        projects: store.projects.filter((p) => p.id !== finalProject.id),
+        archivedProjects: exists
+          ? store.archivedProjects.map((p) => (p.id === finalProject.id ? finalProject : p))
+          : [...store.archivedProjects, finalProject],
       });
     } else {
       store.setAppState({
         ...store,
-        projects: exists 
-          ? store.projects.map(p => p.id === finalProject.id ? finalProject : p).concat(store.projects.some(p => p.id === finalProject.id) ? [] : [finalProject])
+        projects: exists
+          ? store.projects
+              .map((p) => (p.id === finalProject.id ? finalProject : p))
+              .concat(store.projects.some((p) => p.id === finalProject.id) ? [] : [finalProject])
           : [...store.projects, finalProject],
-        archivedProjects: store.archivedProjects.filter(p => p.id !== finalProject.id)
+        archivedProjects: store.archivedProjects.filter((p) => p.id !== finalProject.id),
       });
     }
     // -------------------------
@@ -495,8 +499,12 @@ export async function updateProjectRecord(
     if (!silent) toast.success(successMsg);
     return { success: true, id: finalProject.id };
   } catch (err: any) {
-      // Rollback on error
-      useAppStore.getState().setAppState({ ...useAppStore.getState(), projects: prevProjects, archivedProjects: prevArchivedProjects });
+    // Rollback on error
+    useAppStore.getState().setAppState({
+      ...useAppStore.getState(),
+      projects: prevProjects,
+      archivedProjects: prevArchivedProjects,
+    });
 
     if (!silent) toast.error(errorMsg);
     throw err;
@@ -553,7 +561,11 @@ export async function updateServiceRecord(
   }
 }
 
-export async function deleteClientRecord(id: string, name: string = 'Record', author: string = 'System') {
+export async function deleteClientRecord(
+  id: string,
+  name: string = 'Record',
+  author: string = 'System'
+) {
   try {
     await updateDoc(doc(db, 'clients', id), { isArchived: true, archivedAt: new Date().getTime() });
     await addGlobalLog('Archived record', 'Client', id, name, author);
@@ -565,9 +577,16 @@ export async function deleteClientRecord(id: string, name: string = 'Record', au
   }
 }
 
-export async function deleteProjectRecord(id: string, name: string = 'Record', author: string = 'System') {
+export async function deleteProjectRecord(
+  id: string,
+  name: string = 'Record',
+  author: string = 'System'
+) {
   try {
-    await updateDoc(doc(db, 'projects', id), { isArchived: true, archivedAt: new Date().getTime() });
+    await updateDoc(doc(db, 'projects', id), {
+      isArchived: true,
+      archivedAt: new Date().getTime(),
+    });
     await addGlobalLog('Archived record', 'Project', id, name, author);
     toast.success(`'${name}' successfully archived`);
     return { success: true };
@@ -577,9 +596,16 @@ export async function deleteProjectRecord(id: string, name: string = 'Record', a
   }
 }
 
-export async function deleteServiceRecord(id: string, name: string = 'Record', author: string = 'System') {
+export async function deleteServiceRecord(
+  id: string,
+  name: string = 'Record',
+  author: string = 'System'
+) {
   try {
-    await updateDoc(doc(db, 'services', id), { isArchived: true, archivedAt: new Date().getTime() });
+    await updateDoc(doc(db, 'services', id), {
+      isArchived: true,
+      archivedAt: new Date().getTime(),
+    });
     await addGlobalLog('Archived record', 'Service', id, name, author);
     toast.success(`'${name}' successfully archived`);
     return { success: true };
@@ -600,12 +626,12 @@ export async function restoreRecord(
 ) {
   try {
     await updateDoc(doc(db, collectionName, id), { isArchived: false, archivedAt: null });
-    
+
     let entityType: any = 'System';
     if (collectionName === 'clients') entityType = 'Client';
     if (collectionName === 'projects') entityType = 'Project';
     if (collectionName === 'services') entityType = 'Service';
-    
+
     await addGlobalLog('Restored archived record', entityType, id, name, author);
 
     if (!config?.silent) toast.success(`'${name}' successfully restored`);

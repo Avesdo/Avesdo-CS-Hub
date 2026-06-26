@@ -11,19 +11,20 @@ export async function generateDailyHealthSnapshots() {
     const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
 
     const clients: Client[] = clientsSnap.docs
-      .map(d => d.data() as Client)
-      .filter(c => !c.isArchived);
+      .map((d) => d.data() as Client)
+      .filter((c) => !c.isArchived);
     const projects: Project[] = projectsSnap.docs
-      .map(d => d.data() as Project)
-      .filter(p => !p.isArchived);
-    const settings: Settings = settingsSnap.exists() ? (settingsSnap.data() as Settings) : {} as Settings;
+      .map((d) => d.data() as Project)
+      .filter((p) => !p.isArchived);
+    const settings: Settings = settingsSnap.exists()
+      ? (settingsSnap.data() as Settings)
+      : ({} as Settings);
 
     // 2. Fetch the existing health_history document
     const historyRef = doc(db, 'settings', 'health_history');
     const historyDoc = await getDoc(historyRef);
-    const historyMap = historyDoc.exists() && historyDoc.data().historyMap 
-      ? historyDoc.data().historyMap 
-      : {};
+    const historyMap =
+      historyDoc.exists() && historyDoc.data().historyMap ? historyDoc.data().historyMap : {};
 
     const now = new Date();
     const todayStr = now.toDateString();
@@ -32,7 +33,7 @@ export async function generateDailyHealthSnapshots() {
     // 3. Iterate over clients and capture current score
     let hasUpdates = false;
 
-    clients.forEach(client => {
+    clients.forEach((client) => {
       const clientId = client.clientId || (client as any).id;
       if (!clientId) return;
 
@@ -44,7 +45,7 @@ export async function generateDailyHealthSnapshots() {
       }
 
       const clientHistory = historyMap[clientId];
-      
+
       // Check if we already have a snapshot for today
       if (clientHistory.length > 0) {
         const lastSnapshot = clientHistory[clientHistory.length - 1];
@@ -65,7 +66,7 @@ export async function generateDailyHealthSnapshots() {
     });
 
     // 4. Iterate over projects and capture current score
-    projects.forEach(project => {
+    projects.forEach((project) => {
       const projectId = project.projectId || (project as any).id;
       if (!projectId) return;
 
@@ -77,7 +78,7 @@ export async function generateDailyHealthSnapshots() {
       }
 
       const projectHistory = historyMap[projectId];
-      
+
       // Check if we already have a snapshot for today
       if (projectHistory.length > 0) {
         const lastSnapshot = projectHistory[projectHistory.length - 1];
@@ -103,7 +104,11 @@ export async function generateDailyHealthSnapshots() {
     }
 
     // 5. Update lastSnapshotDate so this doesn't run again today
-    await setDoc(doc(db, 'settings', 'global_config'), { lastSnapshotDate: todayStr }, { merge: true });
+    await setDoc(
+      doc(db, 'settings', 'global_config'),
+      { lastSnapshotDate: todayStr },
+      { merge: true }
+    );
 
     return { success: true };
   } catch (error) {

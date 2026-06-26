@@ -36,7 +36,7 @@ import {
   XCircle,
   Edit,
   Database,
-  Pipette
+  Pipette,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
@@ -80,34 +80,208 @@ import { DataExportHub } from '../components/admin/DataExportHub';
 import { AutoProcessedDrawer } from '../components/admin/AutoProcessedDrawer';
 
 const ICONS = [
-  'Activity', 'AlarmClock', 'AlertCircle', 'AlertTriangle', 'AlignLeft', 'Anchor', 'Aperture', 'Archive', 'Award',
-  'Ban', 'BarChart', 'BarChart2', 'BarChart3', 'Battery', 'Bell', 'Blocks', 'Bluetooth', 'Book', 'BookOpen', 'Bookmark', 'Brain', 'Briefcase', 'Bug', 'Building', 'Building2',
-  'Calculator', 'Calendar', 'CalendarCheck', 'CalendarClock', 'CalendarDays', 'CalendarX', 'Camera', 'Cast', 'CheckCircle2', 'CheckSquare', 'CircleCheckBig', 'CircleDashed', 'CircleEllipsis', 'CircleX', 'ClipboardCheck', 'ClipboardList', 'ClockAlert', 'Cloud', 'Code', 'Coffee', 'Command', 'Compass', 'Contact', 'Copy', 'CornerUpLeft', 'Cpu', 'CreditCard', 'Crop', 'Crosshair',
-  'Database', 'Download', 'Droplet',
-  'Edit3', 'Eye', 'EyeOff',
-  'FastForward', 'Feather', 'File', 'FileText', 'Film', 'Filter', 'Fingerprint', 'Flag', 'Flame', 'FolderOpen',
-  'Gauge', 'Gift', 'Globe',
-  'Hammer', 'Hash', 'Headphones', 'Heart', 'History', 'Home', 'House', 'HousePlus',
-  'Image', 'Inbox', 'Info',
+  'Activity',
+  'AlarmClock',
+  'AlertCircle',
+  'AlertTriangle',
+  'AlignLeft',
+  'Anchor',
+  'Aperture',
+  'Archive',
+  'Award',
+  'Ban',
+  'BarChart',
+  'BarChart2',
+  'BarChart3',
+  'Battery',
+  'Bell',
+  'Blocks',
+  'Bluetooth',
+  'Book',
+  'BookOpen',
+  'Bookmark',
+  'Brain',
+  'Briefcase',
+  'Bug',
+  'Building',
+  'Building2',
+  'Calculator',
+  'Calendar',
+  'CalendarCheck',
+  'CalendarClock',
+  'CalendarDays',
+  'CalendarX',
+  'Camera',
+  'Cast',
+  'CheckCircle2',
+  'CheckSquare',
+  'CircleCheckBig',
+  'CircleDashed',
+  'CircleEllipsis',
+  'CircleX',
+  'ClipboardCheck',
+  'ClipboardList',
+  'ClockAlert',
+  'Cloud',
+  'Code',
+  'Coffee',
+  'Command',
+  'Compass',
+  'Contact',
+  'Copy',
+  'CornerUpLeft',
+  'Cpu',
+  'CreditCard',
+  'Crop',
+  'Crosshair',
+  'Database',
+  'Download',
+  'Droplet',
+  'Edit3',
+  'Eye',
+  'EyeOff',
+  'FastForward',
+  'Feather',
+  'File',
+  'FileText',
+  'Film',
+  'Filter',
+  'Fingerprint',
+  'Flag',
+  'Flame',
+  'FolderOpen',
+  'Gauge',
+  'Gift',
+  'Globe',
+  'Hammer',
+  'Hash',
+  'Headphones',
+  'Heart',
+  'History',
+  'Home',
+  'House',
+  'HousePlus',
+  'Image',
+  'Inbox',
+  'Info',
   'Key',
-  'Laptop', 'Layers', 'LifeBuoy', 'Lightbulb', 'LineChart', 'Link', 'List', 'Loader', 'Loader2', 'Lock', 'LogOut',
-  'Mail', 'Map', 'MapPin', 'Maximize', 'MessageSquare', 'Mic', 'Minus', 'Monitor', 'Moon', 'Music',
+  'Laptop',
+  'Layers',
+  'LifeBuoy',
+  'Lightbulb',
+  'LineChart',
+  'Link',
+  'List',
+  'Loader',
+  'Loader2',
+  'Lock',
+  'LogOut',
+  'Mail',
+  'Map',
+  'MapPin',
+  'Maximize',
+  'MessageSquare',
+  'Mic',
+  'Minus',
+  'Monitor',
+  'Moon',
+  'Music',
   'Navigation',
-  'Package', 'PackageCheck', 'Paperclip', 'Pause', 'PauseCircle', 'PenTool', 'Percent', 'Phone', 'PieChart', 'Play', 'PlayCircle', 'PlusCircle', 'Printer',
+  'Package',
+  'PackageCheck',
+  'Paperclip',
+  'Pause',
+  'PauseCircle',
+  'PenTool',
+  'Percent',
+  'Phone',
+  'PieChart',
+  'Play',
+  'PlayCircle',
+  'PlusCircle',
+  'Printer',
   'Rocket',
-  'Save', 'Search', 'Send', 'Settings', 'Shield', 'ShieldAlert', 'ShieldCheck', 'ShoppingCart', 'Smartphone', 'Star', 'StarHalf', 'StopCircle',
-  'Tag', 'Target', 'Terminal', 'ThumbsDown', 'ThumbsUp', 'Timer', 'TrendingUp', 'Trophy', 'Truck',
-  'Unlock', 'User', 'UserCheck', 'Users',
+  'Save',
+  'Search',
+  'Send',
+  'Settings',
+  'Shield',
+  'ShieldAlert',
+  'ShieldCheck',
+  'ShoppingCart',
+  'Smartphone',
+  'Star',
+  'StarHalf',
+  'StopCircle',
+  'Tag',
+  'Target',
+  'Terminal',
+  'ThumbsDown',
+  'ThumbsUp',
+  'Timer',
+  'TrendingUp',
+  'Trophy',
+  'Truck',
+  'Unlock',
+  'User',
+  'UserCheck',
+  'Users',
   'Video',
-  'Wifi', 'Wrench',
-  'Zap'
+  'Wifi',
+  'Wrench',
+  'Zap',
 ];
 const COLORS = [
-  'rose', 'peach', 'lemon', 'chartreuse', 'mint', 'aqua', 'sky', 'indigo', 'blush', 'gray',
-  'red', 'orange', 'yellow', 'lime', 'emerald', 'cyan', 'blue', 'violet', 'pink', 'stone',
-  'crimson', 'amber', 'gold', 'apple', 'green', 'teal', 'ocean', 'purple', 'fuchsia', 'slate',
-  'ruby', 'rust', 'mustard', 'olive', 'forest', 'jade', 'navy', 'plum', 'magenta', 'zinc',
-  'maroon', 'bronze', 'brown', 'moss', 'pine', 'deepSea', 'midnight', 'grape', 'berry', 'slateDark',
+  'rose',
+  'peach',
+  'lemon',
+  'chartreuse',
+  'mint',
+  'aqua',
+  'sky',
+  'indigo',
+  'blush',
+  'gray',
+  'red',
+  'orange',
+  'yellow',
+  'lime',
+  'emerald',
+  'cyan',
+  'blue',
+  'violet',
+  'pink',
+  'stone',
+  'crimson',
+  'amber',
+  'gold',
+  'apple',
+  'green',
+  'teal',
+  'ocean',
+  'purple',
+  'fuchsia',
+  'slate',
+  'ruby',
+  'rust',
+  'mustard',
+  'olive',
+  'forest',
+  'jade',
+  'navy',
+  'plum',
+  'magenta',
+  'zinc',
+  'maroon',
+  'bronze',
+  'brown',
+  'moss',
+  'pine',
+  'deepSea',
+  'midnight',
+  'grape',
+  'berry',
+  'slateDark',
 ];
 
 const hexToRgba = (hex: string, alpha: number) => {
@@ -128,25 +302,70 @@ const hexToRgb = (hex: string) => {
 };
 
 const rgbToHex = (r: number, g: number, b: number) => {
-  return '#' + [r, g, b].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
+  return (
+    '#' +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      })
+      .join('')
+  );
 };
 
 import { Tooltip } from '../components/ui/Tooltip';
 
 const COLOR_MAP: Record<string, string> = {
-  rose: '#f43f5e', red: '#ef4444', crimson: '#be123c', ruby: '#9f1239', maroon: '#800000',
-  peach: '#fb923c', orange: '#f97316', amber: '#f59e0b', rust: '#b45309', bronze: '#9a3412',
-  lemon: '#fef08a', yellow: '#eab308', gold: '#d4af37', mustard: '#ca8a04', brown: '#713f12',
-  chartreuse: '#bef264', lime: '#84cc16', apple: '#65a30d', olive: '#4d7c0f', moss: '#3f6212',
-  mint: '#34d399', emerald: '#10b981', green: '#22c55e', forest: '#15803d', pine: '#064e3b',
-  aqua: '#67e8f9', cyan: '#06b6d4', teal: '#14b8a6', jade: '#0d9488', deepSea: '#0f766e',
-  sky: '#0ea5e9', blue: '#3b82f6', ocean: '#0369a1', navy: '#1e3a8a', midnight: '#172554',
-  indigo: '#6366f1', violet: '#8b5cf6', purple: '#a855f7', plum: '#701a75', grape: '#581c87',
-  blush: '#f472b6', pink: '#ec4899', fuchsia: '#d946ef', magenta: '#c026d3', berry: '#9d174d',
-  gray: '#9ca3af', stone: '#78716c', slate: '#64748b', zinc: '#52525b', slateDark: '#334155',
+  rose: '#f43f5e',
+  red: '#ef4444',
+  crimson: '#be123c',
+  ruby: '#9f1239',
+  maroon: '#800000',
+  peach: '#fb923c',
+  orange: '#f97316',
+  amber: '#f59e0b',
+  rust: '#b45309',
+  bronze: '#9a3412',
+  lemon: '#fef08a',
+  yellow: '#eab308',
+  gold: '#d4af37',
+  mustard: '#ca8a04',
+  brown: '#713f12',
+  chartreuse: '#bef264',
+  lime: '#84cc16',
+  apple: '#65a30d',
+  olive: '#4d7c0f',
+  moss: '#3f6212',
+  mint: '#34d399',
+  emerald: '#10b981',
+  green: '#22c55e',
+  forest: '#15803d',
+  pine: '#064e3b',
+  aqua: '#67e8f9',
+  cyan: '#06b6d4',
+  teal: '#14b8a6',
+  jade: '#0d9488',
+  deepSea: '#0f766e',
+  sky: '#0ea5e9',
+  blue: '#3b82f6',
+  ocean: '#0369a1',
+  navy: '#1e3a8a',
+  midnight: '#172554',
+  indigo: '#6366f1',
+  violet: '#8b5cf6',
+  purple: '#a855f7',
+  plum: '#701a75',
+  grape: '#581c87',
+  blush: '#f472b6',
+  pink: '#ec4899',
+  fuchsia: '#d946ef',
+  magenta: '#c026d3',
+  berry: '#9d174d',
+  gray: '#9ca3af',
+  stone: '#78716c',
+  slate: '#64748b',
+  zinc: '#52525b',
+  slateDark: '#334155',
 };
 
 const renderIcon = (iconName: string, className: string = 'w-4 h-4') => {
@@ -182,7 +401,8 @@ function CustomPicker({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const hex = type === 'color' ? (value?.startsWith('#') ? value : COLOR_MAP[value] || COLOR_MAP.slate) : '';
+  const hex =
+    type === 'color' ? (value?.startsWith('#') ? value : COLOR_MAP[value] || COLOR_MAP.slate) : '';
 
   return (
     <div className="relative shrink-0" ref={ref}>
@@ -205,37 +425,41 @@ function CustomPicker({
       {isOpen && (
         <div
           className="absolute top-full left-0 mt-1 bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl p-1 z-50 animate-in fade-in zoom-in-95 duration-200"
-          style={{ width: type === 'icon' ? '430px' : (showCustom ? '240px' : '400px') }}
+          style={{ width: type === 'icon' ? '430px' : showCustom ? '240px' : '400px' }}
         >
           {type === 'color' ? (
             showCustom ? (
               <div className="flex flex-col p-2 w-full">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-semibold text-slate-700">Custom Color</span>
-                  <button 
-                    onClick={() => setShowCustom(false)} 
+                  <button
+                    onClick={() => setShowCustom(false)}
                     className="text-[10px] font-medium text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded transition-colors"
                   >
                     Back to Palette
                   </button>
                 </div>
-                
+
                 <div className="custom-color-picker-wrapper mb-4">
-                  <HexColorPicker 
-                    color={value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b'} 
-                    onChange={onChange} 
+                  <HexColorPicker
+                    color={value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b'}
+                    onChange={onChange}
                     style={{ width: '100%', height: '160px' }}
                   />
                 </div>
-                
+
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex-1 flex flex-col gap-1">
                     <label className="text-[10px] font-semibold text-slate-400">Hex</label>
                     <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">#</span>
-                      <input 
-                        type="text" 
-                        value={(value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b').replace('#', '').toUpperCase()}
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">
+                        #
+                      </span>
+                      <input
+                        type="text"
+                        value={(value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b')
+                          .replace('#', '')
+                          .toUpperCase()}
                         onChange={(e) => {
                           const val = e.target.value;
                           if (/^[0-9A-Fa-f]{0,6}$/.test(val)) {
@@ -246,21 +470,29 @@ function CustomPicker({
                       />
                     </div>
                   </div>
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-md border border-slate-200 shadow-sm shrink-0 mt-4"
-                    style={{ backgroundColor: value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b' }}
+                    style={{
+                      backgroundColor: value?.startsWith('#')
+                        ? value
+                        : COLOR_MAP[value] || '#64748b',
+                    }}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {(() => {
-                    const rgb = hexToRgb(value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b');
+                    const rgb = hexToRgb(
+                      value?.startsWith('#') ? value : COLOR_MAP[value] || '#64748b'
+                    );
                     return ['r', 'g', 'b'].map((channel) => (
                       <div key={channel} className="flex flex-col gap-1">
-                        <label className="text-[10px] font-semibold text-slate-400">{channel}</label>
-                        <input 
-                          type="number" 
-                          min="0" 
+                        <label className="text-[10px] font-semibold text-slate-400">
+                          {channel}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
                           max="255"
                           value={rgb[channel as keyof typeof rgb]}
                           onChange={(e) => {
@@ -276,7 +508,7 @@ function CustomPicker({
                     ));
                   })()}
                 </div>
-                
+
                 <style>{`
                   .custom-color-picker-wrapper .react-colorful {
                     width: 100%;
@@ -311,26 +543,30 @@ function CustomPicker({
                 </div>
                 <div className="grid grid-cols-10 gap-1.5">
                   {COLORS.map((c) => {
-                  const cHex = COLOR_MAP[c];
-                  return (
-                    <Tooltip key={c} content={c.charAt(0).toUpperCase() + c.slice(1)} position="top">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onChange(c);
-                          setIsOpen(false);
-                        }}
-                        className={`w-8 h-8 rounded-md flex items-center justify-center border transition-all hover:scale-110 ${value === c ? 'border-primary ring-2 ring-primary/20 shadow-md' : 'border-transparent hover:shadow-sm'}`}
+                    const cHex = COLOR_MAP[c];
+                    return (
+                      <Tooltip
+                        key={c}
+                        content={c.charAt(0).toUpperCase() + c.slice(1)}
+                        position="top"
                       >
-                        <span
-                          className="w-5 h-5 rounded-full shadow-sm border border-black/10"
-                          style={{ backgroundColor: cHex }}
-                        ></span>
-                      </button>
-                    </Tooltip>
-                  );
-                })}
-                  </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onChange(c);
+                            setIsOpen(false);
+                          }}
+                          className={`w-8 h-8 rounded-md flex items-center justify-center border transition-all hover:scale-110 ${value === c ? 'border-primary ring-2 ring-primary/20 shadow-md' : 'border-transparent hover:shadow-sm'}`}
+                        >
+                          <span
+                            className="w-5 h-5 rounded-full shadow-sm border border-black/10"
+                            style={{ backgroundColor: cHex }}
+                          ></span>
+                        </button>
+                      </Tooltip>
+                    );
+                  })}
+                </div>
               </div>
             )
           ) : (
@@ -349,7 +585,7 @@ function CustomPicker({
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-1 p-2 max-h-[220px] overflow-y-auto custom-thin-scroll">
-                {ICONS.filter(i => i.toLowerCase().includes(search.toLowerCase())).map((i) => (
+                {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).map((i) => (
                   <Tooltip key={i} content={i} position="top">
                     <button
                       type="button"
@@ -363,7 +599,8 @@ function CustomPicker({
                     </button>
                   </Tooltip>
                 ))}
-                {ICONS.filter(i => i.toLowerCase().includes(search.toLowerCase())).length === 0 && (
+                {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).length ===
+                  0 && (
                   <div className="col-span-10 text-center py-8 text-xs font-medium text-muted-foreground">
                     No icons found for "{search}"
                   </div>
@@ -378,20 +615,34 @@ function CustomPicker({
 }
 
 export default function SettingsDraft() {
-  const settings = useAppStore(state => state.settings);
-  const projects = useAppStore(state => state.projects);
-  const clients = useAppStore(state => state.clients);
-  const services = useAppStore(state => state.services);
-  const user = useAppStore(state => state.user);
-  const [activeTab, setActiveTab] = useState<'global' | 'projects' | 'services' | 'scoring' | 'templates' | 'pipeline' | 'exports' | 'archives' | 'audit'>('global');
-  const archivedClients = useAppStore(state => state.archivedClients);
-  const archivedProjects = useAppStore(state => state.archivedProjects);
-  const archivedServices = useAppStore(state => state.archivedServices);
+  const settings = useAppStore((state) => state.settings);
+  const projects = useAppStore((state) => state.projects);
+  const clients = useAppStore((state) => state.clients);
+  const services = useAppStore((state) => state.services);
+  const user = useAppStore((state) => state.user);
+  const [activeTab, setActiveTab] = useState<
+    | 'global'
+    | 'projects'
+    | 'services'
+    | 'scoring'
+    | 'templates'
+    | 'pipeline'
+    | 'exports'
+    | 'archives'
+    | 'audit'
+  >('global');
+  const archivedClients = useAppStore((state) => state.archivedClients);
+  const archivedProjects = useAppStore((state) => state.archivedProjects);
+  const archivedServices = useAppStore((state) => state.archivedServices);
 
   const getTemplate = (formName: string) => {
-    let templateId = Object.keys(settings?.templates || {}).find(k => settings?.templates?.[k]?.name === formName);
+    let templateId = Object.keys(settings?.templates || {}).find(
+      (k) => settings?.templates?.[k]?.name === formName
+    );
     if (!templateId) {
-       templateId = Object.keys(settings?.templates || {}).find(k => settings?.templates?.[k]?.type === 'form');
+      templateId = Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates?.[k]?.type === 'form'
+      );
     }
     return templateId ? settings?.templates?.[templateId] : null;
   };
@@ -417,8 +668,7 @@ export default function SettingsDraft() {
     setLoadingLogs(false);
   };
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (activeTab === 'audit' || activeTab === 'pipeline') {
@@ -432,77 +682,97 @@ export default function SettingsDraft() {
   const handleRestoreRecordLocal = async (collectionName: string, item: any) => {
     const title = item.companyName || item.name || 'Record';
     toast.promise(
-      restoreRecord(collectionName, item.clientId || item.id, title, { silent: true }, user?.name || user?.email || 'System').then(
-        async () => {
-          if (collectionName === 'projects') {
-            await addProjectAutoLog(item.clientId || item.id, `Project "${item.name}" restored`, user?.name || 'System');
-            if (item.clientIds) {
-              for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Project "${item.name}" restored`, user?.name || 'System', true);
-              }
-            }
-            const pServices =
-              services?.filter(
-                (s: any) =>
-                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
-              ) || [];
-            const pArchivedServices =
-              archivedServices?.filter(
-                (s: any) =>
-                  s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
-              ) || [];
-            for (const svc of [...pServices, ...pArchivedServices]) {
-              await addServiceAutoLog(
-                svc.id,
-                `Attached Project "${item.name}" restored`,
+      restoreRecord(
+        collectionName,
+        item.clientId || item.id,
+        title,
+        { silent: true },
+        user?.name || user?.email || 'System'
+      ).then(async () => {
+        if (collectionName === 'projects') {
+          await addProjectAutoLog(
+            item.clientId || item.id,
+            `Project "${item.name}" restored`,
+            user?.name || 'System'
+          );
+          if (item.clientIds) {
+            for (const cid of item.clientIds) {
+              await addAutoLog(
+                cid,
+                `Project "${item.name}" restored`,
                 user?.name || 'System',
                 true
               );
             }
-          } else if (collectionName === 'clients') {
-            const cProjects =
-              projects?.filter((p: any) => p.clientIds?.includes(item.clientId || item.id)) || [];
-            const cArchivedProjects =
-              archivedProjects?.filter((p: any) =>
-                p.clientIds?.includes(item.clientId || item.id)
-              ) || [];
-            for (const p of [...cProjects, ...cArchivedProjects]) {
-              await addProjectAutoLog(
-                p.id,
-                `Client "${item.companyName || item.name}" restored`,
+          }
+          const pServices =
+            services?.filter(
+              (s: any) =>
+                s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+            ) || [];
+          const pArchivedServices =
+            archivedServices?.filter(
+              (s: any) =>
+                s.projectId === item.id || (s.projectIds && s.projectIds.includes(item.id))
+            ) || [];
+          for (const svc of [...pServices, ...pArchivedServices]) {
+            await addServiceAutoLog(
+              svc.id,
+              `Attached Project "${item.name}" restored`,
+              user?.name || 'System',
+              true
+            );
+          }
+        } else if (collectionName === 'clients') {
+          const cProjects =
+            projects?.filter((p: any) => p.clientIds?.includes(item.clientId || item.id)) || [];
+          const cArchivedProjects =
+            archivedProjects?.filter((p: any) => p.clientIds?.includes(item.clientId || item.id)) ||
+            [];
+          for (const p of [...cProjects, ...cArchivedProjects]) {
+            await addProjectAutoLog(
+              p.id,
+              `Client "${item.companyName || item.name}" restored`,
+              user?.name || 'System',
+              true
+            );
+          }
+          const cServices =
+            services?.filter((s: any) => s.clientIds?.includes(item.clientId || item.id)) || [];
+          const cArchivedServices =
+            archivedServices?.filter((s: any) => s.clientIds?.includes(item.clientId || item.id)) ||
+            [];
+          for (const svc of [...cServices, ...cArchivedServices]) {
+            await addServiceAutoLog(
+              svc.id,
+              `Attached Client "${item.companyName || item.name}" restored`,
+              user?.name || 'System',
+              true
+            );
+          }
+        } else if (collectionName === 'services') {
+          const pIds =
+            item.projectIds || (item.projectId && item.projectId !== 'N/A' ? [item.projectId] : []);
+          for (const pId of pIds) {
+            await addProjectAutoLog(
+              pId,
+              `Service "${item.name}" restored`,
+              user?.name || 'System',
+              true
+            );
+          }
+          if (item.clientIds) {
+            for (const cid of item.clientIds) {
+              await addAutoLog(
+                cid,
+                `Service "${item.name}" restored`,
                 user?.name || 'System',
                 true
               );
-            }
-            const cServices =
-              services?.filter((s: any) => s.clientIds?.includes(item.clientId || item.id)) || [];
-            const cArchivedServices =
-              archivedServices?.filter((s: any) =>
-                s.clientIds?.includes(item.clientId || item.id)
-              ) || [];
-            for (const svc of [...cServices, ...cArchivedServices]) {
-              await addServiceAutoLog(
-                svc.id,
-                `Attached Client "${item.companyName || item.name}" restored`,
-                user?.name || 'System',
-                true
-              );
-            }
-          } else if (collectionName === 'services') {
-            const pIds =
-              item.projectIds ||
-              (item.projectId && item.projectId !== 'N/A' ? [item.projectId] : []);
-            for (const pId of pIds) {
-              await addProjectAutoLog(pId, `Service "${item.name}" restored`, user?.name || 'System', true);
-            }
-            if (item.clientIds) {
-              for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Service "${item.name}" restored`, user?.name || 'System', true);
-              }
             }
           }
         }
-      ),
+      }),
       {
         loading: `Restoring ${title}...`,
         success: `${title} restored successfully`,
@@ -533,7 +803,12 @@ export default function SettingsDraft() {
           if (collectionName === 'projects') {
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Project "${item.name}" permanently deleted`, user?.name || 'System', true);
+                await addAutoLog(
+                  cid,
+                  `Project "${item.name}" permanently deleted`,
+                  user?.name || 'System',
+                  true
+                );
               }
             }
             const pServices =
@@ -594,7 +869,12 @@ export default function SettingsDraft() {
             }
             if (item.clientIds) {
               for (const cid of item.clientIds) {
-                await addAutoLog(cid, `Service "${item.name}" permanently deleted`, user?.name || 'System', true);
+                await addAutoLog(
+                  cid,
+                  `Service "${item.name}" permanently deleted`,
+                  user?.name || 'System',
+                  true
+                );
               }
             }
           }
@@ -673,10 +953,17 @@ export default function SettingsDraft() {
   };
 
   // --- RENDER HELPERS ---
-  
 
-  const [editingItem, setEditingItem] = useState<{ field: string; idx: number; globalIdx?: number } | null>(null);
-  const [deletingItem, setDeletingItem] = useState<{ field: string; idx: number; globalIdx?: number } | null>(null);
+  const [editingItem, setEditingItem] = useState<{
+    field: string;
+    idx: number;
+    globalIdx?: number;
+  } | null>(null);
+  const [deletingItem, setDeletingItem] = useState<{
+    field: string;
+    idx: number;
+    globalIdx?: number;
+  } | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [newForm, setNewForm] = useState<{ [key: string]: any }>({});
   const [addingNew, setAddingNew] = useState<{ [key: string]: boolean }>({});
@@ -726,7 +1013,6 @@ export default function SettingsDraft() {
   }
 
   const totalProjectWeights = Object.values(projectWeights).reduce((a, b) => a + Number(b), 0);
-
 
   const debouncedSaveSettings = (newSettings: any, customMsg?: string) => {
     const sanitizedSettings = JSON.parse(JSON.stringify(newSettings));
@@ -1037,15 +1323,15 @@ export default function SettingsDraft() {
   };
 
   const handleReorder = (field: string, newOrder: any[]) => {
-    setLocalOrders(prev => ({ ...prev, [field]: newOrder }));
+    setLocalOrders((prev) => ({ ...prev, [field]: newOrder }));
   };
 
   const handleDragEnd = (field: string) => {
     const newOrder = localOrders[field];
     if (!newOrder) return;
-    
+
     let newSettings = { ...settings };
-    
+
     if (field === 'serviceOutcomes' || field === 'serviceStatuses') {
       const cat = field === 'serviceOutcomes' ? 'ServiceOutcome' : 'ServiceStatus';
       const globalData = [...(settings.settingsData || [])];
@@ -1054,14 +1340,14 @@ export default function SettingsDraft() {
     } else {
       newSettings = { ...newSettings, [field]: newOrder };
     }
-    
+
     const msg = `Reordered ${fieldDisplayNames[field] || field}`;
     debouncedSaveSettings(newSettings, msg);
-    
+
     const author = user?.name || user?.email || 'Admin';
     addGlobalLog(msg, 'Setting', field, 'Reorder', author);
-    
-    setLocalOrders(prev => {
+
+    setLocalOrders((prev) => {
       const next = { ...prev };
       delete next[field];
       return next;
@@ -1095,9 +1381,13 @@ export default function SettingsDraft() {
   const renderList = (title: string, desc: string, fieldName: string) => {
     let globalItems: any[] = [];
     if (fieldName === 'serviceOutcomes')
-      globalItems = (settings.settingsData || []).filter((s: any) => s.category === 'ServiceOutcome');
+      globalItems = (settings.settingsData || []).filter(
+        (s: any) => s.category === 'ServiceOutcome'
+      );
     else if (fieldName === 'serviceStatuses')
-      globalItems = (settings.settingsData || []).filter((s: any) => s.category === 'ServiceStatus');
+      globalItems = (settings.settingsData || []).filter(
+        (s: any) => s.category === 'ServiceStatus'
+      );
     else globalItems = (settings[fieldName as keyof typeof settings] as any[]) || [];
 
     const items = localOrders[fieldName] || globalItems;
@@ -1125,211 +1415,218 @@ export default function SettingsDraft() {
           )}
         </div>
         <div className="bg-white border border-border rounded-xl shadow-sm">
-          <Reorder.Group axis="y" values={items} onReorder={(newOrder) => handleReorder(fieldName, newOrder)} className="divide-y divide-border relative list-none m-0 p-0">
+          <Reorder.Group
+            axis="y"
+            values={items}
+            onReorder={(newOrder) => handleReorder(fieldName, newOrder)}
+            className="divide-y divide-border relative list-none m-0 p-0"
+          >
             <AnimatePresence initial={false}>
-            {items.map((item, i) => {
-              let globalIdx: number | undefined;
-              if (fieldName === 'serviceOutcomes' || fieldName === 'serviceStatuses') {
-                globalIdx = settings.settingsData?.findIndex(
-                  (s: any) => s.category === item.category && s.name === item.name
-                );
-              }
+              {items.map((item, i) => {
+                let globalIdx: number | undefined;
+                if (fieldName === 'serviceOutcomes' || fieldName === 'serviceStatuses') {
+                  globalIdx = settings.settingsData?.findIndex(
+                    (s: any) => s.category === item.category && s.name === item.name
+                  );
+                }
 
-              const isEditing = editingItem?.field === fieldName && editingItem.idx === i;
-              const isDeleting = deletingItem?.field === fieldName && deletingItem.idx === i;
-              const name = typeof item === 'string' ? item : item.name;
-              const isDragOver = dragOverIdx === i && draggedItem?.field === fieldName;
+                const isEditing = editingItem?.field === fieldName && editingItem.idx === i;
+                const isDeleting = deletingItem?.field === fieldName && deletingItem.idx === i;
+                const name = typeof item === 'string' ? item : item.name;
+                const isDragOver = dragOverIdx === i && draggedItem?.field === fieldName;
 
-              const hex = item.color?.startsWith('#') ? item.color : COLOR_MAP[item.color] || COLOR_MAP.slate;
+                const hex = item.color?.startsWith('#')
+                  ? item.color
+                  : COLOR_MAP[item.color] || COLOR_MAP.slate;
 
-              if (isEditing) {
+                if (isEditing) {
+                  return (
+                    <Reorder.Item
+                      value={item}
+                      key={name}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className={`p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/80 relative z-10 ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        <input
+                          autoFocus
+                          type="text"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                          className="flex-1 min-w-0 rounded-md border border-input bg-white px-3 h-9 text-sm shadow-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                        />
+                        {isServices && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-muted-foreground font-medium text-sm">$</span>
+                            <input
+                              type="number"
+                              value={editForm.price}
+                              onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                              className="w-24 rounded-md border border-input bg-white px-2 h-9 text-sm shadow-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                            />
+                          </div>
+                        )}
+                        {!isStringList && !isServices && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <CustomPicker
+                              type="color"
+                              value={editForm.color}
+                              onChange={(color) => setEditForm({ ...editForm, color })}
+                            />
+                            {fieldName !== 'managers' && (
+                              <CustomPicker
+                                type="icon"
+                                value={editForm.icon}
+                                onChange={(icon) => setEditForm({ ...editForm, icon })}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => setEditingItem(null)}
+                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-1.5 transition-colors active:scale-95"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={!editForm.name || editForm.name.trim() === ''}
+                          className="bg-primary text-primary-foreground rounded-md text-xs font-medium h-8 px-3 shadow-sm hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </Reorder.Item>
+                  );
+                }
+
+                if (isDeleting) {
+                  return (
+                    <Reorder.Item
+                      value={item}
+                      key={name}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className={`p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-red-50/50 border-l-4 border-l-destructive relative z-10 ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
+                    >
+                      <div className="text-sm font-semibold text-destructive flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> Archive "{name}"? This removes it from
+                        active dropdowns, but preserves historical records.
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => setDeletingItem(null)}
+                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-1.5 transition-colors active:scale-95"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleConfirmDelete}
+                          className="bg-destructive text-destructive-foreground rounded-md text-xs font-medium h-8 px-3 shadow-sm hover:bg-destructive/90 transition-all active:scale-95"
+                        >
+                          Archive
+                        </button>
+                      </div>
+                    </Reorder.Item>
+                  );
+                }
+
                 return (
                   <Reorder.Item
                     value={item}
                     key={name}
+                    onDragEnd={() => handleDragEnd(fieldName)}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className={`p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/80 relative z-10 ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
+                    className={`p-4 flex items-center justify-between hover:bg-slate-50 transition-colors group ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
                   >
-                    <div className="flex items-center gap-3 w-full">
-                      <input
-                        autoFocus
-                        type="text"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
-                        className="flex-1 min-w-0 rounded-md border border-input bg-white px-3 h-9 text-sm shadow-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
-                      />
-                      {isServices && (
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-muted-foreground font-medium text-sm">$</span>
-                          <input
-                            type="number"
-                            value={editForm.price}
-                            onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
-                            className="w-24 rounded-md border border-input bg-white px-2 h-9 text-sm shadow-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
-                          />
+                    <div className="flex items-center gap-3">
+                      {!isStringList && !isServices ? (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="px-2.5 py-1 text-xs shadow-sm tracking-wide font-semibold rounded-full border flex items-center gap-1.5"
+                            style={{
+                              backgroundColor: hexToRgba(hex, 0.1),
+                              color: hex,
+                              borderColor: hexToRgba(hex, 0.2),
+                            }}
+                          >
+                            {(fieldName === 'managers' || item.icon) &&
+                              renderIcon(fieldName === 'managers' ? 'User' : item.icon, 'w-3 h-3')}
+                            {name}
+                          </span>
                         </div>
-                      )}
-                      {!isStringList && !isServices && (
-                        <div className="flex items-center gap-2 shrink-0">
-                          <CustomPicker
-                            type="color"
-                            value={editForm.color}
-                            onChange={(color) => setEditForm({ ...editForm, color })}
-                          />
-                          {fieldName !== 'managers' && (
-                            <CustomPicker
-                              type="icon"
-                              value={editForm.icon}
-                              onChange={(icon) => setEditForm({ ...editForm, icon })}
-                            />
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-slate-700">{name}</span>
+                          {isServices && (
+                            <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border shadow-sm">
+                              $
+                              {parseFloat(item.price || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </span>
                           )}
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => setEditingItem(null)}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-1.5 transition-colors active:scale-95"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveEdit}
-                        disabled={!editForm.name || editForm.name.trim() === ''}
-                        className="bg-primary text-primary-foreground rounded-md text-xs font-medium h-8 px-3 shadow-sm hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </Reorder.Item>
-                );
-              }
-
-              if (isDeleting) {
-                return (
-                  <Reorder.Item
-                    value={item}
-                    key={name}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className={`p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-red-50/50 border-l-4 border-l-destructive relative z-10 ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
-                  >
-                    <div className="text-sm font-semibold text-destructive flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4" /> Archive "{name}"? This removes it from
-                      active dropdowns, but preserves historical records.
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => setDeletingItem(null)}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground px-2 py-1.5 transition-colors active:scale-95"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleConfirmDelete}
-                        className="bg-destructive text-destructive-foreground rounded-md text-xs font-medium h-8 px-3 shadow-sm hover:bg-destructive/90 transition-all active:scale-95"
-                      >
-                        Archive
-                      </button>
-                    </div>
-                  </Reorder.Item>
-                );
-              }
-
-              return (
-                <Reorder.Item
-                  value={item}
-                  key={name}
-                  onDragEnd={() => handleDragEnd(fieldName)}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className={`p-4 flex items-center justify-between hover:bg-slate-50 transition-colors group ${i === 0 ? 'rounded-t-xl' : ''} ${i === items.length - 1 && !isAdding ? 'rounded-b-xl' : ''}`}
-                >
-                  <div className="flex items-center gap-3">
-                    {!isStringList && !isServices ? (
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="px-2.5 py-1 text-xs shadow-sm tracking-wide font-semibold rounded-full border flex items-center gap-1.5"
-                          style={{
-                            backgroundColor: hexToRgba(hex, 0.1),
-                            color: hex,
-                            borderColor: hexToRgba(hex, 0.2),
-                          }}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Tooltip content="Drag to reorder">
+                        <div className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
+                      </Tooltip>
+                      <Tooltip content="Move Up">
+                        <button
+                          onClick={() => moveItem(fieldName, i, -1, items)}
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
                         >
-                          {(fieldName === 'managers' || item.icon) &&
-                            renderIcon(fieldName === 'managers' ? 'User' : item.icon, 'w-3 h-3')}
-                          {name}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-slate-700">{name}</span>
-                        {isServices && (
-                          <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border shadow-sm">
-                            $
-                            {parseFloat(item.price || 0).toLocaleString('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Tooltip content="Drag to reorder">
-                      <div className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors">
-                        <GripVertical className="w-4 h-4" />
-                      </div>
-                    </Tooltip>
-                    <Tooltip content="Move Up">
-                      <button
-                        onClick={() => moveItem(fieldName, i, -1, items)}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <ChevronUp className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Move Down">
-                      <button
-                        onClick={() => moveItem(fieldName, i, 1, items)}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <ChevronDown className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Edit">
-                      <button
-                        onClick={() => {
-                          setEditingItem({ field: fieldName, idx: i, globalIdx });
-                          setEditForm(
-                            isStringList
-                              ? { name }
-                              : isServices
-                                ? { name, price: item.price }
-                                : { name, color: item.color, icon: item.icon }
-                          );
-                        }}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Archive">
-                      <button
-                        onClick={() => setDeletingItem({ field: fieldName, idx: i, globalIdx })}
-                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                  </div>
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Move Down">
+                        <button
+                          onClick={() => moveItem(fieldName, i, 1, items)}
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Edit">
+                        <button
+                          onClick={() => {
+                            setEditingItem({ field: fieldName, idx: i, globalIdx });
+                            setEditForm(
+                              isStringList
+                                ? { name }
+                                : isServices
+                                  ? { name, price: item.price }
+                                  : { name, color: item.color, icon: item.icon }
+                            );
+                          }}
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Archive">
+                        <button
+                          onClick={() => setDeletingItem({ field: fieldName, idx: i, globalIdx })}
+                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    </div>
                   </Reorder.Item>
                 );
               })}
@@ -1339,8 +1636,13 @@ export default function SettingsDraft() {
                 <div className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-3 shadow-sm">
                   <Plus className="w-6 h-6 text-slate-400" />
                 </div>
-                <h4 className="text-sm font-semibold text-slate-700">No {title.toLowerCase()} configured</h4>
-                <p className="text-sm text-slate-500 mt-1 max-w-sm">Get started by adding your first {title.replace(/s$/, '').toLowerCase()} to the list.</p>
+                <h4 className="text-sm font-semibold text-slate-700">
+                  No {title.toLowerCase()} configured
+                </h4>
+                <p className="text-sm text-slate-500 mt-1 max-w-sm">
+                  Get started by adding your first {title.replace(/s$/, '').toLowerCase()} to the
+                  list.
+                </p>
                 <button
                   onClick={() => setAddingNew({ ...addingNew, [fieldName]: true })}
                   className="mt-4 text-sm font-medium bg-white border border-border text-slate-700 hover:text-primary hover:border-primary/30 hover:bg-primary/5 px-4 h-9 rounded-md shadow-sm transition-all active:scale-95 flex items-center gap-2"
@@ -1349,7 +1651,7 @@ export default function SettingsDraft() {
                 </button>
               </li>
             )}
-            
+
             <AnimatePresence>
               {isAdding && (
                 <motion.li
@@ -1383,7 +1685,10 @@ export default function SettingsDraft() {
                         placeholder="Price"
                         value={form.price || ''}
                         onChange={(e) =>
-                          setNewForm({ ...newForm, [fieldName]: { ...form, price: e.target.value } })
+                          setNewForm({
+                            ...newForm,
+                            [fieldName]: { ...form, price: e.target.value },
+                          })
                         }
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && form.name) {
@@ -1399,13 +1704,17 @@ export default function SettingsDraft() {
                       <CustomPicker
                         type="color"
                         value={form.color || 'slate'}
-                        onChange={(color) => setNewForm({ ...newForm, [fieldName]: { ...form, color } })}
+                        onChange={(color) =>
+                          setNewForm({ ...newForm, [fieldName]: { ...form, color } })
+                        }
                       />
                       {fieldName !== 'managers' && (
                         <CustomPicker
                           type="icon"
                           value={form.icon || 'CircleDashed'}
-                          onChange={(icon) => setNewForm({ ...newForm, [fieldName]: { ...form, icon } })}
+                          onChange={(icon) =>
+                            setNewForm({ ...newForm, [fieldName]: { ...form, icon } })
+                          }
                         />
                       )}
                     </div>
@@ -1439,12 +1748,17 @@ export default function SettingsDraft() {
     );
   };
 
-
   const renderArchiveRow = (item: any) => {
     const isConfirming = confirmArchiveDeleteId === item.id;
     const name = item.companyName || item.name || (typeof item === 'string' ? item : 'Unknown');
     const type = item._archiveType;
-    const archivedAt = item.archivedAt ? new Date(item.archivedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : null;
+    const archivedAt = item.archivedAt
+      ? new Date(item.archivedAt).toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      : null;
 
     const isSetting = !!item._category;
     const onDelete = isSetting
@@ -1525,19 +1839,21 @@ export default function SettingsDraft() {
               {(isSetting || type === 'Project' || type === 'Service') && (
                 <div className="flex flex-wrap items-center gap-2 mt-2">
                   {isSetting && (
-                    <span className={`px-2 py-0.5 rounded-md border text-[11px] font-bold capitalize tracking-wide ${typeBadge}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-md border text-[11px] font-bold capitalize tracking-wide ${typeBadge}`}
+                    >
                       {type.toLowerCase()}
                     </span>
                   )}
-                  
+
                   {/* Metadata */}
-                  {(type === 'Project' && item.clients?.length > 0) && (
+                  {type === 'Project' && item.clients?.length > 0 && (
                     <span className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
                       <span className="w-1 h-1 rounded-full bg-slate-300" />
                       Client: {item.clients.join(', ')}
                     </span>
                   )}
-                  
+
                   {type === 'Service' && (
                     <span className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
                       <span className="w-1 h-1 rounded-full bg-slate-300" />
@@ -1559,16 +1875,16 @@ export default function SettingsDraft() {
           <div className="flex items-center gap-3 shrink-0 h-10">
             {/* The Date (always visible) */}
             <div className="flex flex-col items-end transition-all">
-               {archivedAt ? (
-                  <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
-                     <ArchiveRestore className="w-3.5 h-3.5 text-slate-400" />
-                     {archivedAt}
-                  </span>
-                ) : (
-                  <span className="text-xs font-medium text-slate-400 italic bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
-                    Legacy Record
-                  </span>
-                )}
+              {archivedAt ? (
+                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                  <ArchiveRestore className="w-3.5 h-3.5 text-slate-400" />
+                  {archivedAt}
+                </span>
+              ) : (
+                <span className="text-xs font-medium text-slate-400 italic bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                  Legacy Record
+                </span>
+              )}
             </div>
 
             {/* Actions (visible on hover but taking space) */}
@@ -1673,9 +1989,7 @@ export default function SettingsDraft() {
                 key={f.id}
                 onClick={() => setArchiveTab(f.id as any)}
                 className={`relative flex items-center gap-1.5 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 whitespace-nowrap ${
-                  archiveTab === f.id
-                    ? 'text-primary'
-                    : 'text-slate-500 hover:text-slate-700'
+                  archiveTab === f.id ? 'text-primary' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 {archiveTab === f.id && (
@@ -1717,15 +2031,12 @@ export default function SettingsDraft() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {itemsToRender.map((item) => renderArchiveRow(item))}
-            </div>
+            <div className="space-y-3">{itemsToRender.map((item) => renderArchiveRow(item))}</div>
           )}
         </div>
       </div>
     );
   };
-
 
   const tabTitleMap: Record<string, string> = {
     global: 'Organization Settings',
@@ -1736,13 +2047,16 @@ export default function SettingsDraft() {
     pipeline: 'Data Ingestion Pipeline',
     exports: 'Data Exports',
     audit: 'Audit Logs',
-    archives: 'Archives'
+    archives: 'Archives',
   };
 
   const tabSubtitleMap: Record<string, string> = {
-    global: 'Manage fundamental taxonomies, team members, and capabilities that power your workspace.',
-    pipeline: 'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
-    exports: 'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
+    global:
+      'Manage fundamental taxonomies, team members, and capabilities that power your workspace.',
+    pipeline:
+      'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
+    exports:
+      'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
     audit: 'A complete chronological record of all system modifications and data ingestion events.',
   };
 
@@ -1754,14 +2068,16 @@ export default function SettingsDraft() {
             <h2 className="text-xl font-bold text-slate-800 tracking-tight">Settings</h2>
             <div className="mt-4 relative hidden">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search settings..." 
+              <input
+                type="text"
+                placeholder="Search settings..."
                 className="w-full bg-white/50 hover:bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all shadow-sm placeholder:text-slate-400"
               />
             </div>
           </div>
-          <div className="text-[13px] font-semibold text-slate-500 tracking-tight mb-2 px-2">Workspace</div>
+          <div className="text-[13px] font-semibold text-slate-500 tracking-tight mb-2 px-2">
+            Workspace
+          </div>
           {[
             { id: 'global', label: 'Organization', icon: Building2 },
             { id: 'projects', label: 'Project Workflows', icon: Home },
@@ -1782,16 +2098,20 @@ export default function SettingsDraft() {
                   <motion.div
                     layoutId="settingsSidebarActive"
                     className="absolute inset-0 bg-white shadow-sm border border-slate-200/60 rounded-md z-0"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
-                <tab.icon className={`w-4 h-4 relative z-10 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`} /> 
+                <tab.icon
+                  className={`w-4 h-4 relative z-10 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`}
+                />
                 <span className="relative z-10">{tab.label}</span>
               </button>
             );
           })}
-          
-          <div className="text-[13px] font-semibold text-slate-500 tracking-tight mb-2 mt-6 px-2">Operations & Data</div>
+
+          <div className="text-[13px] font-semibold text-slate-500 tracking-tight mb-2 mt-6 px-2">
+            Operations & Data
+          </div>
           {[
             { id: 'pipeline', label: 'Data Imports', icon: Database },
             { id: 'exports', label: 'Data Exports', icon: FileDown },
@@ -1811,11 +2131,13 @@ export default function SettingsDraft() {
                   <motion.div
                     layoutId="settingsSidebarActive"
                     className="absolute inset-0 bg-white shadow-sm border border-slate-200/60 rounded-md z-0"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
                 )}
                 <div className="flex items-center gap-3 relative z-10">
-                  <tab.icon className={`w-4 h-4 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`} /> 
+                  <tab.icon
+                    className={`w-4 h-4 transition-transform duration-300 ${!isActive ? 'group-hover:translate-x-0.5' : ''}`}
+                  />
                   <span>{tab.label}</span>
                 </div>
               </button>
@@ -1826,42 +2148,56 @@ export default function SettingsDraft() {
         <div className="flex-1 bg-white overflow-y-auto custom-thin-scroll relative">
           {activeTab !== 'templates' && (
             <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
-               <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">{tabTitleMap[activeTab]}</h1>
-               {tabSubtitleMap[activeTab] && (
-                 <p className="text-slate-500 text-[15px]">{tabSubtitleMap[activeTab]}</p>
-               )}
+              <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
+                {tabTitleMap[activeTab]}
+              </h1>
+              {tabSubtitleMap[activeTab] && (
+                <p className="text-slate-500 text-[15px]">{tabSubtitleMap[activeTab]}</p>
+              )}
             </div>
           )}
           <div className={activeTab === 'templates' ? '' : 'px-10 pb-10'}>
-          {activeTab === 'global' && (
-            <div className="max-w-4xl space-y-12 animate-in fade-in duration-300">
-              <div className="space-y-12">
-                {renderList('Account Managers', 'Manage the users who can be assigned to clients and projects.', 'managers')}
-                {renderList('Client Types', 'Classify your clients.', 'clientTypes')}
-                {renderList('Platform Features', 'System features and modules.', 'features')}
+            {activeTab === 'global' && (
+              <div className="max-w-4xl space-y-12 animate-in fade-in duration-300">
+                <div className="space-y-12">
+                  {renderList(
+                    'Account Managers',
+                    'Manage the users who can be assigned to clients and projects.',
+                    'managers'
+                  )}
+                  {renderList('Client Types', 'Classify your clients.', 'clientTypes')}
+                  {renderList('Platform Features', 'System features and modules.', 'features')}
+                </div>
               </div>
-            </div>
-          )}
-          {activeTab === 'projects' && (
-            <div className="max-w-3xl animate-in fade-in duration-300">
-              {renderList('Project Status', 'Workflow stages for projects.', 'statuses')}
-              {renderList('Schedule Status', 'Schedule statuses for projects.', 'timelines')}
-              {renderList('Implementation Status', 'Milestones for project execution.', 'phases')}
-            </div>
-          )}
-          {activeTab === 'services' && (
-            <div className="max-w-3xl animate-in fade-in duration-300">
-              {renderList('Available Services', 'Available billable services.', 'services')}
-              {renderList('Service Types', 'Categories of services.', 'serviceTypes')}
-              {renderList('Service Outcomes', 'Outcome statuses for services.', 'serviceOutcomes')}
-              {renderList('Fulfillment Status', 'Lifecycle stages for services.', 'serviceStatuses')}
-            </div>
-          )}
-          {activeTab === 'scoring' && (
-            <div className="max-w-4xl animate-in fade-in duration-300 space-y-8">
-              {/* Unified Health Pillar Weights */}
-              <div className="bg-white border border-border rounded-xl shadow-sm p-6">
-                <style>{`
+            )}
+            {activeTab === 'projects' && (
+              <div className="max-w-3xl animate-in fade-in duration-300">
+                {renderList('Project Status', 'Workflow stages for projects.', 'statuses')}
+                {renderList('Schedule Status', 'Schedule statuses for projects.', 'timelines')}
+                {renderList('Implementation Status', 'Milestones for project execution.', 'phases')}
+              </div>
+            )}
+            {activeTab === 'services' && (
+              <div className="max-w-3xl animate-in fade-in duration-300">
+                {renderList('Available Services', 'Available billable services.', 'services')}
+                {renderList('Service Types', 'Categories of services.', 'serviceTypes')}
+                {renderList(
+                  'Service Outcomes',
+                  'Outcome statuses for services.',
+                  'serviceOutcomes'
+                )}
+                {renderList(
+                  'Fulfillment Status',
+                  'Lifecycle stages for services.',
+                  'serviceStatuses'
+                )}
+              </div>
+            )}
+            {activeTab === 'scoring' && (
+              <div className="max-w-4xl animate-in fade-in duration-300 space-y-8">
+                {/* Unified Health Pillar Weights */}
+                <div className="bg-white border border-border rounded-xl shadow-sm p-6">
+                  <style>{`
                   .premium-slider::-webkit-slider-thumb {
                     -webkit-appearance: none;
                     appearance: none;
@@ -1909,218 +2245,256 @@ export default function SettingsDraft() {
                     background: #f1f5f9;
                   }
                 `}</style>
-                <div className="mb-6">
-                  <h3 className="text-base font-semibold text-slate-800 mb-1 flex items-center gap-2">
-                    Health Score Weights
-                  </h3>
-                  <p className="text-sm text-slate-500">
-                    Adjust the weights for each pillar so they equal exactly 100%.
-                  </p>
+                  <div className="mb-6">
+                    <h3 className="text-base font-semibold text-slate-800 mb-1 flex items-center gap-2">
+                      Health Score Weights
+                    </h3>
+                    <p className="text-sm text-slate-500">
+                      Adjust the weights for each pillar so they equal exactly 100%.
+                    </p>
+                  </div>
+                  <div className="flex flex-col lg:flex-row gap-12 items-center">
+                    {/* Left: Sliders */}
+                    <div className="flex-1 w-full space-y-5">
+                      {[
+                        {
+                          label: 'Platform Engagement',
+                          key: 'opActivity',
+                          val: projectWeights.opActivity,
+                          color: '#0ea5e9',
+                          tooltip: 'Usage of core platform features.',
+                        },
+                        {
+                          label: 'Feature Adoption',
+                          key: 'featAdoption',
+                          val: projectWeights.featAdoption,
+                          color: '#0284c7',
+                          tooltip: 'Breadth of features used across the account.',
+                        },
+                        {
+                          label: 'Financial Standing',
+                          key: 'financial',
+                          val: projectWeights.financial || 0,
+                          color: '#3b82f6',
+                          tooltip: 'Invoice payment health and MRR trends.',
+                        },
+                        {
+                          label: 'Active Users',
+                          key: 'userVol',
+                          val: projectWeights.userVol,
+                          color: '#6366f1',
+                          tooltip: 'Ratio of daily active users vs provisioned licenses.',
+                        },
+                        {
+                          label: 'Client Sentiment',
+                          key: 'csat',
+                          val: projectWeights.csat,
+                          color: '#8b5cf6',
+                          tooltip: 'Recent CSAT scores and support ticket sentiment.',
+                        },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center gap-4">
+                          <Tooltip content={item.tooltip} position="top">
+                            <label className="text-sm font-semibold text-slate-600 w-44 flex items-center justify-between gap-1.5 shrink-0 cursor-help pr-2 border-r border-slate-100">
+                              {item.label}
+                              <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
+                            </label>
+                          </Tooltip>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            className="flex-1 appearance-none bg-transparent cursor-pointer premium-slider"
+                            style={{ '--slider-color': item.color } as React.CSSProperties}
+                            value={item.val}
+                            onChange={(e) =>
+                              setProjectWeights({
+                                ...projectWeights,
+                                [item.key]: Number(e.target.value) || 0,
+                              })
+                            }
+                          />
+                          <span className="text-sm font-bold text-slate-700 w-12 text-right">
+                            {item.val}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Right: Donut Chart */}
+                    <div className="w-full lg:w-64 h-64 shrink-0 flex flex-col items-center justify-center">
+                      <DonutChart
+                        total={totalProjectWeights}
+                        data={[
+                          {
+                            name: 'Platform Engagement',
+                            value: projectWeights.opActivity,
+                            color: '#0ea5e9',
+                          },
+                          {
+                            name: 'Feature Adoption',
+                            value: projectWeights.featAdoption,
+                            color: '#0284c7',
+                          },
+                          {
+                            name: 'Financial Standing',
+                            value: projectWeights.financial || 0,
+                            color: '#3b82f6',
+                          },
+                          { name: 'Active Users', value: projectWeights.userVol, color: '#6366f1' },
+                          {
+                            name: 'Client Sentiment',
+                            value: projectWeights.csat,
+                            color: '#8b5cf6',
+                          },
+                        ].filter((d) => d.value > 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end items-center">
+                    <div className="flex gap-4 items-center">
+                      <button
+                        onClick={handleSaveScoring}
+                        disabled={totalProjectWeights !== 100}
+                        className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Save Weights
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col lg:flex-row gap-12 items-center">
-                  {/* Left: Sliders */}
-                  <div className="flex-1 w-full space-y-5">
-                    {[
-                      {
-                        label: 'Platform Engagement',
-                        key: 'opActivity',
-                        val: projectWeights.opActivity,
-                        color: '#0ea5e9',
-                        tooltip: 'Usage of core platform features.'
-                      },
-                      {
-                        label: 'Feature Adoption',
-                        key: 'featAdoption',
-                        val: projectWeights.featAdoption,
-                        color: '#0284c7',
-                        tooltip: 'Breadth of features used across the account.'
-                      },
-                      {
-                        label: 'Financial Standing',
-                        key: 'financial',
-                        val: projectWeights.financial || 0,
-                        color: '#3b82f6',
-                        tooltip: 'Invoice payment health and MRR trends.'
-                      },
-                      { 
-                        label: 'Active Users', 
-                        key: 'userVol', 
-                        val: projectWeights.userVol,
-                        color: '#6366f1',
-                        tooltip: 'Ratio of daily active users vs provisioned licenses.'
-                      },
-                      { 
-                        label: 'Client Sentiment', 
-                        key: 'csat', 
-                        val: projectWeights.csat,
-                        color: '#8b5cf6',
-                        tooltip: 'Recent CSAT scores and support ticket sentiment.'
-                      },
-                    ].map((item) => (
-                      <div key={item.key} className="flex items-center gap-4">
-                        <Tooltip content={item.tooltip} position="top">
-                          <label className="text-sm font-semibold text-slate-600 w-44 flex items-center justify-between gap-1.5 shrink-0 cursor-help pr-2 border-r border-slate-100">
-                            {item.label}
-                            <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-                          </label>
-                        </Tooltip>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          className="flex-1 appearance-none bg-transparent cursor-pointer premium-slider"
-                          style={{ '--slider-color': item.color } as React.CSSProperties}
-                          value={item.val}
-                          onChange={(e) =>
-                            setProjectWeights({
-                              ...projectWeights,
-                              [item.key]: Number(e.target.value) || 0,
-                            })
-                          }
-                        />
-                        <span className="text-sm font-bold text-slate-700 w-12 text-right">
-                          {item.val}%
+
+                {/* KPI Thresholds */}
+                <div className="bg-white border border-border rounded-xl shadow-sm p-6">
+                  <div className="mb-6">
+                    <h3 className="text-base font-semibold text-slate-800 mb-1">KPI Thresholds</h3>
+                    <p className="text-sm text-slate-500">
+                      Drag the handles below to define the score boundaries for At-Risk, Warning,
+                      and Healthy states.
+                    </p>
+                  </div>
+
+                  <div className="px-4 max-w-3xl">
+                    <DualThumbSlider
+                      value={{ warning: thresholds.warning, healthy: thresholds.healthy }}
+                      onChange={({ warning, healthy }) => setThresholds({ warning, healthy })}
+                    />
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="text-center w-24">
+                        <span className="block text-sm font-semibold text-slate-500 mb-1">
+                          At Risk
+                        </span>
+                        <span className="text-base font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded">
+                          0 - {thresholds.warning - 1}
                         </span>
                       </div>
-                    ))}
+                      <div className="text-center w-24">
+                        <span className="block text-sm font-semibold text-slate-500 mb-1">
+                          Warning
+                        </span>
+                        <span className="text-base font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded">
+                          {thresholds.warning} - {thresholds.healthy - 1}
+                        </span>
+                      </div>
+                      <div className="text-center w-24">
+                        <span className="block text-sm font-semibold text-slate-500 mb-1">
+                          Healthy
+                        </span>
+                        <span className="text-base font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded">
+                          {thresholds.healthy} - 100
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Right: Donut Chart */}
-                  <div className="w-full lg:w-64 h-64 shrink-0 flex flex-col items-center justify-center">
-                    <DonutChart 
-                      total={totalProjectWeights}
-                      data={[
-                        { name: 'Platform Engagement', value: projectWeights.opActivity, color: '#0ea5e9' },
-                        { name: 'Feature Adoption', value: projectWeights.featAdoption, color: '#0284c7' },
-                        { name: 'Financial Standing', value: projectWeights.financial || 0, color: '#3b82f6' },
-                        { name: 'Active Users', value: projectWeights.userVol, color: '#6366f1' },
-                        { name: 'Client Sentiment', value: projectWeights.csat, color: '#8b5cf6' }
-                      ].filter(d => d.value > 0)}
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-end items-center">
-                  <div className="flex gap-4 items-center"> 
+                  <div className="mt-6 flex justify-end items-center">
                     <button
                       onClick={handleSaveScoring}
-                      disabled={totalProjectWeights !== 100}
-                      className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
                     >
-                      Save Weights
+                      Save Thresholds
                     </button>
                   </div>
                 </div>
               </div>
-
-              {/* KPI Thresholds */}
-              <div className="bg-white border border-border rounded-xl shadow-sm p-6">
-                <div className="mb-6">
-                  <h3 className="text-base font-semibold text-slate-800 mb-1">KPI Thresholds</h3>
-                  <p className="text-sm text-slate-500">
-                    Drag the handles below to define the score boundaries for At-Risk, Warning, and Healthy states.
-                  </p>
-                </div>
-                
-                <div className="px-4 max-w-3xl">
-                  <DualThumbSlider 
-                    value={{ warning: thresholds.warning, healthy: thresholds.healthy }}
-                    onChange={({ warning, healthy }) => setThresholds({ warning, healthy })}
-                  />
-                  <div className="flex justify-between items-center mt-3">
-                    <div className="text-center w-24">
-                      <span className="block text-sm font-semibold text-slate-500 mb-1">At Risk</span>
-                      <span className="text-base font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded">0 - {thresholds.warning - 1}</span>
-                    </div>
-                    <div className="text-center w-24">
-                      <span className="block text-sm font-semibold text-slate-500 mb-1">Warning</span>
-                      <span className="text-base font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded">{thresholds.warning} - {thresholds.healthy - 1}</span>
-                    </div>
-                    <div className="text-center w-24">
-                      <span className="block text-sm font-semibold text-slate-500 mb-1">Healthy</span>
-                      <span className="text-base font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded">{thresholds.healthy} - 100</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6 flex justify-end items-center">
-                  <button
-                    onClick={handleSaveScoring}
-                    className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
-                  >
-                    Save Thresholds
-                  </button>
-                </div>
+            )}
+            {activeTab === 'templates' && (
+              <div className="h-full w-full animate-in fade-in duration-300 flex flex-col">
+                <TemplateDesigner />
               </div>
-            </div>
-          )}
-          {activeTab === 'templates' && (
-            <div className="h-full w-full animate-in fade-in duration-300 flex flex-col">
-              <TemplateDesigner />
-            </div>
-          )}
-          
-          {activeTab === 'pipeline' && (
-            <div className="animate-in fade-in duration-300 space-y-8">
-              {/* Top Hero Section */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 tracking-tight">Upload & Compile Data</h3>
-                  <p className="text-sm text-slate-500 mt-0.5 max-w-2xl">
-                    Drop your CSV exports below, then run the compiler to detect new entries, update global metrics, and automatically align data based on your previous mappings.
-                  </p>
-                </div>
-                <DataUploader />
-              </div>
+            )}
 
-              {/* Two Column Layout for Action Required and History */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                
-                {/* Left Column (col-span-2) */}
-                <div className="xl:col-span-2 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900 tracking-tight">Action Required</h3>
-                      <p className="text-sm text-slate-500 mt-0.5">Review and manually map unrecognized incoming data.</p>
-                    </div>
-                  </div>
-                  <DataIntakePipeline />
-                </div>
-
-                {/* Right Column (col-span-1) */}
+            {activeTab === 'pipeline' && (
+              <div className="animate-in fade-in duration-300 space-y-8">
+                {/* Top Hero Section */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">Recent Upload Activity</h3>
-                    <p className="text-sm text-slate-500 mt-0.5">Your recent file uploads and auto-processed logs.</p>
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                      Upload & Compile Data
+                    </h3>
+                    <p className="text-sm text-slate-500 mt-0.5 max-w-2xl">
+                      Drop your CSV exports below, then run the compiler to detect new entries,
+                      update global metrics, and automatically align data based on your previous
+                      mappings.
+                    </p>
                   </div>
-                  
-                  <RecentUploadActivity logs={logs} setViewingUploadLog={setViewingUploadLog} />
-
+                  <DataUploader />
                 </div>
 
+                {/* Two Column Layout for Action Required and History */}
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                  {/* Left Column (col-span-2) */}
+                  <div className="xl:col-span-2 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                          Action Required
+                        </h3>
+                        <p className="text-sm text-slate-500 mt-0.5">
+                          Review and manually map unrecognized incoming data.
+                        </p>
+                      </div>
+                    </div>
+                    <DataIntakePipeline />
+                  </div>
+
+                  {/* Right Column (col-span-1) */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                        Recent Upload Activity
+                      </h3>
+                      <p className="text-sm text-slate-500 mt-0.5">
+                        Your recent file uploads and auto-processed logs.
+                      </p>
+                    </div>
+
+                    <RecentUploadActivity logs={logs} setViewingUploadLog={setViewingUploadLog} />
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-          {activeTab === 'audit' && (
-            <AuditLogViewer 
-              logs={logs} 
-              loadLogs={loadLogs} 
-              setViewingUploadLog={setViewingUploadLog} 
-              loadingLogs={loadingLogs}
+            )}
+            {activeTab === 'audit' && (
+              <AuditLogViewer
+                logs={logs}
+                loadLogs={loadLogs}
+                setViewingUploadLog={setViewingUploadLog}
+                loadingLogs={loadingLogs}
+              />
+            )}
+
+            <AutoProcessedDrawer
+              isOpen={!!viewingUploadLog}
+              onClose={() => setViewingUploadLog(null)}
+              log={viewingUploadLog}
+              onUpdate={loadLogs}
             />
-          )}
-          
-          <AutoProcessedDrawer
-            isOpen={!!viewingUploadLog}
-            onClose={() => setViewingUploadLog(null)}
-            log={viewingUploadLog}
-            onUpdate={loadLogs}
-          />
-          {activeTab === 'archives' && renderArchives()}
-          {activeTab === 'exports' && (
-            <DataExportHub projects={projects} getTemplate={getTemplate} />
-          )}
-        </div>
+            {activeTab === 'archives' && renderArchives()}
+            {activeTab === 'exports' && (
+              <DataExportHub projects={projects} getTemplate={getTemplate} />
+            )}
+          </div>
         </div>
       </div>
     </div>

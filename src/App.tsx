@@ -53,7 +53,7 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
   useFirebaseSync();
   const ready = useAppStore((state) => state.ready);
   const settings = useAppStore((state) => state.settings);
-  
+
   React.useEffect(() => {
     // Frontend Cron: Check if snapshot needs to run today
     if (ready.settings && ready.clients && ready.projects && settings) {
@@ -130,43 +130,41 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
-        <GlobalToaster />
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <React.Suspense
-                fallback={
-                  <div className="flex items-center justify-center w-full h-screen bg-white">
-                    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  </div>
-                }
-              >
-                <Login />
-              </React.Suspense>
-            }
-          />
-          <Route
-            path="/portal/:projectId"
-            element={
-              <React.Suspense
-                fallback={<ClientPortalSkeleton />}
-              >
-                <ClientPortal />
-              </React.Suspense>
-            }
-          />
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+          <GlobalToaster />
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <React.Suspense
+                  fallback={
+                    <div className="flex items-center justify-center w-full h-screen bg-white">
+                      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                  }
+                >
+                  <Login />
+                </React.Suspense>
+              }
+            />
+            <Route
+              path="/portal/:projectId"
+              element={
+                <React.Suspense fallback={<ClientPortalSkeleton />}>
+                  <ClientPortal />
+                </React.Suspense>
+              }
+            />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

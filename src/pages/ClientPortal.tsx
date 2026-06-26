@@ -28,7 +28,11 @@ export default function ClientPortal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // TanStack Query Hooks
-  const { data: project, isLoading: isProjectLoading, error: projectError } = useProjectQuery(projectId);
+  const {
+    data: project,
+    isLoading: isProjectLoading,
+    error: projectError,
+  } = useProjectQuery(projectId);
   const { data: settings, isLoading: isSettingsLoading } = useSettingsQuery();
 
   const loading = isProjectLoading || isSettingsLoading;
@@ -55,7 +59,9 @@ export default function ClientPortal() {
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
           <h2 className="text-xl font-bold text-slate-800 mb-2 tracking-tight">Access Denied</h2>
-          <p className="text-slate-500 text-sm mb-6 leading-relaxed">{error || 'Project not found.'}</p>
+          <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+            {error || 'Project not found.'}
+          </p>
         </div>
       </div>
     );
@@ -64,19 +70,29 @@ export default function ClientPortal() {
   const getTemplate = (formId: string) => {
     if (!settings?.templates) return null;
     if (formId === 'deliverables') {
-      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Deliverables Checklist') || Object.keys(settings.templates).find(k => settings.templates[k].type === 'checklist');
+      const tId =
+        Object.keys(settings.templates).find(
+          (k) => settings.templates[k].name === 'Deliverables Checklist'
+        ) ||
+        Object.keys(settings.templates).find((k) => settings.templates[k].type === 'checklist');
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'survey') {
-      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Onboarding Survey');
+      const tId = Object.keys(settings.templates).find(
+        (k) => settings.templates[k].name === 'Onboarding Survey'
+      );
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'clientQA') {
-      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Client QA');
+      const tId = Object.keys(settings.templates).find(
+        (k) => settings.templates[k].name === 'Client QA'
+      );
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'certification') {
-      const tId = Object.keys(settings.templates).find(k => settings.templates[k].name === 'Project Certification');
+      const tId = Object.keys(settings.templates).find(
+        (k) => settings.templates[k].name === 'Project Certification'
+      );
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'onboardingCsat') {
@@ -85,20 +101,25 @@ export default function ClientPortal() {
     return null;
   };
 
-  const handleSaveForm = async (data: any, autoSave = false, overrideStatus?: string, overrideFormType?: string) => {
+  const handleSaveForm = async (
+    data: any,
+    autoSave = false,
+    overrideStatus?: string,
+    overrideFormType?: string
+  ) => {
     const currentFormType = overrideFormType || activeFormType;
     if (!project || !currentFormType) return;
     setIsSubmitting(true);
-    
+
     const isSaveProgress = overrideStatus === 'In Progress';
-    
+
     try {
       const isCsat = currentFormType === 'onboardingCsat';
       const isDeliverables = currentFormType === 'deliverables';
-      
-      const formNode = isCsat 
-        ? { ...project.health?.onboardingCsat } 
-        : isDeliverables 
+
+      const formNode = isCsat
+        ? { ...project.health?.onboardingCsat }
+        : isDeliverables
           ? { ...project.deliverables }
           : { ...project.onboarding?.[currentFormType as any] };
 
@@ -124,7 +145,12 @@ export default function ClientPortal() {
           const activeFeatures = project?.features || [];
           dTemplate.sections.forEach((section: any) => {
             if ((cleanData as any)._hiddenSections?.includes(section.id)) return;
-            if (section.dependsOnFeature && section.dependsOnFeature.length > 0 && !section.dependsOnFeature.some((f: string) => activeFeatures.includes(f))) return;
+            if (
+              section.dependsOnFeature &&
+              section.dependsOnFeature.length > 0 &&
+              !section.dependsOnFeature.some((f: string) => activeFeatures.includes(f))
+            )
+              return;
             section.items.forEach((item: any) => {
               if ((cleanData as any)._hiddenItems?.includes(item.id)) return;
               total++;
@@ -149,12 +175,12 @@ export default function ClientPortal() {
       }
 
       const projectRef = doc(db, 'projects', project.id);
-      
+
       let updateObj: any = {};
       if (isCsat) {
         updateObj = { 'health.onboardingCsat': payload };
       } else if (isDeliverables) {
-        updateObj = { 'deliverables': payload };
+        updateObj = { deliverables: payload };
       } else {
         updateObj = { [`onboarding.${currentFormType}`]: payload };
         if (isFirstSubmission && currentFormType === 'survey') {
@@ -165,11 +191,25 @@ export default function ClientPortal() {
       await updateDoc(projectRef, updateObj);
 
       const actionType = isFirstSubmission ? 'submission' : 'update';
-      const prettyFormName = currentFormType === 'onboardingCsat' ? 'Onboarding CSAT' : currentFormType === 'survey' ? 'Onboarding Survey' : currentFormType === 'clientQA' ? 'Client QA' : currentFormType === 'certification' ? 'Project Certification' : currentFormType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-      
+      const prettyFormName =
+        currentFormType === 'onboardingCsat'
+          ? 'Onboarding CSAT'
+          : currentFormType === 'survey'
+            ? 'Onboarding Survey'
+            : currentFormType === 'clientQA'
+              ? 'Client QA'
+              : currentFormType === 'certification'
+                ? 'Project Certification'
+                : currentFormType
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/^./, (str) => str.toUpperCase());
+
       await createNotification(project.id, project.name, actionType, prettyFormName);
 
-      if (isFirstSubmission && ['survey', 'clientQA', 'certification', 'onboardingCsat'].includes(currentFormType)) {
+      if (
+        isFirstSubmission &&
+        ['survey', 'clientQA', 'certification', 'onboardingCsat'].includes(currentFormType)
+      ) {
         await sendEmailAlert(project.id, project.name, prettyFormName, 'submitted');
       }
 
@@ -180,7 +220,12 @@ export default function ClientPortal() {
         if (!isSaveProgress) {
           if (currentFormType === 'certification' && isFirstSubmission) {
             setViewState('csat_intercept');
-          } else if (currentFormType === 'onboardingCsat' || currentFormType === 'survey' || currentFormType === 'clientQA' || currentFormType === 'certification') {
+          } else if (
+            currentFormType === 'onboardingCsat' ||
+            currentFormType === 'survey' ||
+            currentFormType === 'clientQA' ||
+            currentFormType === 'certification'
+          ) {
             setViewState('success');
           } else {
             setViewState('dashboard');
@@ -190,7 +235,7 @@ export default function ClientPortal() {
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to submit form. Please try again.");
+      alert('Failed to submit form. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -209,9 +254,10 @@ export default function ClientPortal() {
 
   if (viewState === 'form' && activeFormType) {
     const template = getTemplate(activeFormType);
-    const existingData = activeFormType === 'deliverables' 
-      ? project.deliverables 
-      : project.onboarding?.[activeFormType as keyof typeof project.onboarding];
+    const existingData =
+      activeFormType === 'deliverables'
+        ? project.deliverables
+        : project.onboarding?.[activeFormType as keyof typeof project.onboarding];
 
     return (
       <PortalFormView
@@ -240,10 +286,7 @@ export default function ClientPortal() {
 
   if (viewState === 'success') {
     return (
-      <PortalSuccessView
-        activeFormType={activeFormType}
-        onNavigate={handleCancelNavigation}
-      />
+      <PortalSuccessView activeFormType={activeFormType} onNavigate={handleCancelNavigation} />
     );
   }
 

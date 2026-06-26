@@ -231,8 +231,10 @@ export const getSettingBadge = (
         <span
           className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
-          <LucideIcons.User className={iconSize} /> 
-          <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{value}</span>
+          <LucideIcons.User className={iconSize} />
+          <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+            {value}
+          </span>
         </span>
       );
     }
@@ -240,7 +242,9 @@ export const getSettingBadge = (
       <span
         className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center shrink-0`}
       >
-        <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{value}</span>
+        <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+          {value}
+        </span>
       </span>
     );
   }
@@ -250,10 +254,16 @@ export const getSettingBadge = (
   return (
     <span
       className={`${sizeClasses} font-medium rounded-md inline-flex items-center gap-1.5 shrink-0`}
-      style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}` }}
+      style={{
+        backgroundColor: hexToRgba(hex, 0.1),
+        color: hex,
+        boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}`,
+      }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
-      <span className={truncateText ? "truncate max-w-[180px]" : "whitespace-nowrap"}>{item.name}</span>
+      <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+        {item.name}
+      </span>
     </span>
   );
 };
@@ -277,9 +287,7 @@ export const getTypeBadgeIconOnly = (value: string, settings: any) => {
   if (!item)
     return (
       <Tooltip content={value}>
-        <span
-          className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200"
-        >
+        <span className="w-6 h-6 rounded flex items-center justify-center bg-slate-100 text-slate-400 border border-slate-200">
           <CircleDashed className="w-3.5 h-3.5" />
         </span>
       </Tooltip>
@@ -291,7 +299,11 @@ export const getTypeBadgeIconOnly = (value: string, settings: any) => {
     <Tooltip content={item.name}>
       <span
         className="w-7 h-7 rounded flex items-center justify-center border shadow-sm shrink-0 transition-colors cursor-default"
-        style={{ backgroundColor: hexToRgba(hex, 0.1), color: hex, borderColor: hexToRgba(hex, 0.2) }}
+        style={{
+          backgroundColor: hexToRgba(hex, 0.1),
+          color: hex,
+          borderColor: hexToRgba(hex, 0.2),
+        }}
       >
         {item.icon && renderIcon(item.icon, 'w-4 h-4')}
       </span>
@@ -345,29 +357,32 @@ export const getFeatureBadgeProps = (pct: number, settings: any) => {
   return { bg: 'bg-red-100', fill: 'bg-red-500', text: 'text-foreground' };
 };
 
-export const formatRelativeDate = (dateVal: number | string | null | undefined, showYearInDate: boolean = false) => {
+export const formatRelativeDate = (
+  dateVal: number | string | null | undefined,
+  showYearInDate: boolean = false
+) => {
   if (!dateVal) return 'Not Set';
   const date = new Date(dateVal);
   const now = new Date();
-  
+
   const dDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const nDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  
+
   const diffTime = dDay.getTime() - nDay.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) return 'Today';
   if (diffDays === 1) return 'Tomorrow';
   if (diffDays === -1) return 'Yesterday';
-  
+
   if (diffDays > 1 && diffDays <= 7) {
     return date.toLocaleDateString('en-US', { weekday: 'long' });
   }
-  
+
   if (diffDays < -1 && diffDays >= -7) {
     return `Last ${date.toLocaleDateString('en-US', { weekday: 'long' })}`;
   }
-  
+
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

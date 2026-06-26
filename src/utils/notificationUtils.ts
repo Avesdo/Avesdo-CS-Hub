@@ -46,8 +46,8 @@ export async function markNotificationAsRead(notificationId: string) {
 // 3. Mark all as read
 export async function markAllNotificationsAsRead(notifications: AppNotification[]) {
   try {
-    const unread = notifications.filter(n => !n.read);
-    await Promise.all(unread.map(n => markNotificationAsRead(n.id)));
+    const unread = notifications.filter((n) => !n.read);
+    await Promise.all(unread.map((n) => markNotificationAsRead(n.id)));
   } catch (err) {
     console.error('Failed to mark all as read:', err);
   }
@@ -56,7 +56,7 @@ export async function markAllNotificationsAsRead(notifications: AppNotification[
 // 4. Clear all notifications
 export async function clearAllNotifications(notifications: AppNotification[]) {
   try {
-    await Promise.all(notifications.map(n => deleteDoc(doc(db, 'notifications', n.id))));
+    await Promise.all(notifications.map((n) => deleteDoc(doc(db, 'notifications', n.id))));
   } catch (err) {
     console.error('Failed to clear notifications:', err);
   }

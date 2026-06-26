@@ -3,7 +3,12 @@ import GlobalSearch from './GlobalSearch';
 import { Bell, Check, X, Trash2 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../api/firebase';
-import { AppNotification, markNotificationAsRead, markAllNotificationsAsRead, clearAllNotifications } from '../utils/notificationUtils';
+import {
+  AppNotification,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  clearAllNotifications,
+} from '../utils/notificationUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -18,27 +23,27 @@ function NotificationBell() {
   useEffect(() => {
     const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs = snapshot.docs.map(doc => ({
+      const notifs = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       })) as AppNotification[];
       setNotifications(notifs);
     });
     return () => unsubscribe();
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="relative group bg-white hover:bg-slate-50 border-slate-200/60 text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm transition-all duration-300 rounded-full h-10 px-3 flex items-center gap-2"
         >
           {unreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="flex h-[24px] min-w-[24px] px-2 items-center justify-center text-sm font-black shadow-[0_0_15px_rgba(239,68,68,0.5)] rounded-full animate-in zoom-in"
             >
               {unreadCount}
@@ -47,13 +52,17 @@ function NotificationBell() {
           <Bell className="w-[1.25rem] h-[1.25rem] transition-all duration-300 group-hover:rotate-12 group-hover:scale-110" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2" align="end" sideOffset={8}>
+      <PopoverContent
+        className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+        align="end"
+        sideOffset={8}
+      >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
           <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
           <div className="flex items-center gap-3">
             {unreadCount > 0 && (
-              <Button 
-                variant="link" 
+              <Button
+                variant="link"
                 className="h-auto p-0 text-xs text-primary"
                 onClick={() => markAllNotificationsAsRead(notifications)}
               >
@@ -61,8 +70,8 @@ function NotificationBell() {
               </Button>
             )}
             {notifications.length > 0 && (
-              <Button 
-                variant="link" 
+              <Button
+                variant="link"
                 className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
                 onClick={() => clearAllNotifications(notifications)}
               >
@@ -71,7 +80,7 @@ function NotificationBell() {
             )}
           </div>
         </div>
-        
+
         <div className="max-h-[350px] overflow-y-auto custom-thin-scroll">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
@@ -83,9 +92,9 @@ function NotificationBell() {
             </div>
           ) : (
             <div className="flex flex-col">
-              {notifications.map(n => (
-                <div 
-                  key={n.id} 
+              {notifications.map((n) => (
+                <div
+                  key={n.id}
                   className={`group relative px-4 py-3 hover:bg-primary/5 transition-colors cursor-pointer flex items-start gap-3 ${!n.read ? 'bg-primary/[0.03]' : ''}`}
                   onClick={() => {
                     markNotificationAsRead(n.id);
@@ -95,7 +104,9 @@ function NotificationBell() {
                     }
                   }}
                 >
-                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`}
+                  />
                   <div className="flex-1 pr-6">
                     <p className="text-sm text-foreground leading-tight">
                       <span className="font-semibold">{n.projectName}</span>{' '}
@@ -107,8 +118,11 @@ function NotificationBell() {
                     </p>
                   </div>
                   {!n.read && (
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); markNotificationAsRead(n.id); }}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markNotificationAsRead(n.id);
+                      }}
                       className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-primary/10 text-primary transition-all"
                       title="Mark as read"
                     >

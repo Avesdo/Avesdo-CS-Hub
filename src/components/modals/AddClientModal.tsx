@@ -29,9 +29,13 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
     onClick={onClick}
     className={`group flex items-center h-10 px-4 rounded-full border bg-white shadow-sm transition-all duration-200 active:scale-95 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 ${error ? 'border-destructive' : 'border-slate-200'}`}
   >
-    {Icon && <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />}
+    {Icon && (
+      <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
+    )}
     <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
-    <span className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}>
+    <span
+      className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}
+    >
       {value || 'Select'}
     </span>
     <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -40,9 +44,9 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 
 export default function AddClientModal() {
   const { isModalOpen, closeModal, openDrawer, activeModals } = useUI();
-  const settings = useAppStore(state => state.settings);
-  const clients = useAppStore(state => state.clients);
-  const user = useAppStore(state => state.user);
+  const settings = useAppStore((state) => state.settings);
+  const clients = useAppStore((state) => state.clients);
+  const user = useAppStore((state) => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -69,8 +73,6 @@ export default function AddClientModal() {
   const overlayZ = 120 + (modalIndex >= 0 ? modalIndex * 20 : 0);
   const contentZ = 130 + (modalIndex >= 0 ? modalIndex * 20 : 0);
 
-  
-  
   const handleClose = (force?: boolean | any) => {
     const isForced = force === true;
     if (!isForced && isDirty) {
@@ -149,11 +151,11 @@ export default function AddClientModal() {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
       <Dialog.Portal>
-        <Dialog.Overlay 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+        <Dialog.Overlay
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
           style={{ zIndex: overlayZ }}
         />
-        <Dialog.Content 
+        <Dialog.Content
           onInteractOutside={(e) => {
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addClient') {
@@ -167,7 +169,8 @@ export default function AddClientModal() {
             }
           }}
           style={{ zIndex: contentZ }}
-          className="fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300">
+          className="fixed left-[50%] top-[50%] flex max-h-[90vh] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl bg-white shadow-2xl outline-none overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] transition-all duration-300"
+        >
           <div className="flex justify-end p-4 absolute top-0 right-0 z-10">
             <button
               type="button"
@@ -180,12 +183,20 @@ export default function AddClientModal() {
 
           <div className="flex-1 overflow-y-auto custom-thin-scroll min-h-0 pt-16 pb-8 px-10">
             {globalError && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-destructive text-[13px] font-semibold bg-destructive/5 px-4 py-3 rounded-xl border border-destructive/20 mb-6"
+              >
                 {globalError}
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
               <Controller
                 name="companyName"
                 control={control}
@@ -200,11 +211,18 @@ export default function AddClientModal() {
                 )}
               />
               {errors.companyName && (
-                <p className="text-destructive text-sm mt-2 font-medium">{errors.companyName.message}</p>
+                <p className="text-destructive text-sm mt-2 font-medium">
+                  {errors.companyName.message}
+                </p>
               )}
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-start gap-3 mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-wrap items-start gap-3 mb-10"
+            >
               <div className="flex flex-col gap-1">
                 <Controller
                   name="clientType"
@@ -212,14 +230,33 @@ export default function AddClientModal() {
                   render={({ field }) => (
                     <Select
                       value={field.value}
-                      options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({ label: t, value: t }))}
+                      options={(settings?.clientTypes?.map((t) => t.name) || []).map((t) => ({
+                        label: t,
+                        value: t,
+                      }))}
                       onChange={field.onChange}
-                      trigger={<TokenTrigger label="Client Type" value={field.value} icon={Tag} error={errors.clientType} />}
+                      trigger={
+                        <TokenTrigger
+                          label="Client Type"
+                          value={field.value}
+                          icon={Tag}
+                          error={errors.clientType}
+                        />
+                      }
                     />
                   )}
                 />
                 <AnimatePresence>
-                  {errors.clientType && <motion.span initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-destructive text-[11px] font-medium ml-2">{errors.clientType.message}</motion.span>}
+                  {errors.clientType && (
+                    <motion.span
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-destructive text-[11px] font-medium ml-2"
+                    >
+                      {errors.clientType.message}
+                    </motion.span>
+                  )}
                 </AnimatePresence>
               </div>
 
@@ -229,7 +266,10 @@ export default function AddClientModal() {
                 render={({ field }) => (
                   <Select
                     value={field.value || ''}
-                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({ label: m, value: m }))}
+                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
+                      label: m,
+                      value: m,
+                    }))}
                     onChange={field.onChange}
                     trigger={<TokenTrigger label="Manager" value={field.value} icon={User} />}
                   />
@@ -237,19 +277,40 @@ export default function AddClientModal() {
               />
             </motion.div>
 
-
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col gap-3">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col gap-3"
+            >
               <AnimatePresence mode="popLayout">
                 {!showNote && (
-                  <motion.div key="note-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                    <button type="button" onClick={() => setShowNote(true)} className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit">
-                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">+ Add Initial Note</span>
+                  <motion.div
+                    key="note-btn"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowNote(true)}
+                      className="group flex items-center px-2 py-1 rounded hover:bg-slate-50 transition-all duration-200 active:scale-95 focus:outline-none focus:ring-0 outline-none w-fit"
+                    >
+                      <span className="text-[13px] font-semibold text-slate-500 group-hover:text-primary transition-colors">
+                        + Add Initial Note
+                      </span>
                     </button>
                   </motion.div>
                 )}
                 {showNote && (
-                  <motion.div key="note-editor" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden">
+                  <motion.div
+                    key="note-editor"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden"
+                  >
                     <label className="flex items-center text-[13px] font-semibold text-slate-600 ml-1">
                       <AlignLeft className="w-3.5 h-3.5 mr-1.5" /> Initial Note
                     </label>
@@ -301,7 +362,7 @@ export default function AddClientModal() {
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center max-w-sm mx-4"
@@ -310,16 +371,18 @@ export default function AddClientModal() {
                     <AlertTriangle className="w-6 h-6 text-red-500" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Discard changes?</h3>
-                  <p className="text-sm text-slate-500 mb-6">You have unsaved changes. If you close this now, your data will be lost.</p>
+                  <p className="text-sm text-slate-500 mb-6">
+                    You have unsaved changes. If you close this now, your data will be lost.
+                  </p>
                   <div className="flex gap-3 w-full">
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setShowDiscardConfirm(false)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
                     >
                       Keep Editing
                     </button>
-                    <button 
+                    <button
                       type="button"
                       onClick={() => handleClose(true)}
                       className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 shadow-sm transition-colors"
@@ -344,7 +407,7 @@ export default function AddClientModal() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
                   className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"
                 >
                   <Check className="w-12 h-12 text-green-600 stroke-[3]" />

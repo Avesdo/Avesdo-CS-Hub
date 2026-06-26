@@ -37,7 +37,8 @@ export function MultiSelect({
     let result = options;
     if (searchable && searchTerm) {
       result = options.filter((opt) => {
-        const text = typeof opt.label === 'string' ? opt.label.toLowerCase() : opt.value.toLowerCase();
+        const text =
+          typeof opt.label === 'string' ? opt.label.toLowerCase() : opt.value.toLowerCase();
         return text.includes(searchTerm.toLowerCase());
       });
     }
@@ -62,11 +63,16 @@ export function MultiSelect({
 
   return (
     <div className={`relative inline-block ${className}`}>
-      <Popover.Root open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) setSearchTerm(''); }} modal={true}>
+      <Popover.Root
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (!open) setSearchTerm('');
+        }}
+        modal={true}
+      >
         <Popover.Trigger asChild>
-          <div className="cursor-pointer outline-none">
-            {trigger}
-          </div>
+          <div className="cursor-pointer outline-none">{trigger}</div>
         </Popover.Trigger>
 
         <Popover.Portal>

@@ -65,22 +65,41 @@ export function calculateProjectHealth(
 
   // CSAT
   let csat: number | 'N/A' = 'N/A';
-  if (project.health?.onboardingCsat && Object.keys(project.health.onboardingCsat).filter(k => !['submittedAt', 'updatedAt'].includes(k)).length > 0) {
+  if (
+    project.health?.onboardingCsat &&
+    Object.keys(project.health.onboardingCsat).filter(
+      (k) => !['submittedAt', 'updatedAt'].includes(k)
+    ).length > 0
+  ) {
     const csatValues = Object.values(project.health.onboardingCsat);
     let totalScore = 0;
     let count = 0;
-    
-    csatValues.forEach(val => {
+
+    csatValues.forEach((val) => {
       if (typeof val === 'string') {
         const lowerVal = val.toLowerCase();
-        if (lowerVal.includes('extremely satisfied') || lowerVal.includes('very satisfied')) { totalScore += 100; count++; }
-        else if (lowerVal.includes('somewhat satisfied') || lowerVal === 'satisfied') { totalScore += 75; count++; }
-        else if (lowerVal.includes('neither') || lowerVal.includes('neutral')) { totalScore += 50; count++; }
-        else if (lowerVal.includes('somewhat dissatisfied') || lowerVal === 'dissatisfied') { totalScore += 25; count++; }
-        else if (lowerVal.includes('extremely dissatisfied') || lowerVal.includes('very dissatisfied')) { totalScore += 0; count++; }
+        if (lowerVal.includes('extremely satisfied') || lowerVal.includes('very satisfied')) {
+          totalScore += 100;
+          count++;
+        } else if (lowerVal.includes('somewhat satisfied') || lowerVal === 'satisfied') {
+          totalScore += 75;
+          count++;
+        } else if (lowerVal.includes('neither') || lowerVal.includes('neutral')) {
+          totalScore += 50;
+          count++;
+        } else if (lowerVal.includes('somewhat dissatisfied') || lowerVal === 'dissatisfied') {
+          totalScore += 25;
+          count++;
+        } else if (
+          lowerVal.includes('extremely dissatisfied') ||
+          lowerVal.includes('very dissatisfied')
+        ) {
+          totalScore += 0;
+          count++;
+        }
       }
     });
-    
+
     if (count > 0) {
       csat = Math.round(totalScore / count);
     }

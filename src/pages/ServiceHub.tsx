@@ -51,111 +51,111 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 // --- Column Filter Popover Component ---
 
-const ServiceRow = React.memo(({
-  s,
-  openDrawer,
-  getSettingBadge,
-  settings,
-  activeTab,
-  getTypeBadgeIconOnly,
-  allStatuses,
-  handleStatusChange,
-  formatCurrency,
-  StatusDropdown,
-  TruncatedText,
-  virtualRow
-}: any) => {
-  const sDate = s.dateVal
-    ? new Date(s.dateVal).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : 'No Date';
+const ServiceRow = React.memo(
+  ({
+    s,
+    openDrawer,
+    getSettingBadge,
+    settings,
+    activeTab,
+    getTypeBadgeIconOnly,
+    allStatuses,
+    handleStatusChange,
+    formatCurrency,
+    StatusDropdown,
+    TruncatedText,
+    virtualRow,
+  }: any) => {
+    const sDate = s.dateVal
+      ? new Date(s.dateVal).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      : 'No Date';
 
-  return (
-                        <tr
-                          key={virtualRow?.index || s.id}
-                          className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
-                          onClick={() => openDrawer('service', s.id)}
-                        >
-                          <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2 w-[35%] sm:w-[30%] lg:w-[25%]">
-                            <TruncatedText
-                              text={s.name || 'Unnamed Service'}
-                              className="font-bold text-[13px] text-foreground w-full min-w-[180px] group-hover:text-primary transition-colors"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0 hidden md:table-cell max-w-0 w-[15%]">
-                            <TruncatedText
-                              text={s.projectName || 'No Project'}
-                              className="w-full"
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium max-w-0 w-[15%]">
-                            <TruncatedText
-                              text={s.clientName || s.clients?.join(', ') || 'No Client'}
-                              className="w-full"
-                            />
-                          </td>
-                          <td className="px-6 py-2 hidden lg:table-cell">
-                            <div className="flex justify-center">
-                              {getTypeBadgeIconOnly(s.type, settings)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-2 hidden xl:table-cell">
-                            <div className="flex gap-1 flex-wrap">
-                              {s.managers && s.managers.length > 0 ? (
-                                s.managers.map((m: string, idx: number) => (
-                                  <div key={idx}>{getSettingBadge('managers', m, settings)}</div>
-                                ))
-                              ) : s.manager ? (
-                                getSettingBadge('managers', s.manager, settings)
-                              ) : (
-                                <span className="text-xs text-muted-foreground">Unassigned</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-2">
-                            <StatusDropdown
-                              value={s.status || ''}
-                              options={allStatuses}
-                              onChange={(newStatus: string) => handleStatusChange(s, newStatus)}
-                              settings={settings}
-                            />
-                          </td>
-                          <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium whitespace-nowrap">
-                            {sDate}
-                          </td>
-                          {activeTab !== 'Included' && (
-                            <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
-                              {formatCurrency(Number(s.price) || 0)}
-                            </td>
-                          )}
-                        </tr>
-  );
-}, (prevProps, nextProps) => {
-  return prevProps.s === nextProps.s && 
-         prevProps.activeTab === nextProps.activeTab && 
-         prevProps.settings === nextProps.settings &&
-         prevProps.virtualRow?.index === nextProps.virtualRow?.index;
-});
+    return (
+      <tr
+        key={virtualRow?.index || s.id}
+        className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
+        onClick={() => openDrawer('service', s.id)}
+      >
+        <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2 w-[35%] sm:w-[30%] lg:w-[25%]">
+          <TruncatedText
+            text={s.name || 'Unnamed Service'}
+            className="font-bold text-[13px] text-foreground w-full min-w-[180px] group-hover:text-primary transition-colors"
+          />
+        </td>
+        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0 hidden md:table-cell max-w-0 w-[15%]">
+          <TruncatedText text={s.projectName || 'No Project'} className="w-full" />
+        </td>
+        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium max-w-0 w-[15%]">
+          <TruncatedText
+            text={s.clientName || s.clients?.join(', ') || 'No Client'}
+            className="w-full"
+          />
+        </td>
+        <td className="px-6 py-2 hidden lg:table-cell">
+          <div className="flex justify-center">{getTypeBadgeIconOnly(s.type, settings)}</div>
+        </td>
+        <td className="px-6 py-2 hidden xl:table-cell">
+          <div className="flex gap-1 flex-wrap">
+            {s.managers && s.managers.length > 0 ? (
+              s.managers.map((m: string, idx: number) => (
+                <div key={idx}>{getSettingBadge('managers', m, settings)}</div>
+              ))
+            ) : s.manager ? (
+              getSettingBadge('managers', s.manager, settings)
+            ) : (
+              <span className="text-xs text-muted-foreground">Unassigned</span>
+            )}
+          </div>
+        </td>
+        <td className="px-6 py-2">
+          <StatusDropdown
+            value={s.status || ''}
+            options={allStatuses}
+            onChange={(newStatus: string) => handleStatusChange(s, newStatus)}
+            settings={settings}
+          />
+        </td>
+        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium whitespace-nowrap">
+          {sDate}
+        </td>
+        {activeTab !== 'Included' && (
+          <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+            {formatCurrency(Number(s.price) || 0)}
+          </td>
+        )}
+      </tr>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.s === nextProps.s &&
+      prevProps.activeTab === nextProps.activeTab &&
+      prevProps.settings === nextProps.settings &&
+      prevProps.virtualRow?.index === nextProps.virtualRow?.index
+    );
+  }
+);
 
 export default function ServiceHub() {
   const location = useLocation();
-  const services = useAppStore(state => state.services);
-  const settings = useAppStore(state => state.settings);
-  const user = useAppStore(state => state.user);
+  const services = useAppStore((state) => state.services);
+  const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
   const { openModal, openDrawer } = useUI();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
-    // One-time migrations
+  // One-time migrations
   useEffect(() => {
     services.forEach((s) => {
       let needsUpdate = false;
-      let updates: any = { ...s };
+      const updates: any = { ...s };
 
       if (s.outcome === 'Pending' || s.outcome === 'Unknown' || s.outcome === 'Unknow') {
         updates.outcome = '';
@@ -515,7 +515,7 @@ export default function ServiceHub() {
     if (!scrollContainer) return;
     const scrollTop = scrollContainer.scrollTop;
 
-    setIsScrolled(prev => {
+    setIsScrolled((prev) => {
       if (scrollTop > 40 && !prev) {
         if (scrollContainer.scrollHeight - scrollContainer.clientHeight > 250) {
           return true;
@@ -535,7 +535,10 @@ export default function ServiceHub() {
 
   const virtualItems = rowVirtualizer.getVirtualItems();
   const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
-  const paddingBottom = virtualItems.length > 0 ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? rowVirtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+      : 0;
 
   const renderSortArrow = (colName: string) => {
     const isActive = sortCol === colName;
@@ -544,7 +547,9 @@ export default function ServiceHub() {
     if (isActive && !isDefault) {
       return <ArrowUpDown className="w-3.5 h-3.5 text-primary" />;
     }
-    return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />;
+    return (
+      <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover/th:opacity-50 transition-opacity" />
+    );
   };
 
   return (
@@ -572,45 +577,49 @@ export default function ServiceHub() {
               onClick={() => openModal('addService')}
               className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" /> <span className="shrink-0">Add Service</span>
+              <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" />{' '}
+              <span className="shrink-0">Add Service</span>
             </button>
             <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
               >
-                <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" /> <span className="shrink-0">Export</span>
+                <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" />{' '}
+                <span className="shrink-0">Export</span>
                 <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
               </button>
               <AnimatePresence>
-              {showExportMenu && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
-                >
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Services', services, 'All_Services');
-                    }}
+                {showExportMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
                   >
-                    <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export All
-                  </div>
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Services', tableData, 'Filtered_Services');
-                    }}
-                  >
-                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" /> Export Filtered View
-                  </div>
-                </motion.div>
-              )}
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Services', services, 'All_Services');
+                      }}
+                    >
+                      <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export All
+                    </div>
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Services', tableData, 'Filtered_Services');
+                      }}
+                    >
+                      <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export Filtered View
+                    </div>
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>
@@ -621,128 +630,128 @@ export default function ServiceHub() {
           className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-2 scale-y-100'}`}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-6 py-2">
-          {/* Revenue Won This Year */}
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '50ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-center mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <TrendingUp className="w-4 h-4" />
+            {/* Revenue Won This Year */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '50ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+              <div className="flex justify-between items-center mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Revenue Won This Year
+                    <UITooltip content="Total value of won services this year">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Revenue Won This Year
-                  <UITooltip content="Total value of won services this year">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator
-              current={kpiData.revWonThisYear}
-              previous={kpiData.revWonLastYear}
-              prefix="$"
-              periodText="vs last year"
-            />
-          </motion.div>
+              <TrendIndicator
+                current={kpiData.revWonThisYear}
+                previous={kpiData.revWonLastYear}
+                prefix="$"
+                periodText="vs last year"
+              />
+            </motion.div>
 
-          {/* Revenue Won This Quarter */}
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '150ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 group-hover:bg-lime-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-center mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <BarChart2 className="w-4 h-4" />
+            {/* Revenue Won This Quarter */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '150ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 group-hover:bg-lime-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+              <div className="flex justify-between items-center mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-lime-500/10 text-lime-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <BarChart2 className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Revenue Won This Quarter
+                    <UITooltip content="Total value of won services this quarter">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Revenue Won This Quarter
-                  <UITooltip content="Total value of won services this quarter">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator
-              current={kpiData.revWonThisQuarter}
-              previous={kpiData.revWonLastQuarter}
-              prefix="$"
-              periodText="vs last quarter"
-            />
-          </motion.div>
+              <TrendIndicator
+                current={kpiData.revWonThisQuarter}
+                previous={kpiData.revWonLastQuarter}
+                prefix="$"
+                periodText="vs last quarter"
+              />
+            </motion.div>
 
-          {/* Total Services Revenue */}
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '250ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/5 group-hover:bg-indigo-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-center mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <Database className="w-4 h-4" />
+            {/* Total Services Revenue */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '250ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/5 group-hover:bg-indigo-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+              <div className="flex justify-between items-center mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <Database className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Total Services Revenue
+                    <UITooltip content="Historical lifetime total of won services">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Total Services Revenue
-                  <UITooltip content="Historical lifetime total of won services">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
+              </div>
+              <div className="relative z-10 mt-auto pt-2">
+                <div className="text-3xl font-bold tracking-tight text-foreground">
+                  {formatCurrency(kpiData.totalServicesRev)}
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <div className="relative z-10 mt-auto pt-2">
-              <div className="text-3xl font-bold tracking-tight text-foreground">
-                {formatCurrency(kpiData.totalServicesRev)}
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Total Commission */}
-          <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
-            style={{ animationDelay: '350ms' }}
-          >
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-xl transition-colors duration-500"></div>
-            <div className="flex justify-between items-center mb-3 relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                  <DollarSign className="w-4 h-4" />
+            {/* Total Commission */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white/90 backdrop-blur-sm p-6 shadow-sm hover:shadow-md hover:border-primary transition-colors duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              style={{ animationDelay: '350ms' }}
+            >
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-xl transition-colors duration-500"></div>
+              <div className="flex justify-between items-center mb-3 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    Total Commission This Year
+                    <UITooltip content="Value of won commissions this year">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </div>
+                    </UITooltip>
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  Total Commission This Year
-                  <UITooltip content="Value of won commissions this year">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                    </div>
-                  </UITooltip>
-                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-            </div>
-            <TrendIndicator
-              current={kpiData.totalCommissionThisYear}
-              previous={kpiData.totalCommissionLastYear}
-              prefix="$"
-              periodText="vs last year"
-            />
-          </motion.div>
+              <TrendIndicator
+                current={kpiData.totalCommissionThisYear}
+                previous={kpiData.totalCommissionLastYear}
+                prefix="$"
+                periodText="vs last year"
+              />
+            </motion.div>
           </div>
         </div>
       </div>
@@ -966,7 +975,10 @@ export default function ServiceHub() {
                   <tbody className="divide-y divide-border text-sm relative">
                     {paddingTop > 0 && (
                       <tr>
-                        <td colSpan={activeTab === 'Included' ? 7 : 8} style={{ height: paddingTop, border: 0, padding: 0 }} />
+                        <td
+                          colSpan={activeTab === 'Included' ? 7 : 8}
+                          style={{ height: paddingTop, border: 0, padding: 0 }}
+                        />
                       </tr>
                     )}
                     {virtualItems.map((virtualRow) => {
@@ -993,7 +1005,10 @@ export default function ServiceHub() {
 
                     {paddingBottom > 0 && (
                       <tr>
-                        <td colSpan={activeTab === 'Included' ? 7 : 8} style={{ height: paddingBottom, border: 0, padding: 0 }} />
+                        <td
+                          colSpan={activeTab === 'Included' ? 7 : 8}
+                          style={{ height: paddingBottom, border: 0, padding: 0 }}
+                        />
                       </tr>
                     )}
                     {tableData.length === 0 && (

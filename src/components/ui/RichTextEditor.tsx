@@ -111,20 +111,28 @@ const MenuBar = ({ editor }: { editor: any }) => {
   );
 };
 
-export function RichTextEditor({ content, onChange, placeholder = 'Write an internal note or update...', disabled = false }: RichTextEditorProps) {
+export function RichTextEditor({
+  content,
+  onChange,
+  placeholder = 'Write an internal note or update...',
+  disabled = false,
+}: RichTextEditorProps) {
   const [localContent, setLocalContent] = useState(content);
 
-  const extensions = React.useMemo(() => [
-    StarterKit.configure({
-      link: false,
-    }),
-    Link.configure({
-      openOnClick: false,
-      HTMLAttributes: {
-        class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
-      },
-    }),
-  ], []);
+  const extensions = React.useMemo(
+    () => [
+      StarterKit.configure({
+        link: false,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-primary underline hover:text-primary/80 transition-colors cursor-pointer',
+        },
+      }),
+    ],
+    []
+  );
 
   const editor = useEditor({
     extensions,
@@ -137,7 +145,8 @@ export function RichTextEditor({ content, onChange, placeholder = 'Write an inte
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm prose-slate max-w-none w-full min-h-[80px] px-4 py-3 outline-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-li:p-0 leading-snug',
+        class:
+          'prose prose-sm prose-slate max-w-none w-full min-h-[80px] px-4 py-3 outline-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-li:p-0 leading-snug',
       },
     },
   });
@@ -150,13 +159,18 @@ export function RichTextEditor({ content, onChange, placeholder = 'Write an inte
   }, [content, editor]);
 
   return (
-    <div className={`flex flex-col w-full bg-transparent group/editor ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+    <div
+      className={`flex flex-col w-full bg-transparent group/editor ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+    >
       <MenuBar editor={editor} />
-      <div className="cursor-text min-h-[80px] relative" onClick={() => editor?.chain().focus().run()}>
+      <div
+        className="cursor-text min-h-[80px] relative"
+        onClick={() => editor?.chain().focus().run()}
+      >
         {editor && !editor.getText() && !editor.isActive('link') && (
-           <div className="absolute left-0 top-0 px-4 py-3 text-sm text-slate-300 pointer-events-none">
-             {placeholder}
-           </div>
+          <div className="absolute left-0 top-0 px-4 py-3 text-sm text-slate-300 pointer-events-none">
+            {placeholder}
+          </div>
         )}
         <EditorContent editor={editor} />
       </div>

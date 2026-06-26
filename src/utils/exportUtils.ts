@@ -144,7 +144,12 @@ export const universalExportCSV = (
   toast.success('Export Complete', `${filename} has been downloaded`);
 };
 
-export const exportFormToCSV = (formName: string, projectData: any, formData: any, template?: any) => {
+export const exportFormToCSV = (
+  formName: string,
+  projectData: any,
+  formData: any,
+  template?: any
+) => {
   const dataToExport = formData || {};
   let keys: string[] = [];
   const idToTitle: Record<string, string> = {};
@@ -166,67 +171,94 @@ export const exportFormToCSV = (formName: string, projectData: any, formData: an
       }
     });
   } else {
-    keys = Object.keys(dataToExport).filter(k => k !== 'submittedAt' && k !== 'updatedAt');
+    keys = Object.keys(dataToExport).filter((k) => k !== 'submittedAt' && k !== 'updatedAt');
   }
 
   if (keys.length === 0) {
     toast.error('No Data', 'There is no data to export.');
     return;
   }
-  
+
   const isChecklist = template?.type === 'checklist';
 
   // Rows output
   const rows = [];
   rows.push(['Project Name', escapeCSV(projectData?.name || 'Unknown Project')].join(','));
-  rows.push(['Submitted At', escapeCSV(dataToExport.submittedAt ? new Date(dataToExport.submittedAt).toLocaleDateString() : 'N/A')].join(','));
-  rows.push(['Updated At', escapeCSV(dataToExport.updatedAt ? new Date(dataToExport.updatedAt).toLocaleDateString() : 'N/A')].join(','));
+  rows.push(
+    [
+      'Submitted At',
+      escapeCSV(
+        dataToExport.submittedAt ? new Date(dataToExport.submittedAt).toLocaleDateString() : 'N/A'
+      ),
+    ].join(',')
+  );
+  rows.push(
+    [
+      'Updated At',
+      escapeCSV(
+        dataToExport.updatedAt ? new Date(dataToExport.updatedAt).toLocaleDateString() : 'N/A'
+      ),
+    ].join(',')
+  );
   rows.push(''); // blank row
-  
+
   if (isChecklist) {
     // Deliverables format
-    rows.push(['Deliverable', 'Status', 'Priority', 'Assigned To', 'Date', 'Client Note', 'Internal Note'].join(','));
-    
+    rows.push(
+      [
+        'Deliverable',
+        'Status',
+        'Priority',
+        'Assigned To',
+        'Date',
+        'Client Note',
+        'Internal Note',
+      ].join(',')
+    );
+
     // Add template items
-    keys.forEach(k => {
+    keys.forEach((k) => {
       const taskName = idToTitle[k] || k;
       const val = dataToExport[k] || {};
-      rows.push([
-        escapeCSV(taskName),
-        escapeCSV(val.status || 'Pending'),
-        escapeCSV(val.priority || 'Normal'),
-        escapeCSV(val.resource || ''),
-        escapeCSV(val.date ? new Date(val.date).toLocaleDateString() : ''),
-        escapeCSV(val.clientNote || ''),
-        escapeCSV(val.internalNote || '')
-      ].join(','));
+      rows.push(
+        [
+          escapeCSV(taskName),
+          escapeCSV(val.status || 'Pending'),
+          escapeCSV(val.priority || 'Normal'),
+          escapeCSV(val.resource || ''),
+          escapeCSV(val.date ? new Date(val.date).toLocaleDateString() : ''),
+          escapeCSV(val.clientNote || ''),
+          escapeCSV(val.internalNote || ''),
+        ].join(',')
+      );
     });
 
     // Add custom items if they exist
     if (dataToExport._customItems && Array.isArray(dataToExport._customItems)) {
       dataToExport._customItems.forEach((custom: any) => {
-        rows.push([
-          escapeCSV(custom.taskName || 'Custom Item'),
-          escapeCSV(custom.status || 'Pending'),
-          escapeCSV(custom.priority || 'Normal'),
-          escapeCSV(custom.resource || ''),
-          escapeCSV(custom.date ? new Date(custom.date).toLocaleDateString() : ''),
-          escapeCSV(custom.clientNote || ''),
-          escapeCSV(custom.internalNote || '')
-        ].join(','));
+        rows.push(
+          [
+            escapeCSV(custom.taskName || 'Custom Item'),
+            escapeCSV(custom.status || 'Pending'),
+            escapeCSV(custom.priority || 'Normal'),
+            escapeCSV(custom.resource || ''),
+            escapeCSV(custom.date ? new Date(custom.date).toLocaleDateString() : ''),
+            escapeCSV(custom.clientNote || ''),
+            escapeCSV(custom.internalNote || ''),
+          ].join(',')
+        );
       });
     }
-
   } else {
     // Standard form format
     rows.push(['Question', 'Response'].join(','));
-    keys.forEach(k => {
+    keys.forEach((k) => {
       const questionTitle = idToTitle[k] || k;
       let value = dataToExport[k];
       if (typeof value === 'boolean') {
         value = value ? 'Yes' : 'No';
       } else if (Array.isArray(value)) {
-        value = value.map(v => v === '__other__' ? (dataToExport[`${k}_other`] || 'Other') : v);
+        value = value.map((v) => (v === '__other__' ? dataToExport[`${k}_other`] || 'Other' : v));
       } else if (value === '__other__') {
         value = dataToExport[`${k}_other`] || 'Other';
       }
@@ -250,12 +282,22 @@ export const exportFormToCSV = (formName: string, projectData: any, formData: an
   toast.success('Export Complete', `${filename} has been downloaded`);
 };
 
-export const exportAllFormResponsesToCSV = (formName: string, formKey: string, projects: any[], isDeliverables = false, template?: any) => {
+export const exportAllFormResponsesToCSV = (
+  formName: string,
+  formKey: string,
+  projects: any[],
+  isDeliverables = false,
+  template?: any
+) => {
   const submissions: { projectName: string; data: any }[] = [];
-  projects.forEach(p => {
+  projects.forEach((p) => {
     const flag = 'has' + formKey.charAt(0).toUpperCase() + formKey.slice(1);
-    const data = isDeliverables ? p.deliverables : (formKey === 'onboardingCsat' ? p.health?.onboardingCsat : p.onboarding?.[formKey]);
-    
+    const data = isDeliverables
+      ? p.deliverables
+      : formKey === 'onboardingCsat'
+        ? p.health?.onboardingCsat
+        : p.onboarding?.[formKey];
+
     if (p[flag] || (data && Object.keys(data).length > 0)) {
       submissions.push({ projectName: p.name, data: data || {} });
     }
@@ -284,8 +326,8 @@ export const exportAllFormResponsesToCSV = (formName: string, formKey: string, p
       .map((f: any) => f.id);
   } else {
     const allKeys = new Set<string>();
-    submissions.forEach(sub => {
-      Object.keys(sub.data).forEach(k => {
+    submissions.forEach((sub) => {
+      Object.keys(sub.data).forEach((k) => {
         if (k !== 'submittedAt' && k !== 'updatedAt') {
           allKeys.add(k);
         }
@@ -295,27 +337,48 @@ export const exportAllFormResponsesToCSV = (formName: string, formKey: string, p
   }
 
   // Headers (Row 1): 'Field', Proj A, Proj B, Proj C...
-  const headers = ['Field', ...submissions.map(sub => sub.projectName || 'Unknown Project')];
+  const headers = ['Field', ...submissions.map((sub) => sub.projectName || 'Unknown Project')];
 
   const rows = [];
-  rows.push(['Submitted At', ...submissions.map(sub => sub.data.submittedAt ? new Date(sub.data.submittedAt).toLocaleDateString() : 'N/A')].map(escapeCSV).join(','));
-  rows.push(['Updated At', ...submissions.map(sub => sub.data.updatedAt ? new Date(sub.data.updatedAt).toLocaleDateString() : 'N/A')].map(escapeCSV).join(','));
-  
+  rows.push(
+    [
+      'Submitted At',
+      ...submissions.map((sub) =>
+        sub.data.submittedAt ? new Date(sub.data.submittedAt).toLocaleDateString() : 'N/A'
+      ),
+    ]
+      .map(escapeCSV)
+      .join(',')
+  );
+  rows.push(
+    [
+      'Updated At',
+      ...submissions.map((sub) =>
+        sub.data.updatedAt ? new Date(sub.data.updatedAt).toLocaleDateString() : 'N/A'
+      ),
+    ]
+      .map(escapeCSV)
+      .join(',')
+  );
+
   rows.push(''); // Blank row separator
-  
-  questionKeys.forEach(k => {
+
+  questionKeys.forEach((k) => {
     const questionTitle = idToTitle[k] || k;
-    const rowData = [questionTitle, ...submissions.map(sub => {
-      let value = sub.data[k];
-      if (typeof value === 'boolean') {
-        value = value ? 'Yes' : 'No';
-      } else if (Array.isArray(value)) {
-        value = value.map(v => v === '__other__' ? (sub.data[`${k}_other`] || 'Other') : v);
-      } else if (value === '__other__') {
-        value = sub.data[`${k}_other`] || 'Other';
-      }
-      return value || '';
-    })];
+    const rowData = [
+      questionTitle,
+      ...submissions.map((sub) => {
+        let value = sub.data[k];
+        if (typeof value === 'boolean') {
+          value = value ? 'Yes' : 'No';
+        } else if (Array.isArray(value)) {
+          value = value.map((v) => (v === '__other__' ? sub.data[`${k}_other`] || 'Other' : v));
+        } else if (value === '__other__') {
+          value = sub.data[`${k}_other`] || 'Other';
+        }
+        return value || '';
+      }),
+    ];
     rows.push(rowData.map(escapeCSV).join(','));
   });
 

@@ -23,7 +23,7 @@ export function TimelineTab({
   onSaveNotes,
   emptyStateMessage = 'No activity recorded yet.',
 }: TimelineTabProps) {
-  const user = useAppStore(state => state.user);
+  const user = useAppStore((state) => state.user);
   const [newNote, setNewNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [localNotes, setLocalNotes] = useState<Note[]>([]);
@@ -67,23 +67,28 @@ export function TimelineTab({
   const hasContent = newNote.replace(/<[^>]*>/g, '').trim().length > 0;
 
   const groupedNotes = useMemo(() => {
-    const filtered = localNotes.filter(note => {
-      const isSystem = note.isSystem || note.author === 'System' || note.text.includes(' changed from ') || note.text.includes(' updated from ') || note.text.includes(' created ');
+    const filtered = localNotes.filter((note) => {
+      const isSystem =
+        note.isSystem ||
+        note.author === 'System' ||
+        note.text.includes(' changed from ') ||
+        note.text.includes(' updated from ') ||
+        note.text.includes(' created ');
       if (filter === 'Notes') return !isSystem;
       if (filter === 'Logs') return isSystem;
       return true;
     });
 
     const groups: { [key: string]: Note[] } = {};
-    filtered.forEach(note => {
+    filtered.forEach((note) => {
       const d = new Date(note.timestamp);
       const now = new Date();
       // Reset times to compare strictly by dates
       const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
       const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diffTime = Math.abs(nowOnly.getTime() - dateOnly.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
       let header = '';
       if (diffDays === 0) header = 'Today';
       else if (diffDays === 1) header = 'Yesterday';
@@ -100,7 +105,6 @@ export function TimelineTab({
     <div className="flex flex-col h-full mx-auto w-full max-w-3xl">
       {/* Header with Smart Composer and Filters */}
       <div className="pt-2 pb-6 border-b border-slate-100/60 mb-6">
-        
         {/* Smart Composer */}
         <div className="mb-4">
           <AnimatePresence initial={false} mode="wait">
@@ -126,11 +130,7 @@ export function TimelineTab({
                 transition={{ duration: 0.2 }}
                 className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-primary/20 flex flex-col overflow-hidden"
               >
-                <RichTextEditor
-                  content={newNote}
-                  onChange={setNewNote}
-                  disabled={isSaving}
-                />
+                <RichTextEditor content={newNote} onChange={setNewNote} disabled={isSaving} />
                 <div className="flex justify-between items-center px-4 py-3 bg-slate-50 border-t border-slate-100">
                   <button
                     onClick={() => {
@@ -203,13 +203,20 @@ export function TimelineTab({
 
                 <div className="space-y-5">
                   {groupedNotes[dateHeader].map((note) => {
-                    const isSystem = note.isSystem || note.author === 'System' || note.text.includes(' changed from ') || note.text.includes(' updated from ') || note.text.includes(' created ');
+                    const isSystem =
+                      note.isSystem ||
+                      note.author === 'System' ||
+                      note.text.includes(' changed from ') ||
+                      note.text.includes(' updated from ') ||
+                      note.text.includes(' created ');
                     const parsedDate = new Date(note.timestamp);
-                    const timeString = isNaN(parsedDate.getTime()) ? '' : parsedDate.toLocaleString([], { hour: 'numeric', minute: '2-digit' });
+                    const timeString = isNaN(parsedDate.getTime())
+                      ? ''
+                      : parsedDate.toLocaleString([], { hour: 'numeric', minute: '2-digit' });
 
                     return (
-                      <motion.div 
-                        key={note.id} 
+                      <motion.div
+                        key={note.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="relative group pl-8"
@@ -217,10 +224,16 @@ export function TimelineTab({
                         {/* Timeline Node Icon */}
                         <div
                           className={`absolute -left-[15px] top-1 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center shadow-sm z-10 transition-colors ${
-                            isSystem ? 'bg-slate-50 text-slate-400 group-hover:text-slate-600' : 'bg-blue-50 text-blue-600'
+                            isSystem
+                              ? 'bg-slate-50 text-slate-400 group-hover:text-slate-600'
+                              : 'bg-blue-50 text-blue-600'
                           }`}
                         >
-                          {isSystem ? <Activity className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
+                          {isSystem ? (
+                            <Activity className="w-3.5 h-3.5" />
+                          ) : (
+                            <User className="w-3.5 h-3.5" />
+                          )}
                         </div>
 
                         {/* Content Body */}
@@ -231,22 +244,28 @@ export function TimelineTab({
                               <span className="font-bold text-slate-700 mr-1.5">{note.author}</span>
                               {note.text}
                             </p>
-                            <span className="text-[11px] font-semibold text-slate-400 mt-1 block">{timeString}</span>
+                            <span className="text-[11px] font-semibold text-slate-400 mt-1 block">
+                              {timeString}
+                            </span>
                           </div>
                         ) : (
                           // Elevated Human Note Card
-                          <motion.div 
+                          <motion.div
                             whileHover={{ y: -2 }}
                             className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 hover:border-slate-300 hover:shadow-md transition-all"
                           >
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-[13px] font-bold text-slate-800 flex items-center gap-2">
                                 {note.author}
-                                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-600 text-[11px] font-semibold">Note</span>
+                                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-600 text-[11px] font-semibold">
+                                  Note
+                                </span>
                               </span>
-                              <span className="text-[11px] font-semibold text-slate-400">{timeString}</span>
+                              <span className="text-[11px] font-semibold text-slate-400">
+                                {timeString}
+                              </span>
                             </div>
-                            
+
                             {note.text.includes('<p>') ? (
                               <div
                                 className="prose prose-sm prose-slate max-w-none text-slate-700 leading-relaxed"

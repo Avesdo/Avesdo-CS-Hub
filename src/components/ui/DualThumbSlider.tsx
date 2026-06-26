@@ -16,7 +16,7 @@ export function DualThumbSlider({
   max = 100,
   value,
   onChange,
-  className
+  className,
 }: DualThumbSliderProps) {
   const [warningVal, setWarningVal] = useState(value.warning);
   const [healthyVal, setHealthyVal] = useState(value.healthy);
@@ -47,19 +47,19 @@ export function DualThumbSlider({
   );
 
   return (
-    <div className={cn("relative w-full h-8 flex items-center", className)}>
+    <div className={cn('relative w-full h-8 flex items-center', className)}>
       {/* Background Track with 3 colored zones */}
       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-2 rounded-full overflow-hidden flex">
-        <div 
-          className="bg-rose-500 h-full transition-all duration-200 ease-out" 
+        <div
+          className="bg-rose-500 h-full transition-all duration-200 ease-out"
           style={{ width: `${getPercent(warningVal)}%` }}
         />
-        <div 
-          className="bg-amber-400 h-full transition-all duration-200 ease-out" 
+        <div
+          className="bg-amber-400 h-full transition-all duration-200 ease-out"
           style={{ width: `${getPercent(healthyVal) - getPercent(warningVal)}%` }}
         />
-        <div 
-          className="bg-emerald-500 h-full transition-all duration-200 ease-out" 
+        <div
+          className="bg-emerald-500 h-full transition-all duration-200 ease-out"
           style={{ width: `${100 - getPercent(healthyVal)}%` }}
         />
       </div>
@@ -74,7 +74,7 @@ export function DualThumbSlider({
         className="thumb thumb--left absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-10"
         style={{ '--thumb-color': '#f43f5e' } as React.CSSProperties}
       />
-      
+
       <input
         type="range"
         min={min}
@@ -85,7 +85,7 @@ export function DualThumbSlider({
         className="thumb thumb--right absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-20"
         style={{ '--thumb-color': '#10b981' } as React.CSSProperties}
       />
-      
+
       <style>{`
         .thumb::-webkit-slider-thumb {
           -webkit-appearance: none;

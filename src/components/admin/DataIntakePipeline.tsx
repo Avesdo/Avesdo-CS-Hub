@@ -2,13 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { getPendingAliases, resolveAlias } from '../../api/dbService';
 import { SearchableSelect } from '../ui/SearchableSelect';
-import { CheckCircle2, Building2, Home, Briefcase, ChevronRight, AlertCircle, X, Check } from 'lucide-react';
+import {
+  CheckCircle2,
+  Building2,
+  Home,
+  Briefcase,
+  ChevronRight,
+  AlertCircle,
+  X,
+  Check,
+} from 'lucide-react';
 import { toast } from '../../utils/toast';
 
 export function DataIntakePipeline() {
-  const projects = useAppStore(state => state.projects);
-  const clients = useAppStore(state => state.clients);
-  const services = useAppStore(state => state.services);
+  const projects = useAppStore((state) => state.projects);
+  const clients = useAppStore((state) => state.clients);
+  const services = useAppStore((state) => state.services);
 
   const [pendingAliases, setPendingAliases] = useState<any[]>([]);
   const [loadingAliases, setLoadingAliases] = useState(true);
@@ -79,7 +88,7 @@ export function DataIntakePipeline() {
     <div className="space-y-4">
       {pendingAliases.map((alias) => {
         const isCorrecting = correctingAliasId === alias.id;
-        
+
         return (
           <div
             key={alias.id}
@@ -89,13 +98,21 @@ export function DataIntakePipeline() {
               <div className="flex items-start gap-4">
                 <div
                   className={`mt-0.5 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 
-                    ${alias.type === 'client' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 
-                      alias.type === 'project' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 
-                      'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}
+                    ${
+                      alias.type === 'client'
+                        ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                        : alias.type === 'project'
+                          ? 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                          : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                    }`}
                 >
-                  {alias.type === 'client' ? <Building2 className="w-5 h-5" /> : 
-                   alias.type === 'project' ? <Home className="w-5 h-5" /> : 
-                   <Briefcase className="w-5 h-5" />}
+                  {alias.type === 'client' ? (
+                    <Building2 className="w-5 h-5" />
+                  ) : alias.type === 'project' ? (
+                    <Home className="w-5 h-5" />
+                  ) : (
+                    <Briefcase className="w-5 h-5" />
+                  )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -148,11 +165,20 @@ export function DataIntakePipeline() {
                       <SearchableSelect
                         options={
                           alias.type === 'client'
-                            ? clients.map((c) => ({ value: c.clientId || c.id, label: c.companyName || 'Unnamed Client' }))
+                            ? clients.map((c) => ({
+                                value: c.clientId || c.id,
+                                label: c.companyName || 'Unnamed Client',
+                              }))
                             : alias.type === 'project'
-                              ? projects.map((p) => ({ value: p.id, label: p.name || 'Unnamed Project' }))
+                              ? projects.map((p) => ({
+                                  value: p.id,
+                                  label: p.name || 'Unnamed Project',
+                                }))
                               : alias.type === 'service'
-                                ? services.map((s) => ({ value: s.id, label: s.name || 'Unnamed Service' }))
+                                ? services.map((s) => ({
+                                    value: s.id,
+                                    label: s.name || 'Unnamed Service',
+                                  }))
                                 : []
                         }
                         value={correctionTargetId}
