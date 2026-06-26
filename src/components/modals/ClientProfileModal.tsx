@@ -29,7 +29,7 @@ import {
 } from '../../api/dbService';
 
 // Tabs
-import ClientHealthTab from './clientProfile/ClientHealthTab';
+import { ClientHealthTab } from './clientProfile/ClientHealthTab';
 import ClientProjectsTab from './clientProfile/ClientProjectsTab';
 import ClientServicesTab from './clientProfile/ClientServicesTab';
 import { TimelineTab } from '../ui/TimelineTab';

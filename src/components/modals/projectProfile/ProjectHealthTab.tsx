@@ -541,7 +541,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               </span>
               <UITooltip
                 content={
-                  <span className="text-xs">Measures frequency & volume of core workflows.</span>
+                  <span className="text-xs">Tracks project utilization via page views.</span>
                 }
               >
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
@@ -587,7 +587,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               <UITooltip
                 content={
                   <span className="text-xs">
-                    Tracks volume of unique, authenticated active users.
+                    Tracks frequency of individual user access.
                   </span>
                 }
               >
@@ -602,7 +602,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
                 {project?.activeUserCount
-                  ? `${project.activeUserCount.toLocaleString()} active users`
+                  ? `${project.activeUserCount.toLocaleString()} users  •  ${project.avgSessions || 0} avg. sessions/user`
                   : 'Active users unavailable'}
               </span>
             </div>
@@ -635,7 +635,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               </span>
               <UITooltip
                 content={
-                  <span className="text-xs">Percentage of available features actively used.</span>
+                  <span className="text-xs">Ratio of active features versus all available features.</span>
                 }
               >
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
@@ -648,7 +648,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 {fPct}%
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {fLen} of {fTotal} active features
+                {fLen} of {fTotal} features active
               </span>
             </div>
           </div>
@@ -680,7 +680,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               </span>
               <UITooltip
                 content={
-                  <span className="text-xs">Evaluates payment consistency and invoice status.</span>
+                  <span className="text-xs">Overall invoice payment health.</span>
                 }
               >
                 <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
@@ -693,9 +693,9 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 {healthResult.financial}
               </span>
               <span
-                className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${project?.invoiceStatus === 'Suspended' ? 'text-red-500' : 'text-slate-500'}`}
+                className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${project?.status === 'Suspended' ? 'text-red-500' : 'text-slate-500'}`}
               >
-                Invoice status: {project?.invoiceStatus || 'Current'}
+                {project?.status === 'Suspended' ? 'Invoice status: Overdue' : 'Invoice status: Current'}
               </span>
             </div>
           </div>
@@ -730,7 +730,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               <UITooltip
                 content={
                   <span className="text-xs">
-                    Direct client sentiment scoring for implementation.
+                    Onboarding CSAT metric.
                   </span>
                 }
               >
@@ -745,22 +745,15 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               </span>
               <div className="flex items-center justify-between mt-1 min-h-[20px]">
                 <span className="text-[11px] font-medium text-slate-500">
-                  Onboarding CSAT:{' '}
                   {project?.health?.onboardingCsat
-                    ? `${project.health.onboardingCsat.score || 'Logged'}`
+                    ? 'Source: Onboarding CSAT'
                     : project?.onboardingCsat
-                      ? 'Legacy'
-                      : 'None'}
+                      ? 'Source: Legacy Data'
+                      : project?.status === 'Onboarding'
+                        ? 'Status: Awaiting CSAT'
+                        : 'No Survey Recorded'}
                 </span>
-                {project?.health?.onboardingCsat ? (
-                  <button
-                    onClick={() => setShowCsatModal(true)}
-                    className="opacity-0 group-hover:opacity-100 text-[10px] font-medium text-slate-400 hover:text-primary hover:bg-primary/5 px-1.5 py-0.5 rounded-md transition-all flex items-center gap-1"
-                  >
-                    <Eye className="w-3 h-3" />
-                    View
-                  </button>
-                ) : project?.onboardingCsat ? (
+                {(project?.health?.onboardingCsat || project?.onboardingCsat) ? (
                   <button
                     onClick={() => setShowCsatModal(true)}
                     className="opacity-0 group-hover:opacity-100 text-[10px] font-medium text-slate-400 hover:text-primary hover:bg-primary/5 px-1.5 py-0.5 rounded-md transition-all flex items-center gap-1"

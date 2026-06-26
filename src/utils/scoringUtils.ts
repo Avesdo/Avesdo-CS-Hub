@@ -20,7 +20,9 @@ export interface ClientHealthResult {
   details: {
     invoiceStatus: string;
     avgProjectCsat: number | 'N/A';
-    supportCsat: number | 'N/A';
+    supportCsat: any | 'N/A';
+    activeUserCount: number;
+    avgSessions: number;
   };
 }
 
@@ -115,25 +117,13 @@ export function calculateProjectHealth(
 
   // Financial Standing
   let financial = 100; // Default to Current
-  const invoiceStatus = project.invoiceStatus || '';
   if (
     project.projectStatus === 'Suspended' ||
-    invoiceStatus === 'Suspend' ||
-    invoiceStatus === 'Suspended'
+    project.status === 'Suspended' ||
+    project.invoiceStatus === 'Suspend' ||
+    project.invoiceStatus === 'Suspended'
   ) {
     financial = 0;
-  } else if (
-    project.daysOutstanding >= 60 ||
-    invoiceStatus === 'Overdue 60+ Days' ||
-    invoiceStatus === 'Overdue 60+'
-  ) {
-    financial = 0;
-  } else if (
-    project.daysOutstanding >= 30 ||
-    invoiceStatus === 'Overdue 30 Days' ||
-    invoiceStatus === 'Overdue 30'
-  ) {
-    financial = 50;
   }
 
   // Math - Weights
@@ -211,6 +201,8 @@ export function calculateClientHealth(
       invoiceStatus: 'Current',
       avgProjectCsat: 'N/A',
       supportCsat: 'N/A',
+      activeUserCount: 0,
+      avgSessions: 0,
     },
   };
 
@@ -242,6 +234,9 @@ export function calculateClientHealth(
   let totalProjectCsat = 0;
   let totalProjectFinancial = 0;
   let projectCsatCount = 0;
+  let totalActiveUserCount = 0;
+  let totalAvgSessions = 0;
+  let sessionProjectCount = 0;
 
   activeProjects.forEach((p) => {
     const pHealth = calculateProjectHealth(p, settings);
@@ -249,6 +244,15 @@ export function calculateClientHealth(
     totalUserVol += pHealth.userVol;
     totalFeatAdoption += pHealth.featAdoption;
     totalProjectFinancial += pHealth.financial;
+    
+    if (typeof p.activeUserCount === 'number') {
+      totalActiveUserCount += p.activeUserCount;
+    }
+    if (typeof p.avgSessions === 'number') {
+      totalAvgSessions += p.avgSessions;
+      sessionProjectCount++;
+    }
+
     if (typeof pHealth.csat === 'number') {
       totalProjectCsat += pHealth.csat;
       projectCsatCount++;
@@ -264,7 +268,16 @@ export function calculateClientHealth(
   if (hasSuspended) financial = 0;
 
   const avgProjectCsat = projectCsatCount > 0 ? totalProjectCsat / projectCsatCount : 'N/A';
-  const supportCsat = typeof client.supportCsat === 'number' ? client.supportCsat : 'N/A';
+  const supportCsatData = client.supportCsat;
+  let supportCsat: number | 'N/A' = 'N/A';
+
+  if (supportCsatData && typeof supportCsatData === 'object' && typeof supportCsatData.score === 'number') {
+    supportCsat = supportCsatData.score;
+  } else if (typeof supportCsatData === 'number') {
+    supportCsat = supportCsatData;
+  } else if (typeof client.clientCsat === 'number') {
+    supportCsat = client.clientCsat;
+  }
 
   let csat: number | 'N/A' = 'N/A';
   if (avgProjectCsat !== 'N/A' && supportCsat !== 'N/A') {
@@ -323,7 +336,9 @@ export function calculateClientHealth(
     details: {
       invoiceStatus: client.invoiceStatus || 'Current',
       avgProjectCsat,
-      supportCsat,
+      supportCsat: supportCsatData !== undefined ? supportCsatData : supportCsat,
+      activeUserCount: totalActiveUserCount,
+      avgSessions: sessionProjectCount > 0 ? Math.round((totalAvgSessions / sessionProjectCount) * 10) / 10 : 0,
     },
   };
 }

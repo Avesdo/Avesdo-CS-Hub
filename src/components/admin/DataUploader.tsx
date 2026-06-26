@@ -208,17 +208,25 @@ export function DataUploader() {
             else if (distinctFeatures >= 2) opActivityScore += 35;
             else if (distinctFeatures >= 1) opActivityScore += 15;
 
+            if (totalPageViews >= 200) opActivityScore += 50;
+            else if (totalPageViews >= 100) opActivityScore += 35;
+            else if (totalPageViews >= 25) opActivityScore += 15;
+
+            const avgSessions = parseFloat(avgSessionsPerUser.toFixed(1));
+
             if (
               targetProject.userVol !== userVolScore ||
               targetProject.opActivity !== opActivityScore ||
               targetProject.activeUserCount !== activeUsersCount ||
-              targetProject.eventCount !== totalPageViews
+              targetProject.eventCount !== totalPageViews ||
+              targetProject.avgSessions !== avgSessions
             ) {
               await updateDoc(doc(db, 'projects', targetProject.id), {
                 userVol: userVolScore,
                 opActivity: opActivityScore,
                 activeUserCount: activeUsersCount,
                 eventCount: totalPageViews,
+                avgSessions: avgSessions,
               });
               updateCount++;
             }
@@ -241,61 +249,99 @@ export function DataUploader() {
 
       // 2. Process Satisfaction Report
       if (satisfactionFile.parsedData) {
+        const aggregatedCsat = new Map<string, any>();
+
         for (const row of satisfactionFile.parsedData) {
           const feedbackReceived = parseInt(row['Feedback Received'], 10) || 0;
           if (feedbackReceived > 0) {
             const rawName = row['Customer Name'] || 'Unknown Customer';
             const happy = parseInt(row['Happy'], 10) || 0;
-            const csat = Math.round((happy / feedbackReceived) * 100);
+            const neutral = parseInt(row['Neutral'] || row['Passive'], 10) || 0;
+            const unhappy = parseInt(row['Unhappy'] || row['Detractor'], 10) || 0;
 
-            let targetClient = clients.find(
-              (c) => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase()
+            if (!aggregatedCsat.has(rawName)) {
+              aggregatedCsat.set(rawName, { feedback: 0, happy: 0, neutral: 0, unhappy: 0 });
+            }
+            const existing = aggregatedCsat.get(rawName);
+            existing.feedback += feedbackReceived;
+            existing.happy += happy;
+            existing.neutral += neutral;
+            existing.unhappy += unhappy;
+          }
+        }
+
+        for (const [rawName, data] of aggregatedCsat.entries()) {
+          const csat = Math.round((data.happy / data.feedback) * 100);
+          
+          let targetClient = clients.find(
+            (c) => c.companyName && c.companyName.toLowerCase() === rawName.toLowerCase()
+          );
+          if (!targetClient) {
+            const aliasMatch = aliases.find(
+              (a: any) =>
+                a.rawName === rawName &&
+                (a.status === 'resolved' || a.status === 'verified') &&
+                a.type === 'client'
             );
-            if (!targetClient) {
-              const aliasMatch = aliases.find(
-                (a: any) =>
-                  a.rawName === rawName &&
-                  (a.status === 'resolved' || a.status === 'verified') &&
-                  a.type === 'client'
+            if (aliasMatch) {
+              targetClient = clients.find(
+                (c) => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId
               );
-              if (aliasMatch) {
-                targetClient = clients.find(
-                  (c) => c.clientId === aliasMatch.targetId || c.id === aliasMatch.targetId
-                );
-                if (targetClient) {
-                  autoProcessedMap.set(aliasMatch.id, {
-                    id: aliasMatch.id,
-                    type: 'client',
-                    rawName: aliasMatch.rawName,
-                    targetId: aliasMatch.targetId,
-                    targetName: targetClient.companyName || targetClient.name,
-                    contextName: aliasMatch.contextName,
-                    timestamp: new Date().getTime(),
-                  });
-                }
+              if (targetClient) {
+                autoProcessedMap.set(aliasMatch.id, {
+                  id: aliasMatch.id,
+                  type: 'client',
+                  rawName: aliasMatch.rawName,
+                  targetId: aliasMatch.targetId,
+                  targetName: targetClient.companyName || targetClient.name,
+                  contextName: aliasMatch.contextName,
+                  timestamp: new Date().getTime(),
+                });
+              }
+            }
+          }
+
+          if (targetClient) {
+            const supportCsatObj = {
+              score: csat,
+              totalUsers: data.feedback,
+              promoters: data.happy,
+              passives: data.neutral,
+              detractors: data.unhappy
+            };
+            
+            // Compare existing to save writes
+            const existingObj = targetClient.supportCsat;
+            let needsUpdate = false;
+            if (!existingObj) needsUpdate = true;
+            else {
+              if (existingObj.score !== supportCsatObj.score || 
+                  existingObj.totalUsers !== supportCsatObj.totalUsers ||
+                  existingObj.promoters !== supportCsatObj.promoters ||
+                  existingObj.passives !== supportCsatObj.passives ||
+                  existingObj.detractors !== supportCsatObj.detractors) {
+                needsUpdate = true;
               }
             }
 
-            if (targetClient) {
-              if (targetClient.clientCsat !== csat) {
-                await updateDoc(doc(db, 'clients', targetClient.clientId || targetClient.id), {
-                  clientCsat: csat,
-                });
-                updateCount++;
-              }
-            } else {
-              const aliasExists = aliases.some((a: any) => a.rawName === rawName);
-              if (!aliasExists) {
-                const newAliasRef = doc(collection(db, 'aliases'));
-                batch.set(newAliasRef, {
-                  type: 'client',
-                  rawName: rawName,
-                  targetId: '',
-                  status: 'pending_approval',
-                  contextName: 'Satisfaction Report',
-                });
-                aliasesAdded++;
-              }
+            if (needsUpdate) {
+              await updateDoc(doc(db, 'clients', targetClient.clientId || targetClient.id), {
+                supportCsat: supportCsatObj,
+              });
+              updateCount++;
+            }
+          } else {
+            const aliasExists = aliases.some((a: any) => a.rawName === rawName);
+            if (!aliasExists) {
+              const newAliasRef = doc(collection(db, 'aliases'));
+              batch.set(newAliasRef, {
+                type: 'client',
+                rawName: rawName,
+                targetId: '',
+                status: 'pending_approval',
+                contextName: 'Satisfaction Report',
+              });
+              aliasesAdded++;
             }
           }
         }

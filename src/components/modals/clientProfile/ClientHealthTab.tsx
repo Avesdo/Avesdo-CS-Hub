@@ -36,20 +36,25 @@ import {
   Tooltip,
   Filler,
 } from 'chart.js';
+import ClientCsatBreakdownModal from './ClientCsatBreakdownModal';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
 interface ClientHealthTabProps {
   client: any;
+  healthResult?: any;
+  projects?: any[];
 }
 
-export default React.memo(function ClientHealthTab({ client }: ClientHealthTabProps) {
+export const ClientHealthTab = React.memo(({ client, healthResult: propsHealthResult, projects: propsProjects }: ClientHealthTabProps) => {
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [showCsatModal, setShowCsatModal] = useState(false);
   const [filter, setFilter] = useState<'30' | '90' | '365' | 'all'>('30');
 
   const settings = useAppStore((state) => state.settings);
-  const projects = useAppStore((state) => state.projects);
+  const storeProjects = useAppStore((state) => state.projects);
+  const projects = propsProjects || storeProjects;
 
   // Fetch History
   useEffect(() => {
@@ -101,7 +106,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
     return finalArray;
   }, [history, filter]);
 
-  const healthResult = calculateClientHealth(client, projects, settings);
+  const healthResult = propsHealthResult || calculateClientHealth(client, projects, settings);
   const fPct = healthResult.featAdoption;
   const opVal = healthResult.opActivity;
   const usrVal = healthResult.userVol;
@@ -474,7 +479,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <UITooltip
                 content={
                   <span className="text-xs">
-                    Aggregated volume of core platform events and workflows across active projects.
+                    Average project utilization via page views across active projects.
                   </span>
                 }
               >
@@ -519,8 +524,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <UITooltip
                 content={
                   <span className="text-xs">
-                    The average volume of unique users successfully logging in across the client's
-                    project portfolio.
+                    Average frequency of individual user access across active projects.
                   </span>
                 }
               >
@@ -534,7 +538,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 {usrVal}
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                Average active user score
+                {(healthResult as any).details?.activeUserCount || 0} total users  •  {(healthResult as any).details?.avgSessions || 0} avg. sessions/user
               </span>
             </div>
           </div>
@@ -567,8 +571,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <UITooltip
                 content={
                   <span className="text-xs">
-                    The average breadth of platform features and modules toggled on across all
-                    active projects.
+                    Average ratio of active features versus available features across projects.
                   </span>
                 }
               >
@@ -582,7 +585,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 {fPct}%
               </span>
               <span className="text-[11px] font-medium text-slate-500 mt-1">
-                Average adoption score
+                Average adoption across projects
               </span>
             </div>
           </div>
@@ -615,7 +618,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <UITooltip
                 content={
                   <span className="text-xs">
-                    Average financial health based on outstanding invoices across active projects.
+                    Overall invoice payment health across active projects.
                   </span>
                 }
               >
@@ -629,9 +632,9 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
                 {finVal}
               </span>
               <span
-                className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${(healthResult as any).details?.invoiceStatus === 'Overdue 60+ Days' || (healthResult as any).details?.invoiceStatus === 'Suspended' ? 'text-red-500' : 'text-slate-500'}`}
+                className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${finVal === 0 ? 'text-red-500' : 'text-slate-500'}`}
               >
-                Invoice status: {(healthResult as any).details?.invoiceStatus || 'Current'}
+                {finVal === 0 ? 'Invoice status: Overdue' : 'Invoice status: Current'}
               </span>
             </div>
           </div>
@@ -664,8 +667,7 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               <UITooltip
                 content={
                   <span className="text-xs">
-                    The overall satisfaction and sentiment of the client, combining implementation
-                    feedback and ongoing support.
+                    Blended average of Onboarding and Support CSAT metrics.
                   </span>
                 }
               >
@@ -680,12 +682,22 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
               </span>
               <div className="flex items-center justify-between mt-1 min-h-[20px]">
                 <span className="text-[11px] font-medium text-slate-500">
-                  OB:{' '}
-                  {(healthResult as any).details?.avgProjectCsat !== 'N/A'
+                  Onboarding: {(healthResult as any).details?.avgProjectCsat !== 'N/A'
                     ? Math.round((healthResult as any).details.avgProjectCsat as number)
                     : 'N/A'}{' '}
-                  | Sup: {(healthResult as any).details?.supportCsat}
+                  • Support: {(healthResult as any).details?.supportCsat !== 'N/A' && (healthResult as any).details?.supportCsat !== undefined
+                    ? Math.round(typeof (healthResult as any).details.supportCsat === 'object' ? (healthResult as any).details.supportCsat.score : (healthResult as any).details.supportCsat)
+                    : 'N/A'}
                 </span>
+                {((healthResult as any).details?.supportCsat !== 'N/A' && (healthResult as any).details?.supportCsat !== undefined) || ((healthResult as any).details?.avgProjectCsat !== 'N/A' && (healthResult as any).details?.avgProjectCsat !== undefined) ? (
+                  <button
+                    onClick={() => setShowCsatModal(true)}
+                    className="opacity-0 group-hover:opacity-100 text-[10px] font-medium text-slate-400 hover:text-primary hover:bg-primary/5 px-1.5 py-0.5 rounded-md transition-all flex items-center gap-1"
+                  >
+                    <Eye className="w-3 h-3" />
+                    View
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>
@@ -790,6 +802,10 @@ export default React.memo(function ClientHealthTab({ client }: ClientHealthTabPr
           </div>
         )}
       </div>
+
+      {showCsatModal && (
+        <ClientCsatBreakdownModal client={client} healthResult={healthResult} projects={projects} onClose={() => setShowCsatModal(false)} />
+      )}
     </div>
   );
 });
