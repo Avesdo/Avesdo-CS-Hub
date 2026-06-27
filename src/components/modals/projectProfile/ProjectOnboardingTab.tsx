@@ -382,14 +382,16 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             <div className="flex flex-col min-w-0">
               <span className="text-[13px] font-bold text-slate-800">Client Portal Link</span>
               <span className="text-[12px] font-medium text-slate-500 truncate">
-                {window.location.origin}/portal/{project?.id}
+                {window.location.origin}/portal/{project?.slug || project?.id}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-4">
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/portal/${project?.id}`);
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/portal/${project?.slug || project?.id}`
+                );
                 toast.success('Portal Link copied to clipboard');
               }}
               className="p-1.5 hover:bg-slate-200 text-slate-500 hover:text-slate-700 rounded-md transition-colors"
@@ -398,7 +400,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
               <Copy className="w-4 h-4" />
             </button>
             <a
-              href={`${window.location.origin}/portal/${project?.id}`}
+              href={`${window.location.origin}/portal/${project?.slug || project?.id}`}
               target="_blank"
               rel="noreferrer"
               className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg font-semibold text-[12px] transition-colors shadow-sm"

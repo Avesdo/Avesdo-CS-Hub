@@ -21,10 +21,11 @@ export interface ClientHealthResult {
     invoiceStatus: string;
     avgProjectCsat: number | 'N/A';
     supportCsat: any | 'N/A';
-    activeUserCount: number;
     avgSessions: number;
+    activeUserCount: number;
     avgDistinctFeatures: number;
     eventCount: number;
+    clientNps: any | 'N/A';
   };
 }
 
@@ -203,10 +204,11 @@ export function calculateClientHealth(
       invoiceStatus: 'Current',
       avgProjectCsat: 'N/A',
       supportCsat: 'N/A',
-      activeUserCount: 0,
       avgSessions: 0,
+      activeUserCount: 0,
       avgDistinctFeatures: 0,
       eventCount: 0,
+      clientNps: 'N/A',
     },
   };
 
@@ -251,7 +253,7 @@ export function calculateClientHealth(
     totalUserVol += pHealth.userVol;
     totalFeatAdoption += pHealth.featAdoption;
     totalProjectFinancial += pHealth.financial;
-    
+
     if (typeof p.activeUserCount === 'number') {
       totalActiveUserCount += p.activeUserCount;
     }
@@ -285,7 +287,11 @@ export function calculateClientHealth(
   const supportCsatData = client.supportCsat;
   let supportCsat: number | 'N/A' = 'N/A';
 
-  if (supportCsatData && typeof supportCsatData === 'object' && typeof supportCsatData.score === 'number') {
+  if (
+    supportCsatData &&
+    typeof supportCsatData === 'object' &&
+    typeof supportCsatData.score === 'number'
+  ) {
     supportCsat = supportCsatData.score;
   } else if (typeof supportCsatData === 'number') {
     supportCsat = supportCsatData;
@@ -293,15 +299,20 @@ export function calculateClientHealth(
     supportCsat = client.clientCsat;
   }
 
-  let csat: number | 'N/A' = 'N/A';
-  if (avgProjectCsat !== 'N/A' && supportCsat !== 'N/A') {
-    csat = Math.round(((avgProjectCsat as number) + (supportCsat as number)) / 2);
-  } else if (avgProjectCsat !== 'N/A') {
-    csat = Math.round(avgProjectCsat as number);
-  } else if (supportCsat !== 'N/A') {
-    csat = Math.round(supportCsat as number);
+  let clientNps: number | 'N/A' = 'N/A';
+  if (client.clientNps && typeof client.clientNps.score === 'number') {
+    clientNps = client.clientNps.score;
   }
 
+  const sentimentScores: number[] = [];
+  if (avgProjectCsat !== 'N/A') sentimentScores.push(avgProjectCsat as number);
+  if (supportCsat !== 'N/A') sentimentScores.push(supportCsat as number);
+  if (clientNps !== 'N/A') sentimentScores.push(clientNps as number);
+
+  let csat: number | 'N/A' = 'N/A';
+  if (sentimentScores.length > 0) {
+    csat = Math.round(sentimentScores.reduce((a, b) => a + b, 0) / sentimentScores.length);
+  }
   // Total Score Calculation uses the EXACT SAME weights as Projects
   const weights = {
     opActivity: settings.scoring?.weights?.opActivity ?? 35,
@@ -339,13 +350,13 @@ export function calculateClientHealth(
     totalScore = 'N/A';
   }
 
-  const avgSessionsFinal = sessionProjectCount > 0 
-    ? Math.round((totalAvgSessions / sessionProjectCount) * 10) / 10
-    : 0;
+  const avgSessionsFinal =
+    sessionProjectCount > 0 ? Math.round((totalAvgSessions / sessionProjectCount) * 10) / 10 : 0;
 
-  const avgDistinctFeaturesFinal = opActivityProjectCount > 0
-    ? Math.round((totalDistinctFeatures / opActivityProjectCount) * 10) / 10
-    : 0;
+  const avgDistinctFeaturesFinal =
+    opActivityProjectCount > 0
+      ? Math.round((totalDistinctFeatures / opActivityProjectCount) * 10) / 10
+      : 0;
 
   return {
     totalScore,
@@ -363,6 +374,7 @@ export function calculateClientHealth(
       avgSessions: avgSessionsFinal,
       avgDistinctFeatures: avgDistinctFeaturesFinal,
       eventCount: totalEventCount,
+      clientNps: client.clientNps || 'N/A',
     },
   };
 }

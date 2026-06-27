@@ -26,7 +26,7 @@ export default function PrimaryQAModal({ project, onClose }: PrimaryQAModalProps
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    const portalUrl = `${window.location.origin}/portal/${project.id}?form=primaryQA`;
+    const portalUrl = `${window.location.origin}/portal/${project.slug || project.id}?form=primaryQA`;
     navigator.clipboard.writeText(portalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

@@ -24,7 +24,7 @@ export default function OnboardingSurveyModal({ project, onClose }: OnboardingSu
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    const portalUrl = `${window.location.origin}/portal/${project.id}?form=survey`;
+    const portalUrl = `${window.location.origin}/portal/${project.slug || project.id}?form=survey`;
     navigator.clipboard.writeText(portalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

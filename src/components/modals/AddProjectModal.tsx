@@ -196,6 +196,7 @@ export default function AddProjectModal() {
       }
 
       const newProject: Project = {
+        // eslint-disable-next-line react-hooks/purity
         id: `P-${Date.now()}-${crypto.randomUUID().substring(0, 4)}`,
         name: data.name.trim(),
         developerIds: matchedDevs.map((c) => c.clientId || c.id),

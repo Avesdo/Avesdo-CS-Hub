@@ -14,14 +14,14 @@ The technology stack is exceptionally modern, follows top-tier industry standard
 * **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 * **Data Integrity:** Zod schemas validate and sanitize all real-time data incoming from Firebase `onSnapshot` listeners to prevent UI crashes.
 * **Testing & Code Quality:** Playwright for E2E, Vitest for unit/component testing, ESLint, and Prettier are properly configured.
-* **Data Pipeline:** Google Apps Script (`AppsScriptCompiler.js`) runs isolated in the background to ingest Drive files. It utilizes high-speed bulk writes for structured metric files (Active Users, CSAT) and securely calls the Gemini API to resolve unknown aliases for unstructured data into a "Data Intake" approval queue.
+* **Data Pipeline:** A local Node.js script (`scripts/run_compiler.mjs`) parses Userpilot/Happyfox CSVs and utilizes high-speed bulk writes for structured metrics. It writes any unknown entity names into a "Data Intake" approval queue (`aliases` collection) for manual resolution.
 * **Health Scoring Engine:** A centralized `scoringUtils.ts` engine dynamically recalculates Client and Project health scores live based on weights configured in the Firestore `settings` collection.
 * **Cost Constraint:** The entire application runs on a strict $0 zero-cost Google ecosystem.
 
 ## Global State Management & Deep Linking
 - **Zustand Store:** The application relies on Zustand (`useAppStore.ts`) for centralized global state. We use atomic selectors to prevent unnecessary re-renders.
 - **Data Hydration:** Massive normalized JSON payloads are pulled from Firestore on initial load directly into Zustand via `useFirebaseSync.ts`.
-- **URL Routing:** Modals and slide-out Drawers are mapped to `react-router-dom` search parameters (`?drawer=project&drawerId=123`), enabling bookmarking, sharing, and native back-button support without layout thrashing.
+- **URL Routing:** Modals and slide-out Drawers are mapped to `react-router-dom` search parameters using human-readable slugs (e.g., `?project=hundredth-square` or `?client=avesdo-developments`). This enables beautiful bookmarking, sharing, and native back-button support without layout thrashing.
 
 ## Core Database Schema & Relationships
 Firestore data is intentionally denormalized for speed. When a root record updates, cascading updates are executed to preserve Global Search integrity.

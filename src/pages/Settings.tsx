@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { query, collection, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../api/firebase';
 import { useAppStore } from '../store/useAppStore';
 import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import {
@@ -41,6 +43,8 @@ import {
 import * as LucideIcons from 'lucide-react';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import {
+  getSystemLogs,
+  getPendingAliases,
   saveSettings,
   bulkUpdateProjects,
   bulkUpdateClients,
@@ -55,17 +59,16 @@ import { DonutChart } from '../components/ui/DonutChart';
 import { DualThumbSlider } from '../components/ui/DualThumbSlider';
 
 import {
-  getSystemLogs,
   restoreRecord,
   hardDeleteRecord,
   addAutoLog,
   addServiceAutoLog,
   addProjectAutoLog,
-  getPendingAliases,
   resolveAlias,
   clearAuditTrail,
 } from '../api/dbService';
-import { DataUploader } from '../components/admin/DataUploader';
+import { DataUploadModal } from '../components/admin/DataUploadModal';
+import { DataIntakePipelineModal } from '../components/admin/DataIntakePipelineModal';
 import { PageHeader } from '../components/PageHeader';
 import MultiSelectCombobox from '../components/MultiSelectCombobox';
 import { exportAllFormResponsesToCSV } from '../utils/exportUtils';
@@ -73,7 +76,7 @@ import { FileDown } from 'lucide-react';
 
 import { toast } from '../utils/toast';
 import TemplateDesigner from '../components/admin/TemplateDesigner';
-import { DataIntakePipeline } from '../components/admin/DataIntakePipeline';
+
 import { RecentUploadActivity } from '../components/admin/RecentUploadActivity';
 import { AuditLogViewer } from '../components/admin/AuditLogViewer';
 import { DataExportHub } from '../components/admin/DataExportHub';
@@ -652,7 +655,28 @@ export default function SettingsDraft() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [viewingUploadLog, setViewingUploadLog] = useState<any | null>(null);
+  const [isExportHubOpen, setIsExportHubOpen] = useState(false);
   const [pendingAliasCount, setPendingAliasCount] = useState(0);
+
+  // Fetch pending aliases count for the action banner independently of the modal
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const aliases = await getPendingAliases();
+        setPendingAliasCount(aliases.length);
+      } catch (err) {
+        console.error('Failed to fetch pending aliases count', err);
+      }
+    };
+
+    fetchPendingCount();
+
+    window.addEventListener('pipeline-updated', fetchPendingCount);
+    return () => window.removeEventListener('pipeline-updated', fetchPendingCount);
+  }, []);
+
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isPipelineModalOpen, setIsPipelineModalOpen] = useState(false);
 
   // --- ARCHIVES STATE ---
   const [archiveTab, setArchiveTab] = useState<
@@ -664,26 +688,21 @@ export default function SettingsDraft() {
   // Move functions above useEffect to fix ReferenceError
 
   const loadLogs = async () => {
-    setLoadingLogs(true);
-    const data = await getSystemLogs();
-    setLogs(data);
-    setLoadingLogs(false);
+    // Deprecated: now handled by real-time listener in useEffect
   };
 
   useEffect(() => {
-    if (activeTab === 'audit' || activeTab === 'pipeline') {
-      loadLogs();
-    }
-    
-    const handlePipelineUpdated = () => {
-      if (activeTab === 'audit' || activeTab === 'pipeline') {
-        loadLogs();
-      }
-    };
-    
-    window.addEventListener('pipeline-updated', handlePipelineUpdated);
-    return () => window.removeEventListener('pipeline-updated', handlePipelineUpdated);
-  }, [activeTab]);
+    setLoadingLogs(true);
+    const oneYearAgo = new Date().getTime() - 365 * 24 * 60 * 60 * 1000;
+    const q = query(collection(db, 'system_logs'), where('timestamp', '>=', oneYearAgo));
+    const unsub = onSnapshot(q, (snap) => {
+      const validLogs = snap.docs.map((doc) => doc.data());
+      validLogs.sort((a: any, b: any) => b.timestamp - a.timestamp);
+      setLogs(validLogs);
+      setLoadingLogs(false);
+    });
+    return () => unsub();
+  }, []);
 
   // Functions moved up
 
@@ -2278,35 +2297,40 @@ export default function SettingsDraft() {
                           key: 'opActivity',
                           val: projectWeights.opActivity,
                           color: '#0ea5e9',
-                          tooltip: 'Tracks project utilization via page views.',
+                          tooltip:
+                            'Measures engagement based on the pages accessed and total page views.',
                         },
                         {
                           label: 'Feature Adoption',
                           key: 'featAdoption',
                           val: projectWeights.featAdoption,
                           color: '#0284c7',
-                          tooltip: 'Ratio of active features versus all available features.',
+                          tooltip:
+                            'Measures the breadth of platform utilization based on enabled features versus total available features.',
                         },
                         {
                           label: 'Financial Standing',
                           key: 'financial',
                           val: projectWeights.financial || 0,
                           color: '#3b82f6',
-                          tooltip: 'Overall invoice payment health.',
+                          tooltip:
+                            'Measures financial standing based on current invoice payment status.',
                         },
                         {
                           label: 'Active Users',
                           key: 'userVol',
                           val: projectWeights.userVol,
                           color: '#6366f1',
-                          tooltip: 'Tracks frequency of individual user access.',
+                          tooltip:
+                            'Measures user activity based on active users and their average login frequency.',
                         },
                         {
                           label: 'Client Sentiment',
                           key: 'csat',
                           val: projectWeights.csat,
                           color: '#8b5cf6',
-                          tooltip: 'Blended score of Onboarding and Support CSAT metrics.',
+                          tooltip:
+                            'Measures client sentiment based on onboarding satisfaction, support feedback, and NPS.',
                         },
                       ].map((item) => (
                         <div key={item.key} className="flex items-center gap-4">
@@ -2442,58 +2466,69 @@ export default function SettingsDraft() {
             )}
 
             {activeTab === 'pipeline' && (
-              <div className="animate-in fade-in duration-300 space-y-8">
-                {/* Top Hero Section */}
-                <div className="space-y-4">
+              <div className="animate-in fade-in duration-300 space-y-6">
+                {/* Header with New Import CTA */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                      Upload & Compile Data
+                      Data Imports
                     </h3>
                     <p className="text-sm text-slate-500 mt-0.5 max-w-2xl">
-                      Drop your CSV exports below, then run the compiler to detect new entries,
-                      update global metrics, and automatically align data based on your previous
-                      mappings.
+                      Upload CSV exports to update global metrics and map new data automatically.
                     </p>
                   </div>
-                  <DataUploader />
+                  <button
+                    onClick={() => setIsUploadModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 h-10 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold text-sm transition-colors shadow-sm"
+                  >
+                    <LucideIcons.UploadCloud className="w-4 h-4" />
+                    New Import
+                  </button>
                 </div>
 
-                {/* Two Column Layout for Action Required and History */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                  {/* Left Column (col-span-2) */}
-                  <div className="xl:col-span-2 space-y-4">
-                    <div className="flex items-center justify-between">
+                {/* Conditional Action Required Banner */}
+                {pendingAliasCount > 0 && (
+                  <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-amber-600" />
+                      </div>
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                          Action Required
-                          {pendingAliasCount > 0 && (
-                            <span className="bg-red-500 text-white px-2 py-0.5 rounded-full text-xs shadow-sm">
-                              {pendingAliasCount}
-                            </span>
-                          )}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-0.5">
-                          Review and manually map unrecognized incoming data.
+                        <h4 className="text-sm font-bold text-slate-900">
+                          Mapping Resolution Required
+                        </h4>
+                        <p className="text-xs text-slate-600 mt-0.5">
+                          There {pendingAliasCount === 1 ? 'is' : 'are'} {pendingAliasCount} recent
+                          upload{pendingAliasCount === 1 ? '' : 's'} with unrecognized aliases that
+                          require your attention.
                         </p>
                       </div>
                     </div>
-                    <DataIntakePipeline onPendingCountChange={setPendingAliasCount} />
+                    <button
+                      onClick={() => setIsPipelineModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 h-9 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs transition-colors shadow-sm whitespace-nowrap"
+                    >
+                      Resolve Mapping
+                    </button>
                   </div>
+                )}
 
-                  {/* Right Column (col-span-1) */}
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                        Recent Upload Activity
-                      </h3>
-                      <p className="text-sm text-slate-500 mt-0.5">
-                        Your recent file uploads and auto-processed logs.
-                      </p>
-                    </div>
-
-                    <RecentUploadActivity logs={logs} setViewingUploadLog={setViewingUploadLog} />
-                  </div>
+                {/* Full Width Ledger */}
+                <div className="w-full">
+                  <RecentUploadActivity logs={logs} setViewingUploadLog={setViewingUploadLog} />
                 </div>
+
+                {/* Modals */}
+                <DataUploadModal
+                  isOpen={isUploadModalOpen}
+                  onClose={() => setIsUploadModalOpen(false)}
+                />
+                <DataIntakePipelineModal
+                  isOpen={isPipelineModalOpen}
+                  onClose={() => setIsPipelineModalOpen(false)}
+                  onPendingCountChange={setPendingAliasCount}
+                  pendingCount={pendingAliasCount}
+                />
               </div>
             )}
             {activeTab === 'audit' && (

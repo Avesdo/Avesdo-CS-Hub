@@ -85,7 +85,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
   }, []);
 
   const handleCopyLink = () => {
-    const portalUrl = `${window.location.origin}/portal/${project.id}?form=deliverables`;
+    const portalUrl = `${window.location.origin}/portal/${project.slug || project.id}?form=deliverables`;
     navigator.clipboard.writeText(portalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

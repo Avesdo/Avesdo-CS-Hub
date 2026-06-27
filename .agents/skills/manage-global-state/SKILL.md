@@ -1,6 +1,6 @@
 ---
 name: manage-global-state
-description: Triggers whenever you are working with Firestore databases, Zustand stores, Google Apps Script data pipelines, or health scoring logic.
+description: Triggers whenever you are working with Firestore databases, Zustand stores, Node.js data pipelines, webhooks, or health scoring logic.
 ---
 
 # Database Integrity & Data Pipeline Rules
@@ -11,10 +11,10 @@ description: Triggers whenever you are working with Firestore databases, Zustand
    - `useAppStore` hooks dynamically attach the `companyName` to the data object before broadcasting to the UI.
 
 2. **Drawer Triggering**: 
-   - Global Search NEVER renders a Drawer directly. It passes an ID to `openDrawer(type, id)` so `UIContext` mounts the overlay safely.
+   - Global Search NEVER renders a Drawer directly. It passes an ID or slug to `openDrawer(type, identifier)` so `UIContext` mounts the overlay safely and maps it to a beautiful URL (e.g. `?project=slug-name`).
 
 3. **Data Intake Queue**: 
-   - The Apps Script compiler (`AppsScriptCompiler.js`) writes unmatched entities to the `aliases` collection with `status: 'pending_approval'`. 
+   - The local Node.js compiler (`scripts/run_compiler.mjs`) writes unmatched entities to the `aliases` collection with `status: 'pending_approval'`. 
    - The AdminHub resolves these via the `resolveAlias` function.
 
 4. **Health Scoring Engine**: 

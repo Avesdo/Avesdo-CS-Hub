@@ -147,7 +147,7 @@ export default function App() {
               }
             />
             <Route
-              path="/portal/:projectId"
+              path="/portal/:identifier"
               element={
                 <React.Suspense fallback={<ClientPortalSkeleton />}>
                   <ClientPortal />

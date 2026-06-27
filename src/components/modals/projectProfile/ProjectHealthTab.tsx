@@ -26,6 +26,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import OnboardingCsatFormModal from '../OnboardingCsatFormModal';
 import { motion } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
+import HealthTooltipCard from '../../ui/HealthTooltipCard';
 
 import { Line } from 'react-chartjs-2';
 import {
@@ -521,261 +522,307 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
         </div>
       )}
 
-      {/* 3. KPI GRID (Modern Glassmorphic Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Engagement */}
-        <motion.div
-          whileHover={{ y: -4, scale: 1.02 }}
-          className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${getAuraColor(opVal)}`}
-          ></div>
-          <div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-primary/5 text-slate-500 group-hover:text-primary transition-colors">
+      {/* 3. HEALTH PILLARS (Minimalist Column Layout) */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+        <h3 className="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
+          <Blocks className="w-4 h-4 text-slate-400" />
+          Health Pillars
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 xl:divide-x xl:divide-slate-100">
+          {/* Engagement Pillar */}
+          <div className="flex flex-col h-full xl:px-4 first:pl-0 last:pr-0 group">
+            {/* Header */}
+            <div className="flex flex-col items-center justify-center mb-4 text-center h-16">
+              <div className="p-2 bg-slate-50 rounded-full text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors mb-2">
                 <Zap className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold text-slate-700 tracking-tight">
-                Platform Engagement
-              </span>
               <UITooltip
                 content={
-                  <span className="text-xs">Tracks project utilization via page views.</span>
+                  <HealthTooltipCard
+                    title="Engagement"
+                    icon={<Zap className="w-3.5 h-3.5" />}
+                    description="Measures project engagement based on the pages accessed and total page views."
+                    status={
+                      opVal >= 75
+                        ? 'healthy'
+                        : opVal >= 50
+                          ? 'warning'
+                          : opVal > 0
+                            ? 'critical'
+                            : 'neutral'
+                    }
+                  >
+                    {project?.eventCount && project.eventCount > 0 ? (
+                      <div className="grid grid-cols-2 gap-3">
+                        {project?.distinctFeatures !== undefined && (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[11px] font-medium text-slate-500">Pages</span>
+                            <span className="text-sm font-bold text-slate-900">
+                              {project.distinctFeatures}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[11px] font-medium text-slate-500">
+                            Total Views
+                          </span>
+                          <span className="text-sm font-bold text-slate-900">
+                            {Math.round(project.eventCount).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-slate-50/80 rounded-md border border-dashed border-slate-200 text-slate-400">
+                        <Activity className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-medium">Not recorded</span>
+                      </div>
+                    )}
+                  </HealthTooltipCard>
                 }
               >
-                <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
+                <span className="text-sm font-bold text-slate-800 cursor-help border-b border-dashed border-slate-300 hover:border-slate-500 transition-colors line-clamp-1">
+                  Engagement
+                </span>
               </UITooltip>
             </div>
-            <div className="flex flex-col mb-1">
-              <span
-                className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(opVal)}`}
-              >
-                {opVal}
-              </span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {project?.eventCount !== undefined && project?.distinctFeatures !== undefined
-                  ? `${project.distinctFeatures} features used  •  ${project.eventCount.toLocaleString()} total logged events`
-                  : project?.eventCount !== undefined
-                    ? `${project.eventCount.toLocaleString()} total logged events`
-                    : 'Platform engagement unavailable'}
-              </span>
-            </div>
-          </div>
-          <div className="mt-3 relative z-10">
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(opVal)}`}
-                style={{ width: `${Math.min(typeof opVal === 'number' ? opVal : 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Active Users */}
-        <motion.div
-          whileHover={{ y: -4, scale: 1.02 }}
-          className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${getAuraColor(usrVal)}`}
-          ></div>
-          <div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-primary/5 text-slate-500 group-hover:text-primary transition-colors">
+            {/* Score */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <span
+                className={`text-5xl font-black tabular-nums tracking-tighter ${project?.eventCount && project.eventCount > 0 ? getScoreColor(opVal) : 'text-slate-300'} drop-shadow-sm`}
+              >
+                {project?.eventCount && project.eventCount > 0 ? opVal : '--'}
+              </span>
+            </div>
+          </div>
+
+          {/* Active Users Pillar */}
+          <div className="flex flex-col h-full xl:px-4 first:pl-0 last:pr-0 group">
+            {/* Header */}
+            <div className="flex flex-col items-center justify-center mb-4 text-center h-16">
+              <div className="p-2 bg-slate-50 rounded-full text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors mb-2">
                 <Users className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold text-slate-700 tracking-tight">Active Users</span>
               <UITooltip
                 content={
-                  <span className="text-xs">
-                    Tracks frequency of individual user access.
-                  </span>
+                  <HealthTooltipCard
+                    title="Active Users"
+                    icon={<Users className="w-3.5 h-3.5" />}
+                    description="Measures user activity based on the number of active users and their average login frequency."
+                    status={
+                      usrVal >= 75
+                        ? 'healthy'
+                        : usrVal >= 50
+                          ? 'warning'
+                          : usrVal > 0
+                            ? 'critical'
+                            : 'neutral'
+                    }
+                  >
+                    {project?.activeUserCount && project.activeUserCount > 0 ? (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[11px] font-medium text-slate-500">
+                            Active Users
+                          </span>
+                          <span className="text-sm font-bold text-slate-900">
+                            {project.activeUserCount.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[11px] font-medium text-slate-500">
+                            Logins / User
+                          </span>
+                          <span className="text-sm font-bold text-slate-900">
+                            {Math.round(project.avgSessions || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-slate-50/80 rounded-md border border-dashed border-slate-200 text-slate-400">
+                        <Activity className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-medium">Not recorded</span>
+                      </div>
+                    )}
+                  </HealthTooltipCard>
                 }
               >
-                <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
+                <span className="text-sm font-bold text-slate-800 cursor-help border-b border-dashed border-slate-300 hover:border-slate-500 transition-colors line-clamp-1">
+                  Active Users
+                </span>
               </UITooltip>
             </div>
-            <div className="flex flex-col mb-1">
-              <span
-                className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(usrVal)}`}
-              >
-                {usrVal}
-              </span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {project?.activeUserCount !== undefined
-                  ? `${project.activeUserCount.toLocaleString()} users  •  ${project.avgSessions || 0} avg. sessions/user`
-                  : 'Active users unavailable'}
-              </span>
-            </div>
-          </div>
-          <div className="mt-3 relative z-10">
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(usrVal)}`}
-                style={{ width: `${Math.min(typeof usrVal === 'number' ? usrVal : 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Feature Adoption */}
-        <motion.div
-          whileHover={{ y: -4, scale: 1.02 }}
-          className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${getAuraColor(fPct)}`}
-          ></div>
-          <div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-primary/5 text-slate-500 group-hover:text-primary transition-colors">
+            {/* Score */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <span
+                className={`text-5xl font-black tabular-nums tracking-tighter ${project?.activeUserCount && project.activeUserCount > 0 ? getScoreColor(usrVal) : 'text-slate-300'} drop-shadow-sm`}
+              >
+                {project?.activeUserCount && project.activeUserCount > 0 ? usrVal : '--'}
+              </span>
+            </div>
+          </div>
+
+          {/* Feature Adoption Pillar */}
+          <div className="flex flex-col h-full xl:px-4 first:pl-0 last:pr-0 group">
+            {/* Header */}
+            <div className="flex flex-col items-center justify-center mb-4 text-center h-16">
+              <div className="p-2 bg-slate-50 rounded-full text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors mb-2">
                 <Blocks className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold text-slate-700 tracking-tight">
-                Feature Adoption
-              </span>
               <UITooltip
                 content={
-                  <span className="text-xs">Ratio of active features versus all available features.</span>
+                  <HealthTooltipCard
+                    title="Feature Adoption"
+                    icon={<Blocks className="w-3.5 h-3.5" />}
+                    description="Measures the breadth of platform utilization based on enabled features versus total available features."
+                    status={fPct >= 75 ? 'healthy' : fPct >= 50 ? 'warning' : 'critical'}
+                  >
+                    <p className="text-[11px] text-slate-700 leading-relaxed whitespace-normal break-words">
+                      <span className="font-bold text-slate-900">{fLen}</span> of{' '}
+                      <span className="font-bold text-slate-900">{fTotal}</span> available features
+                      enabled.
+                    </p>
+                  </HealthTooltipCard>
                 }
               >
-                <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
+                <span className="text-sm font-bold text-slate-800 cursor-help border-b border-dashed border-slate-300 hover:border-slate-500 transition-colors line-clamp-1">
+                  Adoption
+                </span>
               </UITooltip>
             </div>
-            <div className="flex flex-col mb-1">
-              <span
-                className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(fPct)}`}
-              >
-                {fPct}%
-              </span>
-              <span className="text-[11px] font-medium text-slate-500 mt-1">
-                {fLen} of {fTotal} features active
-              </span>
-            </div>
-          </div>
-          <div className="mt-3 relative z-10">
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(fPct)}`}
-                style={{ width: `${Math.min(typeof fPct === 'number' ? fPct : 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Financial */}
-        <motion.div
-          whileHover={{ y: -4, scale: 1.02 }}
-          className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${getAuraColor(healthResult.financial)}`}
-          ></div>
-          <div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-primary/5 text-slate-500 group-hover:text-primary transition-colors">
+            {/* Score */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div
+                className={`text-5xl font-black tabular-nums tracking-tighter flex items-baseline ${getScoreColor(fPct)} drop-shadow-sm`}
+              >
+                {fPct}
+                <span className="text-2xl font-bold ml-0.5">%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Financial Pillar */}
+          <div className="flex flex-col h-full xl:px-4 first:pl-0 last:pr-0 group">
+            {/* Header */}
+            <div className="flex flex-col items-center justify-center mb-4 text-center h-16">
+              <div className="p-2 bg-slate-50 rounded-full text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors mb-2">
                 <DollarSign className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold text-slate-700 tracking-tight">
-                Financial Standing
-              </span>
-              <UITooltip
-                content={
-                  <span className="text-xs">Overall invoice payment health.</span>
-                }
-              >
-                <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
-              </UITooltip>
+              <div className="flex items-center justify-center gap-2 relative">
+                <UITooltip
+                  content={
+                    <HealthTooltipCard
+                      title="Financial Standing"
+                      icon={<DollarSign className="w-3.5 h-3.5" />}
+                      description="Measures financial standing based on current invoice payment status."
+                      status={project?.status === 'Suspended' ? 'critical' : 'healthy'}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-slate-500">
+                          Payment Status:
+                        </span>
+                        <span
+                          className={`text-xs font-bold ${project?.status === 'Suspended' ? 'text-red-600' : 'text-emerald-600'}`}
+                        >
+                          {project?.status === 'Suspended' ? 'Overdue' : 'Current'}
+                        </span>
+                      </div>
+                    </HealthTooltipCard>
+                  }
+                >
+                  <span className="text-sm font-bold text-slate-800 cursor-help border-b border-dashed border-slate-300 hover:border-slate-500 transition-colors line-clamp-1">
+                    Financial
+                  </span>
+                </UITooltip>
+                {project?.status === 'Suspended' && (
+                  <span className="absolute -top-2 -right-2 translate-x-full px-1.5 py-0.5 bg-red-100 text-red-700 text-[9px] font-bold rounded-full border border-red-200 leading-none">
+                    Suspended
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col mb-1">
+
+            {/* Score */}
+            <div className="flex-1 flex flex-col items-center justify-center">
               <span
-                className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(healthResult.financial)}`}
+                className={`text-5xl font-black tabular-nums tracking-tighter ${getScoreColor(healthResult.financial)} drop-shadow-sm`}
               >
                 {healthResult.financial}
               </span>
-              <span
-                className={`text-[11px] font-medium mt-1 truncate max-w-[150px] ${project?.status === 'Suspended' ? 'text-red-500' : 'text-slate-500'}`}
-              >
-                {project?.status === 'Suspended' ? 'Invoice status: Overdue' : 'Invoice status: Current'}
-              </span>
             </div>
           </div>
-          <div className="mt-3 relative z-10">
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(healthResult.financial)}`}
-                style={{
-                  width: `${Math.min(typeof healthResult.financial === 'number' ? healthResult.financial : 0, 100)}%`,
-                }}
-              />
-            </div>
-          </div>
-        </motion.div>
 
-        {/* CSAT */}
-        <motion.div
-          whileHover={{ y: -4, scale: 1.02 }}
-          className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${getAuraColor(csatVal)}`}
-          ></div>
-          <div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <div className="p-1.5 bg-slate-50 rounded-lg group-hover:bg-primary/5 text-slate-500 group-hover:text-primary transition-colors">
+          {/* CSAT Pillar */}
+          <div className="flex flex-col h-full xl:px-4 first:pl-0 last:pr-0 group relative">
+            {/* Header */}
+            <div className="flex flex-col items-center justify-center mb-4 text-center h-16 relative">
+              <div className="p-2 bg-slate-50 rounded-full text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors mb-2">
                 <Smile className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold text-slate-700 tracking-tight">
-                Client Sentiment
-              </span>
-              <UITooltip
-                content={
-                  <span className="text-xs">
-                    Onboarding CSAT metric.
+              <div className="relative inline-flex items-center justify-center">
+                <UITooltip
+                  content={
+                    <HealthTooltipCard
+                      title="Client Sentiment"
+                      icon={<Smile className="w-3.5 h-3.5" />}
+                      description="Measures project sentiment based on onboarding satisfaction survey."
+                      status={
+                        typeof csatVal === 'number'
+                          ? csatVal >= 75
+                            ? 'healthy'
+                            : csatVal >= 50
+                              ? 'warning'
+                              : csatVal > 0
+                                ? 'critical'
+                                : 'neutral'
+                          : 'neutral'
+                      }
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-slate-500">Survey:</span>
+                        <span className="text-xs font-bold text-slate-700">
+                          {project?.health?.onboardingCsat
+                            ? 'Onboarding CSAT'
+                            : project?.onboardingCsat
+                              ? 'Legacy CSAT'
+                              : project?.status === 'Onboarding'
+                                ? 'Awaiting CSAT'
+                                : 'Not Recorded'}
+                        </span>
+                      </div>
+                    </HealthTooltipCard>
+                  }
+                >
+                  <span className="text-sm font-bold text-slate-800 cursor-help border-b border-dashed border-slate-300 hover:border-slate-500 transition-colors line-clamp-1">
+                    Sentiment
                   </span>
-                }
-              >
-                <AlertCircle className="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help transition-colors" />
-              </UITooltip>
+                </UITooltip>
+
+                {(project?.health?.onboardingCsat || project?.onboardingCsat) && (
+                  <button
+                    onClick={() => setShowCsatModal(true)}
+                    className="absolute -right-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary transition-opacity bg-white border border-slate-200 p-1 rounded-full shadow-sm"
+                    title="View Sentiment Details"
+                  >
+                    <Eye className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col mb-1 relative z-10">
+
+            {/* Score */}
+            <div className="flex-1 flex flex-col items-center justify-center">
               <span
-                className={`text-3xl font-black tabular-nums leading-none transition-colors duration-300 ${getScoreColor(csatVal)}`}
+                className={`text-5xl font-black tabular-nums tracking-tighter ${getScoreColor(csatVal)} drop-shadow-sm`}
               >
                 {csatVal}
               </span>
-              <div className="flex items-center justify-between mt-1 min-h-[20px]">
-                <span className="text-[11px] font-medium text-slate-500">
-                  {project?.health?.onboardingCsat
-                    ? 'Source: Onboarding CSAT'
-                    : project?.onboardingCsat
-                      ? 'Source: Legacy Data'
-                      : project?.status === 'Onboarding'
-                        ? 'Status: Awaiting CSAT'
-                        : 'No Survey Recorded'}
-                </span>
-                {(project?.health?.onboardingCsat || project?.onboardingCsat) ? (
-                  <button
-                    onClick={() => setShowCsatModal(true)}
-                    className="opacity-0 group-hover:opacity-100 text-[10px] font-medium text-slate-400 hover:text-primary hover:bg-primary/5 px-1.5 py-0.5 rounded-md transition-all flex items-center gap-1"
-                  >
-                    <Eye className="w-3 h-3" />
-                    View
-                  </button>
-                ) : null}
-              </div>
             </div>
           </div>
-          <div className="mt-3 relative z-10">
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(csatVal)}`}
-                style={{ width: `${Math.min(typeof csatVal === 'number' ? csatVal : 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* 4. ACTIVITY TIMELINE FEED */}

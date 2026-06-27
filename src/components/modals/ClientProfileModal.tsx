@@ -101,7 +101,10 @@ export default function ClientProfileModal() {
   const isOpen = isDrawerOpen('client');
   const drawerData = getDrawerData('client');
   const client = clients.find(
-    (c) => c.clientId === drawerData?.entityId || c.id === drawerData?.entityId
+    (c) =>
+      c.clientId === drawerData?.entityId ||
+      c.id === drawerData?.entityId ||
+      c.slug === drawerData?.entityId
   );
 
   useEffect(() => {

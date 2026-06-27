@@ -47,8 +47,22 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
-      const drawer = params.get('drawer') as DrawerType;
-      const drawerId = params.get('drawerId');
+      let drawer = params.get('drawer') as DrawerType;
+      let drawerId = params.get('drawerId');
+
+      // Check for new pretty URLs if old style isn't present
+      if (!drawer) {
+        if (params.get('project')) {
+          drawer = 'project';
+          drawerId = params.get('project');
+        } else if (params.get('client')) {
+          drawer = 'client';
+          drawerId = params.get('client');
+        } else if (params.get('service')) {
+          drawer = 'service';
+          drawerId = params.get('service');
+        }
+      }
 
       if (drawer) {
         setActiveDrawers((prev) => {
@@ -76,15 +90,68 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (visibleDrawers.length === 0) {
       newUrl.searchParams.delete('drawer');
       newUrl.searchParams.delete('drawerId');
+      newUrl.searchParams.delete('project');
+      newUrl.searchParams.delete('client');
+      newUrl.searchParams.delete('service');
     } else {
       const top = visibleDrawers[visibleDrawers.length - 1];
       if (top && top.type) {
-        newUrl.searchParams.set('drawer', top.type);
-        if (top.entityId) newUrl.searchParams.set('drawerId', top.entityId);
-        else newUrl.searchParams.delete('drawerId');
+        // Clear all possible drawer params first to ensure clean state
+        newUrl.searchParams.delete('drawer');
+        newUrl.searchParams.delete('drawerId');
+        newUrl.searchParams.delete('project');
+        newUrl.searchParams.delete('client');
+        newUrl.searchParams.delete('service');
+
+        if (['project', 'client', 'service'].includes(top.type)) {
+          if (top.entityId) {
+            let slugOrId = top.entityId;
+            // Attempt to resolve slug from global state to keep URL pretty
+            import('../store/useAppStore').then(({ useAppStore }) => {
+              const state = useAppStore.getState();
+              if (top.type === 'project') {
+                const p = state.projects.find(
+                  (x: any) => x.id === top.entityId || x.slug === top.entityId
+                );
+                if (p?.slug) slugOrId = p.slug;
+              } else if (top.type === 'client') {
+                const c = state.clients.find(
+                  (x: any) =>
+                    x.clientId === top.entityId || x.id === top.entityId || x.slug === top.entityId
+                );
+                if (c?.slug) slugOrId = c.slug;
+              } else if (top.type === 'service') {
+                const s = state.services.find(
+                  (x: any) => x.id === top.entityId || x.slug === top.entityId
+                );
+                if (s?.slug) slugOrId = s.slug;
+              }
+              newUrl.searchParams.set(top.type as string, slugOrId);
+              window.history.replaceState({}, '', newUrl.toString());
+            });
+          } else {
+            // Fallback if no entityId is somehow passed
+            newUrl.searchParams.set('drawer', top.type as string);
+            window.history.pushState({}, '', newUrl.toString());
+          }
+        } else {
+          // Standard fallback for other drawers like 'dashDrilldown'
+          newUrl.searchParams.set('drawer', top.type as string);
+          if (top.entityId) newUrl.searchParams.set('drawerId', top.entityId);
+          window.history.pushState({}, '', newUrl.toString());
+        }
       }
     }
-    window.history.pushState({}, '', newUrl.toString());
+
+    // For non-async updates (like closing drawers), run synchronously
+    if (
+      visibleDrawers.length === 0 ||
+      !['project', 'client', 'service'].includes(
+        visibleDrawers[visibleDrawers.length - 1]?.type as string
+      )
+    ) {
+      window.history.pushState({}, '', newUrl.toString());
+    }
   };
 
   const openModal = useCallback((modal: ModalType) => {

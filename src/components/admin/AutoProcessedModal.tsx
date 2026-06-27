@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Undo2, CheckSquare, Square, Trash2, Search, ArrowRight, Building2, Home, Briefcase, User, CheckCircle2 } from 'lucide-react';
+import {
+  X,
+  Undo2,
+  CheckSquare,
+  Square,
+  Trash2,
+  Search,
+  ArrowRight,
+  Building2,
+  Home,
+  Briefcase,
+  User,
+  CheckCircle2,
+} from 'lucide-react';
 import { db } from '../../api/firebase';
 import { updateDoc, doc, writeBatch } from 'firebase/firestore';
 import { toast } from '../../utils/toast';
@@ -29,12 +42,14 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
   if (!isOpen || !log) return null;
 
   const autoProcessed = log.autoProcessed || [];
-  const filteredAutoProcessed = autoProcessed.filter((item: any) =>
-    (item.rawName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (item.targetName || '').toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAutoProcessed = autoProcessed.filter(
+    (item: any) =>
+      (item.rawName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.targetName || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
-  const allSelected = filteredAutoProcessed.length > 0 && selected.size === filteredAutoProcessed.length;
+
+  const allSelected =
+    filteredAutoProcessed.length > 0 && selected.size === filteredAutoProcessed.length;
 
   const toggleSelectAll = () => {
     if (allSelected) {
@@ -70,10 +85,13 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
     setIsProcessing(true);
     try {
       const batch = writeBatch(db);
-      for (const id of idsToUndo) {
+      const aliasIdsToUndo = idsToUndo.filter((id) => !String(id).startsWith('direct-'));
+      for (const id of aliasIdsToUndo) {
         batch.update(doc(db, 'aliases', id), { status: 'pending_approval' });
       }
-      await batch.commit();
+      if (aliasIdsToUndo.length > 0) {
+        await batch.commit();
+      }
 
       await removeItemsFromLog(idsToUndo);
       toast.success(`Successfully undone ${idsToUndo.length} item(s)`);
@@ -106,7 +124,6 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-300" />
         <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-2xl max-h-[85vh] bg-white flex flex-col rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] z-[130] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300">
-          
           {/* Standard Grey Header */}
           <div className="bg-slate-50 border-b border-slate-100 px-6 pt-5 pb-5 flex flex-col gap-4 sticky top-0 z-40 shrink-0">
             <div className="flex items-center justify-between">
@@ -115,7 +132,8 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
                   Auto-Processed Log
                 </h2>
                 <p className="text-sm text-slate-500 mt-1">
-                  Review system-mapped aliases for {log?.entityName || 'this upload'}
+                  Review automatic mappings (direct matches and saved aliases) for{' '}
+                  {log?.entityName || 'this upload'}
                 </p>
               </div>
               <button
@@ -138,7 +156,7 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
                   className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm placeholder:text-slate-400"
                 />
                 {searchQuery && (
-                  <button 
+                  <button
                     onClick={() => setSearchQuery('')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
                   >
@@ -149,16 +167,16 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
 
               {selected.size > 0 && (
                 <div className="flex items-center gap-3 bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
-                  <span className="text-xs font-bold text-primary">
-                    {selected.size} selected
-                  </span>
+                  <span className="text-xs font-bold text-primary">{selected.size} selected</span>
                   <div className="flex items-center gap-2 border-l border-primary/10 pl-3">
                     <button
                       disabled={isProcessing}
                       onClick={() => handleUndo(Array.from(selected))}
                       className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg shadow-sm disabled:opacity-50 transition-all active:scale-95"
+                      title="Undo mappings (Note: Direct matches cannot be undone, they will only be removed from this log)"
                     >
-                      <Undo2 className="w-3 h-3" /> Undo
+                      <Undo2 className="w-3.5 h-3.5" />
+                      Undo Mapping
                     </button>
                     <button
                       disabled={isProcessing}
@@ -194,10 +212,12 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
 
               <div className="grid gap-3">
                 {filteredAutoProcessed.map((item: any) => {
-                  const isUserMapping = 
-                    item.contextName === 'Satisfaction Report' || 
+                  const isUserMapping =
+                    item.contextName === 'Satisfaction Report' ||
+                    item.contextName === 'NPS Report' ||
                     item.contextName === 'Happyfox Support CSAT' ||
                     (log?.entityName || '').includes('Satisfaction Report') ||
+                    (log?.entityName || '').includes('Userpilot NPS') ||
                     (log?.entityName || '').includes('Support CSAT');
 
                   const isSelected = selected.has(item.id);
@@ -219,14 +239,22 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
                             <Square className="w-4 h-4" />
                           )}
                         </button>
-                        
+
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           {/* Raw Value */}
                           <div className="flex items-center flex-1 min-w-0">
-                            <TruncatedText
-                              text={item.rawName}
-                              className="text-[13px] font-bold text-slate-800"
-                            />
+                            <div className="flex flex-col min-w-0">
+                              <TruncatedText
+                                text={item.rawName}
+                                className="text-[13px] font-bold text-slate-800"
+                              />
+                              {item.subLabel && (
+                                <TruncatedText
+                                  text={item.subLabel}
+                                  className="text-[11px] font-medium text-slate-500 mt-0.5"
+                                />
+                              )}
+                            </div>
                           </div>
 
                           <ArrowRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
@@ -300,7 +328,9 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
                   </div>
                   <p className="text-lg font-bold text-slate-700">All Caught Up</p>
                   <p className="text-sm font-medium text-slate-400 mt-1 max-w-sm text-center">
-                    {searchQuery ? 'No matching corrections found.' : 'No auto-processed corrections to review.'}
+                    {searchQuery
+                      ? 'No matching corrections found.'
+                      : 'No auto-processed corrections to review.'}
                   </p>
                 </div>
               )}

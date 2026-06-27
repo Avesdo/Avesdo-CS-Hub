@@ -28,11 +28,14 @@ When building or modifying UI components, you MUST adhere to the following estab
    - Interactive elements and drawers MUST use `duration-300 ease-in-out` transitions.
    - ALWAYS include enter/exit animations. Use `<AnimatePresence>` from Framer Motion for custom React dropdowns, or Radix UI data-state animations (`animate-in` / `animate-out`).
 
-5. **KPI Tiles**:
+5. **KPI Tiles & Health Metrics**:
    - Primary metric icon should be on the left.
    - Retain an absolute right-side blurred gradient aura for a soft background.
    - Include Framer Motion hover effects (`whileHover={{ y: -4, scale: 1.01 }}`).
-   - Use interactive `UITooltip` components for subtitles, triggered by hover on an `AlertCircle` icon.
+   - Health metrics (Adoption, Users, Engagement) must use radial progress gauges or large tabular numerals.
+   - Missing telemetry data should be robustly handled and render as a clean `--` rather than defaulting to `0` or breaking layout.
+   - Use interactive `UITooltip` components for subtitles, triggered by hover on an `AlertCircle` icon or the header itself.
+   - For complex metric details, wrap the content inside the `UITooltip` with a `HealthTooltipCard` to explain scoring logic and status thresholds (Healthy, Warning, Critical) on hover.
 
 6. **Action Buttons**:
    - **Primary Actions**: Use `rounded-lg` with a custom soft-blue glow on hover (`hover:shadow-[0_0_15px_rgba(14,165,233,0.3)]`). Add micro-animations to icons (e.g., `group-hover:rotate-90`).

@@ -7,14 +7,14 @@ Please remember that I am relying entirely on your expertise. I do not have a ba
 - **Styling:** Tailwind CSS + PostCSS.
 - **State Management & Global Data:** Zustand (`useAppStore.ts`) for atomic global state selectors, hydrated live from Firestore.
 - **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
-- **Data Pipeline:** Google Apps Script.
+- **Data Pipeline:** Local Node.js Script (`scripts/run_compiler.mjs`). (Google Apps Script is only used as a webhook for email alerts).
 - **Budget Constraint**: We are operating on a strict $0 budget. Do not introduce any paid tools, APIs, or services.
 
 ## 1. COMMUNICATION & WORKFLOW
 - **NO CODING JARGON:** Explain your actions and plans in simple, non-technical English.
 - **LIVE SERVER:** Automatically run `npm run dev` in the background whenever the user might need to view the app locally.
-- **VERIFY CHANGES:** Always build (`npm run build`) or test your changes locally before concluding. Do not leave the workspace broken.
-- **DEPLOYMENT & BACKUPS:** Only deploy to Firebase and back up to Git when explicitly instructed to. We make batch updates and deploy in batches.
+- **VERIFY CHANGES:** Never modify a file blindly. When adding or updating code, you MUST meticulously check that all variables, hooks, and functions you reference are properly imported and defined in the file. When performing string replacements, strictly ensure you do not accidentally sever closing brackets or parenthesis. Always proactively run `npm run lint` to instantly catch missing imports and reference errors, followed by `npm run build` or local testing to verify compilation. Do not leave the workspace broken.
+- **DEPLOYMENT & BACKUPS (BATCH RELEASES):** We do not deploy every minor change. Instead, wait for a logical milestone where a cohesive "batch" of updates is complete and locally stable. When a milestone is reached, proactively recommend a deployment to the user. However, NEVER assume the user has finished testing locally. You must explicitly ask the user and wait for their direct confirmation that "it is actually all good" before running any backup or deployment (`npm run verify`, `git push`, `firebase deploy`) commands.
 - **SUBAGENTS:** Always use multiple/sub-agents when possible and helpful to speed up parallel tasks or background research.
 - **TYPESCRIPT SAFETY:** Always ensure new code is strictly type-safe. The Firebase `npm run build` command will aggressively halt deployment if it detects missing types. Do not leave implicit `any` errors.
 - **CODEBASE MODULARITY:** If a single file or component exceeds 400 lines of code, proactively recommend splitting it into smaller, reusable components before adding more logic to it.

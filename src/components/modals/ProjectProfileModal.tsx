@@ -113,7 +113,9 @@ export default function ProjectProfileModal() {
   const isOpen = isDrawerOpen('project');
   const drawerData = getDrawerData('project');
   const isClosing = drawerData?.isClosing;
-  const project = projects.find((p) => p.id === drawerData?.entityId);
+  const project = projects.find(
+    (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId
+  );
 
   useEffect(() => {
     if (isConfirmingDelete) {

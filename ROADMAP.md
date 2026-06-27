@@ -47,8 +47,8 @@ Deploying the hub into a live testing environment for team evaluation.
 
 ### Step 9: The Compiler Build [COMPLETED]
 Developing the system's background data alignment intelligence.
-*   **Apps Script Pipeline (V1 MVP):** Constructed the Google Apps Script workflow to watch designated Google Drive folders and automatically parse incoming CSV or Excel reports. (Note: This is a fast-path MVP for launch; to be migrated to Cloud Functions in Step 13).
-*   **Entity Resolution Engine:** Securely connected the pipeline to the Gemini API (via Google AI Studio free tier). The AI maps mismatched company names to a single, unified canonical Client ID. Structured data (Support CSAT, Active Users, Feature Adoption, Financials) bypasses the AI for high-speed bulk ingestion into Firestore.
+*   **Node.js Data Pipeline (V1 MVP):** Constructed a local Node.js compiler (`scripts/run_compiler.mjs`) to parse raw incoming Userpilot and Happyfox CSV reports, calculate exact health metrics, and directly inject the structured data into Firestore.
+*   **Entity Resolution Engine:** If the compiler encounters an unrecognized company or project name in the CSV data, it safely queues it into an `aliases` collection (with a `pending_approval` status) so the user can manually map it to the correct canonical ID via the Admin Hub.
 
 ### Step 10: The Security & Authentication Lockdown [COMPLETED]
 Final hardening of the app security perimeter before full production rollout.
@@ -76,6 +76,12 @@ Scaling the application's capabilities onto your stable, verified framework.
 *   **Data Integrity & Validation:** Migrated to Zod schemas to sanitize all incoming real-time Firebase data, protecting the UI from crash-inducing undefined variables.
 *   **State Separation:** Refactored a bloated AppStateContext into atomic, perfectly segmented Zustand store selectors to eliminate unnecessary layout thrashing.
 *   **Accessibility & UX:** Replaced custom dropdowns and modals with Radix UI Headless primitives to ensure perfect focus trapping, ARIA accessibility, and smooth CSS-based exit animations.
-*   **Deep Linking:** Upgraded the UIContext to map Drawer navigation state to React Router `useSearchParams`, allowing power users to bookmark and share specific clients/projects natively.
+*   **Deep Linking & Pretty URLs:** Upgraded the UIContext to map Drawer navigation state to React Router `useSearchParams` using human-readable slugs (e.g. `?project=hundredth-square`), allowing power users to bookmark and share specific clients/projects beautifully and natively.
 *   **Code Splitting:** Split massive third-party dependencies (like `tiptap` in the Rich Text Editor) using `React.lazy` to drastically slash initial load times.
 *   **Keyboard Shortcuts:** Integrated a robust `Cmd+K` global search hotkey for instant query focusing.
+
+### Step 15: Deep UI Polish & Health Metrics Overhaul [COMPLETED]
+Elevating the data visualization and interaction design across all modal profiles and client portals.
+*   **Health & Metrics Visualization:** Completely redesigned the health pillars (Adoption, Users, Engagement, etc.) into a minimalist column layout featuring large tabular-numeral scores, gradient text coloring, and radial progress gauges for visual impact.
+*   **Advanced Tooltips:** Implemented rich, custom `UITooltip` components containing interactive `HealthTooltipCard` micro-layouts to explain scoring logic and status thresholds (Healthy, Warning, Critical) on hover.
+*   **Robust Empty States:** Ensured that missing telemetry data renders cleanly as an elegant "Not recorded" state (`--`) rather than defaulting to `0` or breaking layout.

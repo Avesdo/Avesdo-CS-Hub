@@ -27,7 +27,7 @@ export default function ProjectCertificationModal({
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    const portalUrl = `${window.location.origin}/portal/${project.id}?form=certification`;
+    const portalUrl = `${window.location.origin}/portal/${project.slug || project.id}?form=certification`;
     navigator.clipboard.writeText(portalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

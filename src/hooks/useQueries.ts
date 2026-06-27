@@ -1,18 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import { Project, Settings } from '../types';
 
-export function useProjectQuery(projectId: string | undefined) {
+export function useProjectQuery(projectIdOrSlug: string | undefined) {
   return useQuery({
-    queryKey: ['project', projectId],
+    queryKey: ['project', projectIdOrSlug],
     queryFn: async () => {
-      if (!projectId) throw new Error('No project ID provided');
-      const snap = await getDoc(doc(db, 'projects', projectId));
-      if (!snap.exists()) throw new Error('Project not found');
+      if (!projectIdOrSlug) throw new Error('No project ID or slug provided');
+
+      // 1. Try by document ID first
+      let snap: any = await getDoc(doc(db, 'projects', projectIdOrSlug));
+
+      // 2. If not found, try by slug
+      if (!snap.exists()) {
+        const q = query(collection(db, 'projects'), where('slug', '==', projectIdOrSlug));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          throw new Error('Project not found');
+        }
+        snap = querySnapshot.docs[0];
+      }
       return { id: snap.id, ...snap.data() } as Project;
     },
-    enabled: !!projectId,
+    enabled: !!projectIdOrSlug,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

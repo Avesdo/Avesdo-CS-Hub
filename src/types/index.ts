@@ -1,5 +1,6 @@
 export interface Client {
   clientId: string;
+  slug?: string;
   companyName: string;
   accountManager: string;
   activeProjectCount: number;
@@ -17,6 +18,7 @@ export interface OnboardingData {
 
 export interface Project {
   id: string;
+  slug?: string;
   name: string;
   assignee: string;
   clientIds: string[];
@@ -57,6 +59,7 @@ export interface Project {
 
 export interface Service {
   id: string;
+  slug?: string;
   name: string;
   type: string;
   manager?: string;

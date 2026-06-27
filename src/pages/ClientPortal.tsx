@@ -18,7 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 type PortalState = 'dashboard' | 'form' | 'csat_intercept' | 'success';
 
 export default function ClientPortal() {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { identifier } = useParams<{ identifier: string }>();
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
 
@@ -32,17 +32,25 @@ export default function ClientPortal() {
     data: project,
     isLoading: isProjectLoading,
     error: projectError,
-  } = useProjectQuery(projectId);
+  } = useProjectQuery(identifier);
   const { data: settings, isLoading: isSettingsLoading } = useSettingsQuery();
 
   const loading = isProjectLoading || isSettingsLoading;
   const error = projectError ? 'Project not found or link is invalid.' : null;
 
-  // Support direct form linking via URL param ?form=survey
+  // Support direct form linking via URL param
   useEffect(() => {
     const formParam = searchParams.get('form');
-    if (formParam && ['deliverables', 'survey', 'clientQA', 'certification'].includes(formParam)) {
-      setActiveFormType(formParam);
+    // Map new 'feedback' alias back to the internal 'onboardingCsat' ID for backward compatibility
+    const actualFormType = formParam === 'feedback' ? 'onboardingCsat' : formParam;
+
+    if (
+      actualFormType &&
+      ['deliverables', 'survey', 'clientQA', 'certification', 'onboardingCsat'].includes(
+        actualFormType
+      )
+    ) {
+      setActiveFormType(actualFormType);
       setViewState('form');
     }
   }, [searchParams]);
@@ -214,7 +222,7 @@ export default function ClientPortal() {
       }
 
       // Invalidate the TanStack query to refetch fresh project data
-      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['project', identifier] });
 
       if (!autoSave) {
         if (!isSaveProgress) {

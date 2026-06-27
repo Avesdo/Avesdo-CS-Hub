@@ -1,4 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { query, collection, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../api/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/useAppStore';
 import { Doughnut, Line } from 'react-chartjs-2';
@@ -130,11 +132,14 @@ export default function Dashboard() {
         setIsFetchingHistory(false);
       });
 
-    getSystemLogs()
-      .then((data) => {
-        setSystemLogs(data.slice(0, 10)); // limit to 10 latest
-      })
-      .catch(console.error);
+    const oneYearAgo = new Date().getTime() - 365 * 24 * 60 * 60 * 1000;
+    const q = query(collection(db, 'system_logs'), where('timestamp', '>=', oneYearAgo));
+    const unsubLogs = onSnapshot(q, (snap) => {
+      const validLogs = snap.docs.map((doc) => doc.data());
+      validLogs.sort((a: any, b: any) => b.timestamp - a.timestamp);
+      setSystemLogs(validLogs.slice(0, 10)); // limit to 10 latest
+    });
+    return () => unsubLogs();
   }, []);
 
   const allManagers = useMemo(() => {

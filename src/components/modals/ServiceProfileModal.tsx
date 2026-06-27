@@ -136,7 +136,9 @@ export default function ServiceProfileModal() {
 
   const isOpen = isDrawerOpen('service');
   const drawerData = getDrawerData('service');
-  const service = services.find((s) => s.id === drawerData?.entityId);
+  const service = services.find(
+    (s) => s.id === drawerData?.entityId || s.slug === drawerData?.entityId
+  );
 
   const clientNames =
     service?.clientName || (service?.clients?.length ? service.clients.join(', ') : null);
