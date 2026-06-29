@@ -51,6 +51,10 @@ import {
   Ticket,
   Loader2,
   Search,
+  PieChart as PieChartIcon,
+  Activity,
+  SearchX,
+  LayoutGrid,
 } from 'lucide-react';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -58,6 +62,7 @@ import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { DateRangePicker } from '../components/ui/DateRangePicker';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { TrendIndicator } from '../components/TrendIndicator';
+import EmptyState from '../components/EmptyState';
 
 const parseDate = (dateStr?: string) => {
   if (!dateStr) return null;
@@ -89,25 +94,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   Maintenance: CHART_THEME.green,
   Uncategorized: CHART_THEME.teal,
 };
-
-const EmptyChartState = ({
-  message = 'No data available for the selected filters',
-}: {
-  message?: string;
-}) => (
-  <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/50 backdrop-blur-[1px]">
-    <div className="flex flex-col items-center text-slate-400">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-        className="w-32 h-32 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center mb-4"
-      >
-        <Layers className="w-8 h-8 text-slate-300" />
-      </motion.div>
-      <span className="font-medium text-sm">{message}</span>
-    </div>
-  </div>
-);
 
 const CATEGORIES = [
   'All Categories',
@@ -151,54 +137,9 @@ export default function SupportDashboard() {
   const [showWorkingHours, setShowWorkingHours] = useState(false);
   const [selectedRingCategory, setSelectedRingCategory] = useState<string | null>(null);
 
-  const allProjects = useMemo(() => {
-    const projSet = new Set<string>();
-    tickets.forEach((t) => {
-      const tags = (t['Ticket Tags'] || '')
-        .split(',')
-        .map((p) => p.trim())
-        .filter((p) => {
-          const lower = p.toLowerCase();
-          return (
-            lower && lower !== 'no project' && lower !== 'unknown project' && lower !== 'unknown'
-          );
-        });
-      tags.forEach((tag) => projSet.add(tag));
-    });
-    return ['All Projects', ...Array.from(projSet).sort()];
-  }, [tickets]);
-
-  const filteredProjects = useMemo(() => {
-    if (!projectSearch.trim()) return allProjects;
-    const query = projectSearch.toLowerCase();
-    return allProjects.filter((p) => p.toLowerCase().includes(query));
-  }, [allProjects, projectSearch]);
-
-  const allManagers = useMemo(() => {
-    return settings?.managers?.map((m) => m.name) || [];
-  }, [settings]);
-
-  useEffect(() => {
-    fetchTickets();
-  }, [fetchTickets]);
-
-  const { filteredTickets, prevTickets } = useMemo(() => {
-    if (!tickets || tickets.length === 0) return { filteredTickets: [], prevTickets: [] };
-
-    const filterBySettings = (period: SupportTicket[]) =>
-      period.filter((t) => {
-        const cat = t['Ticket Category'] || '';
-        const tags = (t['Ticket Tags'] || '').toLowerCase();
-
-        const matchesCategory = selectedCategory === 'All Categories' || cat === selectedCategory;
-        const matchesAgent =
-          managerFilter === 'All Agents' ||
-          t['Assigned Agent Name']?.startsWith(managerFilter.split(' ')[0]);
-        const matchesProject =
-          projectFilter === 'All Projects' || tags.includes(projectFilter.toLowerCase());
-
-        return cat.toLowerCase() !== 'calls' && matchesCategory && matchesAgent && matchesProject;
-      });
+  // 1. Base tickets for the current and previous period, BEFORE applying dropdown filters
+  const { currentPeriodBase, previousPeriodBase } = useMemo(() => {
+    if (!tickets || tickets.length === 0) return { currentPeriodBase: [], previousPeriodBase: [] };
 
     const now = new Date();
     let daysToSubtract = 30;
@@ -252,18 +193,91 @@ export default function SupportDashboard() {
     }
 
     return {
-      filteredTickets: filterBySettings(currentPeriod),
-      prevTickets: filterBySettings(previousPeriod),
+      currentPeriodBase: currentPeriod,
+      previousPeriodBase: previousPeriod,
     };
-  }, [
-    tickets,
-    dateRange,
-    customStartDate,
-    customEndDate,
-    selectedCategory,
-    managerFilter,
-    projectFilter,
-  ]);
+  }, [tickets, dateRange, customStartDate, customEndDate]);
+
+  // 2. Cross-filter the dropdown options and the final tickets
+  const { filteredTickets, prevTickets, availableCategories, availableManagers, allProjects } =
+    useMemo(() => {
+      if (!currentPeriodBase || currentPeriodBase.length === 0) {
+        return {
+          filteredTickets: [],
+          prevTickets: [],
+          availableCategories: CATEGORIES,
+          availableManagers: ['All Agents'],
+          allProjects: ['All Projects'],
+        };
+      }
+
+      const catSet = new Set<string>();
+      const mgrSet = new Set<string>();
+      const projSet = new Set<string>();
+
+      currentPeriodBase.forEach((t) => {
+        const cat = t['Ticket Category'] || 'Uncategorized';
+        const mgr = t['Assigned Agent Name']?.split(' ')[0] || 'Unknown';
+        const tagsString = (t['Ticket Tags'] || '').toLowerCase();
+
+        // Check matches for the *other* filters
+        const matchesManager = managerFilter === 'All Agents' || mgr === managerFilter;
+        const matchesProject =
+          projectFilter === 'All Projects' || tagsString.includes(projectFilter.toLowerCase());
+        const matchesCategory = selectedCategory === 'All Categories' || cat === selectedCategory;
+
+        if (matchesManager && matchesProject && cat.toLowerCase() !== 'calls') catSet.add(cat);
+        if (matchesCategory && matchesProject && cat.toLowerCase() !== 'calls' && mgr !== 'Unknown')
+          mgrSet.add(mgr);
+        if (matchesCategory && matchesManager && cat.toLowerCase() !== 'calls') {
+          const tags = (t['Ticket Tags'] || '').split(/[;,]/).map((p) => p.trim());
+          tags.forEach((p) => {
+            const lower = p.toLowerCase();
+            if (
+              lower &&
+              lower !== 'no project' &&
+              lower !== 'unknown project' &&
+              lower !== 'unknown'
+            ) {
+              projSet.add(p);
+            }
+          });
+        }
+      });
+
+      const filterBySettings = (period: SupportTicket[]) =>
+        period.filter((t) => {
+          const cat = t['Ticket Category'] || '';
+          const tags = (t['Ticket Tags'] || '').toLowerCase();
+
+          const matchesCategory = selectedCategory === 'All Categories' || cat === selectedCategory;
+          const matchesAgent =
+            managerFilter === 'All Agents' ||
+            t['Assigned Agent Name']?.startsWith(managerFilter.split(' ')[0]);
+          const matchesProject =
+            projectFilter === 'All Projects' || tags.includes(projectFilter.toLowerCase());
+
+          return cat.toLowerCase() !== 'calls' && matchesCategory && matchesAgent && matchesProject;
+        });
+
+      return {
+        filteredTickets: filterBySettings(currentPeriodBase),
+        prevTickets: filterBySettings(previousPeriodBase),
+        availableCategories: ['All Categories', ...Array.from(catSet).sort()],
+        availableManagers: ['All Agents', ...Array.from(mgrSet).sort()],
+        allProjects: ['All Projects', ...Array.from(projSet).sort()],
+      };
+    }, [currentPeriodBase, previousPeriodBase, selectedCategory, managerFilter, projectFilter]);
+
+  const filteredProjects = useMemo(() => {
+    if (!projectSearch.trim()) return allProjects;
+    const query = projectSearch.toLowerCase();
+    return allProjects.filter((p) => p.toLowerCase().includes(query));
+  }, [allProjects, projectSearch]);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
   const kpis = useMemo(() => {
     const calcKpis = (data: any[]) => {
@@ -909,7 +923,7 @@ export default function SupportDashboard() {
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[150px] z-[90]"
                 >
-                  {CATEGORIES.map((category, index) => (
+                  {availableCategories.map((category, index) => (
                     <React.Fragment key={category}>
                       <div
                         className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 ${
@@ -950,31 +964,21 @@ export default function SupportDashboard() {
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[150px] z-[90]"
                 >
-                  <div
-                    className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary ${
-                      managerFilter === 'All Agents' ? 'text-primary' : ''
-                    }`}
-                    onClick={() => {
-                      setManagerFilter('All Agents');
-                      setShowAmMenu(false);
-                    }}
-                  >
-                    All Agents
-                  </div>
-                  <div className="border-t border-slate-100 my-1"></div>
-                  {allManagers.map((m) => (
-                    <div
-                      key={m}
-                      className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 ${
-                        managerFilter === m ? 'text-primary' : ''
-                      }`}
-                      onClick={() => {
-                        setManagerFilter(m);
-                        setShowAmMenu(false);
-                      }}
-                    >
-                      {m}
-                    </div>
+                  {availableManagers.map((m, index) => (
+                    <React.Fragment key={m}>
+                      <div
+                        className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 ${
+                          managerFilter === m ? 'text-primary' : ''
+                        }`}
+                        onClick={() => {
+                          setManagerFilter(m);
+                          setShowAmMenu(false);
+                        }}
+                      >
+                        {m}
+                      </div>
+                      {index === 0 && <div className="border-t border-slate-100 my-1"></div>}
+                    </React.Fragment>
                   ))}
                 </motion.div>
               )}
@@ -1310,20 +1314,11 @@ export default function SupportDashboard() {
             <div className="flex flex-col lg:flex-row items-start gap-8">
               <div className="w-full lg:w-1/2 h-[500px] relative shrink-0">
                 {doughnutData.inner.length === 0 ? (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex flex-col items-center text-slate-400">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                        className="w-48 h-48 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center mb-4"
-                      >
-                        <Layers className="w-8 h-8 text-slate-300" />
-                      </motion.div>
-                      <span className="font-medium">
-                        No data available for the selected filters
-                      </span>
-                    </div>
-                  </div>
+                  <EmptyState
+                    icon={PieChartIcon}
+                    title="No Ticket Origins Found"
+                    subtitle="There are no tickets matching your current filter criteria."
+                  />
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1592,200 +1587,61 @@ export default function SupportDashboard() {
               </div>
 
               <div className="flex flex-col gap-1 w-full overflow-x-auto custom-thin-scroll pb-4 pt-8">
-                <div className="min-w-[700px]">
-                  {(() => {
-                    const gridCols = showWorkingHours
-                      ? 'repeat(5, minmax(0, 1fr)) 32px repeat(13, minmax(0, 1fr)) 40px repeat(6, minmax(0, 1fr))'
-                      : '32px repeat(24, minmax(0, 1fr)) 40px';
-                    const offset = showWorkingHours ? 5 : 0;
-                    const totalCol = offset + (showWorkingHours ? 15 : 26);
+                {filteredTickets.length === 0 ? (
+                  <EmptyState
+                    icon={Activity}
+                    title="No Activity Data"
+                    subtitle="Try adjusting your filters to see ticket activity patterns."
+                    className="min-h-[300px]"
+                  />
+                ) : (
+                  <div className="min-w-[700px]">
+                    {(() => {
+                      const gridCols = showWorkingHours
+                        ? 'repeat(5, minmax(0, 1fr)) 32px repeat(13, minmax(0, 1fr)) 40px repeat(6, minmax(0, 1fr))'
+                        : '32px repeat(24, minmax(0, 1fr)) 40px';
+                      const offset = showWorkingHours ? 5 : 0;
+                      const totalCol = offset + (showWorkingHours ? 15 : 26);
 
-                    return (
-                      <>
-                        {/* X-Axis Labels (Hours) */}
-                        <div
-                          className="grid gap-1.5 mb-2 items-center"
-                          style={{ gridTemplateColumns: gridCols }}
-                        >
-                          <div style={{ gridColumnStart: offset + 1, gridRowStart: 1 }} />{' '}
-                          {/* Empty slot for Y-axis label */}
-                          <AnimatePresence initial={false}>
-                            {[
-                              '12a',
-                              '1a',
-                              '2a',
-                              '3a',
-                              '4a',
-                              '5a',
-                              '6a',
-                              '7a',
-                              '8a',
-                              '9a',
-                              '10a',
-                              '11a',
-                              '12p',
-                              '1p',
-                              '2p',
-                              '3p',
-                              '4p',
-                              '5p',
-                              '6p',
-                              '7p',
-                              '8p',
-                              '9p',
-                              '10p',
-                              '11p',
-                            ]
-                              .map((hr, i) => ({ hr, i }))
-                              .filter(({ i }) => !showWorkingHours || (i >= 6 && i <= 18))
-                              .map(({ hr, i }, filteredIdx) => (
-                                <motion.div
-                                  key={i}
-                                  layout
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.8 }}
-                                  transition={{ duration: 0.3 }}
-                                  style={{
-                                    gridColumnStart: offset + filteredIdx + 2,
-                                    gridRowStart: 1,
-                                  }}
-                                  className="text-center text-[10px] font-semibold text-slate-400"
-                                >
-                                  {hr}
-                                </motion.div>
-                              ))}
-                          </AnimatePresence>
-                          <div style={{ gridColumnStart: totalCol, gridRowStart: 1 }} />{' '}
-                          {/* Empty slot for Row Total label */}
-                        </div>
-
-                        {/* The Grid */}
-                        <div className="flex flex-col gap-1.5">
-                          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, dayIdx) => (
-                            <div
-                              key={dayIdx}
-                              className="grid gap-1.5 items-center"
-                              style={{ gridTemplateColumns: gridCols }}
-                            >
-                              {/* Y-Axis Label (Day) */}
-                              <motion.div
-                                layout
-                                transition={{ duration: 0.3 }}
-                                className="text-[11px] font-semibold text-slate-400 text-right"
-                                style={{ gridColumnStart: offset + 1, gridRowStart: 1 }}
-                              >
-                                {day}
-                              </motion.div>
-
-                              {/* 24 Hour Blocks */}
-                              <AnimatePresence initial={false}>
-                                {(() => {
-                                  const filteredBlocks = chartData.heatmapMatrix[dayIdx]
-                                    .map((val: number, hourIdx: number) => ({ val, hourIdx }))
-                                    .filter(
-                                      ({ hourIdx }) =>
-                                        !showWorkingHours || (hourIdx >= 6 && hourIdx <= 18)
-                                    );
-
-                                  return filteredBlocks.map(({ val, hourIdx }, filteredIdx) => {
-                                    let bgClass = 'bg-slate-100/70 border-slate-200/50';
-                                    if (val > 0) {
-                                      const ratio = val / (chartData.maxHeat || 1);
-                                      if (ratio <= 0.25)
-                                        bgClass = 'bg-[#00bdd9]/20 border-[#00bdd9]/30';
-                                      else if (ratio <= 0.5)
-                                        bgClass = 'bg-[#00bdd9]/50 border-[#00bdd9]/60';
-                                      else if (ratio <= 0.75)
-                                        bgClass = 'bg-[#00bdd9]/80 border-[#00bdd9]/90';
-                                      else bgClass = 'bg-[#00bdd9] border-[#0096ad]';
-                                    }
-
-                                    const isFirst = filteredIdx === 0;
-                                    const isLast = filteredIdx === filteredBlocks.length - 1;
-
-                                    return (
-                                      <motion.div
-                                        key={hourIdx}
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                        transition={{ duration: 0.3 }}
-                                        style={{
-                                          gridColumnStart: offset + filteredIdx + 2,
-                                          gridRowStart: 1,
-                                        }}
-                                        className={`aspect-square rounded-[3px] border ${bgClass} transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-[#00bdd9]/50 group relative cursor-pointer`}
-                                      >
-                                        {/* Tooltip */}
-                                        <div
-                                          className={`absolute bottom-full mb-2 hidden group-hover:flex flex-col z-50 pointer-events-none ${isFirst ? 'left-0 items-start' : isLast ? 'right-0 items-end' : 'left-1/2 -translate-x-1/2 items-center'}`}
-                                        >
-                                          <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
-                                            <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm">
-                                              {day} at{' '}
-                                              {hourIdx === 0
-                                                ? '12 AM'
-                                                : hourIdx < 12
-                                                  ? `${hourIdx} AM`
-                                                  : hourIdx === 12
-                                                    ? '12 PM'
-                                                    : `${hourIdx - 12} PM`}
-                                            </p>
-                                            <div className="flex flex-col gap-3">
-                                              <div className="flex items-center justify-between gap-6">
-                                                <div className="flex items-center gap-2.5">
-                                                  <div className="w-2.5 h-2.5 rounded-[3px] shadow-sm bg-[#00bdd9]" />
-                                                  <span className="text-[13px] font-medium text-muted-foreground">
-                                                    Avg Tickets
-                                                  </span>
-                                                </div>
-                                                <span className="text-[14px] font-bold text-foreground">
-                                                  {val}
-                                                </span>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </motion.div>
-                                    );
-                                  });
-                                })()}
-                              </AnimatePresence>
-
-                              {/* Row Total */}
-                              <motion.div
-                                layout
-                                transition={{ duration: 0.3 }}
-                                className="flex items-center justify-center ml-1"
-                                style={{ gridColumnStart: totalCol, gridRowStart: 1 }}
-                              >
-                                <span className="text-[11px] font-bold text-slate-500">
-                                  {chartData.dayTotals[dayIdx]}
-                                </span>
-                              </motion.div>
-                            </div>
-                          ))}
-
-                          {/* Column Totals Row */}
+                      return (
+                        <>
+                          {/* X-Axis Labels (Hours) */}
                           <div
-                            className="grid gap-1.5 items-center mt-1"
+                            className="grid gap-1.5 mb-2 items-center"
                             style={{ gridTemplateColumns: gridCols }}
                           >
-                            <motion.div
-                              layout
-                              transition={{ duration: 0.3 }}
-                              className="text-[10px] font-bold text-slate-400 text-right"
-                              style={{ gridColumnStart: offset + 1, gridRowStart: 1 }}
-                            >
-                              Avg
-                            </motion.div>
+                            <div style={{ gridColumnStart: offset + 1, gridRowStart: 1 }} />{' '}
+                            {/* Empty slot for Y-axis label */}
                             <AnimatePresence initial={false}>
-                              {chartData.hourTotals
-                                .map((total, i) => ({ total, i }))
+                              {[
+                                '12a',
+                                '1a',
+                                '2a',
+                                '3a',
+                                '4a',
+                                '5a',
+                                '6a',
+                                '7a',
+                                '8a',
+                                '9a',
+                                '10a',
+                                '11a',
+                                '12p',
+                                '1p',
+                                '2p',
+                                '3p',
+                                '4p',
+                                '5p',
+                                '6p',
+                                '7p',
+                                '8p',
+                                '9p',
+                                '10p',
+                                '11p',
+                              ]
+                                .map((hr, i) => ({ hr, i }))
                                 .filter(({ i }) => !showWorkingHours || (i >= 6 && i <= 18))
-                                .map(({ total, i }, filteredIdx) => (
+                                .map(({ hr, i }, filteredIdx) => (
                                   <motion.div
                                     key={i}
                                     layout
@@ -1797,39 +1653,189 @@ export default function SupportDashboard() {
                                       gridColumnStart: offset + filteredIdx + 2,
                                       gridRowStart: 1,
                                     }}
-                                    className="text-center text-[10px] font-bold text-slate-500"
+                                    className="text-center text-[10px] font-semibold text-slate-400"
                                   >
-                                    {total}
+                                    {hr}
                                   </motion.div>
                                 ))}
                             </AnimatePresence>
+                            <div style={{ gridColumnStart: totalCol, gridRowStart: 1 }} />{' '}
+                            {/* Empty slot for Row Total label */}
                           </div>
-                        </div>
-                      </>
-                    );
-                  })()}
 
-                  {/* Bottom Bar: Badges + Legend */}
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center gap-2">
-                      <span className="bg-[#00bdd9]/10 text-[#0096ad] text-[11px] px-2 py-0.5 rounded-full font-bold">
-                        Peak Day: {chartData.peakDay}
-                      </span>
-                      <span className="bg-[#00bdd9]/10 text-[#0096ad] text-[11px] px-2 py-0.5 rounded-full font-bold">
-                        Peak Time: {chartData.peakTime}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[11px] font-medium text-slate-500">
-                      <span>Less</span>
-                      <div className="w-3 h-3 rounded-[2px] bg-slate-100/70 border border-slate-200/50"></div>
-                      <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/20 border border-[#00bdd9]/30"></div>
-                      <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/50 border border-[#00bdd9]/60"></div>
-                      <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/80 border border-[#00bdd9]/90"></div>
-                      <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9] border border-[#0096ad]"></div>
-                      <span>More</span>
+                          {/* The Grid */}
+                          <div className="flex flex-col gap-1.5">
+                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+                              (day, dayIdx) => (
+                                <div
+                                  key={dayIdx}
+                                  className="grid gap-1.5 items-center"
+                                  style={{ gridTemplateColumns: gridCols }}
+                                >
+                                  {/* Y-Axis Label (Day) */}
+                                  <motion.div
+                                    layout
+                                    transition={{ duration: 0.3 }}
+                                    className="text-[11px] font-semibold text-slate-400 text-right"
+                                    style={{ gridColumnStart: offset + 1, gridRowStart: 1 }}
+                                  >
+                                    {day}
+                                  </motion.div>
+
+                                  {/* 24 Hour Blocks */}
+                                  <AnimatePresence initial={false}>
+                                    {(() => {
+                                      const filteredBlocks = chartData.heatmapMatrix[dayIdx]
+                                        .map((val: number, hourIdx: number) => ({ val, hourIdx }))
+                                        .filter(
+                                          ({ hourIdx }) =>
+                                            !showWorkingHours || (hourIdx >= 6 && hourIdx <= 18)
+                                        );
+
+                                      return filteredBlocks.map(({ val, hourIdx }, filteredIdx) => {
+                                        let bgClass = 'bg-slate-100/70 border-slate-200/50';
+                                        if (val > 0) {
+                                          const ratio = val / (chartData.maxHeat || 1);
+                                          if (ratio <= 0.25)
+                                            bgClass = 'bg-[#00bdd9]/20 border-[#00bdd9]/30';
+                                          else if (ratio <= 0.5)
+                                            bgClass = 'bg-[#00bdd9]/50 border-[#00bdd9]/60';
+                                          else if (ratio <= 0.75)
+                                            bgClass = 'bg-[#00bdd9]/80 border-[#00bdd9]/90';
+                                          else bgClass = 'bg-[#00bdd9] border-[#0096ad]';
+                                        }
+
+                                        const isFirst = filteredIdx === 0;
+                                        const isLast = filteredIdx === filteredBlocks.length - 1;
+
+                                        return (
+                                          <motion.div
+                                            key={hourIdx}
+                                            layout
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            transition={{ duration: 0.3 }}
+                                            style={{
+                                              gridColumnStart: offset + filteredIdx + 2,
+                                              gridRowStart: 1,
+                                            }}
+                                            className={`aspect-square rounded-[3px] border ${bgClass} transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-[#00bdd9]/50 group relative cursor-pointer`}
+                                          >
+                                            {/* Tooltip */}
+                                            <div
+                                              className={`absolute bottom-full mb-2 hidden group-hover:flex flex-col z-50 pointer-events-none ${isFirst ? 'left-0 items-start' : isLast ? 'right-0 items-end' : 'left-1/2 -translate-x-1/2 items-center'}`}
+                                            >
+                                              <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
+                                                <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm">
+                                                  {day} at{' '}
+                                                  {hourIdx === 0
+                                                    ? '12 AM'
+                                                    : hourIdx < 12
+                                                      ? `${hourIdx} AM`
+                                                      : hourIdx === 12
+                                                        ? '12 PM'
+                                                        : `${hourIdx - 12} PM`}
+                                                </p>
+                                                <div className="flex flex-col gap-3">
+                                                  <div className="flex items-center justify-between gap-6">
+                                                    <div className="flex items-center gap-2.5">
+                                                      <div className="w-2.5 h-2.5 rounded-[3px] shadow-sm bg-[#00bdd9]" />
+                                                      <span className="text-[13px] font-medium text-muted-foreground">
+                                                        Avg Tickets
+                                                      </span>
+                                                    </div>
+                                                    <span className="text-[14px] font-bold text-foreground">
+                                                      {val}
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </motion.div>
+                                        );
+                                      });
+                                    })()}
+                                  </AnimatePresence>
+
+                                  {/* Row Total */}
+                                  <motion.div
+                                    layout
+                                    transition={{ duration: 0.3 }}
+                                    className="flex items-center justify-center ml-1"
+                                    style={{ gridColumnStart: totalCol, gridRowStart: 1 }}
+                                  >
+                                    <span className="text-[11px] font-bold text-slate-500">
+                                      {chartData.dayTotals[dayIdx]}
+                                    </span>
+                                  </motion.div>
+                                </div>
+                              )
+                            )}
+
+                            {/* Column Totals Row */}
+                            <div
+                              className="grid gap-1.5 items-center mt-1"
+                              style={{ gridTemplateColumns: gridCols }}
+                            >
+                              <motion.div
+                                layout
+                                transition={{ duration: 0.3 }}
+                                className="text-[10px] font-bold text-slate-400 text-right"
+                                style={{ gridColumnStart: offset + 1, gridRowStart: 1 }}
+                              >
+                                Avg
+                              </motion.div>
+                              <AnimatePresence initial={false}>
+                                {chartData.hourTotals
+                                  .map((total, i) => ({ total, i }))
+                                  .filter(({ i }) => !showWorkingHours || (i >= 6 && i <= 18))
+                                  .map(({ total, i }, filteredIdx) => (
+                                    <motion.div
+                                      key={i}
+                                      layout
+                                      initial={{ opacity: 0, scale: 0.8 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.8 }}
+                                      transition={{ duration: 0.3 }}
+                                      style={{
+                                        gridColumnStart: offset + filteredIdx + 2,
+                                        gridRowStart: 1,
+                                      }}
+                                      className="text-center text-[10px] font-bold text-slate-500"
+                                    >
+                                      {total}
+                                    </motion.div>
+                                  ))}
+                              </AnimatePresence>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+
+                    {/* Bottom Bar: Badges + Legend */}
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center gap-2">
+                        <span className="bg-[#00bdd9]/10 text-[#0096ad] text-[11px] px-2 py-0.5 rounded-full font-bold">
+                          Peak Day: {chartData.peakDay}
+                        </span>
+                        <span className="bg-[#00bdd9]/10 text-[#0096ad] text-[11px] px-2 py-0.5 rounded-full font-bold">
+                          Peak Time: {chartData.peakTime}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+                        <span>Less</span>
+                        <div className="w-3 h-3 rounded-[2px] bg-slate-100/70 border border-slate-200/50"></div>
+                        <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/20 border border-[#00bdd9]/30"></div>
+                        <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/50 border border-[#00bdd9]/60"></div>
+                        <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9]/80 border border-[#00bdd9]/90"></div>
+                        <div className="w-3 h-3 rounded-[2px] bg-[#00bdd9] border border-[#0096ad]"></div>
+                        <span>More</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -1868,124 +1874,133 @@ export default function SupportDashboard() {
                 </div>
               </div>
               <div className="p-6 pt-0 h-[500px] w-full">
-                <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1}>
-                  <BarChart
-                    layout="vertical"
-                    data={
-                      frictionSourceView === 'project'
-                        ? chartData.projectData
-                        : chartData.contactData
-                    }
-                    margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e1eaeb" />
-                    <XAxis
-                      type="number"
-                      axisLine={{ stroke: '#e1eaeb' }}
-                      tickLine={false}
-                      tick={{ fill: '#74868a', fontSize: 12 }}
-                    />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={(props: any) => {
-                        const { x, y, payload } = props;
-                        const yAxisWidth = frictionSourceView === 'project' ? 185 : 120;
-                        return (
-                          <g transform={`translate(${x},${y})`}>
-                            <foreignObject
-                              x={-yAxisWidth}
-                              y={-12}
-                              width={yAxisWidth - 10}
-                              height={24}
-                            >
-                              <div className="w-full h-full flex items-center justify-end">
-                                <TruncatedText
-                                  text={payload.value}
-                                  className="text-[#74868a] text-[12px] font-medium text-right"
-                                  containerClassName="w-full flex justify-end"
-                                />
-                              </div>
-                            </foreignObject>
-                          </g>
-                        );
-                      }}
-                      width={frictionSourceView === 'project' ? 185 : 120}
-                    />
-                    <RechartsTooltip
-                      cursor={{ fill: '#f8fafa' }}
-                      content={({ active, payload, label }: any) => {
-                        if (active && payload && payload.length) {
-                          const total = payload.reduce(
-                            (acc: number, entry: any) => acc + (entry.value || 0),
-                            0
-                          );
-                          return (
-                            <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
-                              <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm flex justify-between">
-                                <span>{label}</span>
-                                <span className="ml-4 font-bold text-primary">{total}</span>
-                              </p>
-                              <div className="flex flex-col gap-2">
-                                {payload.map((entry: any, index: number) => {
-                                  if (!entry.value) return null;
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="flex items-center justify-between gap-6"
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <div
-                                          className="w-2.5 h-2.5 rounded-[3px] shadow-sm"
-                                          style={{ backgroundColor: entry.color }}
-                                        />
-                                        <div className="max-w-[150px] min-w-0">
-                                          <TruncatedText
-                                            text={entry.name.replace('cat_', '')}
-                                            className="text-[13px] font-medium text-muted-foreground"
-                                          />
-                                        </div>
-                                      </div>
-                                      <span className="text-[14px] font-bold text-foreground">
-                                        {entry.value}
-                                      </span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Legend
-                      iconType="circle"
-                      wrapperStyle={{
-                        paddingTop: '10px',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        color: '#74868a',
-                      }}
-                      formatter={(value) => value.replace('cat_', '')}
-                    />
-                    {chartData.categoryKeys.map((catKey, index) => (
-                      <Bar
-                        key={catKey}
-                        dataKey={catKey}
-                        name={catKey}
-                        stackId="a"
-                        fill={chartData.CATEGORY_COLORS[index % chartData.CATEGORY_COLORS.length]}
-                        radius={[3, 3, 3, 3]}
-                        stroke="#ffffff"
-                        strokeWidth={2}
-                        maxBarSize={20}
+                {(frictionSourceView === 'project' ? chartData.projectData : chartData.contactData)
+                  .length === 0 ? (
+                  <EmptyState
+                    icon={SearchX}
+                    title="No High-Friction Sources"
+                    subtitle="Great news! There are no high-friction tickets matching your criteria."
+                  />
+                ) : (
+                  <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1}>
+                    <BarChart
+                      layout="vertical"
+                      data={
+                        frictionSourceView === 'project'
+                          ? chartData.projectData
+                          : chartData.contactData
+                      }
+                      margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e1eaeb" />
+                      <XAxis
+                        type="number"
+                        axisLine={{ stroke: '#e1eaeb' }}
+                        tickLine={false}
+                        tick={{ fill: '#74868a', fontSize: 12 }}
                       />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={(props: any) => {
+                          const { x, y, payload } = props;
+                          const yAxisWidth = frictionSourceView === 'project' ? 185 : 120;
+                          return (
+                            <g transform={`translate(${x},${y})`}>
+                              <foreignObject
+                                x={-yAxisWidth}
+                                y={-12}
+                                width={yAxisWidth - 10}
+                                height={24}
+                              >
+                                <div className="w-full h-full flex items-center justify-end">
+                                  <TruncatedText
+                                    text={payload.value}
+                                    className="text-[#74868a] text-[12px] font-medium text-right"
+                                    containerClassName="w-full flex justify-end"
+                                  />
+                                </div>
+                              </foreignObject>
+                            </g>
+                          );
+                        }}
+                        width={frictionSourceView === 'project' ? 185 : 120}
+                      />
+                      <RechartsTooltip
+                        cursor={{ fill: '#f8fafa' }}
+                        content={({ active, payload, label }: any) => {
+                          if (active && payload && payload.length) {
+                            const total = payload.reduce(
+                              (acc: number, entry: any) => acc + (entry.value || 0),
+                              0
+                            );
+                            return (
+                              <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
+                                <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm flex justify-between">
+                                  <span>{label}</span>
+                                  <span className="ml-4 font-bold text-primary">{total}</span>
+                                </p>
+                                <div className="flex flex-col gap-2">
+                                  {payload.map((entry: any, index: number) => {
+                                    if (!entry.value) return null;
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="flex items-center justify-between gap-6"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div
+                                            className="w-2.5 h-2.5 rounded-[3px] shadow-sm"
+                                            style={{ backgroundColor: entry.color }}
+                                          />
+                                          <div className="max-w-[150px] min-w-0">
+                                            <TruncatedText
+                                              text={entry.name.replace('cat_', '')}
+                                              className="text-[13px] font-medium text-muted-foreground"
+                                            />
+                                          </div>
+                                        </div>
+                                        <span className="text-[14px] font-bold text-foreground">
+                                          {entry.value}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Legend
+                        iconType="circle"
+                        wrapperStyle={{
+                          paddingTop: '10px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          color: '#74868a',
+                        }}
+                        formatter={(value) => value.replace('cat_', '')}
+                      />
+                      {chartData.categoryKeys.map((catKey, index) => (
+                        <Bar
+                          key={catKey}
+                          dataKey={catKey}
+                          name={catKey}
+                          stackId="a"
+                          fill={chartData.CATEGORY_COLORS[index % chartData.CATEGORY_COLORS.length]}
+                          radius={[3, 3, 3, 3]}
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          maxBarSize={20}
+                        />
+                      ))}
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
           </div>
@@ -2030,135 +2045,143 @@ export default function SupportDashboard() {
               </div>
               <div className="p-6 pt-0 w-full overflow-hidden">
                 <div className="h-[450px] w-full overflow-x-auto overflow-y-hidden custom-thin-scroll pb-4">
-                  <div
-                    style={{
-                      minWidth:
-                        chartData.workloadData.length > 15
-                          ? `${chartData.workloadData.length * 60}px`
-                          : '100%',
-                      height: '100%',
-                    }}
-                  >
-                    <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1}>
-                      <ComposedChart
-                        data={chartData.workloadData}
-                        margin={{ top: 20, right: 10, bottom: 20, left: 10 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e1eaeb" />
-                        <XAxis
-                          dataKey="name"
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fill: '#74868a', fontSize: 12, fontWeight: 500 }}
-                          dy={10}
-                        />
-                        <YAxis
-                          yAxisId="left"
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fill: '#74868a', fontSize: 12, fontWeight: 500 }}
+                  {chartData.workloadData.length === 0 ? (
+                    <EmptyState
+                      icon={LayoutGrid}
+                      title="No Workload Data"
+                      subtitle="There are no tickets to plot in the workload matrix."
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        minWidth:
+                          chartData.workloadData.length > 15
+                            ? `${chartData.workloadData.length * 60}px`
+                            : '100%',
+                        height: '100%',
+                      }}
+                    >
+                      <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1}>
+                        <ComposedChart
+                          data={chartData.workloadData}
+                          margin={{ top: 20, right: 10, bottom: 20, left: 10 }}
                         >
-                          <Label
-                            value="Ticket Volume"
-                            angle={-90}
-                            position="insideLeft"
-                            offset={-5}
-                            style={{
-                              textAnchor: 'middle',
-                              fill: '#74868a',
-                              fontSize: 12,
-                              fontWeight: 500,
-                            }}
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e1eaeb" />
+                          <XAxis
+                            dataKey="name"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#74868a', fontSize: 12, fontWeight: 500 }}
+                            dy={10}
                           />
-                        </YAxis>
-                        <YAxis
-                          yAxisId="right"
-                          orientation="right"
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fill: '#84cc16', fontSize: 12, fontWeight: 500 }}
-                        >
-                          <Label
-                            value="Avg Time (mins)"
-                            angle={90}
-                            position="insideRight"
-                            offset={-5}
-                            style={{
-                              textAnchor: 'middle',
-                              fill: '#84cc16',
-                              fontSize: 12,
-                              fontWeight: 500,
-                            }}
-                          />
-                        </YAxis>
-                        <RechartsTooltip
-                          cursor={{ fill: '#f1f5f9' }}
-                          content={({ active, payload }: any) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0].payload;
-                              return (
-                                <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
-                                  <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm">
-                                    {data.name}
-                                  </p>
-                                  <div className="flex flex-col gap-2">
-                                    <div className="flex items-center justify-between gap-6">
-                                      <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-sm bg-[#00bdd9]"></div>
-                                        Ticket Volume
-                                      </span>
-                                      <span className="text-[14px] font-bold text-foreground">
-                                        {data.volume}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-6">
-                                      <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#84cc16]"></div>
-                                        Average Time
-                                      </span>
-                                      <span className="text-[14px] font-bold text-foreground">
-                                        {data.avgTime} mins
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-6 pt-1 mt-1 border-t border-slate-100">
-                                      <span className="text-[13px] font-medium text-muted-foreground">
-                                        Total Time
-                                      </span>
-                                      <span className="text-[13px] font-bold text-slate-500">
-                                        {data.totalTime.toFixed(0)} mins
-                                      </span>
+                          <YAxis
+                            yAxisId="left"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#74868a', fontSize: 12, fontWeight: 500 }}
+                          >
+                            <Label
+                              value="Ticket Volume"
+                              angle={-90}
+                              position="insideLeft"
+                              offset={-5}
+                              style={{
+                                textAnchor: 'middle',
+                                fill: '#74868a',
+                                fontSize: 12,
+                                fontWeight: 500,
+                              }}
+                            />
+                          </YAxis>
+                          <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: '#84cc16', fontSize: 12, fontWeight: 500 }}
+                          >
+                            <Label
+                              value="Avg Time (mins)"
+                              angle={90}
+                              position="insideRight"
+                              offset={-5}
+                              style={{
+                                textAnchor: 'middle',
+                                fill: '#84cc16',
+                                fontSize: 12,
+                                fontWeight: 500,
+                              }}
+                            />
+                          </YAxis>
+                          <RechartsTooltip
+                            cursor={{ fill: '#f1f5f9' }}
+                            content={({ active, payload }: any) => {
+                              if (active && payload && payload.length) {
+                                const data = payload[0].payload;
+                                return (
+                                  <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
+                                    <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm">
+                                      {data.name}
+                                    </p>
+                                    <div className="flex flex-col gap-2">
+                                      <div className="flex items-center justify-between gap-6">
+                                        <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                          <div className="w-2.5 h-2.5 rounded-sm bg-[#00bdd9]"></div>
+                                          Ticket Volume
+                                        </span>
+                                        <span className="text-[14px] font-bold text-foreground">
+                                          {data.volume}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center justify-between gap-6">
+                                        <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                          <div className="w-2.5 h-2.5 rounded-full bg-[#84cc16]"></div>
+                                          Average Time
+                                        </span>
+                                        <span className="text-[14px] font-bold text-foreground">
+                                          {data.avgTime} mins
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center justify-between gap-6 pt-1 mt-1 border-t border-slate-100">
+                                        <span className="text-[13px] font-medium text-muted-foreground">
+                                          Total Time
+                                        </span>
+                                        <span className="text-[13px] font-bold text-slate-500">
+                                          {data.totalTime.toFixed(0)} mins
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Legend
-                          wrapperStyle={{ paddingTop: '20px', fontSize: '13px', fontWeight: 500 }}
-                        />
-                        <Bar
-                          yAxisId="left"
-                          dataKey="volume"
-                          name="Ticket Volume"
-                          fill="#00bdd9"
-                          radius={[4, 4, 0, 0]}
-                          maxBarSize={50}
-                        />
-                        <Line
-                          yAxisId="right"
-                          type="monotone"
-                          dataKey="avgTime"
-                          name="Average Time Spent"
-                          stroke="#84cc16"
-                          strokeWidth={3}
-                          dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
-                          activeDot={{ r: 6, strokeWidth: 0, fill: '#84cc16' }}
-                        />
-                      </ComposedChart>
-                    </ResponsiveContainer>
-                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend
+                            wrapperStyle={{ paddingTop: '20px', fontSize: '13px', fontWeight: 500 }}
+                          />
+                          <Bar
+                            yAxisId="left"
+                            dataKey="volume"
+                            name="Ticket Volume"
+                            fill="#00bdd9"
+                            radius={[4, 4, 0, 0]}
+                            maxBarSize={50}
+                          />
+                          <Line
+                            yAxisId="right"
+                            type="monotone"
+                            dataKey="avgTime"
+                            name="Average Time Spent"
+                            stroke="#84cc16"
+                            strokeWidth={3}
+                            dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                            activeDot={{ r: 6, strokeWidth: 0, fill: '#84cc16' }}
+                          />
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
