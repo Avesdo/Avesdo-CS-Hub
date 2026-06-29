@@ -10,8 +10,10 @@ export const TrendIndicator = ({
   inverted = false,
   neutral = false,
   colorClass = 'text-foreground',
+  showValue = true,
 }: any) => {
-  if (previous === undefined || previous === null)
+  if (previous === undefined || previous === null) {
+    if (!showValue) return null;
     return (
       <div className="text-3xl font-bold tracking-tight text-foreground relative z-10 mt-auto pt-2">
         {prefix}
@@ -19,6 +21,7 @@ export const TrendIndicator = ({
         {suffix}
       </div>
     );
+  }
 
   const diff = current - previous;
   const pct =
@@ -47,7 +50,9 @@ export const TrendIndicator = ({
   return (
     <div className="flex flex-col relative z-10 mt-auto pt-2">
       <div className="flex items-center gap-3">
-        <p className={`text-3xl font-bold tracking-tight ${colorClass}`}>{displayVal}</p>
+        {showValue && (
+          <p className={`text-3xl font-bold tracking-tight ${colorClass}`}>{displayVal}</p>
+        )}
         <span
           className={`inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full border px-2 py-0.5 text-[11px] font-bold ${tColor} border-border bg-transparent gap-1 shadow-sm`}
         >

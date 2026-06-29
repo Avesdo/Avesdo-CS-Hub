@@ -9,6 +9,7 @@ import {
   Activity,
   ChevronRight,
   ThumbsUp,
+  LifeBuoy,
 } from 'lucide-react';
 
 interface RecentUploadActivityProps {
@@ -99,6 +100,12 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                   } else if (entityNameLower.includes('nps')) {
                     Icon = ThumbsUp;
                     colorClass = 'bg-blue-50 text-blue-500 border-blue-100';
+                  } else if (
+                    entityNameLower.includes('happyfox') ||
+                    entityNameLower.includes('support')
+                  ) {
+                    Icon = LifeBuoy;
+                    colorClass = 'bg-rose-50 text-rose-500 border-rose-100';
                   }
 
                   const timeString = new Date(log.timestamp).toLocaleTimeString('en-US', {

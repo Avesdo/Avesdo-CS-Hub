@@ -1,0 +1,15 @@
+const fs = require('fs');
+let code = fs.readFileSync('src/pages/SupportDashboard.tsx', 'utf8');
+code = code.replace(/const calcKpis = \(data\) => \{/, 'const calcKpis = (data: any[]) => {');
+code = code.replace(/data\.filter\(\n\s*\(t\) =>/g, 'data.filter(\n        (t: any) =>');
+code = code.replace(/resolved\n\s*\.filter\(\(t\) =>/g, 'resolved\n        .filter((t: any) =>');
+code = code.replace(/\.map\(\(t\) => \{/g, '.map((t: any) => {');
+code = code.replace(/parseDate\(t\['Last Closed At'\]\)\.getTime\(\) - parseDate\(t\['Created At'\]\)\.getTime\(\)/g, '(parseDate(t[\'Last Closed At\'])?.getTime() || 0) - (parseDate(t[\'Created At\'])?.getTime() || 0)');
+code = code.replace(/filter\(\(t\) => typeof t\['First Response Time/g, 'filter((t: any) => typeof t[\'First Response Time');
+code = code.replace(/\.map\(\(t\) => t\['First Response Time/g, '.map((t: any) => t[\'First Response Time');
+code = code.replace(/\(a, b\) => a \+ b/g, '(a: number, b: number) => a + b');
+code = code.replace(/resolved\.filter\(\(t\) =>/g, 'resolved.filter((t: any) =>');
+code = code.replace(/const getTrend = \(curr, prev\) =>/g, 'const getTrend = (curr: number, prev: number) =>');
+code = code.replace(/xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
+fs.writeFileSync('src/pages/SupportDashboard.tsx', code);
+console.log('Fixed TS issues');

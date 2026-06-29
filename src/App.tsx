@@ -32,6 +32,7 @@ const ClientHealth = React.lazy(() => import('./pages/ClientHealth'));
 const ProjectTracker = React.lazy(() => import('./pages/ProjectTracker'));
 const ServiceHub = React.lazy(() => import('./pages/ServiceHub'));
 const Settings = React.lazy(() => import('./pages/Settings'));
+const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
 
 const Login = React.lazy(() => import('./pages/Login'));
 const ClientPortal = React.lazy(() => import('./pages/ClientPortal'));
@@ -110,6 +111,7 @@ function MainLayout() {
                       <Route path="/clients" element={<ClientHealth />} />
                       <Route path="/projects" element={<ProjectTracker />} />
                       <Route path="/services" element={<ServiceHub />} />
+                      <Route path="/support" element={<SupportDashboard />} />
 
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<Navigate to="/" replace />} />

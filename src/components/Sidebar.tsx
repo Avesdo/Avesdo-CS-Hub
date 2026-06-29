@@ -10,6 +10,7 @@ import {
   Settings,
   Shield,
   LogOut,
+  LifeBuoy,
 } from 'lucide-react';
 import { Tooltip } from './ui/Tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -67,6 +68,7 @@ export default function Sidebar() {
               { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Clients' },
               { to: '/projects', icon: <ListTodo className="w-4 h-4" />, label: 'Projects' },
               { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Services' },
+              { to: '/support', icon: <LifeBuoy className="w-4 h-4" />, label: 'Support' },
             ].map((link) => (
               <li key={link.to}>
                 <NavLink

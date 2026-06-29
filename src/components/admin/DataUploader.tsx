@@ -14,6 +14,11 @@ import {
   Info,
   Loader2,
   ThumbsUp,
+  FileSpreadsheet,
+  Settings,
+  ShieldAlert,
+  ShieldCheck,
+  LifeBuoy,
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { doc, updateDoc, collection, writeBatch, getDocs, setDoc } from 'firebase/firestore';
@@ -56,6 +61,11 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     parsedData: null,
     error: null,
   });
+  const [happyfoxFile, setHappyfoxFile] = useState<FileState>({
+    file: null,
+    parsedData: null,
+    error: null,
+  });
 
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileStep, setCompileStep] = useState(0);
@@ -77,7 +87,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         return;
       }
 
-      let type: 'satisfaction' | 'sessions' | 'views' | 'nps' | null = null;
+      let type: 'satisfaction' | 'sessions' | 'views' | 'nps' | 'happyfox' | null = null;
       if (
         file.name.toLowerCase().includes('satisfaction') ||
         file.name.toLowerCase().includes('customer')
@@ -89,9 +99,14 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         type = 'views';
       } else if (file.name.toLowerCase().includes('nps')) {
         type = 'nps';
+      } else if (
+        file.name.toLowerCase().includes('happyfox') ||
+        file.name.toLowerCase().includes('tabular_export')
+      ) {
+        type = 'happyfox';
       } else {
         toast.error(
-          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', or 'NPS'.`
+          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', 'nps', or 'happyfox'.`
         );
         return;
       }
@@ -107,12 +122,14 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
           if (type === 'sessions') setSessionsFile({ file, parsedData: result.data, error: null });
           if (type === 'views') setViewsFile({ file, parsedData: result.data, error: null });
           if (type === 'nps') setNpsFile({ file, parsedData: result.data, error: null });
+          if (type === 'happyfox') setHappyfoxFile({ file, parsedData: result.data, error: null });
         } catch (err: any) {
           if (type === 'satisfaction')
             setSatisfactionFile({ file, parsedData: null, error: err.message });
           if (type === 'sessions') setSessionsFile({ file, parsedData: null, error: err.message });
           if (type === 'views') setViewsFile({ file, parsedData: null, error: err.message });
           if (type === 'nps') setNpsFile({ file, parsedData: null, error: err.message });
+          if (type === 'happyfox') setHappyfoxFile({ file, parsedData: null, error: err.message });
         }
       };
       reader.readAsText(file);
@@ -649,6 +666,79 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         await batch.commit();
       }
 
+      // 4. Process Happyfox Report
+      if (happyfoxFile.parsedData) {
+        const happyfoxData = happyfoxFile.parsedData;
+        totalParsed += happyfoxData.length;
+
+        // Unwanted columns to remove before pushing to DB
+        const unwantedColumns = [
+          'Original Message',
+          'Assigned Agent Email',
+          'Status Behaviour',
+          'Ticket Priority',
+          'Origin Category',
+          'Please ensure to change Category',
+          'Jira Ticket',
+          'Please merge into existing ticket if available',
+          'Category Description',
+          'Due Date',
+          'Last Closed By',
+          'Mobile',
+          'Work',
+          'Main',
+          'Home',
+          'Other',
+        ];
+
+        // Firestore limits batches to 500 operations.
+        const CHUNK_SIZE = 450;
+        for (let i = 0; i < happyfoxData.length; i += CHUNK_SIZE) {
+          const chunk = happyfoxData.slice(i, i + CHUNK_SIZE);
+          const hfBatch = writeBatch(db);
+          let addedInChunk = 0;
+
+          for (const row of chunk) {
+            const ticketId = row['Ticket ID'];
+            if (!ticketId || ticketId.trim() === '') continue;
+
+            const sanitizedRow = { ...row };
+            for (const col of unwantedColumns) {
+              delete sanitizedRow[col];
+            }
+
+            // Remove empty keys
+            Object.keys(sanitizedRow).forEach((key) => {
+              if (sanitizedRow[key] === undefined) {
+                delete sanitizedRow[key];
+              }
+            });
+
+            // Parse numbers where appropriate
+            if (sanitizedRow['Time Spent (seconds)'])
+              sanitizedRow['Time Spent (seconds)'] =
+                parseInt(sanitizedRow['Time Spent (seconds)']) || 0;
+            if (sanitizedRow['First Response Time (Minutes)'])
+              sanitizedRow['First Response Time (Minutes)'] =
+                parseInt(sanitizedRow['First Response Time (Minutes)']) || 0;
+            if (sanitizedRow['Response Time (Minutes)'])
+              sanitizedRow['Response Time (Minutes)'] =
+                parseInt(sanitizedRow['Response Time (Minutes)']) || 0;
+            if (sanitizedRow['Number of Agent Replies'])
+              sanitizedRow['Number of Agent Replies'] =
+                parseInt(sanitizedRow['Number of Agent Replies']) || 0;
+
+            const docRef = doc(db, 'support_tickets', ticketId);
+            hfBatch.set(docRef, sanitizedRow, { merge: true });
+            addedInChunk++;
+            updateCount++;
+          }
+          if (addedInChunk > 0) {
+            await hfBatch.commit();
+          }
+        }
+      }
+
       if (updatePromises.length > 0) {
         await Promise.all(updatePromises);
       }
@@ -662,6 +752,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         satisfactionFile.file?.name,
         sessionsFile.file?.name,
         viewsFile.file?.name,
+        npsFile.file?.name,
+        happyfoxFile.file?.name,
       ]
         .filter(Boolean)
         .join(', ');
@@ -671,6 +763,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       if (sessionsFile.file) uploadedTypes.push('Userpilot Sessions');
       if (viewsFile.file) uploadedTypes.push('Userpilot Page Views');
       if (npsFile.file) uploadedTypes.push('Userpilot NPS');
+      if (happyfoxFile.file) uploadedTypes.push('Happyfox Support Metrics');
 
       const formattedEntityName = uploadedTypes.join(', ');
 
@@ -706,6 +799,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       setSatisfactionFile({ file: null, parsedData: null, error: null });
       setSessionsFile({ file: null, parsedData: null, error: null });
       setViewsFile({ file: null, parsedData: null, error: null });
+      setHappyfoxFile({ file: null, parsedData: null, error: null });
     } catch (err: any) {
       console.error(err);
       toast.error('Compiler error: ' + err.message);
@@ -718,7 +812,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     satisfactionFile.parsedData ||
     sessionsFile.parsedData ||
     viewsFile.parsedData ||
-    npsFile.parsedData;
+    npsFile.parsedData ||
+    happyfoxFile.parsedData;
 
   const stagedFiles = [
     {
@@ -756,6 +851,15 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       color: 'text-blue-500',
       bg: 'bg-blue-50',
       border: 'border-blue-200',
+    },
+    {
+      type: 'happyfox',
+      label: 'Support Tickets',
+      data: happyfoxFile,
+      icon: LifeBuoy,
+      color: 'text-rose-500',
+      bg: 'bg-rose-50',
+      border: 'border-rose-200',
     },
   ].filter((f) => f.data.file || f.data.error);
 
@@ -844,7 +948,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
 
               <div className="relative z-20 pointer-events-auto">
                 <Tooltip
-                  content="Filenames must contain 'satisfaction' (or 'customer'), 'sessions', 'views', or 'nps' to be auto-mapped."
+                  content="Filenames must contain 'satisfaction' (or 'customer'), 'sessions', 'views', 'nps', or 'happyfox' (or 'tabular_export') to be auto-mapped."
                   position="bottom"
                 >
                   <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 bg-white hover:bg-slate-50 transition-colors px-3 py-1.5 rounded-full border border-slate-200 shadow-sm cursor-help">
