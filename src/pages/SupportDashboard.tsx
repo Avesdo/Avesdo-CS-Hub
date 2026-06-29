@@ -993,6 +993,8 @@ export default function SupportDashboard() {
               if (preset === 'custom') setCustomDates(start, end);
               setDateRange(preset);
             }}
+            minDate={new Date(2025, 9, 1)}
+            maxDate={new Date()}
           />
         </div>
       </div>

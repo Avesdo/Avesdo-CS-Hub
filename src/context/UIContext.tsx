@@ -14,7 +14,7 @@ export type DrawerType =
   | 'dashDrilldown'
   | 'unscheduledProjects'
   | null;
-export type ModalType = 'addClient' | 'addProject' | 'addService' | null;
+export type ModalType = 'addClient' | 'addProject' | 'addService' | 'scheduleModal' | null;
 
 export interface DrawerState {
   type: DrawerType;

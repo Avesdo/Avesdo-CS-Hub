@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import * as Popover from '@radix-ui/react-popover';
 import { MultiSelect } from './ui/MultiSelect';
 import { Select } from './ui/Select';
@@ -342,47 +341,25 @@ export const DateFilter = ({ dateRange, setDateRange }: any) => {
 
 export const StatusDropdown = ({ value, options, onChange, settings }: any) => {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setIsOpen(false);
-    };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
 
   return (
     <div
       className="relative inline-block"
-      ref={ref}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <div
-        onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer hover:opacity-80 transition-all active:scale-95 flex items-center"
-      >
-        {getSettingBadge('serviceStatuses', value, settings)}
-      </div>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 mt-2 min-w-[140px] bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[90] overflow-hidden flex flex-col max-h-[300px]"
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen} modal={true}>
+        <Popover.Trigger asChild>
+          <div className="cursor-pointer hover:opacity-80 transition-all active:scale-95 flex items-center">
+            {getSettingBadge('serviceStatuses', value, settings)}
+          </div>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            align="start"
+            sideOffset={8}
+            className="bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[99999] overflow-hidden flex flex-col max-h-[300px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200 min-w-[140px]"
           >
             <div className="overflow-y-auto p-1 custom-thin-scroll">
               {options.map((opt: string) => (
@@ -403,9 +380,9 @@ export const StatusDropdown = ({ value, options, onChange, settings }: any) => {
                 </button>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };

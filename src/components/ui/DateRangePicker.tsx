@@ -23,6 +23,11 @@ interface DateRangePickerProps {
   endDate: number | null;
   onChange: (preset: PresetRange, start: number | null, end: number | null) => void;
   className?: string;
+  minDate?: Date;
+  maxDate?: Date;
+  hidePresets?: boolean;
+  placeholder?: string;
+  variant?: 'default' | 'outline';
 }
 
 const PRESETS: { label: string; value: PresetRange }[] = [
@@ -34,15 +39,17 @@ const PRESETS: { label: string; value: PresetRange }[] = [
   { label: 'Custom Range', value: 'custom' },
 ];
 
-const MIN_DATE = new Date(2025, 9, 1); // Oct 1, 2025
-const MAX_DATE = startOfDay(new Date());
-
 export function DateRangePicker({
   preset,
   startDate,
   endDate,
   onChange,
   className = '',
+  minDate,
+  maxDate,
+  hidePresets = false,
+  placeholder,
+  variant = 'default',
 }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [leftMonth, setLeftMonth] = useState<Date>(startOfMonth(new Date()));
@@ -93,13 +100,13 @@ export function DateRangePicker({
   const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   const getDisplayString = () => {
-    if (preset !== 'custom') {
-      return PRESETS.find((p) => p.value === preset)?.label || 'Select Date Range';
+    if (preset !== 'custom' && !hidePresets) {
+      return PRESETS.find((p) => p.value === preset)?.label || placeholder || 'Select Date Range';
     }
     if (startDate && endDate) {
       return `${format(new Date(startDate), 'MMM dd, yyyy')} - ${format(new Date(endDate), 'MMM dd, yyyy')}`;
     }
-    return 'Custom Range';
+    return placeholder || 'Custom Range';
   };
 
   const handlePresetClick = (p: PresetRange) => {
@@ -136,9 +143,9 @@ export function DateRangePicker({
     if (isStart) setStartInput(val);
     else setEndInput(val);
 
-    const d = new Date(val);
-    if (!isNaN(d.getTime()) && d.getFullYear() > 2000) {
-      if (d < MIN_DATE || d > MAX_DATE) return;
+    const d = new Date(val.replace(/[-.]/g, '/'));
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1900 && d.getFullYear() < 2100) {
+      if ((minDate && d < minDate) || (maxDate && d > maxDate)) return;
 
       setLocalPreset('custom');
       if (isStart) {
@@ -206,7 +213,7 @@ export function DateRangePicker({
               localStart &&
               localEnd &&
               isWithinInterval(day, { start: new Date(localStart), end: new Date(localEnd) });
-            const isDisabled = day < MIN_DATE || day > MAX_DATE;
+            const isDisabled = (minDate && day < minDate) || (maxDate && day > maxDate);
 
             let bgClass = 'bg-transparent';
             let roundedClass = 'rounded-md';
@@ -247,16 +254,32 @@ export function DateRangePicker({
     );
   };
 
+  const isOutline = variant === 'outline';
+  const buttonClass = isOutline
+    ? `flex items-center gap-2 justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-slate-400/20 transition-all duration-200 h-10 ${className}`
+    : `group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-slate-400/20 ${className}`;
+
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <button
-          className={`group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-slate-400/20 ${className}`}
-        >
-          <div className="flex items-center gap-1.5 flex-1 text-left">
-            <TruncatedText text={getDisplayString()} className="text-foreground font-bold" />
-          </div>
-          <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+        <button className={buttonClass}>
+          {isOutline ? (
+            <>
+              <span
+                className={`font-semibold whitespace-nowrap text-left ${startDate && endDate ? 'text-foreground' : 'text-muted-foreground'}`}
+              >
+                {getDisplayString()}
+              </span>
+              <CalendarIcon className="w-4 h-4 text-muted-foreground shrink-0 ml-1" />
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-1.5 flex-1 text-left">
+                <TruncatedText text={getDisplayString()} className="text-foreground font-bold" />
+              </div>
+              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+            </>
+          )}
         </button>
       </Popover.Trigger>
 
@@ -295,19 +318,21 @@ export function DateRangePicker({
           )}
 
           {/* Presets Section */}
-          <div className="w-48 bg-transparent border-l border-slate-200/60 p-2 flex flex-col gap-1">
-            {PRESETS.map((p) => (
-              <button
-                key={p.value}
-                onClick={() => handlePresetClick(p.value)}
-                className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 w-full text-left ${
-                  localPreset === p.value ? 'text-primary' : ''
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
+          {!hidePresets && (
+            <div className="w-48 bg-transparent border-l border-slate-200/60 p-2 flex flex-col gap-1">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.value}
+                  onClick={() => handlePresetClick(p.value)}
+                  className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 w-full text-left ${
+                    localPreset === p.value ? 'text-primary' : ''
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          )}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

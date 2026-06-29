@@ -14,6 +14,19 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { format } from 'date-fns';
 import { useUI } from '../context/UIContext';
+import { useScheduleData } from '../hooks/useScheduleData';
+import {
+  Calendar as CalendarIcon,
+  ExternalLink,
+  Sun,
+  UserX,
+  Clock,
+  CheckCircle2,
+  ChevronRight,
+  AlertTriangle,
+  CalendarDays,
+  Users,
+} from 'lucide-react';
 
 function NotificationBell() {
   const { openDrawer } = useUI();
@@ -139,6 +152,314 @@ function NotificationBell() {
   );
 }
 
+function TeamScheduleWidget() {
+  const { openModal } = useUI();
+  const [isOpen, setIsOpen] = useState(false);
+  const { scheduleData, loading, getTodaySchedule } = useScheduleData();
+
+  const todayData = getTodaySchedule();
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-6">
+          <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      );
+    }
+
+    const now = new Date();
+    const getHourInTZ = (tz: string) => {
+      try {
+        return parseInt(
+          new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            hour: 'numeric',
+            hourCycle: 'h23',
+          }).format(now),
+          10
+        );
+      } catch (e) {
+        return now.getHours(); // fallback
+      }
+    };
+
+    const estHour = getHourInTZ('America/New_York');
+    const pstHour = getHourInTZ('America/Los_Angeles');
+    const currentDay = now.getDay();
+    const isWeekend = currentDay === 0 || currentDay === 6;
+    const isThurFri = currentDay === 4 || currentDay === 5;
+
+    type ShiftState = 'active' | 'upcoming' | 'completed';
+    interface Shift {
+      id: string;
+      name: string;
+      timeRange: string;
+      managers: string[];
+      state: ShiftState;
+    }
+
+    const shifts: Shift[] = [];
+
+    // 1. EST Core
+    if (!isWeekend) {
+      let state: ShiftState = 'upcoming';
+      if (estHour >= 17) state = 'completed';
+      else if (estHour >= 9) state = 'active';
+
+      shifts.push({
+        id: 'est',
+        name: 'EST',
+        timeRange: '9:00 AM - 5:00 PM EST',
+        managers: todayData.estManagers || [],
+        state,
+      });
+    }
+
+    // 2. PST Core
+    if (!isWeekend) {
+      let state: ShiftState = 'upcoming';
+      if (pstHour >= 18) state = 'completed';
+      else if (pstHour >= 10) state = 'active';
+
+      shifts.push({
+        id: 'pst',
+        name: 'PST',
+        timeRange: '10:00 AM - 6:00 PM PST',
+        managers: todayData.pstManagers || [],
+        state,
+      });
+    }
+
+    // 3. PST Extended / Weekend
+    if (isThurFri || isWeekend) {
+      let state: ShiftState = 'upcoming';
+      if (pstHour >= 19) state = 'completed';
+      else if (pstHour >= 9) state = 'active';
+
+      shifts.push({
+        id: 'pst-ext',
+        name: isWeekend ? 'Weekend Coverage' : 'PST Extended',
+        timeRange: '9:00 AM - 7:00 PM PST',
+        managers: todayData.pstThurSunManager ? [todayData.pstThurSunManager] : [],
+        state,
+      });
+    }
+
+    // 4. After Hours
+    if (!isWeekend) {
+      let state: ShiftState = 'upcoming';
+      if (pstHour >= 17 || pstHour < 1) state = 'active';
+      else if (pstHour >= 1) state = 'upcoming';
+
+      shifts.push({
+        id: 'after-hours',
+        name: 'After Hours',
+        timeRange: '5:00 PM - 1:00 AM PST',
+        managers: todayData.istMonFriManager ? [todayData.istMonFriManager] : [],
+        state,
+      });
+    }
+
+    const hasUpcoming =
+      todayData.upcomingHolidays?.length ||
+      todayData.upcomingTimeOff?.length ||
+      (isThurFri && todayData.upcomingWeekendCoverage);
+
+    const formatDates = (dates: string[]) => {
+      return dates
+        .map((dateStr) => {
+          if (dateStr.includes(' to ')) {
+            const [start, end] = dateStr.split(' to ');
+            const startDate = new Date(`${start}T12:00:00`);
+            const endDate = new Date(`${end}T12:00:00`);
+            return `${startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+          }
+          return new Date(`${dateStr}T12:00:00`).toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+          });
+        })
+        .join(', ');
+    };
+
+    return (
+      <div className="flex flex-col max-h-[80vh] overflow-y-auto custom-thin-scroll">
+        {todayData.isStatHoliday && (
+          <div className="bg-amber-50 border-b border-amber-100 p-3 text-center">
+            <h4 className="text-amber-800 font-bold text-sm mb-0.5 flex justify-center items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4" /> {todayData.statHolidayName}
+            </h4>
+            <p className="text-amber-600 font-medium text-xs">Reduced schedule in effect.</p>
+          </div>
+        )}
+
+        <div className="p-2 space-y-1.5">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 mb-2 px-1">
+            <Sun className="w-3.5 h-3.5 text-amber-500" /> Today's Coverage
+          </div>
+
+          {shifts.map((shift) => {
+            const isActive = shift.state === 'active';
+            const isCompleted = shift.state === 'completed';
+            return (
+              <div
+                key={shift.id}
+                className={`flex flex-col px-3 py-2 rounded-lg border transition-colors ${isActive ? 'bg-emerald-50/40 border-emerald-200' : isCompleted ? 'bg-slate-50 border-slate-100 opacity-60' : 'bg-white border-slate-200 shadow-sm'}`}
+              >
+                <div className="flex items-center justify-between mb-0.5">
+                  <div className="flex items-center gap-2">
+                    <h4
+                      className={`font-semibold text-sm ${isActive ? 'text-emerald-800' : 'text-slate-700'}`}
+                    >
+                      {shift.name}
+                    </h4>
+                  </div>
+                  <div className="text-[10px] font-semibold text-slate-400">{shift.timeRange}</div>
+                </div>
+                <div className="flex items-center gap-1.5 mt-0">
+                  <Users
+                    className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
+                  />
+                  <span
+                    className={`text-sm font-medium ${shift.managers.length > 0 ? (isActive ? 'text-emerald-700' : 'text-slate-600') : 'text-slate-400 italic'}`}
+                  >
+                    {shift.managers.length > 0
+                      ? typeof shift.managers === 'string'
+                        ? shift.managers
+                        : shift.managers
+                            .map((m: any) => (typeof m === 'object' ? m.name : m))
+                            .join(', ')
+                      : 'Unassigned'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+
+          {shifts.length === 0 && !todayData.isStatHoliday && (
+            <div className="text-center text-sm text-slate-500 py-4 italic">
+              No coverage scheduled today.
+            </div>
+          )}
+          {/* Time Off Today */}
+          {todayData.peopleOffToday.length > 0 && (
+            <div className="flex flex-col px-3 py-2 rounded-lg border transition-colors bg-red-50/40 border-red-200 shadow-sm">
+              <div className="flex items-center justify-between mb-0.5">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-semibold text-sm text-red-800">Away Today</h4>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 mt-0">
+                <UserX className="w-3.5 h-3.5 text-red-500" />
+                <span className="text-sm font-medium text-red-700">
+                  {todayData.peopleOffToday.map((m: string, i: number) => (
+                    <React.Fragment key={m}>
+                      {m}
+                      {i < todayData.peopleOffToday.length - 1 ? ', ' : ''}
+                    </React.Fragment>
+                  ))}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 7-Day Lookahead */}
+        {hasUpcoming && (
+          <div className="bg-slate-50/80 border-t border-slate-200/60 p-4 space-y-4">
+            <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500">
+              <CalendarDays className="w-3.5 h-3.5" /> Upcoming
+            </div>
+
+            {todayData.upcomingTimeOff && todayData.upcomingTimeOff.length > 0 && (
+              <div>
+                <div className="text-[11px] font-semibold text-red-500 mb-1">Time Off</div>
+                <div className="space-y-1">
+                  {todayData.upcomingTimeOff.map((t: any, i: number) => (
+                    <div key={i} className="text-xs text-slate-700 flex justify-between">
+                      <span>{t.manager}</span>
+                      <span className="text-slate-500">{formatDates(t.dates)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {todayData.upcomingHolidays && todayData.upcomingHolidays.length > 0 && (
+              <div>
+                <div className="text-[11px] font-semibold text-amber-600 mb-1">Stat Holidays</div>
+                <div className="space-y-1">
+                  {todayData.upcomingHolidays.map((h: any, i: number) => (
+                    <div key={i} className="text-xs text-slate-700 flex justify-between">
+                      <span>{h.name}</span>
+                      <span className="text-slate-500">
+                        {new Date(`${h.date}T12:00:00`).toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {isThurFri && todayData.upcomingWeekendCoverage && (
+              <div>
+                <div className="text-[11px] font-semibold text-indigo-500 mb-1">
+                  Weekend Coverage
+                </div>
+                <div className="text-xs text-slate-700 font-medium">
+                  {todayData.upcomingWeekendCoverage}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="relative group bg-white hover:bg-slate-50 border-slate-200/60 text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm transition-all duration-300 rounded-full h-10 w-10 p-0 flex items-center justify-center"
+        >
+          <CalendarIcon className="w-[1.25rem] h-[1.25rem] transition-all duration-300 group-hover:scale-110" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-[280px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+        align="end"
+        sideOffset={8}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-white">
+          <div className="flex items-center gap-2 text-slate-800">
+            <CalendarIcon className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm">Team Schedule</h3>
+          </div>
+          <Button
+            variant="link"
+            className="h-auto p-0 text-xs text-primary flex items-center gap-0.5"
+            onClick={() => {
+              setIsOpen(false);
+              openModal('scheduleModal');
+            }}
+          >
+            Full Schedule <ChevronRight className="w-3 h-3" />
+          </Button>
+        </div>
+
+        {renderContent()}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function Header() {
   return (
     <header
@@ -148,6 +469,7 @@ export default function Header() {
       <div className="h-[60px] flex items-center px-4 md:px-6 gap-2 md:gap-4">
         <GlobalSearch />
         <div className="flex-1"></div>
+        <TeamScheduleWidget />
         <NotificationBell />
       </div>
     </header>

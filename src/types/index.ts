@@ -92,6 +92,16 @@ export interface Settings {
     };
     thresholds: { healthy: number; warning: number };
   };
+  estManagers?: string[];
+  pstManagers?: string[];
+  statHolidays?: { date: string; name: string; location: string }[];
+  timeOff?: {
+    date?: string;
+    startDate?: string;
+    endDate?: string;
+    manager: string;
+    type?: string;
+  }[];
   [key: string]: any;
 }
 
