@@ -26,6 +26,7 @@ import {
   AlertTriangle,
   CalendarDays,
   Users,
+  User,
 } from 'lucide-react';
 
 function NotificationBell() {
@@ -239,7 +240,7 @@ function TeamScheduleWidget() {
 
       shifts.push({
         id: 'pst-ext',
-        name: isWeekend ? 'Weekend Coverage' : 'PST Extended',
+        name: isWeekend ? 'Weekend' : 'PST Extended',
         timeRange: '9:00 AM - 7:00 PM PST',
         managers: todayData.pstThurSunManager ? [todayData.pstThurSunManager] : [],
         state,
@@ -318,9 +319,15 @@ function TeamScheduleWidget() {
                   <div className="text-[10px] font-semibold text-slate-400">{shift.timeRange}</div>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0">
-                  <Users
-                    className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
-                  />
+                  {shift.managers.length > 1 ? (
+                    <Users
+                      className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
+                    />
+                  ) : (
+                    <User
+                      className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
+                    />
+                  )}
                   <span
                     className={`text-sm font-medium ${shift.managers.length > 0 ? (isActive ? 'text-emerald-700' : 'text-slate-600') : 'text-slate-400 italic'}`}
                   >
@@ -351,7 +358,11 @@ function TeamScheduleWidget() {
                 </div>
               </div>
               <div className="flex items-center gap-1.5 mt-0">
-                <UserX className="w-3.5 h-3.5 text-red-500" />
+                {todayData.peopleOffToday.length > 1 ? (
+                  <Users className="w-3.5 h-3.5 text-red-500" />
+                ) : (
+                  <User className="w-3.5 h-3.5 text-red-500" />
+                )}
                 <span className="text-sm font-medium text-red-700">
                   {todayData.peopleOffToday.map((m: string, i: number) => (
                     <React.Fragment key={m}>
@@ -367,55 +378,59 @@ function TeamScheduleWidget() {
 
         {/* 7-Day Lookahead */}
         {hasUpcoming && (
-          <div className="bg-slate-50/80 border-t border-slate-200/60 p-4 space-y-4">
-            <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500">
+          <div className="bg-slate-50 border-t border-slate-200/60 p-4 space-y-4">
+            <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 mb-2">
               <CalendarDays className="w-3.5 h-3.5" /> Upcoming
             </div>
 
-            {todayData.upcomingTimeOff && todayData.upcomingTimeOff.length > 0 && (
-              <div>
-                <div className="text-[11px] font-semibold text-red-500 mb-1">Time Off</div>
-                <div className="space-y-1">
-                  {todayData.upcomingTimeOff.map((t: any, i: number) => (
-                    <div key={i} className="text-xs text-slate-700 flex justify-between">
-                      <span>{t.manager}</span>
-                      <span className="text-slate-500">{formatDates(t.dates)}</span>
-                    </div>
-                  ))}
+            <div className="space-y-4">
+              {todayData.upcomingTimeOff && todayData.upcomingTimeOff.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-red-500 mb-1.5">Time Off</div>
+                  <div className="space-y-2">
+                    {todayData.upcomingTimeOff.map((t: any, i: number) => (
+                      <div key={i} className="text-xs flex justify-between items-center gap-2">
+                        <span className="font-medium text-slate-700">{t.manager}</span>
+                        <span className="text-slate-500 text-[10.5px] bg-slate-100/50 px-1.5 py-0.5 rounded">
+                          {formatDates(t.dates)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {todayData.upcomingHolidays && todayData.upcomingHolidays.length > 0 && (
-              <div>
-                <div className="text-[11px] font-semibold text-amber-600 mb-1">Stat Holidays</div>
-                <div className="space-y-1">
-                  {todayData.upcomingHolidays.map((h: any, i: number) => (
-                    <div key={i} className="text-xs text-slate-700 flex justify-between">
-                      <span>{h.name}</span>
-                      <span className="text-slate-500">
-                        {new Date(`${h.date}T12:00:00`).toLocaleDateString(undefined, {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                  ))}
+              {todayData.upcomingHolidays && todayData.upcomingHolidays.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-amber-600 mb-1.5">
+                    Stat Holidays
+                  </div>
+                  <div className="space-y-2">
+                    {todayData.upcomingHolidays.map((h: any, i: number) => (
+                      <div key={i} className="text-xs flex justify-between items-center gap-2">
+                        <span className="font-medium text-slate-700">{h.name}</span>
+                        <span className="text-slate-500 text-[10.5px] bg-slate-100/50 px-1.5 py-0.5 rounded">
+                          {new Date(`${h.date}T12:00:00`).toLocaleDateString(undefined, {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {isThurFri && todayData.upcomingWeekendCoverage && (
-              <div>
-                <div className="text-[11px] font-semibold text-indigo-500 mb-1">
-                  Weekend Coverage
+              {isThurFri && todayData.upcomingWeekendCoverage && (
+                <div>
+                  <div className="text-[11px] font-semibold text-indigo-500 mb-1.5">Weekend</div>
+                  <div className="text-xs font-medium text-slate-700">
+                    {todayData.upcomingWeekendCoverage}
+                  </div>
                 </div>
-                <div className="text-xs text-slate-700 font-medium">
-                  {todayData.upcomingWeekendCoverage}
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -442,19 +457,22 @@ function TeamScheduleWidget() {
             <CalendarIcon className="w-4 h-4 text-primary" />
             <h3 className="font-semibold text-sm">Team Schedule</h3>
           </div>
+        </div>
+
+        <div className="max-h-[350px] overflow-y-auto">{renderContent()}</div>
+
+        <div className="p-1 border-t border-slate-200/60 bg-slate-50/50">
           <Button
-            variant="link"
-            className="h-auto p-0 text-xs text-primary flex items-center gap-0.5"
+            variant="ghost"
+            className="w-full text-xs text-primary font-medium hover:text-primary hover:bg-primary/10 h-8 transition-colors"
             onClick={() => {
               setIsOpen(false);
               openModal('scheduleModal');
             }}
           >
-            Full Schedule <ChevronRight className="w-3 h-3" />
+            View Full Schedule
           </Button>
         </div>
-
-        {renderContent()}
       </PopoverContent>
     </Popover>
   );

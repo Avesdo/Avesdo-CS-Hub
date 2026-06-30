@@ -39,7 +39,8 @@ export function useScheduleData() {
     async function fetchData() {
       try {
         setLoading(true);
-        const res = await fetch(SHEET_CSV_URL);
+        const urlWithCacheBust = `${SHEET_CSV_URL}&t=${new Date().getTime()}`;
+        const res = await fetch(urlWithCacheBust);
         if (!res.ok) throw new Error('Failed to fetch schedule data');
         const text = await res.text();
 

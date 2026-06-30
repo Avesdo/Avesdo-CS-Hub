@@ -41,6 +41,7 @@ import {
   Pipette,
   Calendar,
   ExternalLink,
+  Info,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
@@ -667,23 +668,7 @@ export default function SettingsDraft() {
   const [editHolidayName, setEditHolidayName] = useState<string>('');
   const [editingHolidayIndex, setEditingHolidayIndex] = useState<number | null>(null);
   const [showPastHolidays, setShowPastHolidays] = useState(false);
-
-  // Auto-delete past time off
-  useEffect(() => {
-    if (!settings?.timeOff) return;
-
-    const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .split('T')[0];
-    const validTimeOff = settings.timeOff.filter((t: any) => {
-      const end = t.endDate || t.date;
-      return end >= todayStr;
-    });
-
-    if (validTimeOff.length !== settings.timeOff.length) {
-      saveSettings({ ...(settings as any), timeOff: validTimeOff });
-    }
-  }, [settings?.timeOff]);
+  const [showPastTimeOff, setShowPastTimeOff] = useState(false);
 
   const getTemplate = (formName: string) => {
     let templateId = Object.keys(settings?.templates || {}).find(
@@ -2128,6 +2113,7 @@ export default function SettingsDraft() {
   const tabSubtitleMap: Record<string, string> = {
     global:
       'Manage fundamental taxonomies, team members, and capabilities that power your workspace.',
+    schedule: 'Configure fixed EST/PST shifts, time off, and statutory holidays for the team.',
     pipeline:
       'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
     exports:
@@ -2255,348 +2241,428 @@ export default function SettingsDraft() {
             )}
             {activeTab === 'schedule' && (
               <div className="max-w-4xl animate-in fade-in duration-300">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-lg font-bold text-slate-800">
-                      Team Schedule Configuration
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1">
-                      Configure ongoing shifts, stat holidays, and time off.
-                    </p>
-                  </div>
-                  <a
-                    href="https://docs.google.com/spreadsheets/d/1sBG1AyGHvyNPkGVLfgcQwdIiz0GxXV4rM2wltZ_7msA/edit?usp=sharing"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Open Source Sheet
-                  </a>
-                </div>
-                <div className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-800 mb-1">
-                        Ongoing EST Shifts (Mon-Fri 9am-5pm)
-                      </h3>
-                      <p className="text-[13px] text-slate-500 mb-3">
-                        Select the managers who work this shift on an ongoing basis.
-                      </p>
-                      <MultiSelectCombobox
-                        options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
-                        selectedValues={settings?.estManagers || []}
-                        onChange={(vals) =>
-                          saveSettings({ ...(settings as any), estManagers: vals })
-                        }
-                        placeholder="Select EST managers..."
-                      />
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-800 mb-1">
-                        Ongoing PST Shifts (Mon-Fri 10am-6pm)
-                      </h3>
-                      <p className="text-[13px] text-slate-500 mb-3">
-                        Select the managers who work this shift on an ongoing basis.
-                      </p>
-                      <MultiSelectCombobox
-                        options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
-                        selectedValues={settings?.pstManagers || []}
-                        onChange={(vals) =>
-                          saveSettings({ ...(settings as any), pstManagers: vals })
-                        }
-                        placeholder="Select PST managers..."
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-6 border-t border-slate-200">
-                    <h3 className="text-sm font-semibold text-slate-800 mb-1">Time Off</h3>
-                    <p className="text-[13px] text-slate-500 mb-4">
-                      Record time off for managers to exclude them from the schedule on those days.
-                    </p>
-
-                    <div className="flex items-center gap-2 mb-4">
-                      <DateRangePicker
-                        preset="custom"
-                        startDate={newTimeOffStart}
-                        endDate={newTimeOffEnd}
-                        onChange={(_, start, end) => {
-                          setNewTimeOffStart(start);
-                          setNewTimeOffEnd(end);
-                        }}
-                        className="w-auto min-w-[180px]"
-                        hidePresets={true}
-                        placeholder="Select Date"
-                        variant="outline"
-                      />
-                      <Select
-                        value={newTimeOffManager}
-                        onChange={(val) => setNewTimeOffManager(val)}
-                        options={(settings?.managers || []).map((m: any) => ({
-                          label: m.name,
-                          value: m.name,
-                        }))}
-                        trigger={
-                          <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between min-w-[200px] flex-1">
-                            {newTimeOffManager || (
-                              <span className="text-muted-foreground">Select Manager...</span>
-                            )}
-                            <ChevronDown className="w-4 h-4 text-slate-400" />
-                          </button>
-                        }
-                      />
-                      <button
-                        onClick={() => {
-                          if (newTimeOffStart && newTimeOffEnd && newTimeOffManager) {
-                            const newEntry = {
-                              startDate: format(new Date(newTimeOffStart), 'yyyy-MM-dd'),
-                              endDate: format(new Date(newTimeOffEnd), 'yyyy-MM-dd'),
-                              manager: newTimeOffManager,
-                            };
-
-                            const existingTimeOff = [...(settings?.timeOff || [])];
-
-                            // Filter out exact duplicates (same start, end, and manager)
-                            const filteredExisting = existingTimeOff.filter(
-                              (t: any) =>
-                                !(
-                                  t.manager === newEntry.manager &&
-                                  (t.startDate || t.date) === newEntry.startDate &&
-                                  (t.endDate || t.date) === newEntry.endDate
-                                )
-                            );
-                            existingTimeOff.splice(
-                              0,
-                              existingTimeOff.length,
-                              ...filteredExisting,
-                              newEntry
-                            );
-
-                            // Sort by date asc
-                            existingTimeOff.sort(
-                              (a: any, b: any) =>
-                                new Date(a.startDate || a.date).getTime() -
-                                new Date(b.startDate || b.date).getTime()
-                            );
-                            saveSettings({ ...(settings as any), timeOff: existingTimeOff });
-                            setNewTimeOffStart(null);
-                            setNewTimeOffEnd(null);
-                            setNewTimeOffManager('');
+                <div className="space-y-8 mt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center border border-sky-100 shrink-0">
+                          <LucideIcons.Clock className="w-5 h-5 text-sky-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-slate-800 leading-tight">EST</h3>
+                          <p className="text-xs font-medium text-slate-500 mt-1">Mon-Fri 9am-5pm</p>
+                        </div>
+                      </div>
+                      <div>
+                        <MultiSelectCombobox
+                          variant="inline"
+                          options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
+                          selectedValues={settings?.estManagers || []}
+                          onChange={(vals) =>
+                            saveSettings({ ...(settings as any), estManagers: vals })
                           }
-                        }}
-                        className="bg-primary text-white px-4 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-                      >
-                        Add
-                      </button>
+                          placeholder="Select managers..."
+                        />
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      {(settings?.timeOff || []).map((t: any, i: number) => (
-                        <div
-                          key={i}
-                          className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm"
+                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100 shrink-0">
+                          <LucideIcons.Clock className="w-5 h-5 text-indigo-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-slate-800 leading-tight">PST</h3>
+                          <p className="text-xs font-medium text-slate-500 mt-1">
+                            Mon-Fri 10am-6pm
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <MultiSelectCombobox
+                          variant="inline"
+                          options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
+                          selectedValues={settings?.pstManagers || []}
+                          onChange={(vals) =>
+                            saveSettings({ ...(settings as any), pstManagers: vals })
+                          }
+                          placeholder="Select managers..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100 shrink-0">
+                          <LucideIcons.Clock className="w-5 h-5 text-amber-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-slate-800 leading-tight">
+                            PST Extended, Weekend, and After Hours
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <a
+                          href="https://docs.google.com/spreadsheets/d/1sBG1AyGHvyNPkGVLfgcQwdIiz0GxXV4rM2wltZ_7msA/edit?usp=sharing"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-semibold text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 transition-all"
                         >
-                          {editingTimeOffIndex === i ? (
-                            <div className="flex items-center gap-2 w-full">
-                              <DateRangePicker
-                                preset="custom"
-                                startDate={editTimeOffStart}
-                                endDate={editTimeOffEnd}
-                                onChange={(_, start, end) => {
-                                  setEditTimeOffStart(start);
-                                  setEditTimeOffEnd(end);
-                                }}
-                                className="w-auto min-w-[180px]"
-                                hidePresets={true}
-                                placeholder="Select Date"
-                                variant="outline"
-                              />
-                              <Select
-                                value={editTimeOffManager}
-                                onChange={(val) => setEditTimeOffManager(val)}
-                                options={(settings?.managers || []).map((m: any) => ({
-                                  label: m.name,
-                                  value: m.name,
-                                }))}
-                                trigger={
-                                  <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between min-w-[200px] flex-1">
-                                    {editTimeOffManager || (
-                                      <span className="text-muted-foreground">
-                                        Select Manager...
-                                      </span>
-                                    )}
-                                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                                  </button>
-                                }
-                              />
-                              <div className="flex items-center gap-1 ml-auto">
-                                <button
-                                  onClick={() => {
-                                    if (editTimeOffStart && editTimeOffEnd && editTimeOffManager) {
-                                      const newEntry = {
-                                        startDate: format(new Date(editTimeOffStart), 'yyyy-MM-dd'),
-                                        endDate: format(new Date(editTimeOffEnd), 'yyyy-MM-dd'),
-                                        manager: editTimeOffManager,
-                                      };
-                                      const existingTimeOff = [...(settings?.timeOff || [])];
-                                      existingTimeOff[i] = newEntry;
-                                      existingTimeOff.sort(
-                                        (a: any, b: any) =>
-                                          new Date(a.startDate || a.date).getTime() -
-                                          new Date(b.startDate || b.date).getTime()
-                                      );
-                                      saveSettings({
-                                        ...(settings as any),
-                                        timeOff: existingTimeOff,
-                                      });
-                                      setEditingTimeOffIndex(null);
-                                      setEditTimeOffStart(null);
-                                      setEditTimeOffEnd(null);
-                                      setEditTimeOffManager('');
-                                    }
-                                  }}
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 rounded transition-colors"
-                                  title="Save"
-                                >
-                                  <Check className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setEditingTimeOffIndex(null);
-                                    setEditTimeOffStart(null);
-                                    setEditTimeOffEnd(null);
-                                    setEditTimeOffManager('');
-                                  }}
-                                  className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded transition-colors"
-                                  title="Cancel"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="flex items-center gap-3">
-                                <span className="font-bold text-slate-800 min-w-[90px]">
-                                  {(t.startDate || t.date) === (t.endDate || t.date)
-                                    ? format(
-                                        new Date(`${t.startDate || t.date}T00:00:00`),
-                                        'MMM d, yyyy'
-                                      )
-                                    : `${format(new Date(`${t.startDate || t.date}T00:00:00`), 'MMM d, yyyy')} - ${format(new Date(`${t.endDate || t.date}T00:00:00`), 'MMM d, yyyy')}`}
-                                </span>
-                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                                <span className="font-medium text-slate-700">{t.manager}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => {
-                                    const sDate = new Date(
-                                      `${t.startDate || t.date}T00:00:00`
-                                    ).getTime();
-                                    const eDate = new Date(
-                                      `${t.endDate || t.date}T00:00:00`
-                                    ).getTime();
-                                    setEditTimeOffStart(sDate);
-                                    setEditTimeOffEnd(eDate);
-                                    setEditTimeOffManager(t.manager);
-                                    setEditingTimeOffIndex(i);
-                                  }}
-                                  className="text-slate-400 hover:text-primary hover:bg-primary/5 p-1.5 rounded transition-colors"
-                                  title="Edit time off"
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    const newTimeOff = (settings?.timeOff || []).filter(
-                                      (_, index) => index !== i
-                                    );
-                                    saveSettings({ ...(settings as any), timeOff: newTimeOff });
-                                  }}
-                                  className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"
-                                  title="Remove time off"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      ))}
-                      {(!settings?.timeOff || settings.timeOff.length === 0) && (
-                        <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-center">
-                          No time off recorded.
-                        </div>
-                      )}
+                          <ExternalLink className="w-4 h-4" />
+                          View Schedule
+                        </a>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-200">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-sm font-semibold text-slate-800">Statutory Holidays</h3>
-                      <label className="flex items-center gap-1.5 text-xs text-slate-500 cursor-pointer hover:text-slate-700 transition-colors">
+                  <div className="pt-8 border-t border-slate-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <User className="w-5 h-5 text-slate-400" />
+                        Time Off Records
+                      </h3>
+                      <label
+                        className={`relative flex items-center p-2 cursor-pointer rounded-lg border transition-all duration-200 group ${showPastTimeOff ? 'bg-primary/5 border-primary shadow-sm ring-1 ring-primary/10' : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                      >
                         <input
                           type="checkbox"
-                          className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5"
-                          checked={showPastHolidays}
-                          onChange={(e) => setShowPastHolidays(e.target.checked)}
+                          checked={showPastTimeOff}
+                          onChange={(e) => setShowPastTimeOff(e.target.checked)}
+                          className="sr-only"
                         />
-                        <span>Show past holidays</span>
+                        <div
+                          className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 mr-2 transition-colors ${showPastTimeOff ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}
+                        >
+                          {showPastTimeOff && (
+                            <Check className="w-2.5 h-2.5 text-white animate-in zoom-in" />
+                          )}
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Show past</span>
                       </label>
                     </div>
-                    <p className="text-[13px] text-slate-500 mb-4">
-                      Add upcoming statutory holidays. During these days, the system will not assign
-                      fixed shifts.
-                    </p>
 
-                    <div className="flex items-center gap-2 mb-4">
-                      <DatePicker
-                        value={newHolidayDate}
-                        onChange={(val) => setNewHolidayDate(val)}
-                        placeholder="Select Date"
-                        className="w-[180px]"
-                      />
-                      <Input
-                        value={newHolidayName}
-                        onChange={(e) => setNewHolidayName(e.target.value)}
-                        placeholder="Holiday Name"
-                        className="flex-1"
-                      />
-                      <button
-                        onClick={() => {
-                          if (newHolidayDate && newHolidayName) {
-                            const dateStr = new Date(
-                              newHolidayDate - new Date().getTimezoneOffset() * 60000
-                            )
-                              .toISOString()
-                              .split('T')[0];
-                            const newHolidays = [...(settings?.statHolidays || [])];
-
-                            newHolidays.push({
-                              date: dateStr,
-                              name: newHolidayName,
-                              location: 'Global',
-                            });
-
-                            // Sort by date asc
-                            newHolidays.sort(
-                              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-                            );
-                            saveSettings({ ...(settings as any), statHolidays: newHolidays });
-                            setNewHolidayDate(null);
-                            setNewHolidayName('');
+                    <div className="bg-slate-50/50 border border-slate-200 rounded-2xl p-4 mb-6">
+                      <div className="flex flex-col md:flex-row gap-3">
+                        <DateRangePicker
+                          preset="custom"
+                          startDate={newTimeOffStart}
+                          endDate={newTimeOffEnd}
+                          onChange={(_, start, end) => {
+                            setNewTimeOffStart(start);
+                            setNewTimeOffEnd(end);
+                          }}
+                          className="flex-1 md:max-w-[260px]"
+                          hidePresets={true}
+                          placeholder="Select Date Range"
+                          variant="outline"
+                        />
+                        <Select
+                          value={newTimeOffManager}
+                          onChange={(val) => setNewTimeOffManager(val)}
+                          options={(settings?.managers || []).map((m: any) => ({
+                            label: m.name,
+                            value: m.name,
+                          }))}
+                          trigger={
+                            <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 md:max-w-[220px]">
+                              {newTimeOffManager || (
+                                <span className="text-muted-foreground">Select Manager...</span>
+                              )}
+                              <ChevronDown className="w-4 h-4 text-slate-400" />
+                            </button>
                           }
-                        }}
-                        className="bg-primary text-white px-4 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-                      >
-                        Add
-                      </button>
+                        />
+                        <button
+                          onClick={() => {
+                            if (newTimeOffStart && newTimeOffEnd && newTimeOffManager) {
+                              const newEntry = {
+                                startDate: format(new Date(newTimeOffStart), 'yyyy-MM-dd'),
+                                endDate: format(new Date(newTimeOffEnd), 'yyyy-MM-dd'),
+                                manager: newTimeOffManager,
+                              };
+                              const existingTimeOff = [...(settings?.timeOff || [])];
+                              existingTimeOff.push(newEntry);
+                              existingTimeOff.sort(
+                                (a: any, b: any) =>
+                                  new Date(a.startDate || a.date).getTime() -
+                                  new Date(b.startDate || b.date).getTime()
+                              );
+                              saveSettings({ ...(settings as any), timeOff: existingTimeOff });
+                              setNewTimeOffStart(null);
+                              setNewTimeOffEnd(null);
+                              setNewTimeOffManager('');
+                            }
+                          }}
+                          disabled={!newTimeOffStart || !newTimeOffEnd || !newTimeOffManager}
+                          className="bg-primary text-white px-5 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                          Add Record
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
+                      {(() => {
+                        const todayStr = new Date(
+                          new Date().getTime() - new Date().getTimezoneOffset() * 60000
+                        )
+                          .toISOString()
+                          .split('T')[0];
+                        const visibleTimeOff = (settings?.timeOff || []).filter((t: any) => {
+                          if (showPastTimeOff) return true;
+                          const end = t.endDate || t.date;
+                          return end >= todayStr;
+                        });
+
+                        return (
+                          <>
+                            {visibleTimeOff.map((t: any, i: number) => (
+                              <div
+                                key={i}
+                                className="flex justify-between items-center bg-white p-3 px-4 rounded-xl border border-slate-200 text-sm shadow-sm hover:shadow-md transition-shadow"
+                              >
+                                {editingTimeOffIndex === i ? (
+                                  <div className="flex items-center gap-3 w-full">
+                                    <DateRangePicker
+                                      preset="custom"
+                                      startDate={editTimeOffStart}
+                                      endDate={editTimeOffEnd}
+                                      onChange={(_, start, end) => {
+                                        setEditTimeOffStart(start);
+                                        setEditTimeOffEnd(end);
+                                      }}
+                                      className="w-[220px]"
+                                      hidePresets={true}
+                                      placeholder="Select Date"
+                                      variant="outline"
+                                    />
+                                    <Select
+                                      value={editTimeOffManager}
+                                      onChange={(val) => setEditTimeOffManager(val)}
+                                      options={(settings?.managers || []).map((m: any) => ({
+                                        label: m.name,
+                                        value: m.name,
+                                      }))}
+                                      trigger={
+                                        <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 max-w-[200px]">
+                                          {editTimeOffManager || (
+                                            <span className="text-muted-foreground">
+                                              Select Manager...
+                                            </span>
+                                          )}
+                                          <ChevronDown className="w-4 h-4 text-slate-400" />
+                                        </button>
+                                      }
+                                    />
+                                    <div className="flex items-center gap-2 ml-auto">
+                                      <button
+                                        onClick={() => {
+                                          if (
+                                            editTimeOffStart &&
+                                            editTimeOffEnd &&
+                                            editTimeOffManager
+                                          ) {
+                                            const newEntry = {
+                                              startDate: format(
+                                                new Date(editTimeOffStart),
+                                                'yyyy-MM-dd'
+                                              ),
+                                              endDate: format(
+                                                new Date(editTimeOffEnd),
+                                                'yyyy-MM-dd'
+                                              ),
+                                              manager: editTimeOffManager,
+                                            };
+                                            const existingTimeOff = [...(settings?.timeOff || [])];
+                                            existingTimeOff[i] = newEntry;
+                                            existingTimeOff.sort(
+                                              (a: any, b: any) =>
+                                                new Date(a.startDate || a.date).getTime() -
+                                                new Date(b.startDate || b.date).getTime()
+                                            );
+                                            saveSettings({
+                                              ...(settings as any),
+                                              timeOff: existingTimeOff,
+                                            });
+                                            setEditingTimeOffIndex(null);
+                                            setEditTimeOffStart(null);
+                                            setEditTimeOffEnd(null);
+                                            setEditTimeOffManager('');
+                                          }
+                                        }}
+                                        className="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setEditingTimeOffIndex(null);
+                                          setEditTimeOffStart(null);
+                                          setEditTimeOffEnd(null);
+                                          setEditTimeOffManager('');
+                                        }}
+                                        className="text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <div className="flex items-center gap-4">
+                                      <div className="flex flex-col">
+                                        <span className="font-bold text-slate-800">
+                                          {(t.startDate || t.date) === (t.endDate || t.date)
+                                            ? format(
+                                                new Date(`${t.startDate || t.date}T00:00:00`),
+                                                'MMM d, yyyy'
+                                              )
+                                            : `${format(new Date(`${t.startDate || t.date}T00:00:00`), 'MMM d, yyyy')} - ${format(new Date(`${t.endDate || t.date}T00:00:00`), 'MMM d, yyyy')}`}
+                                        </span>
+                                      </div>
+                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                          <User className="w-3.5 h-3.5 text-primary" />
+                                        </div>
+                                        <span className="font-medium text-slate-700">
+                                          {t.manager}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={() => {
+                                          const sDate = new Date(
+                                            `${t.startDate || t.date}T00:00:00`
+                                          ).getTime();
+                                          const eDate = new Date(
+                                            `${t.endDate || t.date}T00:00:00`
+                                          ).getTime();
+                                          setEditTimeOffStart(sDate);
+                                          setEditTimeOffEnd(eDate);
+                                          setEditTimeOffManager(t.manager);
+                                          setEditingTimeOffIndex(i);
+                                        }}
+                                        className="text-slate-400 hover:text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors"
+                                        title="Edit time off"
+                                      >
+                                        <Edit2 className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          const newTimeOff = (settings?.timeOff || []).filter(
+                                            (_, index) => index !== i
+                                          );
+                                          saveSettings({
+                                            ...(settings as any),
+                                            timeOff: newTimeOff,
+                                          });
+                                        }}
+                                        className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                        title="Remove time off"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            ))}
+                            {visibleTimeOff.length === 0 && (
+                              <div className="flex flex-col items-center justify-center py-10 px-4 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                                <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center mb-3">
+                                  <User className="w-6 h-6 text-slate-300" />
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-700">
+                                  No time off recorded
+                                </h3>
+                                <p className="text-xs font-medium text-slate-400 mt-1">
+                                  There are no upcoming absences.
+                                </p>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  <div className="pt-8 border-t border-slate-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-slate-400" />
+                        Statutory Holidays
+                      </h3>
+                      <label
+                        className={`relative flex items-center p-2 cursor-pointer rounded-lg border transition-all duration-200 group ${showPastHolidays ? 'bg-primary/5 border-primary shadow-sm ring-1 ring-primary/10' : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={showPastHolidays}
+                          onChange={(e) => setShowPastHolidays(e.target.checked)}
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 mr-2 transition-colors ${showPastHolidays ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}
+                        >
+                          {showPastHolidays && (
+                            <Check className="w-2.5 h-2.5 text-white animate-in zoom-in" />
+                          )}
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Show past</span>
+                      </label>
+                    </div>
+
+                    <div className="bg-slate-50/50 border border-slate-200 rounded-2xl p-4 mb-6">
+                      <div className="flex flex-col md:flex-row gap-3">
+                        <DatePicker
+                          value={newHolidayDate}
+                          onChange={(val) => setNewHolidayDate(val)}
+                          placeholder="Select Holiday Date"
+                          className="flex-1 md:max-w-[200px]"
+                        />
+                        <Input
+                          value={newHolidayName}
+                          onChange={(e) => setNewHolidayName(e.target.value)}
+                          placeholder="e.g. Christmas Day"
+                          className="flex-1 h-10"
+                        />
+                        <button
+                          onClick={() => {
+                            if (newHolidayDate && newHolidayName) {
+                              const dateStr = new Date(
+                                newHolidayDate - new Date().getTimezoneOffset() * 60000
+                              )
+                                .toISOString()
+                                .split('T')[0];
+                              const newHolidays = [...(settings?.statHolidays || [])];
+
+                              newHolidays.push({
+                                date: dateStr,
+                                name: newHolidayName,
+                                location: 'Global',
+                              });
+
+                              // Sort by date asc
+                              newHolidays.sort(
+                                (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+                              );
+                              saveSettings({ ...(settings as any), statHolidays: newHolidays });
+                              setNewHolidayDate(null);
+                              setNewHolidayName('');
+                            }
+                          }}
+                          disabled={!newHolidayDate || !newHolidayName}
+                          className="bg-primary text-white px-5 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                          Add Holiday
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
                       {(() => {
                         const todayStr = new Date(
                           new Date().getTime() - new Date().getTimezoneOffset() * 60000
@@ -2614,10 +2680,10 @@ export default function SettingsDraft() {
                               return (
                                 <div
                                   key={i}
-                                  className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm"
+                                  className="flex justify-between items-center bg-white p-3 px-4 rounded-xl border border-slate-200 text-sm shadow-sm hover:shadow-md transition-shadow"
                                 >
                                   {editingHolidayIndex === i ? (
-                                    <div className="flex items-center gap-2 w-full">
+                                    <div className="flex items-center gap-3 w-full">
                                       <DatePicker
                                         value={editHolidayDate}
                                         onChange={(val) => setEditHolidayDate(val)}
@@ -2628,9 +2694,9 @@ export default function SettingsDraft() {
                                         value={editHolidayName}
                                         onChange={(e) => setEditHolidayName(e.target.value)}
                                         placeholder="Holiday Name"
-                                        className="flex-1"
+                                        className="flex-1 h-10"
                                       />
-                                      <div className="flex items-center gap-1 ml-auto">
+                                      <div className="flex items-center gap-2 ml-auto">
                                         <button
                                           onClick={() => {
                                             if (editHolidayDate && editHolidayName) {
@@ -2662,10 +2728,9 @@ export default function SettingsDraft() {
                                               setEditHolidayName('');
                                             }
                                           }}
-                                          className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 rounded transition-colors"
-                                          title="Save"
+                                          className="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg font-medium transition-colors"
                                         >
-                                          <Check className="w-4 h-4" />
+                                          Save
                                         </button>
                                         <button
                                           onClick={() => {
@@ -2673,20 +2738,19 @@ export default function SettingsDraft() {
                                             setEditHolidayDate(null);
                                             setEditHolidayName('');
                                           }}
-                                          className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded transition-colors"
-                                          title="Cancel"
+                                          className="text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium transition-colors"
                                         >
-                                          <X className="w-4 h-4" />
+                                          Cancel
                                         </button>
                                       </div>
                                     </div>
                                   ) : (
                                     <>
-                                      <div>
+                                      <div className="flex items-center gap-3">
                                         <span className="font-bold text-slate-800">
                                           {format(new Date(`${h.date}T00:00:00`), 'MMM d, yyyy')}
-                                        </span>{' '}
-                                        <span className="mx-2 text-slate-300">|</span>{' '}
+                                        </span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                                         <span className="font-medium text-slate-700">{h.name}</span>
                                       </div>
                                       <div className="flex items-center gap-1">
@@ -2697,7 +2761,7 @@ export default function SettingsDraft() {
                                             setEditHolidayName(h.name);
                                             setEditingHolidayIndex(i);
                                           }}
-                                          className="text-slate-400 hover:text-primary hover:bg-primary/5 p-1.5 rounded transition-colors"
+                                          className="text-slate-400 hover:text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors"
                                           title="Edit holiday"
                                         >
                                           <Edit2 className="w-4 h-4" />
@@ -2717,7 +2781,7 @@ export default function SettingsDraft() {
                                               setNewHolidayName('');
                                             }
                                           }}
-                                          className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"
+                                          className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
                                           title="Remove holiday"
                                         >
                                           <Trash2 className="w-4 h-4" />
@@ -2728,27 +2792,19 @@ export default function SettingsDraft() {
                                 </div>
                               );
                             })}
-                            {(!settings?.statHolidays || settings.statHolidays.length === 0) && (
-                              <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-center">
-                                No statutory holidays configured.
+                            {visibleHolidays.length === 0 && (
+                              <div className="flex flex-col items-center justify-center py-10 px-4 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                                <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center mb-3">
+                                  <Calendar className="w-6 h-6 text-slate-300" />
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-700">
+                                  No statutory holidays
+                                </h3>
+                                <p className="text-xs font-medium text-slate-400 mt-1">
+                                  There are no upcoming global holidays.
+                                </p>
                               </div>
                             )}
-                            {settings?.statHolidays &&
-                              settings.statHolidays.length > 0 &&
-                              (settings?.statHolidays || []).filter(
-                                (h: any) =>
-                                  showPastHolidays ||
-                                  h.date >=
-                                    new Date(
-                                      new Date().getTime() - new Date().getTimezoneOffset() * 60000
-                                    )
-                                      .toISOString()
-                                      .split('T')[0]
-                              ).length === 0 && (
-                                <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-center">
-                                  No upcoming holidays.
-                                </div>
-                              )}
                           </>
                         );
                       })()}
