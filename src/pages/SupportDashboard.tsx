@@ -136,6 +136,10 @@ export default function SupportDashboard() {
   const [workloadSortBy, setWorkloadSortBy] = useState<'volume' | 'time'>('volume');
   const [showWorkingHours, setShowWorkingHours] = useState(false);
   const [selectedRingCategory, setSelectedRingCategory] = useState<string | null>(null);
+  const [timeAnalysisView, setTimeAnalysisView] = useState<
+    'project' | 'category' | 'classification'
+  >('project');
+  const [timeAnalysisFilter, setTimeAnalysisFilter] = useState<'all' | 'significant'>('all');
 
   // 1. Base tickets for the current and previous period, BEFORE applying dropdown filters
   const { currentPeriodBase, previousPeriodBase } = useMemo(() => {
@@ -721,6 +725,92 @@ export default function SupportDashboard() {
         ? workloadData.reduce((acc, curr) => acc + curr.avgTime, 0) / workloadData.length
         : 0;
 
+    // --- NEW: Time Analysis Quadrant Data ---
+    const timeAnalysisMap = new Map<
+      string,
+      {
+        name: string;
+        type: 'project' | 'category' | 'classification';
+        volume: number;
+        totalTimeSpentSec: number;
+        resolvedTickets: number;
+        totalResolutionTimeSec: number;
+      }
+    >();
+
+    filteredTickets.forEach((t) => {
+      const cat = t['Ticket Category'] || 'Uncategorized';
+      const classification =
+        t['Onboarding Classification'] ||
+        t['Maintenance Classification'] ||
+        t['Product Classification'] ||
+        t['Internal Classification'] ||
+        t['Services Classification'] ||
+        'None';
+
+      const rawProjects = t['Ticket Tags'] || '';
+      const projects = rawProjects
+        .split(',')
+        .map((p) => p.trim())
+        .filter((p) => {
+          const lower = p.toLowerCase();
+          return (
+            lower && lower !== 'no project' && lower !== 'unknown project' && lower !== 'unknown'
+          );
+        });
+
+      const timeSpentSec = Number(t['Time Spent (seconds)'] || 0);
+      const isResolved =
+        t['Ticket Status']?.toLowerCase() === 'closed' ||
+        t['Ticket Status']?.toLowerCase() === 'solved';
+      let resolutionTimeSec = 0;
+      if (isResolved && t['Last Closed At'] && t['Created At']) {
+        const closed = parseDate(t['Last Closed At']);
+        const created = parseDate(t['Created At']);
+        if (closed && created) {
+          resolutionTimeSec = (closed.getTime() - created.getTime()) / 1000;
+        }
+      }
+
+      const addToMap = (name: string, type: 'project' | 'category' | 'classification') => {
+        const key = `${type}_${name}`;
+        if (!timeAnalysisMap.has(key)) {
+          timeAnalysisMap.set(key, {
+            name,
+            type,
+            volume: 0,
+            totalTimeSpentSec: 0,
+            resolvedTickets: 0,
+            totalResolutionTimeSec: 0,
+          });
+        }
+        const entry = timeAnalysisMap.get(key)!;
+        entry.volume += 1;
+        entry.totalTimeSpentSec += timeSpentSec;
+        if (isResolved && resolutionTimeSec > 0) {
+          entry.resolvedTickets += 1;
+          entry.totalResolutionTimeSec += resolutionTimeSec;
+        }
+      };
+
+      addToMap(cat, 'category');
+      addToMap(classification, 'classification');
+      projects.forEach((p) => addToMap(p, 'project'));
+    });
+
+    const timeAnalysisData = Array.from(timeAnalysisMap.values())
+      .map((d) => ({
+        name: d.name,
+        type: d.type,
+        volume: d.volume,
+        timeSpentHours: Number((d.totalTimeSpentSec / 3600).toFixed(1)),
+        avgResolutionHours:
+          d.resolvedTickets > 0
+            ? Number((d.totalResolutionTimeSec / d.resolvedTickets / 3600).toFixed(1))
+            : 0,
+      }))
+      .filter((d) => d.volume > 0 && (d.timeSpentHours > 0 || d.avgResolutionHours > 0));
+
     return {
       trendData,
       channelData,
@@ -741,6 +831,7 @@ export default function SupportDashboard() {
       workloadData,
       avgWorkloadVolume,
       avgWorkloadTime,
+      timeAnalysisData,
     };
   }, [
     filteredTickets,
@@ -817,6 +908,56 @@ export default function SupportDashboard() {
 
     return { inner, outer };
   }, [chartData.categoryData, chartData.classificationGrids, selectedRingCategory]);
+
+  const formatTime = (hours: number) => {
+    if (hours === 0) return '0h';
+    if (hours < 1) return `${Math.round(hours * 60)}m`;
+    if (hours < 24) return `${Number(hours.toFixed(1))}h`;
+    return `${Number((hours / 24).toFixed(1))}d`;
+  };
+
+  const currentQuadrantData = useMemo(() => {
+    let data = chartData.timeAnalysisData.filter((d) => d.type === timeAnalysisView);
+    if (timeAnalysisFilter === 'significant') {
+      // Must have at least 3 hours of active time OR took more than 4 hours to resolve
+      data = data
+        .filter((d) => d.timeSpentHours >= 3 || d.avgResolutionHours >= 4)
+        .sort((a, b) => b.timeSpentHours - a.timeSpentHours)
+        .slice(0, 50);
+    }
+    if (data.length === 0) return { data: [], avgX: 0, avgY: 0, minX: 0, maxX: 10, minY: 0, maxY: 10 };
+
+    const xVals = data.map((d) => d.avgResolutionHours).sort((a, b) => a - b);
+    const yVals = data.map((d) => d.timeSpentHours).sort((a, b) => a - b);
+
+    // Use stricter 80th percentile for better zooming
+    const pX = xVals[Math.floor(xVals.length * 0.80)] || 0;
+    const pY = yVals[Math.floor(yVals.length * 0.80)] || 0;
+
+    const avgX = xVals.reduce((a, b) => a + b, 0) / (xVals.length || 1);
+    const avgY = yVals.reduce((a, b) => a + b, 0) / (yVals.length || 1);
+
+    const rawMinX = xVals.length > 0 ? xVals[0] : 0;
+    const rawMinY = yVals.length > 0 ? yVals[0] : 0;
+
+    // Give a little breathing room below the minimum point, bounded at 0
+    const minX = Math.max(0, Math.floor(rawMinX * 0.9));
+    const minY = Math.max(0, Math.floor(rawMinY * 0.9));
+
+    // Provide a reasonable max that covers 80% of data plus a 20% buffer, using Math.ceil to prevent JS float inaccuracy
+    const maxX = Math.ceil(Math.max(pX * 1.2, avgX * 1.5, 5));
+    const maxY = Math.ceil(Math.max(pY * 1.2, avgY * 1.5, 2));
+
+    const clampedData = data.map((d) => ({
+      ...d,
+      displayX: Math.min(d.avgResolutionHours, maxX),
+      displayY: Math.min(d.timeSpentHours, maxY),
+      isOutlierX: d.avgResolutionHours > maxX,
+      isOutlierY: d.timeSpentHours > maxY,
+    }));
+
+    return { data: clampedData, avgX, avgY, minX, maxX, minY, maxY };
+  }, [chartData.timeAnalysisData, timeAnalysisView, timeAnalysisFilter]);
 
   if (isLoading)
     return (
@@ -1842,7 +1983,225 @@ export default function SupportDashboard() {
             </div>
           </div>
 
-          {/* High-Friction Sources (Horizontal Stacked Bar) */}
+          {/* Time & Effort Quadrant */}
+          <div className="grid grid-cols-1 gap-6 mt-6 mb-8">
+            <div className="rounded-xl border border-border bg-white shadow-sm p-6 overflow-hidden flex flex-col">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                  <h3 className="font-bold text-foreground text-lg">Time & Effort Quadrant</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Correlation between Total Time Spent and Avg Resolution Time
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                  <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                    <button
+                      onClick={() => setTimeAnalysisView('project')}
+                      className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                        timeAnalysisView === 'project'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      Projects
+                    </button>
+                    <button
+                      onClick={() => setTimeAnalysisView('category')}
+                      className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                        timeAnalysisView === 'category'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      Categories
+                    </button>
+                    <button
+                      onClick={() => setTimeAnalysisView('classification')}
+                      className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                        timeAnalysisView === 'classification'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      Classifications
+                    </button>
+                  </div>
+                  <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                    <button
+                      onClick={() => setTimeAnalysisFilter('all')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        timeAnalysisFilter === 'all'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      All Data
+                    </button>
+                    <button
+                      onClick={() => setTimeAnalysisFilter('significant')}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                        timeAnalysisFilter === 'significant'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      Significant Effort
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 pt-0 w-full overflow-hidden">
+                <div className="h-[500px] w-full">
+                  {currentQuadrantData.data.length === 0 ? (
+                    <EmptyState
+                      icon={Activity}
+                      title="No Data Available"
+                      subtitle={`There is no time or resolution data for ${timeAnalysisView}s in this period.`}
+                    />
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e1eaeb" />
+                        <XAxis
+                          type="number"
+                          dataKey="displayX"
+                          name="Avg Resolution Time"
+                          domain={[currentQuadrantData.minX, currentQuadrantData.maxX]}
+                          tickFormatter={formatTime}
+                          tick={{ fill: '#74868a', fontSize: 12 }}
+                          axisLine={false}
+                          tickLine={false}
+                        >
+                          <Label
+                            value="Average Resolution Time (Hours)"
+                            position="bottom"
+                            offset={0}
+                            fill="#74868a"
+                            fontSize={12}
+                          />
+                        </XAxis>
+                        <YAxis
+                          type="number"
+                          dataKey="displayY"
+                          name="Total Time Spent"
+                          domain={[currentQuadrantData.minY, currentQuadrantData.maxY]}
+                          tickFormatter={formatTime}
+                          tick={{ fill: '#74868a', fontSize: 12 }}
+                          axisLine={false}
+                          tickLine={false}
+                        >
+                          <Label
+                            value="Total Time Spent (Hours)"
+                            angle={-90}
+                            position="insideLeft"
+                            offset={-5}
+                            fill="#74868a"
+                            fontSize={12}
+                          />
+                        </YAxis>
+                        <ZAxis
+                          type="number"
+                          dataKey="volume"
+                          range={[60, 400]}
+                          name="Ticket Volume"
+                        />
+                        <ReferenceLine
+                          x={currentQuadrantData.avgX}
+                          stroke="#94a3b8"
+                          strokeDasharray="3 3"
+                          label={{
+                            value: 'Avg Resolution',
+                            position: 'insideTopLeft',
+                            fill: '#94a3b8',
+                            fontSize: 11,
+                          }}
+                        />
+                        <ReferenceLine
+                          y={currentQuadrantData.avgY}
+                          stroke="#94a3b8"
+                          strokeDasharray="3 3"
+                          label={{
+                            value: 'Avg Time Spent',
+                            position: 'insideBottomRight',
+                            fill: '#94a3b8',
+                            fontSize: 11,
+                          }}
+                        />
+                        <RechartsTooltip
+                          cursor={{ strokeDasharray: '3 3' }}
+                          content={({ active, payload }: any) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px]">
+                                  <p className="font-bold text-foreground border-b border-border pb-2 mb-3 text-sm flex justify-between items-center">
+                                    {data.name}
+                                    {(data.isOutlierX || data.isOutlierY) && (
+                                      <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded ml-2">
+                                        Outlier
+                                      </span>
+                                    )}
+                                  </p>
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex items-center justify-between gap-6">
+                                      <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-sm bg-[#00bdd9]"></div>
+                                        Total Time Spent
+                                      </span>
+                                      <span className="text-[14px] font-bold text-foreground">
+                                        {formatTime(data.timeSpentHours)}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-6">
+                                      <span className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-sm bg-[#84cc16]"></div>
+                                        Avg Resolution Time
+                                      </span>
+                                      <span className="text-[14px] font-bold text-foreground">
+                                        {formatTime(data.avgResolutionHours)}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-6 pt-1 mt-1 border-t border-slate-100">
+                                      <span className="text-[13px] font-medium text-muted-foreground">
+                                        Ticket Volume
+                                      </span>
+                                      <span className="text-[13px] font-bold text-slate-500">
+                                        {data.volume}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Scatter
+                          name="Data"
+                          data={currentQuadrantData.data}
+                          fillOpacity={0.7}
+                        >
+                          {currentQuadrantData.data.map((entry: any, index: number) => {
+                            const colors = Object.values(CHART_THEME);
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                                stroke={colors[index % colors.length]}
+                                strokeWidth={1}
+                              />
+                            );
+                          })}
+                        </Scatter>
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+{/* High-Friction Sources (Horizontal Stacked Bar) */}
           <div className="grid grid-cols-1 gap-6 mt-6">
             <div className="rounded-xl border border-border bg-white shadow-sm p-6 overflow-hidden flex flex-col">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -2188,7 +2547,8 @@ export default function SupportDashboard() {
               </div>
             </div>
           </div>
-        </div>
+
+                  </div>
       </div>
     </div>
   );

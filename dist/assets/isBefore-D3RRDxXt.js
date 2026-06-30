@@ -1,0 +1,1 @@
+import{bO as c,cy as f}from"./index-BNcX-Wrc.js";function i(e,r,a){const t=c(e,a==null?void 0:a.in);return isNaN(r)?f(e,NaN):(r&&t.setDate(t.getDate()+r),t)}function n(e,r){return+c(e)<+c(r)}export{i as a,n as i};
