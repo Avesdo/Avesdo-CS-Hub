@@ -459,7 +459,7 @@ function TeamScheduleWidget() {
           </div>
         </div>
 
-        <div className="max-h-[350px] overflow-y-auto">{renderContent()}</div>
+        <div className="max-h-[350px] overflow-y-auto custom-thin-scroll">{renderContent()}</div>
 
         <div className="p-1 border-t border-slate-200/60 bg-slate-50/50">
           <Button
