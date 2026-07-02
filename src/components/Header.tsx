@@ -483,7 +483,7 @@ function TeamScheduleWidget() {
 export default function Header() {
   return (
     <header
-      className="w-full bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-sm shrink-0 relative z-[var(--z-header)]"
+      className="w-full bg-white/70 backdrop-blur-xl shrink-0 relative z-[var(--z-header)]"
       id="global-header-bar"
     >
       <div className="h-[60px] flex items-center px-4 md:px-6 gap-2 md:gap-4">
