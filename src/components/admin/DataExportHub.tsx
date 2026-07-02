@@ -92,8 +92,8 @@ export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTempl
               className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col hover:border-slate-300 hover:shadow-sm transition-all group"
             >
               <div className="flex items-start gap-3.5 mb-2">
-                <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
-                  <FileSpreadsheet className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center shrink-0">
+                  <FileSpreadsheet className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
                   <div className="flex items-center gap-2 flex-wrap">

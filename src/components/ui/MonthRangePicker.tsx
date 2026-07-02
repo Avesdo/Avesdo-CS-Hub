@@ -151,6 +151,7 @@ export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
           <Popover.Content
             align="end"
             sideOffset={8}
+            onWheel={(e) => e.stopPropagation()}
             className="flex bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[var(--z-popover)] font-normal overflow-hidden animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >

@@ -434,7 +434,14 @@ export default function ServiceHub() {
     <div
       className="flex-1 flex flex-col h-full overflow-hidden bg-white"
       onWheel={(e) => {
-        if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
+        const target = e.target as Element;
+        if (
+          tableScrollRef.current &&
+          !tableScrollRef.current.contains(target) &&
+          !target.closest('[data-radix-popper-content-wrapper]') &&
+          !target.closest('[data-radix-portal]') &&
+          !target.closest('[role="dialog"]')
+        ) {
           tableScrollRef.current.scrollTop += e.deltaY;
         }
       }}
@@ -722,9 +729,9 @@ export default function ServiceHub() {
             {useMemo(
               () => (
                 <table className="w-full text-left bg-white border-separate border-spacing-0">
-                  <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
-                    <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-white/95 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                  <thead className="sticky top-0 z-[80] bg-slate-50/90 backdrop-blur-md shadow-sm">
+                    <tr className="bg-slate-50/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-slate-50/95 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"

@@ -258,6 +258,7 @@ export function MultiSelect({
           <Popover.Content
             align={radixAlign}
             sideOffset={8}
+            onWheel={(e) => e.stopPropagation()}
             onOpenAutoFocus={(e) => {
               if (searchable && !creatable) {
                 e.preventDefault();
@@ -267,6 +268,7 @@ export function MultiSelect({
             className={twMerge(
               'bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[var(--z-popover)] overflow-hidden flex flex-col max-h-[300px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200 pointer-events-auto',
               dropdownWidth,
+              'max-w-[320px]',
               menuClassName
             )}
           >
@@ -291,7 +293,8 @@ export function MultiSelect({
                   onClick={() => toggleValue(searchTerm.trim())}
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center outline-none"
                 >
-                  <span className="mr-2 opacity-60">Create</span> "{searchTerm.trim()}"
+                  <span className="mr-2 opacity-60 shrink-0">Create</span> 
+                  <span className="truncate">"{searchTerm.trim()}"</span>
                 </button>
               )}
 
@@ -315,10 +318,10 @@ export function MultiSelect({
                           : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                       )}
                     >
-                      <span className={twMerge('font-medium', isSelected && 'font-semibold')}>
+                      <span className={twMerge('font-medium truncate flex-1 pr-2', isSelected && 'font-semibold')}>
                         {opt.label}
                       </span>
-                      {isSelected && <Check className="w-4 h-4 text-primary shrink-0 ml-2" />}
+                      {isSelected && <Check className="w-4 h-4 text-primary shrink-0 ml-auto" />}
                     </button>
                   );
                 })

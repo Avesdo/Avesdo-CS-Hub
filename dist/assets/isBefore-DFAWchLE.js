@@ -1,0 +1,1 @@
+import{bI as f,eX as s}from"./index-NtoCzLH9.js";function i(e,r,a){const t=f(e,a==null?void 0:a.in);return isNaN(r)?s(e,NaN):(r&&t.setDate(t.getDate()+r),t)}function n(e,r){return+f(e)<+f(r)}export{i as a,n as i};

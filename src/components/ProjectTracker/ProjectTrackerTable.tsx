@@ -555,9 +555,9 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
       <table className="w-full text-left bg-white border-separate border-spacing-0">
         {useMemo(
           () => (
-            <thead className="sticky top-0 z-40 bg-white/90 backdrop-blur-md">
-              <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                <th className="sticky left-0 z-50 bg-white/95 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
+            <thead className="sticky top-0 z-40 bg-slate-50/90 backdrop-blur-md">
+              <tr className="bg-slate-50/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                <th className="sticky left-0 z-50 bg-slate-50/95 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
                   <div className="flex items-center w-full">
                     <div
                       className={`flex-shrink-0 flex items-center mr-2 transition-opacity duration-200 ${selectedRows.length > 0 ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-100'}`}

@@ -156,6 +156,7 @@ export function Select({
           <Popover.Content
             align={radixAlign}
             side={position}
+            onWheel={(e) => e.stopPropagation()}
             sideOffset={8}
             onOpenAutoFocus={(e) => {
               if (searchable || creatable) {
@@ -166,6 +167,7 @@ export function Select({
             className={twMerge(
               'bg-white/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-[var(--z-popover)] overflow-hidden flex flex-col max-h-[300px] pointer-events-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200',
               dropdownWidth,
+              'max-w-[320px]',
               menuClassName
             )}
           >
@@ -191,7 +193,8 @@ export function Select({
                   onClick={() => handleSelect(searchTerm.trim())}
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center"
                 >
-                  <span className="mr-2 opacity-60">Create</span> "{searchTerm.trim()}"
+                  <span className="mr-2 opacity-60 shrink-0">Create</span> 
+                  <span className="truncate">"{searchTerm.trim()}"</span>
                 </button>
               )}
 
@@ -214,12 +217,12 @@ export function Select({
                     )}
                   >
                     <span
-                      className={twMerge('font-medium', value === opt.value ? 'font-semibold' : '')}
+                      className={twMerge('font-medium truncate flex-1 pr-2', value === opt.value ? 'font-semibold' : '')}
                     >
                       {opt.label}
                     </span>
                     {!hideCheckmark && value === opt.value && (
-                      <Check className="w-4 h-4 text-primary shrink-0 ml-2" />
+                      <Check className="w-4 h-4 text-primary shrink-0 ml-auto" />
                     )}
                   </button>
                 ))

@@ -42,7 +42,7 @@ export default function Sidebar() {
       ></div>
       <aside
         id="mobile-sidebar"
-        className="w-56 bg-white/70 backdrop-blur-xl text-sidebar-foreground border-r border-white/50 flex flex-col z-[var(--z-drawer)] shrink-0 absolute md:relative h-full shadow-sm md:shadow-none transition-all duration-200"
+        className="w-56 bg-white md:bg-transparent text-sidebar-foreground flex flex-col z-[var(--z-drawer)] shrink-0 absolute md:relative h-full transition-all duration-200"
       >
         {/* Brand Logo */}
         <div className="flex flex-col gap-2 p-0 shrink-0">

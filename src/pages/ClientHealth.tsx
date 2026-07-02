@@ -503,7 +503,14 @@ export default function ClientHealth() {
     <div
       className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden"
       onWheel={(e) => {
-        if (tableScrollRef.current && !tableScrollRef.current.contains(e.target as Node)) {
+        const target = e.target as Element;
+        if (
+          tableScrollRef.current &&
+          !tableScrollRef.current.contains(target) &&
+          !target.closest('[data-radix-popper-content-wrapper]') &&
+          !target.closest('[data-radix-portal]') &&
+          !target.closest('[role="dialog"]')
+        ) {
           tableScrollRef.current.scrollTop += e.deltaY;
         }
       }}
@@ -772,9 +779,9 @@ export default function ClientHealth() {
             }}
           >
             <table className="w-full text-left bg-white border-separate border-spacing-0">
-              <thead className="sticky top-0 z-[80] bg-white/90 backdrop-blur-md shadow-sm">
-                <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                  <th className="w-[30%] sticky left-0 z-[90] bg-white/95 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
+              <thead className="sticky top-0 z-[80] bg-slate-50/90 backdrop-blur-md shadow-sm">
+                <tr className="bg-slate-50/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
+                  <th className="w-[30%] sticky left-0 z-[90] bg-slate-50/95 backdrop-blur-md border-b border-border px-6 py-2 border-r-0 group/th">
                     <div className="flex items-center">
                       <div
                         className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors whitespace-nowrap mr-2"
