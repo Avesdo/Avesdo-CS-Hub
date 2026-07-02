@@ -28,6 +28,16 @@ import { TrendIndicator } from '../components/TrendIndicator';
 import { PageHeader } from '../components/PageHeader';
 import { useTableFilter } from '../hooks/useTableFilter';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+};
+
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
 import { useUI } from '../context/UIContext';
@@ -39,7 +49,8 @@ import {
   getTypeBadgeIconOnly,
 } from '../utils/uiUtils';
 import { updateServiceRecord, addProjectAutoLog, addAutoLog } from '../api/dbService';
-import { ColumnFilter, DateFilter, StatusDropdown } from '../components/TableFilters';
+import { ColumnFilter, StatusDropdown } from '../components/TableFilters';
+import { MonthRangePicker } from '../components/ui/MonthRangePicker';
 import { PageTabs } from '../components/ui/PageTabs';
 import { ActiveFilterBar } from '../components/ui/ActiveFilterBar';
 import { TableFooter } from '../components/ui/TableFooter';
@@ -65,6 +76,7 @@ const ServiceRow = React.memo(
     StatusDropdown,
     TruncatedText,
     virtualRow,
+    index,
   }: any) => {
     const sDate = s.dateVal
       ? new Date(s.dateVal).toLocaleDateString('en-US', {
@@ -75,7 +87,8 @@ const ServiceRow = React.memo(
       : 'No Date';
 
     return (
-      <tr
+      <motion.tr
+        variants={itemVariants}
         key={virtualRow?.index || s.id}
         className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
         onClick={() => openDrawer('service', s.id)}
@@ -127,7 +140,7 @@ const ServiceRow = React.memo(
             {formatCurrency(Number(s.price) || 0)}
           </td>
         )}
-      </tr>
+      </motion.tr>
     );
   },
   (prevProps, nextProps) => {
@@ -954,7 +967,7 @@ export default function ServiceHub() {
                             Completion Date
                             {renderSortArrow('dateVal')}
                           </span>
-                          <DateFilter dateRange={dateRange} setDateRange={setDateRange} />
+                          <MonthRangePicker dateRange={dateRange} setDateRange={setDateRange} />
                         </div>
                       </th>
                       {activeTab !== 'Included' && (
@@ -972,7 +985,12 @@ export default function ServiceHub() {
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border text-sm relative">
+                  <motion.tbody
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="divide-y divide-border text-sm relative"
+                  >
                     {paddingTop > 0 && (
                       <tr>
                         <td
@@ -1022,7 +1040,7 @@ export default function ServiceHub() {
                         </td>
                       </tr>
                     )}
-                  </tbody>
+                  </motion.tbody>
                 </table>
               ),
               [

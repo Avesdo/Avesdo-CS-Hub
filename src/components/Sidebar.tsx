@@ -37,12 +37,12 @@ export default function Sidebar() {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[var(--z-drawer-overlay)] md:hidden"
         aria-hidden="true"
       ></div>
       <aside
         id="mobile-sidebar"
-        className="w-56 bg-sidebar text-sidebar-foreground border-r border-border flex flex-col z-40 shrink-0 absolute md:relative h-full shadow-2xl md:shadow-none transition-all duration-200"
+        className="w-56 bg-white/70 backdrop-blur-xl text-sidebar-foreground border-r border-white/50 flex flex-col z-[var(--z-drawer)] shrink-0 absolute md:relative h-full shadow-sm md:shadow-none transition-all duration-200"
       >
         {/* Brand Logo */}
         <div className="flex flex-col gap-2 p-0 shrink-0">

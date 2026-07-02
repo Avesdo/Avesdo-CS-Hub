@@ -1,5 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowUpDown,
   ArrowUp,
@@ -24,8 +25,18 @@ import {
 import { TruncatedText } from '../ui/TruncatedText';
 import { Select } from '../ui/Select';
 import EmptyState from '../EmptyState';
-import { ColumnFilter, DateFilter } from '../TableFilters';
+import { ColumnFilter } from '../TableFilters';
+import { MonthRangePicker } from '../ui/MonthRangePicker';
 import { DatePicker } from '../ui/DatePicker';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+};
 
 // --- Sparkline Component ---
 const Sparkline = React.memo(({ data }: { data: number[] }) => {
@@ -132,12 +143,13 @@ const ProjectRow = React.memo(
     useRelativeDate,
   }: any) => {
     return (
-      <tr
+      <motion.tr
+        variants={itemVariants}
         key={virtualRow.index}
-        className={`transition-colors cursor-pointer group hover:relative hover:z-[100] ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
+        className={`transition-colors cursor-pointer group hover:relative hover:z-30 ${selectedRows.includes(p.id) ? 'bg-primary/5' : 'bg-white hover:bg-primary/[0.02]'}`}
         onClick={() => openDrawer('project', p.id)}
       >
-        <td className="sticky left-0 z-20 group-hover:z-[110] bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[35%] sm:w-[30%] lg:w-[25%]">
+        <td className="sticky left-0 z-20 group-hover:z-40 bg-inherit border-r-0 pl-3 pr-4 py-2 font-medium text-foreground w-[35%] sm:w-[30%] lg:w-[25%]">
           <div className="flex items-center gap-2 w-full">
             <div
               className={`flex-shrink-0 flex items-center transition-opacity duration-200 ${selectedRows.includes(p.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
@@ -364,7 +376,7 @@ const ProjectRow = React.memo(
             })()}
           </td>
         )}
-      </tr>
+      </motion.tr>
     );
   },
   arePropsEqual
@@ -543,9 +555,9 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
       <table className="w-full text-left bg-white border-separate border-spacing-0">
         {useMemo(
           () => (
-            <thead className="sticky top-0 z-[150] bg-white/90 backdrop-blur-md">
+            <thead className="sticky top-0 z-40 bg-white/90 backdrop-blur-md">
               <tr className="bg-white/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                <th className="sticky left-0 z-[160] bg-white/95 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
+                <th className="sticky left-0 z-50 bg-white/95 backdrop-blur-md border-b border-border border-r-0 pl-3 pr-4 py-2 w-[35%] sm:w-[30%] lg:w-[25%] group/th">
                   <div className="flex items-center w-full">
                     <div
                       className={`flex-shrink-0 flex items-center mr-2 transition-opacity duration-200 ${selectedRows.length > 0 ? 'opacity-100' : 'opacity-0 group-hover/th:opacity-100'}`}
@@ -633,7 +645,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                       {renderSortIcon('releaseDateVal')}
                     </div>
                     {setReleaseDateFilter && (
-                      <DateFilter
+                      <MonthRangePicker
                         dateRange={releaseDateFilter}
                         setDateRange={setReleaseDateFilter}
                       />
@@ -784,7 +796,12 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
           ]
         )}
 
-        <tbody className="divide-y divide-border text-sm">
+        <motion.tbody
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="divide-y divide-border text-sm"
+        >
           {paddingTop > 0 && (
             <tr>
               <td colSpan={columnCount} style={{ height: paddingTop, border: 0, padding: 0 }} />
@@ -836,7 +853,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
               </td>
             </tr>
           )}
-        </tbody>
+        </motion.tbody>
       </table>
     );
   }

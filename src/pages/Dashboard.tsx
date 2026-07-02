@@ -1,21 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { query, collection, where, onSnapshot } from 'firebase/firestore';
 import { db } from '../api/firebase';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/useAppStore';
-import { Doughnut, Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Filler,
-} from 'chart.js';
+
 import {
   Activity,
   Building,
@@ -56,22 +44,23 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '../utils/toast';
 import { universalExportCSV } from '../utils/exportUtils';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Filler
-);
-
 import { TrendIndicator } from '../components/TrendIndicator';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { TruncatedText } from '../components/ui/TruncatedText';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
+};
 
 export default function Dashboard() {
   const clients = useAppStore((state) => state.clients);
@@ -246,82 +235,24 @@ export default function Dashboard() {
   const { qRev, prevQRev } = useMemo(() => {
     let rev = 0;
     let prevRev = 0;
-    const today = new Date();
-    const currYear = today.getFullYear();
-    const currQtr = Math.floor(today.getMonth() / 3);
-    const lastQuarter = currQtr === 0 ? 3 : currQtr - 1;
-    const lastQuarterYear = currQtr === 0 ? currYear - 1 : currYear;
-    const monthInQuarter = today.getMonth() % 3;
-    const pqtdLimit = new Date(
-      lastQuarterYear,
-      lastQuarter * 3 + monthInQuarter,
-      today.getDate(),
-      23,
-      59,
-      59
-    ).getTime();
+    const today = new Date().getTime();
+    const ninetyDaysAgo = today - 90 * 24 * 60 * 60 * 1000;
+    const oneEightyDaysAgo = today - 180 * 24 * 60 * 60 * 1000;
 
     filteredServices.forEach((s) => {
       if (s.outcome === 'Won') {
-        const d = new Date(s.dateVal || s.dateInput || 0);
-        const y = d.getFullYear();
-        const q = Math.floor(d.getMonth() / 3);
         const price = parseFloat(s.price?.toString().replace(/[^0-9.-]+/g, '')) || 0;
-
         const timestamp = s.dateVal || (s.dateInput ? new Date(s.dateInput).getTime() : 0);
 
-        if (y === currYear && q === currQtr) {
+        if (timestamp >= ninetyDaysAgo && timestamp <= today) {
           rev += price;
-        } else if (y === lastQuarterYear && q === lastQuarter && timestamp <= pqtdLimit) {
+        } else if (timestamp >= oneEightyDaysAgo && timestamp < ninetyDaysAgo) {
           prevRev += price;
         }
       }
     });
     return { qRev: rev, prevQRev: prevRev };
   }, [filteredServices]);
-
-  const chartData = {
-    labels: ['Healthy', 'Warning', 'At Risk'],
-    datasets: [
-      {
-        data: [healthyCount, warningCount, riskCount],
-        backgroundColor: ['#5ea500', '#fe9a00', '#e7000b'],
-        borderWidth: 2,
-        borderColor: '#ffffff',
-        hoverOffset: 4,
-      },
-    ],
-  };
-
-  const chartOptions: any = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '70%',
-    onClick: (event: any, elements: any) => {
-      if (elements && elements.length > 0) {
-        const index = elements[0].index;
-        const filters = ['healthy', 'warning', 'risk'];
-        navigate('/clients', { state: { kpiFilter: filters[index] } });
-      }
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#ffffff',
-        titleColor: '#0f172a',
-        bodyColor: '#0f172a',
-        borderColor: '#e2e8f0',
-        borderWidth: 1,
-        padding: 10,
-        cornerRadius: 4,
-        displayColors: true,
-        callbacks: {
-          title: () => '',
-          label: (context: any) => ` ${context.label} ${context.raw}`,
-        },
-      },
-    },
-  };
 
   const onboardingPhases = useMemo(() => {
     const obProjs = filteredProjects.filter((p) => p.projectStatus === 'Onboarding');
@@ -435,15 +366,13 @@ export default function Dashboard() {
   }, [projects, settings?.managers]);
 
   const recentServices = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const currentQtr = Math.floor((new Date().getMonth() + 3) / 3);
+    const ninetyDaysAgo = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
     return [...filteredServices]
       .filter((s) => {
         if (s.outcome !== 'Won') return false;
         if (s.status !== 'Completed') return false;
         if (!s.dateVal) return false;
-        const d = new Date(s.dateVal);
-        return d.getFullYear() === currentYear && Math.floor((d.getMonth() + 3) / 3) === currentQtr;
+        return s.dateVal >= ninetyDaysAgo;
       })
       .sort((a, b) => (b.dateVal || 0) - (a.dateVal || 0));
   }, [filteredServices]);
@@ -455,8 +384,7 @@ export default function Dashboard() {
   };
 
   const recentLaunches = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const currentQtr = Math.floor((new Date().getMonth() + 3) / 3);
+    const ninetyDaysAgo = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
     return [...filteredProjects]
       .filter((p) => {
         // Must be actually launched (not in Onboarding) OR explicitly marked as Released
@@ -477,8 +405,7 @@ export default function Dashboard() {
         }
         if (!timestamp) return false;
 
-        const d = new Date(timestamp);
-        return d.getFullYear() === currentYear && Math.floor((d.getMonth() + 3) / 3) === currentQtr;
+        return timestamp >= ninetyDaysAgo;
       })
       .sort((a, b) => {
         const valA = a.releaseDateVal || (a.releaseDate ? new Date(a.releaseDate).getTime() : 0);
@@ -772,10 +699,16 @@ export default function Dashboard() {
       <div className="flex-1 min-h-0 flex flex-col overflow-y-auto pb-6 relative scroll-smooth custom-thin-scroll">
         {/* KPI CARDS */}
         <div className="shrink-0 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 pt-4">
-            <div
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 pt-4"
+          >
+            <motion.div
+              variants={itemVariants}
               onClick={() => navigate('/clients', { state: { kpiFilter: 'active' } })}
-              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-lime-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              className="cursor-pointer flex flex-col rounded-xl border border-white/50 bg-white/70 backdrop-blur-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-lime-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
               style={{ animationDelay: '50ms' }}
             >
               <div className="absolute -right-6 -top-6 w-24 h-24 bg-lime-500/5 group-hover:bg-lime-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -809,13 +742,14 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
 
-            <div
+            <motion.div
+              variants={itemVariants}
               onClick={() =>
                 navigate('/projects', { state: { ptTab: 'All Projects', kpiFilter: 'units' } })
               }
-              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              className="cursor-pointer flex flex-col rounded-xl border border-white/50 bg-white/70 backdrop-blur-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-blue-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
               style={{ animationDelay: '150ms' }}
             >
               <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -836,11 +770,12 @@ export default function Dashboard() {
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
               <TrendIndicator current={totalUnits} previous={prevUnits} />
-            </div>
+            </motion.div>
 
-            <div
+            <motion.div
+              variants={itemVariants}
               onClick={() => navigate('/projects', { state: { ptTab: 'Actively Onboarding' } })}
-              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              className="cursor-pointer flex flex-col rounded-xl border border-white/50 bg-white/70 backdrop-blur-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-purple-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
               style={{ animationDelay: '250ms' }}
             >
               <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 group-hover:bg-purple-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -861,9 +796,10 @@ export default function Dashboard() {
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
               <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
-            </div>
+            </motion.div>
 
-            <div
+            <motion.div
+              variants={itemVariants}
               onClick={() => {
                 const d = new Date();
                 const y = d.getFullYear();
@@ -874,7 +810,7 @@ export default function Dashboard() {
                   state: { svTab: 'Won', dateRange: { start: `${y}-${sm}`, end: `${y}-${em}` } },
                 });
               }}
-              className="cursor-pointer flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
+              className="cursor-pointer flex flex-col rounded-xl border border-white/50 bg-white/70 backdrop-blur-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 fill-mode-both active:scale-[0.98]"
               style={{ animationDelay: '350ms' }}
             >
               <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-xl transition-colors duration-200"></div>
@@ -885,7 +821,7 @@ export default function Dashboard() {
                   </div>
                   <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                     Service Revenue
-                    <UITooltip content="Revenue won in this quarter">
+                    <UITooltip content="Revenue won in last 90 days">
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
                         <AlertCircle className="w-3.5 h-3.5" />
                       </div>
@@ -900,8 +836,8 @@ export default function Dashboard() {
                 prefix="$"
                 periodText="last quarter"
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* SCROLLABLE MAIN CONTENT */}
@@ -1834,7 +1770,7 @@ export default function Dashboard() {
                         Recent Activity
                       </div>
                       <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                        Projects released and services sold this quarter
+                        Projects released and services sold in the last 90 days
                       </p>
                     </div>
                     <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-lg">

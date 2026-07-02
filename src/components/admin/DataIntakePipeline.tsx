@@ -3,7 +3,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { getPendingAliases, resolveAlias } from '../../api/dbService';
 import { db } from '../../api/firebase';
 import { writeBatch, doc } from 'firebase/firestore';
-import { SearchableSelect } from '../ui/SearchableSelect';
+import { Select } from '../ui/Select';
 import { Tooltip } from '../ui/Tooltip';
 import { TruncatedText } from '../ui/TruncatedText';
 import {
@@ -270,7 +270,8 @@ export function DataIntakePipeline({
                         className="flex items-center gap-2"
                       >
                         <div className="w-[250px] bg-white rounded-lg shadow-sm border border-slate-200">
-                          <SearchableSelect
+                          <Select
+                            searchable
                             options={
                               alias.type === 'client'
                                 ? clients.map((c) => ({

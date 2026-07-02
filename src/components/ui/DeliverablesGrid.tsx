@@ -367,7 +367,7 @@ export default function DeliverablesGrid({
 
         {/* Floating Bulk Action Bar (Modal Level) */}
         {selectedItems.length > 0 && !readOnly && !isClientPortal && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-4 py-2.5 flex items-center gap-4 z-[60] animate-in slide-in-from-bottom-10 fade-in zoom-in-95 duration-300 ease-out border border-slate-200/60 whitespace-nowrap">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-4 py-2.5 flex items-center gap-4 z-[var(--z-popover)] animate-in slide-in-from-bottom-10 fade-in zoom-in-95 duration-300 ease-out border border-slate-200/60 whitespace-nowrap">
             <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-[11px] font-bold shrink-0">
                 {selectedItems.length}

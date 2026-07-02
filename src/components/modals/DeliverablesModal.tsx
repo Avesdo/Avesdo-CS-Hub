@@ -163,7 +163,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
   return (
     <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[120] bg-black/40 backdrop-blur-sm transition-opacity" />
+        <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal-overlay)] bg-black/40 backdrop-blur-sm transition-opacity" />
         <Dialog.Content
           onEscapeKeyDown={(e) => {
             e.preventDefault();
@@ -173,7 +173,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
             e.preventDefault();
             onClose();
           }}
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[130] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[var(--z-modal)] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
         >
           <FormProvider {...methods}>
             {/* Modal Container */}

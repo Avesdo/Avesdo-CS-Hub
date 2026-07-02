@@ -384,6 +384,17 @@ function TeamScheduleWidget() {
             </div>
 
             <div className="space-y-4">
+              {isThurFri && todayData.upcomingWeekendCoverage && (
+                <div>
+                  <div className="text-[11px] font-semibold text-indigo-500 mb-1.5">
+                    Weekend Coverage
+                  </div>
+                  <div className="text-xs font-medium text-slate-700">
+                    {todayData.upcomingWeekendCoverage}
+                  </div>
+                </div>
+              )}
+
               {todayData.upcomingTimeOff && todayData.upcomingTimeOff.length > 0 && (
                 <div>
                   <div className="text-[11px] font-semibold text-red-500 mb-1.5">Time Off</div>
@@ -418,15 +429,6 @@ function TeamScheduleWidget() {
                         </span>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {isThurFri && todayData.upcomingWeekendCoverage && (
-                <div>
-                  <div className="text-[11px] font-semibold text-indigo-500 mb-1.5">Weekend</div>
-                  <div className="text-xs font-medium text-slate-700">
-                    {todayData.upcomingWeekendCoverage}
                   </div>
                 </div>
               )}
@@ -481,7 +483,7 @@ function TeamScheduleWidget() {
 export default function Header() {
   return (
     <header
-      className="w-full bg-background/90 backdrop-blur-md shrink-0 relative z-50"
+      className="w-full bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-sm shrink-0 relative z-[var(--z-header)]"
       id="global-header-bar"
     >
       <div className="h-[60px] flex items-center px-4 md:px-6 gap-2 md:gap-4">

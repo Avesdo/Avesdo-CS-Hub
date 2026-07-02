@@ -122,8 +122,8 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-300" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-2xl max-h-[85vh] bg-white flex flex-col rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] z-[130] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300">
+        <Dialog.Overlay className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[var(--z-modal-overlay)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-300" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-2xl max-h-[85vh] bg-white flex flex-col rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] z-[var(--z-modal)] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300">
           {/* Standard Grey Header */}
           <div className="bg-slate-50 border-b border-slate-100 px-6 pt-5 pb-5 flex flex-col gap-4 sticky top-0 z-40 shrink-0">
             <div className="flex items-center justify-between">

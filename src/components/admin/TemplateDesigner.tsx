@@ -618,7 +618,7 @@ function SortableFieldItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white border rounded-2xl shadow-sm transition-all relative group/field ${isDragging ? 'border-primary ring-2 ring-primary/20 shadow-lg scale-[1.01] z-50' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'}`}
+      className={`bg-white border rounded-2xl shadow-sm transition-all relative group/field ${isDragging ? 'border-primary ring-2 ring-primary/20 shadow-lg scale-[1.01] z-[var(--z-popover)]' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'}`}
     >
       {/* Top Hover Action Bar */}
       <div className="absolute right-3 -top-4 flex items-center gap-1.5 opacity-0 group-hover/field:opacity-100 transition-all transform translate-y-1 group-hover/field:translate-y-0 bg-white border border-slate-200 shadow-sm rounded-lg p-1 z-20">
@@ -1537,7 +1537,7 @@ export default function TemplateDesigner() {
 
       {/* Preview Modal */}
       {showPreview && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[var(--z-popover)] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-slate-50 w-full max-w-4xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="bg-white border-b border-slate-200 px-5 py-3 flex items-center justify-between shrink-0">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">

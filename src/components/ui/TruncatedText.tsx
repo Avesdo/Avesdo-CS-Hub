@@ -12,7 +12,7 @@ export function TruncatedText({
   text,
   className = '',
   containerClassName = 'w-full',
-  tooltipClassName = 'bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200 shadow-xl text-xs px-3 py-2 rounded-md whitespace-nowrap z-[99999] pointer-events-none font-medium',
+  tooltipClassName = 'bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200 shadow-xl text-xs px-3 py-2 rounded-md whitespace-nowrap z-[var(--z-popover)] pointer-events-none font-medium',
 }: TruncatedTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);

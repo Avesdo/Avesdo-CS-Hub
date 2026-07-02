@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { useAppStore } from './store/useAppStore';
 import { UIProvider } from './context/UIContext';
@@ -106,16 +107,7 @@ function MainLayout() {
                       </div>
                     }
                   >
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/clients" element={<ClientHealth />} />
-                      <Route path="/projects" element={<ProjectTracker />} />
-                      <Route path="/services" element={<ServiceHub />} />
-                      <Route path="/support" element={<SupportDashboard />} />
-
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
+                    <AnimatedRoutes />
                   </React.Suspense>
                 </ErrorBoundary>
               </div>
@@ -124,6 +116,79 @@ function MainLayout() {
         </div>
       </UIProvider>
     </SyncWrapper>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path="/"
+          element={
+            <PageWrapper>
+              <Dashboard />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/clients"
+          element={
+            <PageWrapper>
+              <ClientHealth />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <PageWrapper>
+              <ProjectTracker />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/services"
+          element={
+            <PageWrapper>
+              <ServiceHub />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <PageWrapper>
+              <SupportDashboard />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PageWrapper>
+              <Settings />
+            </PageWrapper>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+function PageWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="w-full h-full flex flex-col"
+    >
+      {children}
+    </motion.div>
   );
 }
 

@@ -7,6 +7,16 @@ import { universalExportCSV } from '../utils/exportUtils';
 import { PageHeader } from '../components/PageHeader';
 import { TrendIndicator } from '../components/TrendIndicator';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+};
+
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import {
   Users,
@@ -117,7 +127,8 @@ export default function ClientHealth() {
       Sparkline,
     }: any) => {
       return (
-        <tr
+        <motion.tr
+          variants={itemVariants}
           key={c.clientId}
           data-index={index}
           className="hover:bg-slate-50 transition-colors cursor-pointer group bg-white hover:relative hover:z-[100]"
@@ -262,7 +273,7 @@ export default function ClientHealth() {
               />
             </div>
           </td>
-        </tr>
+        </motion.tr>
       );
     },
     (prevProps, nextProps) => {
@@ -1055,7 +1066,12 @@ export default function ClientHealth() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border text-sm relative">
+              <motion.tbody
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="divide-y divide-border text-sm relative"
+              >
                 {paddingTop > 0 && (
                   <tr>
                     <td colSpan={5} style={{ height: paddingTop, border: 0, padding: 0 }} />
@@ -1097,7 +1113,7 @@ export default function ClientHealth() {
                     </td>
                   </tr>
                 )}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
 

@@ -479,7 +479,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.15, ease: 'easeOut' }}
-                    className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-50 p-1"
+                    className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
                   >
                     {settings?.timelines?.map((t: any) => (
                       <button
@@ -519,7 +519,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.15, ease: 'easeOut' }}
-                    className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-50 p-1"
+                    className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
                   >
                     {settings?.phases?.map((p: any) => (
                       <button
@@ -715,8 +715,8 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
       {/* KYC Modal */}
       <Dialog.Root open={isKycModalOpen} onOpenChange={setIsKycModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[120] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-white rounded-2xl shadow-2xl z-[130] overflow-hidden flex flex-col max-h-[85vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
+          <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[var(--z-modal-overlay)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-white rounded-2xl shadow-2xl z-[var(--z-modal)] overflow-hidden flex flex-col max-h-[85vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">

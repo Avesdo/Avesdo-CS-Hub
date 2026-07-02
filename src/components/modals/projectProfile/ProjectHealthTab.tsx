@@ -28,18 +28,15 @@ import { motion } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
 import HealthTooltipCard from '../../ui/HealthTooltipCard';
 
-import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-} from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+} from 'recharts';
 
 interface ProjectHealthTabProps {
   project: any;
@@ -55,6 +52,18 @@ const pt_features = [
   'Workflows',
   'Reporting',
 ];
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-[8px] p-3 shadow-md">
+        <p className="text-[#0f172a] font-bold text-[13px] mb-1">{label}</p>
+        <p className="text-[#334155] text-[12px]">{`Health Score: ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const [showCsatModal, setShowCsatModal] = useState(false);
@@ -167,74 +176,12 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const isActive = !isOnboarding && !isClosed && !isCancelled;
 
   // Chart Data
-  const chartData = {
-    labels: optimizedHistory.map((h) =>
-      new Date(h.timeVal).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-    ),
-    datasets: [
-      {
-        data: optimizedHistory.map((h) => h.score),
-        borderColor: '#0ea5e9', // brand primary
-        backgroundColor: (context: any) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) return null;
-          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-          gradient.addColorStop(0, 'rgba(0, 189, 217, 0.2)');
-          gradient.addColorStop(1, 'rgba(0, 189, 217, 0)');
-          return gradient;
-        },
-        borderWidth: 2,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: '#0ea5e9',
-        pointBorderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.98)',
-        titleColor: '#0f172a',
-        bodyColor: '#334155',
-        borderColor: 'transparent',
-        borderWidth: 0,
-        padding: 12,
-        displayColors: false,
-        titleFont: { size: 13, weight: 'bold' },
-        bodyFont: { size: 12 },
-        callbacks: {
-          label: function (context: any) {
-            return `Health Score: ${context.parsed.y}`;
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 100,
-        grid: { color: '#f1f5f9', drawBorder: false },
-        border: { display: false, dash: [4, 4] },
-      },
-      x: {
-        grid: { display: false, drawBorder: false },
-        border: { display: false },
-      },
-    },
-  };
+  const rechartsData = useMemo(() => {
+    return optimizedHistory.map((h) => ({
+      date: new Date(h.timeVal).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      score: h.score,
+    }));
+  }, [optimizedHistory]);
 
   const normalizedScore =
     typeof overallScore === 'number' ? Math.max(0, Math.min(100, overallScore)) : 0;
@@ -515,7 +462,43 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                   </p>
                 </div>
               ) : (
-                <Line data={chartData} options={chartOptions as any} />
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={rechartsData}
+                    margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorScoreProject" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#f1f5f9" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#94a3b8' }}
+                      dy={10}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#94a3b8' }}
+                    />
+                    <RechartsTooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#0ea5e9"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorScoreProject)"
+                      activeDot={{ r: 6, strokeWidth: 2, stroke: '#0ea5e9', fill: '#fff' }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               )}
             </div>
           </div>

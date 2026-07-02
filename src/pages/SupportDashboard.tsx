@@ -925,14 +925,15 @@ export default function SupportDashboard() {
         .sort((a, b) => b.timeSpentHours - a.timeSpentHours)
         .slice(0, 50);
     }
-    if (data.length === 0) return { data: [], avgX: 0, avgY: 0, minX: 0, maxX: 10, minY: 0, maxY: 10 };
+    if (data.length === 0)
+      return { data: [], avgX: 0, avgY: 0, minX: 0, maxX: 10, minY: 0, maxY: 10 };
 
     const xVals = data.map((d) => d.avgResolutionHours).sort((a, b) => a - b);
     const yVals = data.map((d) => d.timeSpentHours).sort((a, b) => a - b);
 
     // Use stricter 80th percentile for better zooming
-    const pX = xVals[Math.floor(xVals.length * 0.80)] || 0;
-    const pY = yVals[Math.floor(yVals.length * 0.80)] || 0;
+    const pX = xVals[Math.floor(xVals.length * 0.8)] || 0;
+    const pY = yVals[Math.floor(yVals.length * 0.8)] || 0;
 
     const avgX = xVals.reduce((a, b) => a + b, 0) / (xVals.length || 1);
     const avgY = yVals.reduce((a, b) => a + b, 0) / (yVals.length || 1);
@@ -2177,11 +2178,7 @@ export default function SupportDashboard() {
                             return null;
                           }}
                         />
-                        <Scatter
-                          name="Data"
-                          data={currentQuadrantData.data}
-                          fillOpacity={0.7}
-                        >
+                        <Scatter name="Data" data={currentQuadrantData.data} fillOpacity={0.7}>
                           {currentQuadrantData.data.map((entry: any, index: number) => {
                             const colors = Object.values(CHART_THEME);
                             return (
@@ -2201,7 +2198,7 @@ export default function SupportDashboard() {
               </div>
             </div>
           </div>
-{/* High-Friction Sources (Horizontal Stacked Bar) */}
+          {/* High-Friction Sources (Horizontal Stacked Bar) */}
           <div className="grid grid-cols-1 gap-6 mt-6">
             <div className="rounded-xl border border-border bg-white shadow-sm p-6 overflow-hidden flex flex-col">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -2547,8 +2544,7 @@ export default function SupportDashboard() {
               </div>
             </div>
           </div>
-
-                  </div>
+        </div>
       </div>
     </div>
   );

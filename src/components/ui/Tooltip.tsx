@@ -127,7 +127,7 @@ export function Tooltip({
               animate={animateAnimation}
               exit={exitAnimation}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className={`fixed bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap z-[99999] pointer-events-none font-medium ${className}`}
+              className={`fixed bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap z-[var(--z-popover)] pointer-events-none font-medium ${className}`}
               style={positionStyles}
             >
               <div className={arrowClass} style={arrowStyles} />

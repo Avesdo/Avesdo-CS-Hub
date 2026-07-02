@@ -42,7 +42,7 @@ export function PortalFormView({
       transition={{ duration: 0.3 }}
       className="h-screen bg-slate-50 flex flex-col font-sans overflow-hidden"
     >
-      <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-[100] shadow-sm">
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-[var(--z-header)] shadow-sm">
         <div className="flex items-center gap-6">
           <img
             alt="Avesdo"

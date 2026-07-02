@@ -214,7 +214,7 @@ export default function GlobalSearch() {
         <div
           id="global-search-listbox"
           role="listbox"
-          className="absolute top-full left-0 w-full min-w-[500px] bg-white mt-2 rounded-xl border border-border shadow-xl z-50 max-h-[80vh] overflow-y-auto custom-thin-scroll flex flex-col"
+          className="absolute top-full left-0 w-full min-w-[500px] bg-white mt-2 rounded-xl border border-border shadow-xl z-[var(--z-popover)] max-h-[80vh] overflow-y-auto custom-thin-scroll flex flex-col"
         >
           {totalResults === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">

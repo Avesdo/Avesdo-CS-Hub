@@ -5,7 +5,7 @@ export const GlobalToaster = () => {
   return (
     <Toaster
       position="bottom-right"
-      containerStyle={{ zIndex: 99999 }}
+      containerStyle={{ zIndex: 'var(--z-toast)' }}
       toastOptions={{
         duration: 4000,
         className:

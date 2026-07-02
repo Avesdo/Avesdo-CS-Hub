@@ -287,7 +287,7 @@ export function DateRangePicker({
         <Popover.Content
           sideOffset={8}
           align="end"
-          className="bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[99999] flex overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          className="bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[var(--z-popover)] flex overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         >
           {/* Calendars Section */}
           {localPreset === 'custom' && (

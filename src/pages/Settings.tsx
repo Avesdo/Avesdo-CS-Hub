@@ -57,7 +57,6 @@ import {
 
 import { HexColorPicker } from 'react-colorful';
 
-import { SearchableSelect } from '../components/ui/SearchableSelect';
 import { DonutChart } from '../components/ui/DonutChart';
 import { DualThumbSlider } from '../components/ui/DualThumbSlider';
 
@@ -78,7 +77,7 @@ import { eachDayOfInterval, format } from 'date-fns';
 import { DataUploadModal } from '../components/admin/DataUploadModal';
 import { DataIntakePipelineModal } from '../components/admin/DataIntakePipelineModal';
 import { PageHeader } from '../components/PageHeader';
-import MultiSelectCombobox from '../components/MultiSelectCombobox';
+import { MultiSelect } from '../components/ui/MultiSelect';
 import { exportAllFormResponsesToCSV } from '../utils/exportUtils';
 import { FileDown } from 'lucide-react';
 
@@ -2254,10 +2253,15 @@ export default function SettingsDraft() {
                         </div>
                       </div>
                       <div>
-                        <MultiSelectCombobox
+                        <MultiSelect
                           variant="inline"
-                          options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
-                          selectedValues={settings?.estManagers || []}
+                          options={
+                            settings?.managers?.map((m: any) => ({
+                              value: m.name,
+                              label: m.name,
+                            })) || []
+                          }
+                          values={settings?.estManagers || []}
                           onChange={(vals) =>
                             saveSettings({ ...(settings as any), estManagers: vals })
                           }
@@ -2279,10 +2283,15 @@ export default function SettingsDraft() {
                         </div>
                       </div>
                       <div>
-                        <MultiSelectCombobox
+                        <MultiSelect
                           variant="inline"
-                          options={settings?.managers?.map((m: any) => ({ name: m.name })) || []}
-                          selectedValues={settings?.pstManagers || []}
+                          options={
+                            settings?.managers?.map((m: any) => ({
+                              value: m.name,
+                              label: m.name,
+                            })) || []
+                          }
+                          values={settings?.pstManagers || []}
                           onChange={(vals) =>
                             saveSettings({ ...(settings as any), pstManagers: vals })
                           }

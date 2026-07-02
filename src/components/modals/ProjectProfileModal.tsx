@@ -676,7 +676,7 @@ export default function ProjectProfileModal() {
                               <Popover.Content
                                 side="right"
                                 sideOffset={12}
-                                className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                                className="z-[var(--z-popover)] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
                               >
                                 <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
                                   <Search className="w-4 h-4 text-slate-400 ml-2" />
@@ -753,7 +753,7 @@ export default function ProjectProfileModal() {
                               <Popover.Content
                                 side="right"
                                 sideOffset={12}
-                                className="z-[110] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                                className="z-[var(--z-popover)] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
                               >
                                 <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
                                   <Search className="w-4 h-4 text-slate-400 ml-2" />
@@ -965,7 +965,7 @@ export default function ProjectProfileModal() {
                   {/* RIGHT PANE: Main Content */}
                   <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
                     {/* Close Button overlay */}
-                    <div className="absolute top-4 right-4 z-50">
+                    <div className="absolute top-4 right-4 z-10">
                       <button
                         onClick={closeDrawer}
                         className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"

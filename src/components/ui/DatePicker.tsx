@@ -210,7 +210,7 @@ export function DatePicker({
         <Popover.Content
           sideOffset={8}
           align="start"
-          className="bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[99999] p-4 flex flex-col animate-in fade-in zoom-in-95 duration-200"
+          className="bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-xl z-[var(--z-popover)] p-4 flex flex-col animate-in fade-in zoom-in-95 duration-200"
         >
           {/* Manual Date Input */}
           <div className="mb-4">

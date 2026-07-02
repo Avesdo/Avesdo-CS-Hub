@@ -14,7 +14,7 @@ export const DataUploadModal: React.FC<DataUploadModalProps> = ({ isOpen, onClos
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && !isCompiling && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[var(--z-modal-overlay)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
           onInteractOutside={(e) => {
             if (isCompiling) e.preventDefault();
@@ -22,7 +22,7 @@ export const DataUploadModal: React.FC<DataUploadModalProps> = ({ isOpen, onClos
           onEscapeKeyDown={(e) => {
             if (isCompiling) e.preventDefault();
           }}
-          className="fixed left-[50%] top-[50%] z-[101] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
+          className="fixed left-[50%] top-[50%] z-[var(--z-modal)] w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/80">

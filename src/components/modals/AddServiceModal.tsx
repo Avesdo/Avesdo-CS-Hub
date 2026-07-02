@@ -25,7 +25,6 @@ import { Service } from '../../types';
 
 import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
-import { CreatableMultiSelect } from '../ui/CreatableMultiSelect';
 import { RichTextEditor } from '../ui/RichTextEditor';
 
 import { useForm, Controller } from 'react-hook-form';
@@ -355,7 +354,8 @@ export default function AddServiceModal() {
                 name="serviceNames"
                 control={control}
                 render={({ field }) => (
-                  <CreatableMultiSelect
+                  <MultiSelect
+                    creatable
                     values={field.value}
                     onChange={field.onChange}
                     options={serviceOptions}
@@ -767,7 +767,7 @@ export default function AddServiceModal() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
+                className="absolute inset-0 z-[var(--z-popover)] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl"
               >
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -809,7 +809,7 @@ export default function AddServiceModal() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white rounded-2xl"
+                className="absolute inset-0 z-[var(--z-popover)] flex flex-col items-center justify-center bg-white rounded-2xl"
               >
                 <motion.div
                   initial={{ scale: 0 }}
