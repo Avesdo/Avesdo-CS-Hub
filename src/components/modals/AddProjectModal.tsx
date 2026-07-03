@@ -17,7 +17,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import {
   updateProjectRecord,
@@ -81,7 +81,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 );
 
 export default function AddProjectModal() {
-  const { activeModal, activeModals, isModalOpen, closeModal, openModal, openDrawer } = useUI();
+  const { activeModal, activeModals, isModalOpen, closeModal, openModal, openDrawer } = useUIStore();
   const clients = useAppStore((state) => state.clients);
   const settings = useAppStore((state) => state.settings);
   const projects = useAppStore((state) => state.projects);

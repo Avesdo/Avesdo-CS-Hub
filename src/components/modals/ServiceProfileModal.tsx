@@ -18,7 +18,7 @@ import {
   Building,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge, COLOR_MAP, hexToRgba, renderIcon } from '../../utils/uiUtils';
 import {
@@ -112,7 +112,7 @@ const ContactInputPill = ({ value, onChange, onBlur }: any) => (
 );
 
 export default function ServiceProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
   const stackIndex = activeDrawers.findIndex((d) => d.type === 'service');
   const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
   const services = useAppStore((state) => state.services);

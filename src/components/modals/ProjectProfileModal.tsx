@@ -26,7 +26,7 @@ import {
   Edit2,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge } from '../../utils/uiUtils';
 import {
@@ -90,7 +90,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
 };
 
 export default function ProjectProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawers } = useUIStore();
   const stackIndex = activeDrawers.findIndex((d) => d.type === 'project');
   const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
   const projects = useAppStore((state) => state.projects);

@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useScheduleData } from '../../hooks/useScheduleData';
 import {
   format,
@@ -28,7 +28,7 @@ import { Tooltip } from '../ui/Tooltip';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ScheduleModal() {
-  const { isModalOpen, closeModal } = useUI();
+  const { isModalOpen, closeModal } = useUIStore();
   const isOpen = isModalOpen('scheduleModal');
 
   const { scheduleData, loading, error } = useScheduleData();

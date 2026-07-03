@@ -18,7 +18,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import {
   updateClientRecord,
@@ -79,7 +79,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
 };
 
 export default function ClientProfileModal() {
-  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
   const stackIndex = activeDrawers.findIndex((d) => d.type === 'client');
   const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
   const clients = useAppStore((state) => state.clients);

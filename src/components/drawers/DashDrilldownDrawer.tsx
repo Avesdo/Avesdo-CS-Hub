@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { X, ChevronRight, User, Calendar, ClipboardCheck, Target } from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import {
   getSafeHex,
@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function DashDrilldownDrawer() {
   const navigate = useNavigate();
-  const { isDrawerOpen, getDrawerData, closeDrawer, openDrawer, activeDrawers } = useUI();
+  const { isDrawerOpen, getDrawerData, closeDrawer, openDrawer, activeDrawers } = useUIStore();
   const clients = useAppStore((state) => state.clients);
   const settings = useAppStore((state) => state.settings);
   const globalProjects = useAppStore((state) => state.projects);

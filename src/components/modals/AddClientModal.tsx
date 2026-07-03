@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, ChevronDown, Check, Tag, User, AlignLeft, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { updateClientRecord, addAutoLog } from '../../api/dbService';
 import { Client } from '../../types';
@@ -43,7 +43,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 );
 
 export default function AddClientModal() {
-  const { isModalOpen, closeModal, openDrawer, activeModals } = useUI();
+  const { isModalOpen, closeModal, openDrawer, activeModals } = useUIStore();
   const settings = useAppStore((state) => state.settings);
   const clients = useAppStore((state) => state.clients);
   const user = useAppStore((state) => state.user);

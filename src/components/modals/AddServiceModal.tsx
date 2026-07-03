@@ -13,7 +13,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import {
   updateServiceRecord,
@@ -86,7 +86,7 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
 );
 
 export default function AddServiceModal() {
-  const { activeModals, isModalOpen, closeModal, activeDrawer, openDrawer } = useUI();
+  const { activeModals, isModalOpen, closeModal, activeDrawer, openDrawer } = useUIStore();
   const clients = useAppStore((state) => state.clients);
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);

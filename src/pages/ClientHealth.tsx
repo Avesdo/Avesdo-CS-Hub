@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import { useLocation } from 'react-router-dom';
 import { getHealthBadge, getSettingBadge, getSafeHex, hexToRgba } from '../utils/uiUtils';
 import { universalExportCSV } from '../utils/exportUtils';
@@ -101,7 +101,7 @@ export default function ClientHealth() {
   const clients = useAppStore((state) => state.clients);
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
-  const { openDrawer, openModal } = useUI();
+  const { openDrawer, openModal } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const exportMenuRef = useRef<HTMLDivElement>(null);

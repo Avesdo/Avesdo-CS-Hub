@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AnimatePresence, motion } from 'framer-motion';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { useAppStore } from './store/useAppStore';
-import { UIProvider } from './context/UIContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Components
@@ -79,42 +78,40 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
 function MainLayout() {
   return (
     <SyncWrapper>
-      <UIProvider>
-        <ErrorBoundary>
-          <ProjectProfileModal />
-          <ServiceProfileModal />
-          <ClientProfileModal />
-          <GlobalOverlays />
-        </ErrorBoundary>
-        <GlobalToaster />
-        <div
-          data-slot="sidebar-wrapper"
-          className="group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
-          style={
-            { '--sidebar-width': '16rem', '--sidebar-width-icon': '3rem' } as React.CSSProperties
-          }
-        >
-          <div className="flex h-screen w-full bg-white">
-            <Sidebar />
-            <main className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden">
-              <Header />
-              <div className="flex-grow flex-1 overflow-hidden relative flex flex-col w-full h-[calc(100vh-var(--header-height))]">
-                <ErrorBoundary>
-                  <React.Suspense
-                    fallback={
-                      <div className="flex items-center justify-center w-full h-full">
-                        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                      </div>
-                    }
-                  >
-                    <AnimatedRoutes />
-                  </React.Suspense>
-                </ErrorBoundary>
-              </div>
-            </main>
-          </div>
+      <ErrorBoundary>
+        <ProjectProfileModal />
+        <ServiceProfileModal />
+        <ClientProfileModal />
+        <GlobalOverlays />
+      </ErrorBoundary>
+      <GlobalToaster />
+      <div
+        data-slot="sidebar-wrapper"
+        className="group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
+        style={
+          { '--sidebar-width': '16rem', '--sidebar-width-icon': '3rem' } as React.CSSProperties
+        }
+      >
+        <div className="flex h-screen w-full bg-white">
+          <Sidebar />
+          <main className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden">
+            <Header />
+            <div className="flex-grow flex-1 overflow-hidden relative flex flex-col w-full h-[calc(100vh-var(--header-height))]">
+              <ErrorBoundary>
+                <React.Suspense
+                  fallback={
+                    <div className="flex items-center justify-center w-full h-full">
+                      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                  }
+                >
+                  <AnimatedRoutes />
+                </React.Suspense>
+              </ErrorBoundary>
+            </div>
+          </main>
         </div>
-      </UIProvider>
+      </div>
     </SyncWrapper>
   );
 }

@@ -13,7 +13,7 @@ import {
   Search,
 } from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
-import { useUI } from '../../../context/UIContext';
+import { useUIStore } from '../../../store/useUIStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
 import { getSafeHex, hexToRgba, getSettingBadge, renderIcon } from '../../../utils/uiUtils';
@@ -25,7 +25,7 @@ interface ClientProjectsTabProps {
 export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
-  const { openDrawer, openModal } = useUI();
+  const { openDrawer, openModal } = useUIStore();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { X, Calendar, User, Target } from 'lucide-react';
-import { useUI } from '../../context/UIContext';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge } from '../../utils/uiUtils';
 
 export default function UnscheduledProjectsDrawer() {
-  const { isDrawerOpen, closeDrawer, openDrawer, activeDrawers } = useUI();
+  const { isDrawerOpen, closeDrawer, openDrawer, activeDrawers } = useUIStore();
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
 

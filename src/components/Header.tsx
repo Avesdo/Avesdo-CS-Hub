@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { format } from 'date-fns';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import { useScheduleData } from '../hooks/useScheduleData';
 import {
   Calendar as CalendarIcon,
@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 
 function NotificationBell() {
-  const { openDrawer } = useUI();
+  const { openDrawer } = useUIStore();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -154,7 +154,7 @@ function NotificationBell() {
 }
 
 function TeamScheduleWidget() {
-  const { openModal } = useUI();
+  const { openModal } = useUIStore();
   const [isOpen, setIsOpen] = useState(false);
   const { scheduleData, loading, getTodaySchedule } = useScheduleData();
 

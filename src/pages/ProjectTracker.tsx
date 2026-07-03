@@ -19,7 +19,7 @@ import { TableFooter } from '../components/ui/TableFooter';
 import { TrendIndicator } from '../components/TrendIndicator';
 import { calculateProjectHealth } from '../utils/scoringUtils';
 import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
 import {
@@ -66,7 +66,7 @@ export default function ProjectTracker() {
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
-  const { openModal, openDrawer } = useUI();
+  const { openModal, openDrawer } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);

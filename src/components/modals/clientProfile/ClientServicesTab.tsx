@@ -10,7 +10,7 @@ import {
   Search,
 } from 'lucide-react';
 import { useAppStore } from '../../../store/useAppStore';
-import { useUI } from '../../../context/UIContext';
+import { useUIStore } from '../../../store/useUIStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
 import { getSafeHex, hexToRgba, renderIcon } from '../../../utils/uiUtils';
@@ -22,7 +22,7 @@ interface ClientServicesTabProps {
 export default function ClientServicesTab({ client }: ClientServicesTabProps) {
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
-  const { openDrawer, openModal } = useUI();
+  const { openDrawer, openModal } = useUIStore();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
 

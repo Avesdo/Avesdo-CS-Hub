@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, Building, Box, Briefcase, SearchX } from 'lucide-react';
 import Fuse from 'fuse.js';
 import { useAppStore } from '../store/useAppStore';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 
@@ -11,7 +11,7 @@ export default function GlobalSearch() {
   const projects = useAppStore((state) => state.projects);
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
-  const { openDrawer, closeDrawer, closeModal, activeDrawers, activeModal } = useUI();
+  const { openDrawer, closeDrawer, closeModal, activeDrawers, activeModal } = useUIStore();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);

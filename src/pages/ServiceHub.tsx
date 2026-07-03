@@ -40,7 +40,7 @@ const itemVariants = {
 
 import { Tooltip as UITooltip } from '../components/ui/Tooltip';
 import { universalExportCSV } from '../utils/exportUtils';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import {
   getSettingBadge,
   hexToRgba,
@@ -168,7 +168,7 @@ export default function ServiceHub() {
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
-  const { openModal, openDrawer } = useUI();
+  const { openModal, openDrawer } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
 

@@ -31,7 +31,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
-import { useUI } from '../context/UIContext';
+import { useUIStore } from '../store/useUIStore';
 import { getHealthHistory, getSystemLogs } from '../api/dbService';
 import {
   getHealthBadge,
@@ -95,7 +95,7 @@ export default function Dashboard() {
   const projects = useAppStore((state) => state.projects);
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
-  const { openModal, openDrawer } = useUI();
+  const { openModal, openDrawer } = useUIStore();
   const navigate = useNavigate();
   const [managerFilter, setManagerFilter] = useState('All Managers');
   const [showAmMenu, setShowAmMenu] = useState(false);
