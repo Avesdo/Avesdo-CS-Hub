@@ -170,6 +170,10 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
             onClose();
           }}
           onInteractOutside={(e) => {
+            if (e.detail.originalEvent.type === 'focusin') {
+              e.preventDefault();
+              return;
+            }
             e.preventDefault();
             onClose();
           }}

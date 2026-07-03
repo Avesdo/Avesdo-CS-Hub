@@ -346,8 +346,12 @@ export default function ClientProfileModal() {
                   if (activeDrawer?.type === 'client') closeDrawer();
                 }}
                 onInteractOutside={(e) => {
+                  if (e.detail.originalEvent.type === 'focusin') {
+                    e.preventDefault();
+                    return;
+                  }
                   e.preventDefault();
-                  if (activeDrawer?.type === 'client') closeDrawer();
+                  if (activeDrawers[activeDrawers.length - 1]?.type === 'client') closeDrawer();
                 }}
                 asChild
               >

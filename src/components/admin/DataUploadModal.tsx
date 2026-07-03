@@ -17,6 +17,10 @@ export const DataUploadModal: React.FC<DataUploadModalProps> = ({ isOpen, onClos
         <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[var(--z-modal-overlay)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
           onInteractOutside={(e) => {
+            if (e.detail.originalEvent.type === 'focusin') {
+              e.preventDefault();
+              return;
+            }
             if (isCompiling) e.preventDefault();
           }}
           onEscapeKeyDown={(e) => {

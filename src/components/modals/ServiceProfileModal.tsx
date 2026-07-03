@@ -492,8 +492,12 @@ export default function ServiceProfileModal() {
                   if (activeDrawer?.type === 'service') closeDrawer();
                 }}
                 onInteractOutside={(e) => {
+                  if (e.detail.originalEvent.type === 'focusin') {
+                    e.preventDefault();
+                    return;
+                  }
                   e.preventDefault();
-                  if (activeDrawer?.type === 'service') closeDrawer();
+                  if (activeDrawers[activeDrawers.length - 1]?.type === 'service') closeDrawer();
                 }}
                 asChild
               >

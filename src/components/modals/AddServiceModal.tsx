@@ -312,6 +312,10 @@ export default function AddServiceModal() {
         />
         <Dialog.Content
           onInteractOutside={(e) => {
+            if (e.detail.originalEvent.type === 'focusin') {
+              e.preventDefault();
+              return;
+            }
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addService') {
               handleClose(false);

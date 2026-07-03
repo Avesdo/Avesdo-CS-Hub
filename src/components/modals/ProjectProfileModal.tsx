@@ -492,6 +492,10 @@ export default function ProjectProfileModal() {
                   if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
                 }}
                 onInteractOutside={(e) => {
+                  if (e.detail.originalEvent.type === 'focusin') {
+                    e.preventDefault();
+                    return;
+                  }
                   e.preventDefault();
                   if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
                 }}

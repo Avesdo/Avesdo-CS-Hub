@@ -115,6 +115,10 @@ export default function ClientCsatBreakdownModal({
           <Dialog.Content
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] max-w-3xl max-h-[85vh] bg-white flex flex-col rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] z-[var(--z-modal)] overflow-hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300"
             onInteractOutside={(e) => {
+              if (e.detail.originalEvent.type === 'focusin') {
+                e.preventDefault();
+                return;
+              }
               if (viewingProject) e.preventDefault();
             }}
             onEscapeKeyDown={(e) => {

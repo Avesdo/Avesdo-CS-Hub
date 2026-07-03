@@ -291,6 +291,10 @@ export default function AddProjectModal() {
         />
         <Dialog.Content
           onInteractOutside={(e) => {
+            if (e.detail.originalEvent.type === 'focusin') {
+              e.preventDefault();
+              return;
+            }
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addProject') {
               handleClose(false);

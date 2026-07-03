@@ -159,6 +159,10 @@ export default function AddClientModal() {
         />
         <Dialog.Content
           onInteractOutside={(e) => {
+            if (e.detail.originalEvent.type === 'focusin') {
+              e.preventDefault();
+              return;
+            }
             e.preventDefault();
             if (activeModals[activeModals.length - 1] === 'addClient') {
               handleClose(false);
