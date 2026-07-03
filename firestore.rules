@@ -7,22 +7,24 @@ service cloud.firestore {
     }
     
     function isSuperAdmin() {
-      let email = request.auth.token.email.lower();
+      let email = request.auth != null && request.auth.token.email != null ? request.auth.token.email.lower() : '';
       return email == 'roell.pereira@avesdo.com' || email == 'roell@avesdo.com' || email == 'roell.pererira@avesdo.com';
     }
 
     function hasPermission(node) {
-      if (isSuperAdmin()) return true;
-      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
-      if (userDoc == null) return false;
-      let roleId = userDoc.data.roleId;
-      if (roleId == 'super_admin') return true;
+      let isSuper = isSuperAdmin();
+      let uid = request.auth != null ? request.auth.uid : 'NO_USER';
+      let userDoc = get(/databases/$(database)/documents/users/$(uid));
+      let hasUser = userDoc != null;
+      let roleId = hasUser && 'roleId' in userDoc.data ? userDoc.data.roleId : 'NO_ROLE';
+      let isSuperRole = roleId == 'super_admin';
       
       let config = get(/databases/$(database)/documents/settings/global_config);
-      if (config == null || !('rolePermissions' in config.data)) return false;
+      let hasConfig = config != null && 'rolePermissions' in config.data;
+      let perms = hasConfig ? config.data.rolePermissions : {};
+      let hasRolePerms = hasConfig && (roleId in perms);
       
-      let perms = config.data.rolePermissions;
-      return roleId in perms && node in perms[roleId];
+      return isSuper || isSuperRole || (hasRolePerms && (node in perms[roleId]));
     }
 
     match /{document=**} {
