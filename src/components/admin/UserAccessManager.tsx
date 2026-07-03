@@ -455,21 +455,13 @@ export function UserAccessManager() {
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                   Assign Role
                 </label>
-                <select
-                  required
+                <Select
                   value={inviteRoleId}
-                  onChange={(e) => setInviteRoleId(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none"
-                >
-                  <option value="" disabled>
-                    Select a role...
-                  </option>
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setInviteRoleId}
+                  placeholder="Select a role..."
+                  options={roles.map((r) => ({ label: r.name, value: r.id }))}
+                  className="w-full"
+                />
               </div>
 
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 flex gap-3 mt-2">
