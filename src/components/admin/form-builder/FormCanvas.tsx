@@ -30,7 +30,10 @@ export function FormCanvas({
 
   if (fields.length === 0) {
     return (
-      <div ref={setNodeRef} className="h-full flex items-center justify-center p-12 overflow-y-auto">
+      <div
+        ref={setNodeRef}
+        className="h-full flex items-center justify-center p-12 overflow-y-auto"
+      >
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center flex flex-col items-center justify-center max-w-md w-full">
           <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-5">
             <LayoutTemplate className="w-8 h-8 text-slate-400" />
@@ -45,7 +48,7 @@ export function FormCanvas({
   }
 
   return (
-    <div 
+    <div
       ref={setNodeRef}
       className="h-full overflow-y-auto overflow-x-hidden custom-thin-scroll px-10 py-10 pb-32"
       onClick={() => setSelectedFieldId(null)}

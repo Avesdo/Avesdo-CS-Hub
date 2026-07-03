@@ -27,7 +27,11 @@ const WORKSPACE_TABS = [
   { id: 'templates', label: 'Form Templates', icon: LayoutTemplate },
 ];
 
-export function SettingsSidebar({ activeTab, setActiveTab, pendingAliasCount }: SettingsSidebarProps) {
+export function SettingsSidebar({
+  activeTab,
+  setActiveTab,
+  pendingAliasCount,
+}: SettingsSidebarProps) {
   const OPERATIONS_TABS = [
     {
       id: 'pipeline',
@@ -45,7 +49,9 @@ export function SettingsSidebar({ activeTab, setActiveTab, pendingAliasCount }: 
       <div className="mt-2">
         <h2 className="text-xl font-bold tracking-tight text-slate-800 mb-5 px-2">Settings</h2>
 
-        <div className="mb-2 px-2 text-[13px] font-semibold text-slate-500 tracking-tight">Workspace</div>
+        <div className="mb-2 px-2 text-[13px] font-semibold text-slate-500 tracking-tight">
+          Workspace
+        </div>
         <div className="flex flex-col">
           {WORKSPACE_TABS.map((tab) => {
             const Icon = tab.icon;
@@ -69,7 +75,9 @@ export function SettingsSidebar({ activeTab, setActiveTab, pendingAliasCount }: 
       </div>
 
       <div className="mt-2">
-        <div className="mb-2 px-2 text-[13px] font-semibold text-slate-500 tracking-tight">Operations & Data</div>
+        <div className="mb-2 px-2 text-[13px] font-semibold text-slate-500 tracking-tight">
+          Operations & Data
+        </div>
         <div className="flex flex-col">
           {OPERATIONS_TABS.map((tab) => {
             const Icon = tab.icon;

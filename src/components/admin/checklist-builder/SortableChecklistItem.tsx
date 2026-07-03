@@ -30,7 +30,7 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
       >
         <GripVertical className="w-[14px] h-[14px]" />
       </div>
-      
+
       <div className="flex-1 p-3 flex gap-3">
         <div className="flex-1 space-y-2.5">
           <input
@@ -40,7 +40,7 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
             className="w-full text-[14px] font-semibold text-slate-800 outline-none bg-transparent placeholder:text-slate-400 placeholder:font-normal focus:ring-0"
             placeholder={`Deliverable ${itemIdx + 1}`}
           />
-          {(!item.defaultNote && !isEditingNote) ? (
+          {!item.defaultNote && !isEditingNote ? (
             <button
               onClick={() => setIsEditingNote(true)}
               className="text-[11px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1"
@@ -52,14 +52,16 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
               type="text"
               value={item.defaultNote || ''}
               onChange={(e) => handleUpdateItem(itemIdx, { defaultNote: e.target.value })}
-              onBlur={() => { if (!item.defaultNote) setIsEditingNote(false); }}
+              onBlur={() => {
+                if (!item.defaultNote) setIsEditingNote(false);
+              }}
               className="w-full text-[13px] text-slate-500 outline-none bg-transparent placeholder:text-slate-400 focus:ring-0"
               placeholder="Default note or instructions (optional)"
               autoFocus={isEditingNote}
             />
           )}
         </div>
-        
+
         <div className="flex flex-col justify-between items-end shrink-0 pl-3 border-l border-slate-100">
           <button
             onClick={() => handleRemoveItem(itemIdx)}

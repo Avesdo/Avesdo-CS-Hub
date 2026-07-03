@@ -393,7 +393,8 @@ export function SettingsList({
             onClick={() => setIsAdding(true)}
             className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
           >
-            <Plus className="w-4 h-4" /> Add {title.endsWith('Status') ? title : title.replace(/s$/, '')}
+            <Plus className="w-4 h-4" /> Add{' '}
+            {title.endsWith('Status') ? title : title.replace(/s$/, '')}
           </button>
         )}
       </div>

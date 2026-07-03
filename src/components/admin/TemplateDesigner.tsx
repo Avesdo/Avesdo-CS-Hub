@@ -192,15 +192,19 @@ export default function TemplateDesigner() {
     .map((id) => templates[id] || defaultTemplates[id])
     .filter(Boolean);
 
-  const activeTemplate = activeTemplateId ? (templates[activeTemplateId] || defaultTemplates[activeTemplateId]) : null;
+  const activeTemplate = activeTemplateId
+    ? templates[activeTemplateId] || defaultTemplates[activeTemplateId]
+    : null;
   const [fields, setFields] = useState<FormField[]>(activeTemplate?.fields || []);
   const [sections, setSections] = useState<ChecklistSection[]>(activeTemplate?.sections || []);
   const [showPreview, setShowPreview] = useState(false);
 
   const hasUnsavedChanges = React.useMemo(() => {
     if (!activeTemplate) return false;
-    return JSON.stringify(fields) !== JSON.stringify(activeTemplate.fields || []) ||
-           JSON.stringify(sections) !== JSON.stringify(activeTemplate.sections || []);
+    return (
+      JSON.stringify(fields) !== JSON.stringify(activeTemplate.fields || []) ||
+      JSON.stringify(sections) !== JSON.stringify(activeTemplate.sections || [])
+    );
   }, [fields, sections, activeTemplate]);
 
   const hasLoadedSettingsRef = React.useRef(false);
@@ -209,14 +213,26 @@ export default function TemplateDesigner() {
   React.useEffect(() => {
     if (currentTabRef.current !== activeTemplateId) {
       if (activeTemplateId) {
-        setFields(templates[activeTemplateId]?.fields || defaultTemplates[activeTemplateId]?.fields || []);
-        setSections(templates[activeTemplateId]?.sections || defaultTemplates[activeTemplateId]?.sections || []);
+        setFields(
+          templates[activeTemplateId]?.fields || defaultTemplates[activeTemplateId]?.fields || []
+        );
+        setSections(
+          templates[activeTemplateId]?.sections ||
+            defaultTemplates[activeTemplateId]?.sections ||
+            []
+        );
       }
       currentTabRef.current = activeTemplateId;
     } else if (!hasLoadedSettingsRef.current && settings?.templates) {
       if (activeTemplateId) {
-        setFields(templates[activeTemplateId]?.fields || defaultTemplates[activeTemplateId]?.fields || []);
-        setSections(templates[activeTemplateId]?.sections || defaultTemplates[activeTemplateId]?.sections || []);
+        setFields(
+          templates[activeTemplateId]?.fields || defaultTemplates[activeTemplateId]?.fields || []
+        );
+        setSections(
+          templates[activeTemplateId]?.sections ||
+            defaultTemplates[activeTemplateId]?.sections ||
+            []
+        );
       }
       hasLoadedSettingsRef.current = true;
     }
@@ -245,7 +261,9 @@ export default function TemplateDesigner() {
           <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
             Form Templates
           </h1>
-          <p className="text-slate-500 text-[15px]">Build and manage all dynamic checklist and form templates used across projects.</p>
+          <p className="text-slate-500 text-[15px]">
+            Build and manage all dynamic checklist and form templates used across projects.
+          </p>
         </div>
         <div className="px-10 pb-10 flex-1 overflow-y-auto custom-thin-scroll">
           <div className="max-w-4xl space-y-12 animate-in fade-in duration-300">
@@ -253,14 +271,18 @@ export default function TemplateDesigner() {
               <div className="bg-white border border-border rounded-xl shadow-sm">
                 <div className="divide-y divide-border relative list-none m-0 p-0">
                   {sortedTemplates.map((tpl, i) => (
-                    <div 
-                      key={tpl.id} 
+                    <div
+                      key={tpl.id}
                       onClick={() => setActiveTemplateId(tpl.id)}
                       className={`p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors cursor-pointer group relative z-10 ${i === 0 ? 'rounded-t-xl' : ''} ${i === sortedTemplates.length - 1 ? 'rounded-b-xl' : ''}`}
                     >
                       <div className="flex items-center gap-3 w-full">
                         <div className="flex items-center gap-2.5 text-sm font-medium text-slate-700">
-                          {tpl.type === 'checklist' ? <CheckSquare className="w-4 h-4 text-slate-400 shrink-0" /> : <FileText className="w-4 h-4 text-slate-400 shrink-0" />}
+                          {tpl.type === 'checklist' ? (
+                            <CheckSquare className="w-4 h-4 text-slate-400 shrink-0" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                          )}
                           {tpl.name}
                         </div>
                       </div>
@@ -288,17 +310,25 @@ export default function TemplateDesigner() {
       {/* Top Header - Glassmorphic Toolbar */}
       <div className="shrink-0 px-8 py-4 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl z-20 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-5">
-          <button 
+          <button
             onClick={() => setActiveTemplateId(null)}
             className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-900"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${activeTemplate.type === 'checklist' ? 'bg-cyan-100/50 text-cyan-600' : 'bg-indigo-100/50 text-indigo-600'}`}>
-              {activeTemplate.type === 'checklist' ? <CheckSquare className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+            <div
+              className={`p-2 rounded-lg ${activeTemplate.type === 'checklist' ? 'bg-cyan-100/50 text-cyan-600' : 'bg-indigo-100/50 text-indigo-600'}`}
+            >
+              {activeTemplate.type === 'checklist' ? (
+                <CheckSquare className="w-5 h-5" />
+              ) : (
+                <FileText className="w-5 h-5" />
+              )}
             </div>
-            <h3 className="text-xl font-bold text-slate-800 tracking-tight">{activeTemplate.name}</h3>
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">
+              {activeTemplate.name}
+            </h3>
           </div>
         </div>
         <div className="flex items-center gap-4">

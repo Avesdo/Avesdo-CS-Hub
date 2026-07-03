@@ -193,7 +193,7 @@ export function Select({
                   onClick={() => handleSelect(searchTerm.trim())}
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center"
                 >
-                  <span className="mr-2 opacity-60 shrink-0">Create</span> 
+                  <span className="mr-2 opacity-60 shrink-0">Create</span>
                   <span className="truncate">"{searchTerm.trim()}"</span>
                 </button>
               )}
@@ -217,7 +217,10 @@ export function Select({
                     )}
                   >
                     <span
-                      className={twMerge('font-medium truncate flex-1 pr-2', value === opt.value ? 'font-semibold' : '')}
+                      className={twMerge(
+                        'font-medium truncate flex-1 pr-2',
+                        value === opt.value ? 'font-semibold' : ''
+                      )}
                     >
                       {opt.label}
                     </span>

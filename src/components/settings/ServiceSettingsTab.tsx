@@ -10,7 +10,11 @@ export function ServiceSettingsTab() {
           desc="Available billable services."
           fieldName="services"
         />
-        <SettingsList title="Service Types" desc="Categories of services." fieldName="serviceTypes" />
+        <SettingsList
+          title="Service Types"
+          desc="Categories of services."
+          fieldName="serviceTypes"
+        />
         <SettingsList
           title="Service Outcomes"
           desc="Outcome statuses for services."

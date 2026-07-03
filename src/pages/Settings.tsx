@@ -131,39 +131,49 @@ export default function Settings() {
   };
 
   const tabSubtitleMap: Record<string, string> = {
-    global: 'Manage fundamental taxonomies, team members, and capabilities that power your workspace.',
+    global:
+      'Manage fundamental taxonomies, team members, and capabilities that power your workspace.',
     schedule: 'Configure fixed EST/PST shifts, time off, and statutory holidays for the team.',
     projects: 'Configure project stages, schedule statuses, and implementation phases.',
     services: 'Manage the available services, types, and fulfillment statuses.',
     scoring: 'Configure how client health scores are calculated and their threshold indicators.',
     templates: 'Build and manage all dynamic checklist and form templates used across projects.',
-    pipeline: 'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
-    exports: 'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
+    pipeline:
+      'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
+    exports:
+      'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
   };
 
   return (
     <div className="flex flex-1 h-full w-full overflow-hidden bg-white">
       <div className="flex w-full h-full">
-          
-          <SettingsSidebar 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab as any} 
-            pendingAliasCount={pendingAliasCount} 
-          />
+        <SettingsSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab as any}
+          pendingAliasCount={pendingAliasCount}
+        />
 
-          {/* MAIN CONTENT AREA */}
-          <div className={`flex-1 bg-white relative ${activeTab !== 'templates' ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}>
-            {activeTab !== 'templates' && (
-              <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
-                <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
-                  {tabTitleMap[activeTab]}
-                </h1>
-                {tabSubtitleMap[activeTab] && (
-                  <p className="text-slate-500 text-[15px]">{tabSubtitleMap[activeTab]}</p>
-                )}
-              </div>
-            )}
-            <div className={activeTab === 'templates' ? 'flex-1 flex flex-col overflow-hidden min-h-0' : 'px-10 pb-10'}>
+        {/* MAIN CONTENT AREA */}
+        <div
+          className={`flex-1 bg-white relative ${activeTab !== 'templates' ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
+        >
+          {activeTab !== 'templates' && (
+            <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
+              <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
+                {tabTitleMap[activeTab]}
+              </h1>
+              {tabSubtitleMap[activeTab] && (
+                <p className="text-slate-500 text-[15px]">{tabSubtitleMap[activeTab]}</p>
+              )}
+            </div>
+          )}
+          <div
+            className={
+              activeTab === 'templates'
+                ? 'flex-1 flex flex-col overflow-hidden min-h-0'
+                : 'px-10 pb-10'
+            }
+          >
             {activeTab === 'global' && <GlobalSettingsTab />}
             {activeTab === 'schedule' && <ScheduleSettingsTab />}
             {activeTab === 'projects' && <ProjectSettingsTab />}

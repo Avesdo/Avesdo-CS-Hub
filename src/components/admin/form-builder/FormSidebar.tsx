@@ -1,6 +1,15 @@
 import React from 'react';
 import { FormField, FieldType, FIELD_PALETTE_CATEGORIES } from '../TemplateDesigner';
-import { X, Plus, Trash2, SplitSquareHorizontal, ChevronDown, Settings2, GripVertical, Blocks } from 'lucide-react';
+import {
+  X,
+  Plus,
+  Trash2,
+  SplitSquareHorizontal,
+  ChevronDown,
+  Settings2,
+  GripVertical,
+  Blocks,
+} from 'lucide-react';
 import { Select } from '../../ui/Select';
 import { MultiSelect } from '../../ui/MultiSelect';
 import { RichTextEditor } from '../../ui/RichTextEditor';
@@ -23,13 +32,13 @@ interface FormSidebarProps {
   features: string[];
 }
 
-function DraggablePaletteItem({ item, onClick }: { item: any, onClick: () => void }) {
+function DraggablePaletteItem({ item, onClick }: { item: any; onClick: () => void }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${item.type}`,
     data: {
       type: 'palette-item',
-      fieldType: item.type
-    }
+      fieldType: item.type,
+    },
   });
 
   return (
@@ -67,7 +76,7 @@ export function FormSidebar({
         <h3 className="text-sm font-bold text-slate-800">Form Elements</h3>
         <p className="text-[12px] text-slate-500 mt-1">Drag and drop to add</p>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto custom-thin-scroll p-4 space-y-6">
         {FIELD_PALETTE_CATEGORIES.map((category) => (
           <div key={category.title}>
@@ -76,10 +85,10 @@ export function FormSidebar({
             </div>
             <div className="flex flex-col gap-2">
               {category.items.map((item) => (
-                <DraggablePaletteItem 
-                  key={item.type} 
-                  item={item} 
-                  onClick={() => handleAddField(item.type as FieldType)} 
+                <DraggablePaletteItem
+                  key={item.type}
+                  item={item}
+                  onClick={() => handleAddField(item.type as FieldType)}
                 />
               ))}
             </div>

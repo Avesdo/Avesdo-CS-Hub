@@ -293,7 +293,7 @@ export function MultiSelect({
                   onClick={() => toggleValue(searchTerm.trim())}
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center outline-none"
                 >
-                  <span className="mr-2 opacity-60 shrink-0">Create</span> 
+                  <span className="mr-2 opacity-60 shrink-0">Create</span>
                   <span className="truncate">"{searchTerm.trim()}"</span>
                 </button>
               )}
@@ -318,7 +318,12 @@ export function MultiSelect({
                           : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                       )}
                     >
-                      <span className={twMerge('font-medium truncate flex-1 pr-2', isSelected && 'font-semibold')}>
+                      <span
+                        className={twMerge(
+                          'font-medium truncate flex-1 pr-2',
+                          isSelected && 'font-semibold'
+                        )}
+                      >
                         {opt.label}
                       </span>
                       {isSelected && <Check className="w-4 h-4 text-primary shrink-0 ml-auto" />}

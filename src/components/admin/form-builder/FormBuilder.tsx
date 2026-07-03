@@ -43,7 +43,7 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
   const handleFieldDragEnd = (event: any) => {
     setActiveDragId(null);
     const { active, over } = event;
-    
+
     if (active.id.toString().startsWith('palette-')) {
       const type = active.id.toString().replace('palette-', '');
       const newField: FormField = {
@@ -52,7 +52,7 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
         label: type === 'page_break' ? 'Page Break' : '',
         required: false,
       };
-      
+
       if (over) {
         if (over.id === 'form-canvas') {
           // Dropped on the empty canvas or at the bottom
@@ -71,7 +71,7 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
           return;
         }
       }
-      
+
       // If we reach here, it was dropped outside valid areas (like the sidebar). Do not add it.
       return;
     }
@@ -122,11 +122,16 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
 
   return (
     <div className="flex h-full w-full relative bg-slate-50/50">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleFieldDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleFieldDragEnd}
+      >
         <div className="flex-1 h-full min-w-0 overflow-hidden">
-          <FormCanvas 
-            fields={fields} 
-            selectedFieldId={selectedFieldId} 
+          <FormCanvas
+            fields={fields}
+            selectedFieldId={selectedFieldId}
             setSelectedFieldId={setSelectedFieldId}
             handleUpdateField={handleUpdateField}
             handleRemoveField={handleRemoveField}
@@ -135,7 +140,7 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
           />
         </div>
         <div className="w-[320px] shrink-0 border-l border-slate-200 bg-white h-full z-10 shadow-sm relative flex flex-col">
-          <FormSidebar 
+          <FormSidebar
             fields={fields}
             selectedFieldId={selectedFieldId}
             setSelectedFieldId={setSelectedFieldId}
@@ -145,24 +150,24 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
           />
         </div>
         <DragOverlay dropAnimation={null}>
-          {activeDragId && activeDragId.toString().startsWith('palette-') ? (() => {
-            const type = activeDragId.toString().replace('palette-', '') as FieldType;
-            const meta = getFieldMeta(type);
-            const Icon = meta.icon;
-            
-            return (
-              <div className="w-[280px] flex items-center justify-between p-2.5 rounded-lg border border-primary bg-white shadow-xl opacity-90 scale-105">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-3.5 h-3.5 text-primary" />
+          {activeDragId && activeDragId.toString().startsWith('palette-')
+            ? (() => {
+                const type = activeDragId.toString().replace('palette-', '') as FieldType;
+                const meta = getFieldMeta(type);
+                const Icon = meta.icon;
+
+                return (
+                  <div className="w-[280px] flex items-center justify-between p-2.5 rounded-lg border border-primary bg-white shadow-xl opacity-90 scale-105">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <span className="text-[13px] font-semibold text-slate-700">{meta.label}</span>
+                    </div>
                   </div>
-                  <span className="text-[13px] font-semibold text-slate-700">
-                    {meta.label}
-                  </span>
-                </div>
-              </div>
-            );
-          })() : null}
+                );
+              })()
+            : null}
         </DragOverlay>
       </DndContext>
     </div>

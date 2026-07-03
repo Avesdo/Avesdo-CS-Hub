@@ -8,7 +8,17 @@ import { Select } from '../ui/Select';
 import { Input } from '../ui/input';
 import { format } from 'date-fns';
 import * as LucideIcons from 'lucide-react';
-import { Check, User, Calendar, Edit2, Trash2, ChevronDown, ExternalLink, Plus, X } from 'lucide-react';
+import {
+  Check,
+  User,
+  Calendar,
+  Edit2,
+  Trash2,
+  ChevronDown,
+  ExternalLink,
+  Plus,
+  X,
+} from 'lucide-react';
 
 export function ScheduleSettingsTab() {
   const settings = useAppStore((state) => state.settings);
@@ -129,8 +139,12 @@ export function ScheduleSettingsTab() {
                   onChange={(e) => setShowPastTimeOff(e.target.checked)}
                   className="sr-only"
                 />
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${showPastTimeOff ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}>
-                  {showPastTimeOff && <Check className="w-2.5 h-2.5 text-white animate-in zoom-in" />}
+                <div
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${showPastTimeOff ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}
+                >
+                  {showPastTimeOff && (
+                    <Check className="w-2.5 h-2.5 text-white animate-in zoom-in" />
+                  )}
                 </div>
                 <span className="text-sm font-semibold text-slate-700">Show past</span>
               </label>
@@ -149,7 +163,7 @@ export function ScheduleSettingsTab() {
             <div className="mb-6 bg-slate-50/50 border border-slate-200 rounded-2xl p-4">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-sm font-semibold text-slate-700">New Time Off Record</h4>
-                <button 
+                <button
                   onClick={() => setIsAddingTimeOff(false)}
                   className="text-slate-400 hover:text-slate-600 transition-colors"
                 >
@@ -157,64 +171,64 @@ export function ScheduleSettingsTab() {
                 </button>
               </div>
               <div className="flex flex-col md:flex-row gap-3">
-              <DateRangePicker
-                preset="custom"
-                startDate={newTimeOffStart}
-                endDate={newTimeOffEnd}
-                onChange={(_, start, end) => {
-                  setNewTimeOffStart(start);
-                  setNewTimeOffEnd(end);
-                }}
-                className="flex-1 md:max-w-[260px]"
-                hidePresets={true}
-                placeholder="Select Date Range"
-                variant="outline"
-              />
-              <Select
-                value={newTimeOffManager}
-                onChange={(val) => setNewTimeOffManager(val)}
-                options={(settings?.managers || []).map((m: any) => ({
-                  label: m.name,
-                  value: m.name,
-                }))}
-                trigger={
-                  <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 md:max-w-[220px]">
-                    {newTimeOffManager || (
-                      <span className="text-muted-foreground">Select Manager...</span>
-                    )}
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                  </button>
-                }
-              />
-              <button
-                onClick={() => {
-                  if (newTimeOffStart && newTimeOffEnd && newTimeOffManager) {
-                    const newEntry = {
-                      startDate: format(new Date(newTimeOffStart), 'yyyy-MM-dd'),
-                      endDate: format(new Date(newTimeOffEnd), 'yyyy-MM-dd'),
-                      manager: newTimeOffManager,
-                    };
-                    const existingTimeOff = [...(settings?.timeOff || [])];
-                    existingTimeOff.push(newEntry);
-                    existingTimeOff.sort(
-                      (a: any, b: any) =>
-                        new Date(a.startDate || a.date).getTime() -
-                        new Date(b.startDate || b.date).getTime()
-                    );
-                    saveSettings({ ...(settings as any), timeOff: existingTimeOff });
-                    setNewTimeOffStart(null);
-                    setNewTimeOffEnd(null);
-                    setNewTimeOffManager('');
-                    setIsAddingTimeOff(false);
+                <DateRangePicker
+                  preset="custom"
+                  startDate={newTimeOffStart}
+                  endDate={newTimeOffEnd}
+                  onChange={(_, start, end) => {
+                    setNewTimeOffStart(start);
+                    setNewTimeOffEnd(end);
+                  }}
+                  className="flex-1 md:max-w-[260px]"
+                  hidePresets={true}
+                  placeholder="Select Date Range"
+                  variant="outline"
+                />
+                <Select
+                  value={newTimeOffManager}
+                  onChange={(val) => setNewTimeOffManager(val)}
+                  options={(settings?.managers || []).map((m: any) => ({
+                    label: m.name,
+                    value: m.name,
+                  }))}
+                  trigger={
+                    <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 md:max-w-[220px]">
+                      {newTimeOffManager || (
+                        <span className="text-muted-foreground">Select Manager...</span>
+                      )}
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    </button>
                   }
-                }}
-                disabled={!newTimeOffStart || !newTimeOffEnd || !newTimeOffManager}
-                className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
-              >
-                Add Time Off
-              </button>
+                />
+                <button
+                  onClick={() => {
+                    if (newTimeOffStart && newTimeOffEnd && newTimeOffManager) {
+                      const newEntry = {
+                        startDate: format(new Date(newTimeOffStart), 'yyyy-MM-dd'),
+                        endDate: format(new Date(newTimeOffEnd), 'yyyy-MM-dd'),
+                        manager: newTimeOffManager,
+                      };
+                      const existingTimeOff = [...(settings?.timeOff || [])];
+                      existingTimeOff.push(newEntry);
+                      existingTimeOff.sort(
+                        (a: any, b: any) =>
+                          new Date(a.startDate || a.date).getTime() -
+                          new Date(b.startDate || b.date).getTime()
+                      );
+                      saveSettings({ ...(settings as any), timeOff: existingTimeOff });
+                      setNewTimeOffStart(null);
+                      setNewTimeOffEnd(null);
+                      setNewTimeOffManager('');
+                      setIsAddingTimeOff(false);
+                    }
+                  }}
+                  disabled={!newTimeOffStart || !newTimeOffEnd || !newTimeOffManager}
+                  className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
+                >
+                  Add Time Off
+                </button>
+              </div>
             </div>
-          </div>
           )}
 
           <div className="space-y-3">
@@ -394,7 +408,9 @@ export function ScheduleSettingsTab() {
                   onChange={(e) => setShowPastHolidays(e.target.checked)}
                   className="sr-only"
                 />
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${showPastHolidays ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}>
+                <div
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${showPastHolidays ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-slate-400 bg-white'}`}
+                >
                   {showPastHolidays && (
                     <Check className="w-2.5 h-2.5 text-white animate-in zoom-in" />
                   )}
@@ -416,7 +432,7 @@ export function ScheduleSettingsTab() {
             <div className="mb-6 bg-slate-50/50 border border-slate-200 rounded-2xl p-4">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-sm font-semibold text-slate-700">New Holiday</h4>
-                <button 
+                <button
                   onClick={() => setIsAddingHoliday(false)}
                   className="text-slate-400 hover:text-slate-600 transition-colors"
                 >
@@ -424,44 +440,44 @@ export function ScheduleSettingsTab() {
                 </button>
               </div>
               <div className="flex flex-col md:flex-row gap-3">
-              <DatePicker
-                value={newHolidayDate}
-                onChange={(val) => setNewHolidayDate(val)}
-                placeholder="Select Holiday Date"
-                className="flex-1 md:max-w-[200px]"
-              />
-              <Input
-                value={newHolidayName}
-                onChange={(e) => setNewHolidayName(e.target.value)}
-                placeholder="e.g. Christmas Day"
-                className="flex-1 h-10"
-              />
-              <button
-                onClick={() => {
-                  if (newHolidayDate && newHolidayName) {
-                    const dateStr = new Date(
-                      newHolidayDate - new Date().getTimezoneOffset() * 60000
-                    )
-                      .toISOString()
-                      .split('T')[0];
-                    const newHolidays = [...(settings?.statHolidays || [])];
-                    newHolidays.push({ date: dateStr, name: newHolidayName, location: 'Global' });
-                    newHolidays.sort(
-                      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-                    );
-                    saveSettings({ ...(settings as any), statHolidays: newHolidays });
-                    setNewHolidayDate(null);
-                    setNewHolidayName('');
-                    setIsAddingHoliday(false);
-                  }
-                }}
-                disabled={!newHolidayDate || !newHolidayName}
-                className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
-              >
-                Add Holiday
-              </button>
+                <DatePicker
+                  value={newHolidayDate}
+                  onChange={(val) => setNewHolidayDate(val)}
+                  placeholder="Select Holiday Date"
+                  className="flex-1 md:max-w-[200px]"
+                />
+                <Input
+                  value={newHolidayName}
+                  onChange={(e) => setNewHolidayName(e.target.value)}
+                  placeholder="e.g. Christmas Day"
+                  className="flex-1 h-10"
+                />
+                <button
+                  onClick={() => {
+                    if (newHolidayDate && newHolidayName) {
+                      const dateStr = new Date(
+                        newHolidayDate - new Date().getTimezoneOffset() * 60000
+                      )
+                        .toISOString()
+                        .split('T')[0];
+                      const newHolidays = [...(settings?.statHolidays || [])];
+                      newHolidays.push({ date: dateStr, name: newHolidayName, location: 'Global' });
+                      newHolidays.sort(
+                        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+                      );
+                      saveSettings({ ...(settings as any), statHolidays: newHolidays });
+                      setNewHolidayDate(null);
+                      setNewHolidayName('');
+                      setIsAddingHoliday(false);
+                    }
+                  }}
+                  disabled={!newHolidayDate || !newHolidayName}
+                  className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
+                >
+                  Add Holiday
+                </button>
+              </div>
             </div>
-          </div>
           )}
 
           <div className="space-y-3">

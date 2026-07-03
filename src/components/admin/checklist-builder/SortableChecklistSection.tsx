@@ -2,8 +2,22 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { Plus, Trash2, GripVertical, SplitSquareHorizontal, CheckSquare, ChevronDown } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  Plus,
+  Trash2,
+  GripVertical,
+  SplitSquareHorizontal,
+  CheckSquare,
+  ChevronDown,
+} from 'lucide-react';
 import { MultiSelect } from '../../ui/MultiSelect';
 import { SortableChecklistItem } from './SortableChecklistItem';
 
@@ -102,7 +116,7 @@ export function SortableChecklistSection({
                 <span className="text-[13px] font-semibold text-slate-700">Feature logic</span>
               </label>
             </div>
-            
+
             <div className="w-px h-4 bg-slate-200 mx-1" />
 
             <button
@@ -121,7 +135,9 @@ export function SortableChecklistSection({
             <div className="flex flex-col gap-3 max-w-3xl">
               <div className="flex items-center gap-2 text-slate-700">
                 <SplitSquareHorizontal className="w-[18px] h-[18px]" />
-                <span className="text-[13px] font-semibold">Show this section if project uses any of:</span>
+                <span className="text-[13px] font-semibold">
+                  Show this section if project uses any of:
+                </span>
               </div>
               <div className="flex items-center gap-3 pl-6">
                 <MultiSelect
@@ -162,7 +178,7 @@ export function SortableChecklistSection({
               />
             </div>
 
-            {(!section.description && !isEditingDesc) ? (
+            {!section.description && !isEditingDesc ? (
               <button
                 onClick={() => setIsEditingDesc(true)}
                 className="text-[12px] font-bold text-slate-500 hover:text-slate-700 flex items-center gap-1 mt-1"
@@ -178,7 +194,9 @@ export function SortableChecklistSection({
                   type="text"
                   value={section.description || ''}
                   onChange={(e) => handleUpdateSection(index, { description: e.target.value })}
-                  onBlur={() => { if (!section.description) setIsEditingDesc(false); }}
+                  onBlur={() => {
+                    if (!section.description) setIsEditingDesc(false);
+                  }}
                   className="w-full text-[14px] font-medium text-slate-700 rounded-lg border border-slate-300 px-4 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 shadow-sm bg-white"
                   placeholder="Add some context about this section..."
                   autoFocus={isEditingDesc}
