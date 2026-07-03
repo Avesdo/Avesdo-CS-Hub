@@ -20,6 +20,7 @@ import {
 import * as LucideIcons from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
+import { Tooltip } from '../ui/Tooltip';
 import {
   updateClientRecord,
   addAutoLog,
@@ -37,22 +38,37 @@ import { TimelineTab } from '../ui/TimelineTab';
 import { Select } from '../ui/Select';
 import toast from 'react-hot-toast';
 import { renderIcon } from '../../utils/uiUtils';
+import { usePermissions } from '../../hooks/usePermissions';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
-const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = '' }: any) => {
+const TokenTrigger = ({
+  label,
+  value,
+  icon: Icon,
+  error,
+  onClick,
+  className = '',
+  disabled = false,
+}: any) => {
   const isSuspended = value === 'Suspended' || value === 'On Hold';
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 active:scale-95 hover:shadow-md focus:ring-2 w-full justify-between ${
+      disabled={disabled}
+      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 w-full justify-between ${
+        disabled ? 'cursor-not-allowed opacity-70' : 'active:scale-95 hover:shadow-md focus:ring-2'
+      } ${
         error
           ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20'
           : isSuspended
             ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20'
-            : 'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20'
+            : disabled
+              ? 'bg-slate-50 border-slate-200'
+              : 'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20'
       } ${className}`}
     >
-      <div className="flex items-center truncate">
+      <div className="flex items-center min-w-0">
         {Icon && (
           <Icon
             className={`w-4 h-4 transition-colors mr-2 shrink-0 ${isSuspended ? 'text-red-500 group-hover:text-red-600' : 'text-slate-400 group-hover:text-primary'}`}
@@ -63,13 +79,12 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
         >
           {label}:
         </span>
-        <span
-          className={`text-[13px] font-semibold truncate ${
-            isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'
-          }`}
+        <TruncatedText
+          text={String(value || 'Select')}
+          containerClassName={`text-[13px] font-semibold ${isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'}`}
         >
           {value || 'Select'}
-        </span>
+        </TruncatedText>
       </div>
       <ChevronDown
         className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`}
@@ -87,6 +102,7 @@ export default function ClientProfileModal() {
   const projects = useAppStore((state) => state.projects);
   const user = useAppStore((state) => state.user);
   const services = useAppStore((state) => state.services);
+  const { hasPermission } = usePermissions();
 
   const [activeTab, setActiveTab] = useState<'health' | 'projects' | 'services' | 'notes'>(
     'health'
@@ -377,38 +393,44 @@ export default function ClientProfileModal() {
                             className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
                           <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateName();
-                              }}
-                              className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
-                              title="Save"
-                            >
-                              <Check className="w-5 h-5 stroke-[2.5]" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditNameValue(client?.companyName || client?.name || '');
-                                setIsEditingName(false);
-                              }}
-                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
-                              title="Cancel"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
+                            <Tooltip content="Save">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateName();
+                                }}
+                                className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
+                              >
+                                <Check className="w-5 h-5 stroke-[2.5]" />
+                              </button>
+                            </Tooltip>
+                            <Tooltip content="Cancel">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditNameValue(client?.companyName || client?.name || '');
+                                  setIsEditingName(false);
+                                }}
+                                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </Tooltip>
                           </div>
                         </div>
                       ) : (
                         <div
-                          className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
-                          onClick={() => setIsEditingName(true)}
+                          className={`group flex items-start justify-between rounded-xl -mx-3 px-3 py-2 transition-colors ${hasPermission('client_edit_profile') ? 'cursor-pointer hover:bg-slate-200/50' : ''}`}
+                          onClick={() =>
+                            hasPermission('client_edit_profile') && setIsEditingName(true)
+                          }
                         >
                           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
                             {client?.companyName || client?.name || 'Unnamed Client'}
                           </h2>
-                          <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          {hasPermission('client_edit_profile') && (
+                            <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -426,11 +448,13 @@ export default function ClientProfileModal() {
                             ).map((o: string) => ({ label: o, value: o }))}
                             value={client?.clientType || 'Unassigned'}
                             onChange={(val) => handleUpdateType(val)}
+                            disabled={!hasPermission('client_edit_profile')}
                             trigger={
                               <TokenTrigger
                                 label="Type"
                                 value={client?.clientType || 'Unassigned'}
                                 icon={Building}
+                                disabled={!hasPermission('client_edit_profile')}
                               />
                             }
                           />
@@ -443,11 +467,13 @@ export default function ClientProfileModal() {
                             )}
                             value={client?.accountManager || ''}
                             onChange={(val) => handleUpdateManager(val)}
+                            disabled={!hasPermission('client_edit_profile')}
                             trigger={
                               <TokenTrigger
                                 label="Manager"
                                 value={client?.accountManager || 'Unassigned'}
                                 icon={User}
+                                disabled={!hasPermission('client_edit_profile')}
                               />
                             }
                           />
@@ -498,7 +524,7 @@ export default function ClientProfileModal() {
                                               <LayoutDashboard className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                             );
                                           })()}
-                                          <span className="truncate">{status}</span>
+                                          <TruncatedText text={status}>{status}</TruncatedText>
                                         </div>
                                         <span className="text-[12px] font-bold text-slate-500 shrink-0">
                                           {count}
@@ -557,7 +583,7 @@ export default function ClientProfileModal() {
                                               <Layers className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                             );
                                           })()}
-                                          <span className="truncate">{type}</span>
+                                          <TruncatedText text={type}>{type}</TruncatedText>
                                         </div>
                                         <span className="text-[12px] font-bold text-slate-500 shrink-0">
                                           {count}
@@ -575,38 +601,39 @@ export default function ClientProfileModal() {
                         </div>
                       </div>
 
-                      {/* Danger Zone */}
-                      <div className="pt-4 mt-auto border-t border-slate-200/60">
-                        {isConfirmingDelete ? (
-                          <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                            <p className="text-[11px] font-medium text-red-600 text-center">
-                              Archive this client?
-                            </p>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => setIsConfirmingDelete(false)}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={handleDelete}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
-                              >
-                                Archive
-                              </button>
+                      {hasPermission('client_archive') && (
+                        <div className="pt-4 mt-auto border-t border-slate-200/60">
+                          {isConfirmingDelete ? (
+                            <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                              <p className="text-[11px] font-medium text-red-600 text-center">
+                                Archive this client?
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setIsConfirmingDelete(false)}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={handleDelete}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                                >
+                                  Archive
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setIsConfirmingDelete(true)}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
-                          >
-                            <LucideIcons.Archive className="w-4 h-4" />
-                            Archive Client
-                          </button>
-                        )}
-                      </div>
+                          ) : (
+                            <button
+                              onClick={() => setIsConfirmingDelete(true)}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
+                            >
+                              <LucideIcons.Archive className="w-4 h-4" />
+                              Archive Client
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 

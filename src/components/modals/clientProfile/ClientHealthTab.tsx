@@ -754,13 +754,14 @@ export const ClientHealthTab = React.memo(
                     (healthResult as any).details?.supportCsat !== undefined) ||
                   ((healthResult as any).details?.avgProjectCsat !== 'N/A' &&
                     (healthResult as any).details?.avgProjectCsat !== undefined) ? (
-                    <button
-                      onClick={() => setShowCsatModal(true)}
-                      className="absolute -right-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary transition-opacity bg-white border border-slate-200 p-1 rounded-full shadow-sm"
-                      title="View Details"
-                    >
-                      <Eye className="w-3 h-3" />
-                    </button>
+                    <UITooltip content="View Details">
+                      <button
+                        onClick={() => setShowCsatModal(true)}
+                        className="absolute -right-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary transition-opacity bg-white border border-slate-200 p-1 rounded-full shadow-sm"
+                      >
+                        <Eye className="w-3 h-3" />
+                      </button>
+                    </UITooltip>
                   ) : null}
                 </div>
               </div>

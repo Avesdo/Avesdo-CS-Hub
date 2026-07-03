@@ -169,15 +169,16 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
                 <div className="flex items-center gap-3 bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
                   <span className="text-xs font-bold text-primary">{selected.size} selected</span>
                   <div className="flex items-center gap-2 border-l border-primary/10 pl-3">
-                    <button
-                      disabled={isProcessing}
-                      onClick={() => handleUndo(Array.from(selected))}
-                      className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg shadow-sm disabled:opacity-50 transition-all active:scale-95"
-                      title="Undo mappings (Note: Direct matches cannot be undone, they will only be removed from this log)"
-                    >
-                      <Undo2 className="w-3.5 h-3.5" />
-                      Undo Mapping
-                    </button>
+                    <Tooltip content="Undo mappings (Note: Direct matches cannot be undone, they will only be removed from this log)">
+                      <button
+                        disabled={isProcessing}
+                        onClick={() => handleUndo(Array.from(selected))}
+                        className="px-3 py-1.5 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg shadow-sm disabled:opacity-50 transition-all active:scale-95"
+                      >
+                        <Undo2 className="w-3.5 h-3.5" />
+                        Undo Mapping
+                      </button>
+                    </Tooltip>
                     <button
                       disabled={isProcessing}
                       onClick={() => handleDismiss(Array.from(selected))}
@@ -301,20 +302,22 @@ export function AutoProcessedModal({ isOpen, onClose, log, onUpdate }: AutoProce
 
                       {/* Right: Individual Actions */}
                       <div className="flex items-center gap-1.5 mt-2 sm:mt-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 sm:ml-3">
-                        <button
-                          onClick={() => handleUndo([item.id])}
-                          className="flex items-center justify-center w-8 h-8 bg-slate-50 hover:bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 rounded-lg transition-all shadow-sm active:scale-95"
-                          title="Undo"
-                        >
-                          <Undo2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDismiss([item.id])}
-                          className="flex items-center justify-center w-8 h-8 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 rounded-lg transition-all shadow-sm active:scale-95"
-                          title="Dismiss"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <Tooltip content="Undo">
+                          <button
+                            onClick={() => handleUndo([item.id])}
+                            className="flex items-center justify-center w-8 h-8 bg-slate-50 hover:bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 rounded-lg transition-all shadow-sm active:scale-95"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Dismiss">
+                          <button
+                            onClick={() => handleDismiss([item.id])}
+                            className="flex items-center justify-center w-8 h-8 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 rounded-lg transition-all shadow-sm active:scale-95"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </Tooltip>
                       </div>
                     </div>
                   );

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { TruncatedText } from '../ui/TruncatedText';
 import {
   X,
   CalendarDays,
@@ -139,13 +140,14 @@ export default function ScheduleModal() {
                   <ChevronLeft className="w-5 h-5" />
                 </button>
 
-                <button
-                  onClick={goToday}
-                  className="text-lg font-bold text-slate-800 w-[180px] text-center hover:text-primary transition-colors cursor-pointer"
-                  title="Go to Today"
-                >
-                  {format(currentMonth, 'MMMM yyyy')}
-                </button>
+                <Tooltip content="Go to Today">
+                  <button
+                    onClick={goToday}
+                    className="text-lg font-bold text-slate-800 w-[180px] text-center hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {format(currentMonth, 'MMMM yyyy')}
+                  </button>
+                </Tooltip>
 
                 <button
                   onClick={nextMonth}
@@ -334,22 +336,31 @@ export default function ScheduleModal() {
                             {/* Cell Content (Shifts and Holidays) */}
                             <div className="space-y-1.5 mt-1 w-full">
                               {d.isHoliday && (
-                                <div className="w-full truncate text-[10px] font-bold text-amber-700 bg-amber-100/50 border border-amber-200/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                <TruncatedText
+                                  text={d.holidayName || 'Holiday'}
+                                  containerClassName="w-full text-[10px] font-bold text-amber-700 bg-amber-100/50 border border-amber-200/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
+                                >
                                   <Sun className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
-                                  {d.holidayName || 'Holiday'}
-                                </div>
+                                  <span>{d.holidayName || 'Holiday'}</span>
+                                </TruncatedText>
                               )}
                               {d.pstThurSunShift && (
-                                <div className="w-full truncate text-[10px] font-bold text-indigo-700 bg-indigo-50/80 border border-indigo-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                <TruncatedText
+                                  text={d.pstThurSunShift.split(' ')[0]}
+                                  containerClassName="w-full text-[10px] font-bold text-indigo-700 bg-indigo-50/80 border border-indigo-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
+                                >
                                   <CalendarIcon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
-                                  {d.pstThurSunShift.split(' ')[0]}
-                                </div>
+                                  <span>{d.pstThurSunShift.split(' ')[0]}</span>
+                                </TruncatedText>
                               )}
                               {d.istMonFriShift && (
-                                <div className="w-full truncate text-[9px] font-bold text-violet-700 bg-violet-50/80 border border-violet-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                <TruncatedText
+                                  text={d.istMonFriShift.split(' ')[0]}
+                                  containerClassName="w-full text-[9px] font-bold text-violet-700 bg-violet-50/80 border border-violet-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
+                                >
                                   <Moon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
-                                  {d.istMonFriShift.split(' ')[0]}
-                                </div>
+                                  <span>{d.istMonFriShift.split(' ')[0]}</span>
+                                </TruncatedText>
                               )}
                             </div>
                           </div>

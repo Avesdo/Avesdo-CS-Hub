@@ -6,6 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
 import { AnimatePresence, motion } from 'framer-motion';
 import { formControlVariants } from './form-controls';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 const multiSelectTriggerVariants = cva(
   twMerge(formControlVariants(), 'cursor-pointer min-h-[38px]'),
@@ -145,7 +146,9 @@ export function MultiSelect({
             exit={{ opacity: 0, scale: 0.8 }}
             className="flex items-center gap-1.5 px-3 py-1 bg-primary text-white hover:bg-primary/90 transition-colors font-bold text-2xl rounded-md shadow-sm"
           >
-            <span className="truncate max-w-[300px]">{val}</span>
+            <TruncatedText text={val} containerClassName="max-w-[300px]">
+              {val}
+            </TruncatedText>
             <button
               type="button"
               onClick={(e) => removeValue(val, e)}
@@ -220,9 +223,12 @@ export function MultiSelect({
       disabled={disabled}
       className={multiSelectTriggerVariants({ variant: 'default' })}
     >
-      <span className={twMerge('truncate', values.length === 0 && 'text-muted-foreground')}>
+      <TruncatedText
+        text={String(values.length > 0 ? `${values.length} Selected` : placeholder)}
+        containerClassName={twMerge('', values.length === 0 && 'text-muted-foreground')}
+      >
         {values.length > 0 ? `${values.length} Selected` : placeholder}
-      </span>
+      </TruncatedText>
       <ChevronDown
         className={twMerge(
           'h-4 w-4 opacity-50 shrink-0 transition-transform',
@@ -295,7 +301,9 @@ export function MultiSelect({
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center outline-none"
                 >
                   <span className="mr-2 opacity-60 shrink-0">Create</span>
-                  <span className="truncate">"{searchTerm.trim()}"</span>
+                  <TruncatedText text={String('"' + searchTerm.trim() + '"')}>
+                    "{searchTerm.trim()}"
+                  </TruncatedText>
                 </button>
               )}
 
@@ -319,14 +327,15 @@ export function MultiSelect({
                           : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                       )}
                     >
-                      <span
-                        className={twMerge(
-                          'font-medium truncate flex-1 pr-2',
+                      <TruncatedText
+                        text={String('' + opt.label + '')}
+                        containerClassName={twMerge(
+                          'font-medium flex-1 pr-2',
                           isSelected && 'font-semibold'
                         )}
                       >
                         {opt.label}
-                      </span>
+                      </TruncatedText>
                       {isSelected && <Check className="w-4 h-4 text-primary shrink-0 ml-auto" />}
                     </button>
                   );

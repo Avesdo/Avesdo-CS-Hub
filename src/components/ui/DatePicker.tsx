@@ -23,6 +23,7 @@ interface DatePickerProps {
   className?: string;
   trigger?: React.ReactNode;
   variant?: 'default' | 'outline';
+  disabled?: boolean;
 }
 
 export function DatePicker({
@@ -33,6 +34,7 @@ export function DatePicker({
   className = '',
   trigger,
   variant = 'outline',
+  disabled = false,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -185,12 +187,16 @@ export function DatePicker({
   }
 
   return (
-    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger asChild>
+    <Popover.Root open={isOpen && !disabled} onOpenChange={(open) => !disabled && setIsOpen(open)}>
+      <Popover.Trigger asChild disabled={disabled}>
         {trigger ? (
           <div className={`relative popover-container inline-block ${className}`}>{trigger}</div>
         ) : (
-          <Button variant={isOutline ? 'outline' : 'secondary'} className={buttonClass}>
+          <Button
+            variant={isOutline ? 'outline' : 'secondary'}
+            className={buttonClass}
+            disabled={disabled}
+          >
             {isOutline ? (
               <>
                 <span

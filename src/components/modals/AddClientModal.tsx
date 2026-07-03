@@ -13,6 +13,7 @@ import { RichTextEditor } from '../ui/RichTextEditor';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 const clientSchema = z.object({
   companyName: z.string().min(1, 'Client Name is required.'),
@@ -33,11 +34,12 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick }: any) => (
       <Icon className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" />
     )}
     <span className="text-[13px] font-medium text-slate-500 mr-2">{label}:</span>
-    <span
-      className={`text-[13px] font-semibold truncate max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}
+    <TruncatedText
+      text={String('' + value || 'Select' + '')}
+      containerClassName={`text-[13px] font-semibold max-w-[160px] ${value ? 'text-slate-900' : 'text-slate-400'}`}
     >
       {value || 'Select'}
-    </span>
+    </TruncatedText>
     <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
   </button>
 );

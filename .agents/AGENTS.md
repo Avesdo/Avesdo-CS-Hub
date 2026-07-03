@@ -5,7 +5,7 @@ Please remember that I am relying entirely on your expertise. I do not have a ba
 ## 0. TECH STACK & ARCHITECTURE
 - **Core Framework:** React 19 + TypeScript + Vite (compiled as a Single Page Application).
 - **Styling:** Tailwind CSS + PostCSS.
-- **State Management & Global Data:** Zustand (`useAppStore.ts`) for atomic global state selectors, hydrated live from Firestore.
+- **State Management, Global Data & UI Routing:** Zustand (`useAppStore.ts` for data, `useUIStore.ts` for overlays/modals) for atomic global state selectors, hydrated live from Firestore.
 - **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 - **Data Pipeline:** Local Node.js Script (`scripts/run_compiler.mjs`). (Google Apps Script is only used as a webhook for email alerts).
 - **Budget Constraint**: We are operating on a strict $0 budget. Do not introduce any paid tools, APIs, or services.

@@ -11,6 +11,7 @@ import {
   ThumbsUp,
   LifeBuoy,
 } from 'lucide-react';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 interface RecentUploadActivityProps {
   logs: any[];
@@ -127,12 +128,12 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                       <div className="flex-1 min-w-0">
                         {/* Title and Time */}
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h4
-                            className="text-[14px] font-bold text-slate-900 truncate max-w-sm"
-                            title={rawEntityName}
+                          <TruncatedText
+                            text={String('' + rawEntityName + '')}
+                            containerClassName="text-[14px] font-bold text-slate-900 max-w-sm"
                           >
                             {rawEntityName}
-                          </h4>
+                          </TruncatedText>
                           <span className="text-[12px] font-medium text-slate-400">
                             {timeString}
                           </span>

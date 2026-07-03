@@ -11,7 +11,9 @@ import {
   GitBranch,
   SplitSquareHorizontal,
 } from 'lucide-react';
+import { Tooltip } from '../../ui/Tooltip';
 import { PropertiesPanel } from './FieldPropertiesPanel';
+import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 export const getFieldMeta = (type: FieldType) => {
   for (const cat of FIELD_PALETTE_CATEGORIES) {
@@ -273,57 +275,68 @@ export function SortableFieldItem({
 
                     {/* Quick Actions (Always Visible in Edit Mode) */}
                     <div className="flex items-center gap-0.5 pr-0.5">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicateField(index);
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
-                        title="Duplicate"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveField(index);
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <Tooltip content="Duplicate">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDuplicateField(index);
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Delete">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveField(index);
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 w-full justify-between pr-2">
-                  <div className="text-[15px] font-bold text-slate-900 truncate">
+                  <TruncatedText
+                    text={String(
+                      '' + field.label ||
+                        (`New ${meta.label} Question` + '' + field.required &&
+                          (
+                            <Tooltip content="Required">
+                              <span className="text-red-500 ml-1">*</span>
+                            </Tooltip>
+                          ) + '')
+                    )}
+                    containerClassName="text-[15px] font-bold text-slate-900"
+                  >
                     {field.label || `New ${meta.label} Question`}
                     {field.required && (
-                      <span className="text-red-500 ml-1" title="Required">
-                        *
-                      </span>
+                      <Tooltip content="Required">
+                        <span className="text-red-500 ml-1">*</span>
+                      </Tooltip>
                     )}
-                  </div>
+                  </TruncatedText>
                   <div className="flex items-center gap-2 shrink-0">
                     {field.logicEnabled && (
-                      <div
-                        className="flex items-center gap-1.5 text-primary bg-primary-50 px-2 py-1 rounded-md"
-                        title="Field logic enabled"
-                      >
-                        <GitBranch className="w-3.5 h-3.5" />
-                        <span className="text-[11px] font-semibold">Logic</span>
-                      </div>
+                      <Tooltip content="Field logic enabled">
+                        <div className="flex items-center gap-1.5 text-primary bg-primary-50 px-2 py-1 rounded-md">
+                          <GitBranch className="w-3.5 h-3.5" />
+                          <span className="text-[11px] font-semibold">Logic</span>
+                        </div>
+                      </Tooltip>
                     )}
                     {field.featureLogicEnabled && (
-                      <div
-                        className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-md"
-                        title="Feature logic enabled"
-                      >
-                        <SplitSquareHorizontal className="w-3.5 h-3.5" />
-                        <span className="text-[11px] font-semibold">Feature logic</span>
-                      </div>
+                      <Tooltip content="Feature logic enabled">
+                        <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
+                          <SplitSquareHorizontal className="w-3.5 h-3.5" />
+                          <span className="text-[11px] font-semibold">Feature logic</span>
+                        </div>
+                      </Tooltip>
                     )}
                   </div>
                 </div>

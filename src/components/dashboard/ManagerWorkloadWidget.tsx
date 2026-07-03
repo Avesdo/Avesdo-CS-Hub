@@ -1,5 +1,6 @@
 import React from 'react';
 import { hexToRgba, getSafeHex } from '../../utils/uiUtils';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export interface ManagerWorkloadWidgetProps {
   managerWorkload: any[];
@@ -64,9 +65,12 @@ export function ManagerWorkloadWidget({
                     {initials}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-foreground truncate" title={manager}>
+                    <TruncatedText
+                      text={String('' + manager + '')}
+                      containerClassName="text-sm font-bold text-foreground"
+                    >
                       {manager}
-                    </span>
+                    </TruncatedText>
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         onClick={() =>

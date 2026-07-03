@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as LucideIcons from 'lucide-react';
 import { X, Smile, AlertCircle, BarChart2, Eye, HelpCircle, ThumbsUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OnboardingCsatFormModal from '../OnboardingCsatFormModal';
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
 import { useAppStore } from '../../../store/useAppStore';
+import { Tooltip } from '../../ui/Tooltip';
 import { PageTabs } from '../../ui/PageTabs';
+import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 interface ClientCsatBreakdownModalProps {
   client: any;
@@ -197,25 +200,31 @@ export default function ClientCsatBreakdownModal({
                             {/* Thicker Distribution Bar */}
                             <div className="w-full h-4 bg-slate-200/50 rounded-full overflow-hidden flex shadow-inner">
                               {barWidths.promoters > 0 && (
-                                <div
-                                  className="h-full bg-emerald-500 transition-all duration-1000"
+                                <Tooltip
+                                  content="Promoters"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${barWidths.promoters}%` }}
-                                  title="Promoters"
-                                />
+                                >
+                                  <div className="w-full h-full bg-emerald-500" />
+                                </Tooltip>
                               )}
                               {barWidths.passives > 0 && (
-                                <div
-                                  className="h-full bg-amber-400 transition-all duration-1000"
+                                <Tooltip
+                                  content="Passives"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${barWidths.passives}%` }}
-                                  title="Passives"
-                                />
+                                >
+                                  <div className="w-full h-full bg-amber-400" />
+                                </Tooltip>
                               )}
                               {barWidths.detractors > 0 && (
-                                <div
-                                  className="h-full bg-rose-500 transition-all duration-1000"
+                                <Tooltip
+                                  content="Detractors"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${barWidths.detractors}%` }}
-                                  title="Detractors"
-                                />
+                                >
+                                  <div className="w-full h-full bg-rose-500" />
+                                </Tooltip>
                               )}
                             </div>
 
@@ -267,9 +276,12 @@ export default function ClientCsatBreakdownModal({
 
                                     {/* Left Side: Name and Volume */}
                                     <div className="flex-1 min-w-0 pl-2">
-                                      <div className="font-bold text-slate-800 text-sm truncate group-hover:text-primary transition-colors">
+                                      <TruncatedText
+                                        text={String('' + user.name + '')}
+                                        containerClassName="font-bold text-slate-800 text-sm group-hover:text-primary transition-colors"
+                                      >
                                         {user.name}
-                                      </div>
+                                      </TruncatedText>
                                       <div className="text-[11px] font-medium text-slate-400 mt-0.5">
                                         {totalInteractions} Total Interaction
                                         {totalInteractions !== 1 ? 's' : ''}
@@ -397,25 +409,31 @@ export default function ClientCsatBreakdownModal({
                                   {/* Thicker Distribution Bar */}
                                   <div className="w-full h-4 bg-slate-200/50 rounded-full overflow-hidden flex shadow-inner">
                                     {obBarWidths.promoters > 0 && (
-                                      <div
-                                        className="h-full bg-emerald-500 transition-all duration-1000"
+                                      <Tooltip
+                                        content="Promoters"
+                                        containerClassName="h-full transition-all duration-1000"
                                         style={{ width: `${obBarWidths.promoters}%` }}
-                                        title="Promoters"
-                                      />
+                                      >
+                                        <div className="w-full h-full bg-emerald-500" />
+                                      </Tooltip>
                                     )}
                                     {obBarWidths.passives > 0 && (
-                                      <div
-                                        className="h-full bg-amber-400 transition-all duration-1000"
+                                      <Tooltip
+                                        content="Passives"
+                                        containerClassName="h-full transition-all duration-1000"
                                         style={{ width: `${obBarWidths.passives}%` }}
-                                        title="Passives"
-                                      />
+                                      >
+                                        <div className="w-full h-full bg-amber-400" />
+                                      </Tooltip>
                                     )}
                                     {obBarWidths.detractors > 0 && (
-                                      <div
-                                        className="h-full bg-rose-500 transition-all duration-1000"
+                                      <Tooltip
+                                        content="Detractors"
+                                        containerClassName="h-full transition-all duration-1000"
                                         style={{ width: `${obBarWidths.detractors}%` }}
-                                        title="Detractors"
-                                      />
+                                      >
+                                        <div className="w-full h-full bg-rose-500" />
+                                      </Tooltip>
                                     )}
                                   </div>
 
@@ -555,25 +573,31 @@ export default function ClientCsatBreakdownModal({
                             {/* Thicker Distribution Bar */}
                             <div className="w-full h-4 bg-slate-200/50 rounded-full overflow-hidden flex shadow-inner">
                               {npsBarWidths.promoters > 0 && (
-                                <div
-                                  className="h-full bg-emerald-500 transition-all duration-1000"
+                                <Tooltip
+                                  content="Promoters"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${npsBarWidths.promoters}%` }}
-                                  title="Promoters"
-                                />
+                                >
+                                  <div className="w-full h-full bg-emerald-500" />
+                                </Tooltip>
                               )}
                               {npsBarWidths.passives > 0 && (
-                                <div
-                                  className="h-full bg-amber-400 transition-all duration-1000"
+                                <Tooltip
+                                  content="Passives"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${npsBarWidths.passives}%` }}
-                                  title="Passives"
-                                />
+                                >
+                                  <div className="w-full h-full bg-amber-400" />
+                                </Tooltip>
                               )}
                               {npsBarWidths.detractors > 0 && (
-                                <div
-                                  className="h-full bg-rose-500 transition-all duration-1000"
+                                <Tooltip
+                                  content="Detractors"
+                                  containerClassName="h-full transition-all duration-1000"
                                   style={{ width: `${npsBarWidths.detractors}%` }}
-                                  title="Detractors"
-                                />
+                                >
+                                  <div className="w-full h-full bg-rose-500" />
+                                </Tooltip>
                               )}
                             </div>
 

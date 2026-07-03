@@ -5,6 +5,7 @@ import { Select } from './Select';
 import { DatePicker } from './DatePicker';
 import { ChevronDown, Calendar, Check, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 interface DynamicFormProps {
   template: Template;
@@ -243,7 +244,18 @@ export function DynamicForm({
                           : 'border-slate-200 hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20'
                       }`}
                     >
-                      <span className="truncate">
+                      <TruncatedText
+                        text={String(
+                          '' + value === '__other__'
+                            ? 'Other...'
+                            : value ||
+                                (
+                                  <span className="text-slate-400 font-normal">
+                                    Select an option...
+                                  </span>
+                                ) + ''
+                        )}
+                      >
                         {value === '__other__'
                           ? 'Other...'
                           : value || (
@@ -251,7 +263,7 @@ export function DynamicForm({
                                 Select an option...
                               </span>
                             )}
-                      </span>
+                      </TruncatedText>
                       <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                     </div>
                   }

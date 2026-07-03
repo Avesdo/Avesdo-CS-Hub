@@ -25,6 +25,7 @@ import { doc, updateDoc, collection, writeBatch, getDocs, setDoc } from 'firebas
 import { db } from '../../api/firebase';
 import { toast } from '../../utils/toast';
 import { Tooltip } from '../ui/Tooltip';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 type FileState = {
   file: File | null;
@@ -988,9 +989,12 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-800">{f.label}</p>
-                          <p className="text-[11px] text-slate-500 mt-0.5 font-medium truncate max-w-[200px] sm:max-w-[400px]">
+                          <TruncatedText
+                            text={String('' + f.data.file?.name + '')}
+                            containerClassName="text-[11px] text-slate-500 mt-0.5 font-medium max-w-[200px] sm:max-w-[400px]"
+                          >
                             {f.data.file?.name}
-                          </p>
+                          </TruncatedText>
                         </div>
                       </div>
                       <div className="shrink-0 flex items-center">
@@ -1000,13 +1004,13 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                             {f.data.parsedData.length} rows parsed
                           </span>
                         ) : f.data.error ? (
-                          <span
-                            className="flex items-center gap-1.5 text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-full max-w-[150px] truncate"
-                            title={f.data.error}
+                          <TruncatedText
+                            text={f.data.error}
+                            containerClassName="flex items-center gap-1.5 text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-full max-w-[150px]"
                           >
                             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                            <span className="truncate">{f.data.error}</span>
-                          </span>
+                            <span>{f.data.error}</span>
+                          </TruncatedText>
                         ) : null}
                       </div>
                     </div>

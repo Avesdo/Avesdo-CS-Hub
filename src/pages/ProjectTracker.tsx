@@ -60,6 +60,7 @@ import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { updateProjectRecord, addProjectAutoLog, addAutoLog } from '../api/dbService';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../hooks/usePermissions';
 
 export default function ProjectTracker() {
   const location = useLocation();
@@ -70,6 +71,7 @@ export default function ProjectTracker() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
+  const { hasPermission } = usePermissions();
 
   const { data: healthHistory = {} } = useQuery({
     queryKey: ['healthHistory'],
@@ -506,55 +508,59 @@ export default function ProjectTracker() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto mt-2 md:mt-0">
-          <button
-            onClick={() => openModal('addProject')}
-            className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-          >
-            <Plus className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:rotate-90" />
-            <span>Add Project</span>
-          </button>
-          <div className="relative rounded-lg" ref={exportMenuRef}>
+          {hasPermission('project_create') && (
             <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none"
+              onClick={() => openModal('addProject')}
+              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
-              <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
-              <span>Export</span>
-              <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              <Plus className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:rotate-90" />
+              <span>Add Project</span>
             </button>
-            <AnimatePresence>
-              {showExportMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                  className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
-                >
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Projects', projects, 'All_Projects');
-                    }}
+          )}
+          {hasPermission('project_export') && (
+            <div className="relative rounded-lg" ref={exportMenuRef}>
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none"
+              >
+                <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                <span>Export</span>
+                <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+              </button>
+              <AnimatePresence>
+                {showExportMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
                   >
-                    <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
-                    Export All
-                  </div>
-                  <div
-                    className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
-                    }}
-                  >
-                    <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
-                    Export Filtered View
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Projects', projects, 'All_Projects');
+                      }}
+                    >
+                      <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export All
+                    </div>
+                    <div
+                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        universalExportCSV('Projects', filteredProjects, 'Filtered_Projects');
+                      }}
+                    >
+                      <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                      Export Filtered View
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </div>
 

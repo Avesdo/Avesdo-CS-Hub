@@ -1,6 +1,7 @@
 import React from 'react';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import { useWatch } from 'react-hook-form';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 interface DeliverablesMasterRowProps {
   item: any;
@@ -99,11 +100,12 @@ export default function DeliverablesMasterRow({
         />
       </div>
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <h4
-          className={`text-[13px] font-semibold truncate ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}
+        <TruncatedText
+          text={String('' + taskName + '')}
+          containerClassName={`text-[13px] font-semibold ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}
         >
           {taskName}
-        </h4>
+        </TruncatedText>
         {!isHidden && status !== 'Completed' && (
           <div className="flex items-center">
             <span

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { useAppStore } from './store/useAppStore';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { usePermissions } from './hooks/usePermissions';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -15,6 +16,7 @@ import GlobalOverlays from './components/GlobalOverlays';
 import { AppLoadingSkeleton, ClientPortalSkeleton } from './components/ui/Skeleton';
 import { GlobalToaster } from './components/GlobalToaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { RoleSimulatorBanner } from './components/RoleSimulatorBanner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -47,6 +49,28 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function PermissionRoute({
+  children,
+  hasPermission,
+}: {
+  children: React.ReactNode;
+  hasPermission: boolean;
+}) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center w-full h-screen bg-white">
+        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (!hasPermission) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -85,31 +109,34 @@ function MainLayout() {
         <GlobalOverlays />
       </ErrorBoundary>
       <GlobalToaster />
-      <div
-        data-slot="sidebar-wrapper"
-        className="group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
-        style={
-          { '--sidebar-width': '16rem', '--sidebar-width-icon': '3rem' } as React.CSSProperties
-        }
-      >
-        <div className="flex h-screen w-full bg-white">
-          <Sidebar />
-          <main className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden">
-            <Header />
-            <div className="flex-grow flex-1 overflow-hidden relative flex flex-col w-full h-[calc(100vh-var(--header-height))]">
-              <ErrorBoundary>
-                <React.Suspense
-                  fallback={
-                    <div className="flex items-center justify-center w-full h-full">
-                      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                    </div>
-                  }
-                >
-                  <AnimatedRoutes />
-                </React.Suspense>
-              </ErrorBoundary>
-            </div>
-          </main>
+      <div className="flex flex-col w-full h-screen overflow-hidden">
+        <RoleSimulatorBanner />
+        <div
+          data-slot="sidebar-wrapper"
+          className="group/sidebar-wrapper flex flex-1 min-h-0 w-full has-data-[variant=inset]:bg-sidebar"
+          style={
+            { '--sidebar-width': '16rem', '--sidebar-width-icon': '3rem' } as React.CSSProperties
+          }
+        >
+          <div className="flex h-full w-full bg-white min-h-0">
+            <Sidebar />
+            <main className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden">
+              <Header />
+              <div className="flex-grow flex-1 overflow-hidden relative flex flex-col w-full h-[calc(100vh-var(--header-height))]">
+                <ErrorBoundary>
+                  <React.Suspense
+                    fallback={
+                      <div className="flex items-center justify-center w-full h-full">
+                        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                      </div>
+                    }
+                  >
+                    <AnimatedRoutes />
+                  </React.Suspense>
+                </ErrorBoundary>
+              </div>
+            </main>
+          </div>
         </div>
       </div>
     </SyncWrapper>
@@ -118,6 +145,8 @@ function MainLayout() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { hasAnySettingsPermission } = usePermissions();
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -164,9 +193,11 @@ function AnimatedRoutes() {
         <Route
           path="/settings"
           element={
-            <PageWrapper>
-              <Settings />
-            </PageWrapper>
+            <PermissionRoute hasPermission={hasAnySettingsPermission()}>
+              <PageWrapper>
+                <Settings />
+              </PageWrapper>
+            </PermissionRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

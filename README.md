@@ -9,8 +9,8 @@ It tracks and manages the overall health and lifecycle of **Clients**, **Project
 The technology stack is exceptionally modern, follows top-tier industry standards, and completely replaces our legacy Google Sheets/Apps Script architecture.
 
 * **Core Framework:** React 19 + TypeScript + Vite (compiled as a Single Page Application).
-* **Styling & UI:** Tailwind CSS + PostCSS, heavily utilizing Radix UI primitives for accessible, animated headless components (Modals, Dropdowns).
-* **State & Routing:** Zustand for atomic global state selectors, combined with React Router for URL-based deep linking (bookmarkable drawers/modals).
+* **Styling & UI:** Tailwind CSS + PostCSS. All form controls are unified under a strict `formControlVariants` cva paradigm. Headless, accessible components (Modals, Dropdowns) are powered by Radix UI.
+* **State & Routing:** Zustand handles 100% of global state across two atomic stores (`useAppStore` for data, `useUIStore` for UI routing). This pairs tightly with React Router and `popstate` listeners for URL-based deep linking (bookmarkable drawers/modals).
 * **Backend & Hosting:** Firebase 10 (Cloud Firestore NoSQL Database and Firebase Hosting).
 * **Data Integrity:** Zod schemas validate and sanitize all real-time data incoming from Firebase `onSnapshot` listeners to prevent UI crashes.
 * **Testing & Code Quality:** Playwright for E2E, Vitest for unit/component testing, ESLint, and Prettier are properly configured.
@@ -19,9 +19,10 @@ The technology stack is exceptionally modern, follows top-tier industry standard
 * **Cost Constraint:** The entire application runs on a strict $0 zero-cost Google ecosystem.
 
 ## Global State Management & Deep Linking
-- **Zustand Store:** The application relies on Zustand (`useAppStore.ts`) for centralized global state. We use atomic selectors to prevent unnecessary re-renders.
-- **Data Hydration:** Massive normalized JSON payloads are pulled from Firestore on initial load directly into Zustand via `useFirebaseSync.ts`.
-- **URL Routing:** Modals and slide-out Drawers are mapped to `react-router-dom` search parameters using human-readable slugs (e.g., `?project=hundredth-square` or `?client=avesdo-developments`). This enables beautiful bookmarking, sharing, and native back-button support without layout thrashing.
+- **Zustand Data Store:** The application relies on `useAppStore.ts` for centralized global entity data. We use atomic selectors to prevent unnecessary re-renders.
+- **Zustand UI Store:** The application relies on `useUIStore.ts` to coordinate 30+ modals, drawers, and nested overlays without prop drilling.
+- **Data Hydration:** Massive normalized JSON payloads are pulled from Firestore on initial load directly into `useAppStore` via `useFirebaseSync.ts`.
+- **URL Routing:** Modals and slide-out Drawers are mapped to search parameters using human-readable slugs (e.g., `?project=hundredth-square`). `useUIStore.ts` natively intercepts `popstate` events to automatically open/close drawers based on URL changes, enabling beautiful bookmarking and native back-button support without layout thrashing.
 
 ## Core Database Schema & Relationships
 Firestore data is intentionally denormalized for speed. When a root record updates, cascading updates are executed to preserve Global Search integrity.

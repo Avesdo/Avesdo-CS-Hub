@@ -145,19 +145,19 @@ export function UpcomingActivityWidget({
                         </span>
                       </div>
                       {isService ? (
-                        <span
-                          className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate"
-                          title={`${act.projectName} • ${act.clientName}`}
+                        <TruncatedText
+                          text={String('' + act.projectName + '&bull;' + act.clientName + '')}
+                          containerClassName="text-[11px] text-muted-foreground font-medium mt-0.5"
                         >
-                          {act.projectName} &bull; {act.clientName}
-                        </span>
+                          {act.projectName}&bull; {act.clientName}
+                        </TruncatedText>
                       ) : (
-                        <span
-                          className="text-[11px] text-muted-foreground font-medium mt-0.5 truncate"
-                          title={act.clientName}
+                        <TruncatedText
+                          text={String('' + act.clientName + '')}
+                          containerClassName="text-[11px] text-muted-foreground font-medium mt-0.5"
                         >
                           {act.clientName}
-                        </span>
+                        </TruncatedText>
                       )}
                     </div>
                     <div className="flex flex-col items-end shrink-0 pl-2">

@@ -8,6 +8,7 @@ interface TooltipProps {
   position?: 'top' | 'bottom' | 'left' | 'right' | 'bottom-right';
   className?: string;
   containerClassName?: string;
+  style?: React.CSSProperties;
 }
 
 export function Tooltip({
@@ -16,6 +17,7 @@ export function Tooltip({
   position = 'top',
   className = '',
   containerClassName = 'inline-flex',
+  style,
 }: TooltipProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -114,6 +116,7 @@ export function Tooltip({
   return (
     <div
       className={containerClassName}
+      style={style}
       ref={triggerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -127,11 +130,16 @@ export function Tooltip({
               animate={animateAnimation}
               exit={exitAnimation}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className={`fixed bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap z-[var(--z-popover)] pointer-events-none font-medium ${className}`}
+              className={`fixed z-[9999] pointer-events-none ${className}`}
               style={positionStyles}
             >
+              {/* Arrow */}
               <div className={arrowClass} style={arrowStyles} />
-              <div className="relative z-10">{content}</div>
+
+              {/* Tooltip Body */}
+              <div className="relative bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap font-medium">
+                <div className="relative z-10">{content}</div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>,

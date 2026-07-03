@@ -4,9 +4,11 @@ import { calculateProjectHealth, calculateClientHealth } from '../utils/scoringU
 export function mapAppState(state: AppState, authUser: any | null): AppState {
   const mappedUser = authUser
     ? {
-        name: authUser.displayName || authUser.email?.split('@')[0] || 'Unknown User',
+        ...authUser,
+        name:
+          authUser.displayName || authUser.name || authUser.email?.split('@')[0] || 'Unknown User',
         email: authUser.email || '',
-        initials: (authUser.displayName || authUser.email?.split('@')[0] || 'U')
+        initials: (authUser.displayName || authUser.name || authUser.email?.split('@')[0] || 'U')
           .split(' ')
           .map((n: string) => n[0])
           .join('')

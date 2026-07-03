@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore';
 import { useUIStore } from '../store/useUIStore';
 import { getHealthBadge, getSettingBadge } from '../utils/uiUtils';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
+import { TruncatedText } from '../components/ui/TruncatedText';
 
 export default function GlobalSearch() {
   const clients = useAppStore((state) => state.clients);
@@ -285,9 +286,12 @@ export default function GlobalSearch() {
                             >
                               {p.name}
                             </span>
-                            <span className="text-xs text-muted-foreground font-medium mt-0.5 truncate max-w-[220px]">
+                            <TruncatedText
+                              text={String('' + (p.clients || []).join(', ') || 'Not Set' + '')}
+                              containerClassName="text-xs text-muted-foreground font-medium mt-0.5 max-w-[220px]"
+                            >
                               {(p.clients || []).join(', ') || 'Not Set'}
-                            </span>
+                            </TruncatedText>
                           </div>
                           <div className="shrink-0 ml-4">
                             {getSettingBadge('statuses', p.projectStatus, settings)}

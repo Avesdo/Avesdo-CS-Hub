@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Tooltip as UITooltip } from '../ui/Tooltip';
 import { motion } from 'framer-motion';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export function ArchivesTab({ loadLogs }: { loadLogs: () => void }) {
   const settings = useAppStore((state) => state.settings);
@@ -400,7 +401,9 @@ export function ArchivesTab({ loadLogs }: { loadLogs: () => void }) {
               {iconContent}
             </div>
             <div className="min-w-0 pt-0.5 pr-2">
-              <h4 className="text-sm font-bold text-slate-900 truncate">{name}</h4>
+              <TruncatedText text={name} containerClassName="text-sm font-bold text-slate-900">
+                {name}
+              </TruncatedText>
               {(isSetting || type === 'Project' || type === 'Service') && (
                 <div className="flex flex-wrap items-center gap-2 mt-2">
                   {isSetting && (

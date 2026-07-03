@@ -6,16 +6,16 @@ import { useAuth } from '../context/AuthContext';
 
 export function useFirebaseSync() {
   const setAppState = useAppStore((state) => state.setAppState);
-  const { user: authUser } = useAuth();
+  const { appUser } = useAuth();
 
   useEffect(() => {
     const unsubscribe = setupRealtimeListeners((rawState) => {
-      const mappedState = mapAppState(rawState, authUser);
+      const mappedState = mapAppState(rawState, appUser);
       setAppState(mappedState);
     });
 
     return () => {
       unsubscribe();
     };
-  }, [authUser, setAppState]);
+  }, [appUser, setAppState]);
 }

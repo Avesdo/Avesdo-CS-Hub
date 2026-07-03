@@ -1,4 +1,5 @@
 import React from 'react';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export interface FeatureAdoptionWidgetProps {
   featureAdoptionCombined: any;
@@ -15,18 +16,20 @@ export function FeatureAdoptionWidget({
     <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
       <div className="flex justify-between items-center p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
         <div className="flex flex-col pr-4 min-w-0">
-          <div
-            className="text-base font-semibold tracking-tight text-foreground truncate"
-            title="Feature Adoption"
+          <TruncatedText
+            text={String('Feature Adoption')}
+            containerClassName="text-base font-semibold tracking-tight text-foreground"
           >
             Feature Adoption
-          </div>
-          <p
-            className="text-xs text-muted-foreground mt-1 font-medium truncate"
-            title={`Combined adoption across ${featureAdoptionCombined.totalProjects} total projects`}
+          </TruncatedText>
+          <TruncatedText
+            text={String(
+              'Combined adoption across' + featureAdoptionCombined.totalProjects + 'total projects'
+            )}
+            containerClassName="text-xs text-muted-foreground mt-1 font-medium"
           >
-            Combined adoption across {featureAdoptionCombined.totalProjects} total projects
-          </p>
+            Combined adoption across {featureAdoptionCombined.totalProjects}total projects
+          </TruncatedText>
         </div>
       </div>
       <div className="flex-1 overflow-auto p-5 content-start custom-thin-scroll bg-white">
@@ -48,12 +51,12 @@ export function FeatureAdoptionWidget({
                   className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-primary/50 hover:shadow-md transition-all group"
                 >
                   <div className="flex flex-col gap-2 flex-1 overflow-hidden pr-2">
-                    <span
-                      className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors"
-                      title={feature}
+                    <TruncatedText
+                      text={String('' + feature + '')}
+                      containerClassName="text-sm font-bold text-foreground group-hover:text-primary transition-colors"
                     >
                       {feature}
-                    </span>
+                    </TruncatedText>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>

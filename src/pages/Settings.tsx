@@ -35,23 +35,53 @@ import { ServiceSettingsTab } from '../components/settings/ServiceSettingsTab';
 import { ScoringSettingsTab } from '../components/settings/ScoringSettingsTab';
 import { ArchivesTab } from '../components/settings/ArchivesTab';
 import { SettingsSidebar } from '../components/settings/SettingsSidebar';
+import { RoleManagerTab } from '../components/settings/RoleManagerTab';
+import { UserAccessManager } from '../components/admin/UserAccessManager';
+
+import { usePermissions } from '../hooks/usePermissions';
 
 export default function Settings() {
   const settings = useAppStore((state) => state.settings);
   const projects = useAppStore((state) => state.projects);
+  const { hasPermission } = usePermissions();
 
-  const [activeTab, setActiveTab] = useState<
-    | 'global'
-    | 'schedule'
-    | 'projects'
-    | 'services'
-    | 'scoring'
-    | 'templates'
-    | 'pipeline'
-    | 'exports'
-    | 'archives'
-    | 'audit'
-  >('global');
+  const defaultTab = React.useMemo(() => {
+    const tabs = [
+      { id: 'global', permission: 'view_org_settings' },
+      { id: 'schedule', permission: 'view_schedule' },
+      { id: 'projects', permission: 'view_project_workflows' },
+      { id: 'services', permission: 'view_service_catalog' },
+      { id: 'scoring', permission: 'view_health_scoring' },
+      { id: 'templates', permission: 'view_form_templates' },
+      { id: 'pipeline', permission: 'view_upload_log' },
+      { id: 'exports', permission: 'run_exports' },
+      { id: 'audit', permission: 'view_audit_logs' },
+      { id: 'archives', permission: 'view_archives' },
+      { id: 'user_access', permission: 'view_user_access' },
+      { id: 'roles', permission: 'view_roles' },
+    ];
+    const permitted = tabs.find((t) => hasPermission(t.permission));
+    return (permitted ? permitted.id : 'global') as
+      | 'global'
+      | 'schedule'
+      | 'projects'
+      | 'services'
+      | 'scoring'
+      | 'templates'
+      | 'pipeline'
+      | 'exports'
+      | 'archives'
+      | 'audit'
+      | 'user_access'
+      | 'roles';
+  }, [hasPermission]);
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  // Update active tab if permissions/role changes and the current tab is no longer permitted
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   // --- AUDIT TRAIL STATE ---
   const [logs, setLogs] = useState<any[]>([]);
@@ -128,6 +158,8 @@ export default function Settings() {
     exports: 'Data Exports',
     audit: 'Audit Logs',
     archives: 'Archives',
+    user_access: 'User Access',
+    roles: 'Roles & Permissions',
   };
 
   const tabSubtitleMap: Record<string, string> = {
@@ -142,6 +174,8 @@ export default function Settings() {
       'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
     exports:
       'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
+    user_access: 'Manage user roles and invite new members to the platform.',
+    roles: 'Create and configure custom roles with granular permission access.',
   };
 
   return (
@@ -155,10 +189,10 @@ export default function Settings() {
 
         {/* MAIN CONTENT AREA */}
         <div
-          className={`flex-1 bg-white relative ${activeTab !== 'templates' ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
+          className={`flex-1 bg-white relative ${!['templates', 'roles', 'user_access'].includes(activeTab) ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
         >
           {activeTab !== 'templates' && (
-            <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
+            <div className="flex-shrink-0 z-30 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
               <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
                 {tabTitleMap[activeTab]}
               </h1>
@@ -169,8 +203,8 @@ export default function Settings() {
           )}
           <div
             className={
-              activeTab === 'templates'
-                ? 'flex-1 flex flex-col overflow-hidden min-h-0'
+              ['templates', 'roles', 'user_access'].includes(activeTab)
+                ? `flex-1 flex flex-col overflow-hidden min-h-0 ${activeTab !== 'templates' ? 'px-10 pb-10' : ''}`
                 : 'px-10 pb-10'
             }
           >
@@ -255,6 +289,8 @@ export default function Settings() {
             {activeTab === 'exports' && (
               <DataExportHub projects={projects} getTemplate={getTemplate} />
             )}
+            {activeTab === 'user_access' && <UserAccessManager />}
+            {activeTab === 'roles' && <RoleManagerTab />}
             <AutoProcessedModal
               isOpen={!!viewingUploadLog}
               onClose={() => setViewingUploadLog(null)}

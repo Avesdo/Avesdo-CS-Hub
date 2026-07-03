@@ -69,6 +69,7 @@ import {
   getAllServiceManagers,
   getAllServiceStatuses,
 } from '../utils/serviceUtils';
+import { usePermissions } from '../hooks/usePermissions';
 
 // --- Column Filter Popover Component ---
 
@@ -88,6 +89,7 @@ const ServiceRow = React.memo(
     virtualRow,
     index,
   }: any) => {
+    const { hasPermission } = usePermissions();
     const sDate = s.dateVal
       ? new Date(s.dateVal).toLocaleDateString('en-US', {
           month: 'short',
@@ -140,6 +142,7 @@ const ServiceRow = React.memo(
             options={allStatuses}
             onChange={(newStatus: string) => handleStatusChange(s, newStatus)}
             settings={settings}
+            disabled={!hasPermission('service_edit_details')}
           />
         </td>
         <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium whitespace-nowrap">
@@ -171,6 +174,7 @@ export default function ServiceHub() {
   const { openModal, openDrawer } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
+  const { hasPermission } = usePermissions();
 
   useOnClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
 
@@ -458,55 +462,59 @@ export default function ServiceHub() {
             </p>
           </div>
           <div className="flex gap-2 flex-wrap self-start md:self-auto mt-2 md:mt-0">
-            <button
-              onClick={() => openModal('addService')}
-              className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-            >
-              <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" />{' '}
-              <span className="shrink-0">Add Service</span>
-            </button>
-            <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+            {hasPermission('service_create') && (
               <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
-                className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                onClick={() => openModal('addService')}
+                className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
               >
-                <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" />{' '}
-                <span className="shrink-0">Export</span>
-                <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+                <Plus className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:rotate-90" />{' '}
+                <span className="shrink-0">Add Service</span>
               </button>
-              <AnimatePresence>
-                {showExportMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
-                  >
-                    <div
-                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
-                      onClick={() => {
-                        setShowExportMenu(false);
-                        universalExportCSV('Services', services, 'All_Services');
-                      }}
+            )}
+            {hasPermission('service_export') && (
+              <div className="relative shadow-sm rounded-md" ref={exportMenuRef}>
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  className="group inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                >
+                  <Download className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5" />{' '}
+                  <span className="shrink-0">Export</span>
+                  <ChevronDown className="w-3 h-3 shrink-0 opacity-70" />
+                </button>
+                <AnimatePresence>
+                  {showExportMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-1.5 shadow-xl border border-slate-200/60 rounded-xl min-w-[220px] whitespace-nowrap z-[90]"
                     >
-                      <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
-                      Export All
-                    </div>
-                    <div
-                      className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
-                      onClick={() => {
-                        setShowExportMenu(false);
-                        universalExportCSV('Services', tableData, 'Filtered_Services');
-                      }}
-                    >
-                      <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
-                      Export Filtered View
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      <div
+                        className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          universalExportCSV('Services', services, 'All_Services');
+                        }}
+                      >
+                        <Database className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                        Export All
+                      </div>
+                      <div
+                        className="group px-2 py-2 rounded-md hover:bg-primary/5 cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary mt-0.5"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          universalExportCSV('Services', tableData, 'Filtered_Services');
+                        }}
+                      >
+                        <Filter className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />{' '}
+                        Export Filtered View
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
 

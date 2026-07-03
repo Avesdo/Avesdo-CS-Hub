@@ -1,28 +1,80 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
     function isAvesdoEmployee() {
       return request.auth != null && request.auth.token.email.matches('.*@avesdo[.]com$');
     }
+    
+    function isSuperAdmin() {
+      let email = request.auth.token.email.lower();
+      return email == 'roell.pereira@avesdo.com' || email == 'roell@avesdo.com' || email == 'roell.pererira@avesdo.com';
+    }
+
+    function hasPermission(node) {
+      if (isSuperAdmin()) return true;
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      if (userDoc == null) return false;
+      let roleId = userDoc.data.roleId;
+      if (roleId == 'super_admin') return true;
+      
+      let config = get(/databases/$(database)/documents/settings/global_config);
+      if (config == null || !('rolePermissions' in config.data)) return false;
+      
+      let perms = config.data.rolePermissions;
+      return roleId in perms && node in perms[roleId];
+    }
+
     match /{document=**} {
-      allow read, write: if isAvesdoEmployee();
+      allow read: if isAvesdoEmployee();
     }
 
-    match /projects/{projectId} {
-      allow read, write: if isAvesdoEmployee();
-      allow get: if !isAvesdoEmployee();
-      allow update: if !isAvesdoEmployee() 
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase']);
+    match /users/{uid} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('manage_user_access') || isSuperAdmin() || request.auth.uid == uid;
     }
 
-    match /notifications/{notificationId} {
-      allow read, write: if isAvesdoEmployee();
-      allow create: if !isAvesdoEmployee();
+    match /invitations/{email} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('manage_user_access') || isSuperAdmin();
+      allow delete: if request.auth.token.email.lower() == email;
     }
 
     match /settings/{document=**} {
       allow read: if isAvesdoEmployee();
-      allow get: if !isAvesdoEmployee();
+      allow write: if hasPermission('edit_org_settings') || hasPermission('edit_schedule') || hasPermission('edit_project_workflows') || hasPermission('edit_service_catalog') || hasPermission('edit_health_scoring') || hasPermission('edit_form_templates') || hasPermission('manage_roles') || hasPermission('manage_user_access') || isSuperAdmin();
+    }
+    
+    match /clients/{clientId} {
+      allow read: if isAvesdoEmployee();
+      allow create: if hasPermission('client_create');
+      allow update: if hasPermission('client_edit_profile') || hasPermission('client_add_notes') || hasPermission('client_archive');
+      allow delete: if hasPermission('hard_delete_archives');
+    }
+
+    match /projects/{projectId} {
+      allow read: if isAvesdoEmployee();
+      allow create: if hasPermission('project_create');
+      allow update: if hasPermission('project_edit_details') || hasPermission('project_add_notes') || hasPermission('project_archive');
+      allow delete: if hasPermission('hard_delete_archives');
+    }
+
+    match /services/{serviceId} {
+      allow read: if isAvesdoEmployee();
+      allow create: if hasPermission('service_create');
+      allow update: if hasPermission('service_edit_details') || hasPermission('service_edit_financials') || hasPermission('service_add_notes') || hasPermission('service_archive');
+      allow delete: if hasPermission('hard_delete_archives');
+    }
+
+    match /system_logs/{logId} {
+      allow read: if hasPermission('view_audit_logs');
+      allow create: if isAvesdoEmployee();
+      allow delete: if hasPermission('hard_delete_archives');
+    }
+
+    match /aliases/{aliasId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('resolve_imports');
     }
   }
 }

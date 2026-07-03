@@ -31,10 +31,12 @@ import OnboardingCsatFormModal from '../../modals/OnboardingCsatFormModal';
 import { RichTextEditor } from '../../ui/RichTextEditor';
 import { updateProjectRecord } from '../../../api/dbService';
 import { useAppStore } from '../../../store/useAppStore';
+import { Tooltip } from '../../ui/Tooltip';
 import { getSettingBadge } from '../../../utils/uiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Button } from '../../ui/button';
+import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 interface ProjectOnboardingTabProps {
   project: any;
@@ -382,26 +384,30 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[13px] font-bold text-slate-800">Client Portal Link</span>
-              <span className="text-[12px] font-medium text-slate-500 truncate">
+              <TruncatedText
+                text={String(
+                  '' + window.location.origin + '/portal/' + project?.slug || project?.id + ''
+                )}
+                containerClassName="text-[12px] font-medium text-slate-500"
+              >
                 {window.location.origin}/portal/{project?.slug || project?.id}
-              </span>
+              </TruncatedText>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/portal/${project?.slug || project?.id}`
-                );
-                toast.success('Portal Link copied to clipboard');
-              }}
-              className="w-8 h-8 text-slate-500 hover:text-slate-700 transition-colors"
-              title="Copy Link"
-            >
-              <Copy className="w-4 h-4" />
-            </Button>
+            <Tooltip content="Copy Link">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/portal/${project?.slug || project?.id}`
+                  );
+                  toast.success('Portal Link copied to clipboard');
+                }}
+                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </Tooltip>
             <a
               href={`${window.location.origin}/portal/${project?.slug || project?.id}`}
               target="_blank"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Tooltip } from '../../ui/Tooltip';
 import { Plus, Trash2, GripVertical, ChevronDown } from 'lucide-react';
 import { Select } from '../../ui/Select';
 import { Button } from '../../ui/button';
@@ -66,15 +67,14 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
         </div>
 
         <div className="flex flex-col justify-between items-end shrink-0 pl-3 border-l border-slate-100">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleRemoveItem(itemIdx)}
-            className="w-7 h-7 text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/item:opacity-100"
-            title="Delete deliverable"
-          >
-            <Trash2 className="w-[14px] h-[14px]" />
-          </Button>
+          <Tooltip content="Delete deliverable">
+            <button
+              onClick={() => handleRemoveItem(itemIdx)}
+              className="w-7 h-7 text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/item:opacity-100"
+            >
+              <Trash2 className="w-[14px] h-[14px]" />
+            </button>
+          </Tooltip>
 
           <div className="flex items-center gap-2 pt-1">
             <span className="text-[11px] font-bold text-slate-400">Priority</span>

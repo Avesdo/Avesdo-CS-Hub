@@ -11,6 +11,7 @@ import {
   Link as LinkIcon,
   Unlink,
 } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface RichTextEditorProps {
   content: string;
@@ -40,72 +41,79 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   return (
     <div className="flex flex-wrap items-center gap-1 bg-slate-50/50 rounded-t-2xl transition-all duration-200 opacity-0 max-h-0 overflow-hidden px-1.5 py-0 border-b-0 group-focus-within/editor:opacity-100 group-focus-within/editor:max-h-[50px] group-focus-within/editor:py-1.5 group-focus-within/editor:border-b group-focus-within/editor:border-border">
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        disabled={!editor.can().chain().focus().toggleBold().run()}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('bold') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Bold"
-      >
-        <Bold className="w-4 h-4" />
-      </button>
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        disabled={!editor.can().chain().focus().toggleItalic().run()}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('italic') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Italic"
-      >
-        <Italic className="w-4 h-4" />
-      </button>
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-        disabled={!editor.can().chain().focus().toggleStrike().run()}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('strike') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Strikethrough"
-      >
-        <Strikethrough className="w-4 h-4" />
-      </button>
-
-      <div className="w-px h-4 bg-slate-200 mx-1" />
-
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('bulletList') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Bullet List"
-      >
-        <List className="w-4 h-4" />
-      </button>
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('orderedList') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Ordered List"
-      >
-        <ListOrdered className="w-4 h-4" />
-      </button>
-
-      <div className="w-px h-4 bg-slate-200 mx-1" />
-
-      <button
-        type="button"
-        onClick={setLink}
-        className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('link') ? 'bg-slate-200/50 text-slate-900' : ''}`}
-        title="Add Link"
-      >
-        <LinkIcon className="w-4 h-4" />
-      </button>
-      {editor.isActive('link') && (
+      <Tooltip content="Bold">
         <button
           type="button"
-          onClick={() => editor.chain().focus().unsetLink().run()}
-          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors`}
-          title="Remove Link"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('bold') ? 'bg-slate-200/50 text-slate-900' : ''}`}
         >
-          <Unlink className="w-4 h-4" />
+          <Bold className="w-4 h-4" />
         </button>
+      </Tooltip>
+      <Tooltip content="Italic">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('italic') ? 'bg-slate-200/50 text-slate-900' : ''}`}
+        >
+          <Italic className="w-4 h-4" />
+        </button>
+      </Tooltip>
+      <Tooltip content="Strikethrough">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          disabled={!editor.can().chain().focus().toggleStrike().run()}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('strike') ? 'bg-slate-200/50 text-slate-900' : ''}`}
+        >
+          <Strikethrough className="w-4 h-4" />
+        </button>
+      </Tooltip>
+
+      <div className="w-px h-4 bg-slate-200 mx-1" />
+
+      <Tooltip content="Bullet List">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('bulletList') ? 'bg-slate-200/50 text-slate-900' : ''}`}
+        >
+          <List className="w-4 h-4" />
+        </button>
+      </Tooltip>
+      <Tooltip content="Ordered List">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('orderedList') ? 'bg-slate-200/50 text-slate-900' : ''}`}
+        >
+          <ListOrdered className="w-4 h-4" />
+        </button>
+      </Tooltip>
+
+      <div className="w-px h-4 bg-slate-200 mx-1" />
+
+      <Tooltip content="Add Link">
+        <button
+          type="button"
+          onClick={setLink}
+          className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors ${editor.isActive('link') ? 'bg-slate-200/50 text-slate-900' : ''}`}
+        >
+          <LinkIcon className="w-4 h-4" />
+        </button>
+      </Tooltip>
+      {editor.isActive('link') && (
+        <Tooltip content="Remove Link">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().unsetLink().run()}
+            className={`p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-colors`}
+          >
+            <Unlink className="w-4 h-4" />
+          </button>
+        </Tooltip>
       )}
     </div>
   );

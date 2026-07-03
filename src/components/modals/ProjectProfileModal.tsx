@@ -28,6 +28,7 @@ import {
 import * as LucideIcons from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
+import { Tooltip } from '../ui/Tooltip';
 import { getSettingBadge } from '../../utils/uiUtils';
 import {
   updateProjectRecord,
@@ -48,19 +49,32 @@ import { Select } from '../ui/Select';
 import { DatePicker } from '../ui/DatePicker';
 import toast from 'react-hot-toast';
 import { Button } from '../ui/button';
+import { usePermissions } from '../../hooks/usePermissions';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
-const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = '' }: any) => {
+const TokenTrigger = ({
+  label,
+  value,
+  icon: Icon,
+  error,
+  onClick,
+  className = '',
+  disabled,
+}: any) => {
   const isSuspended = value === 'Suspended' || value === 'On Hold';
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 active:scale-95 hover:shadow-md focus:ring-2 w-full justify-between ${
-        error
-          ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20'
-          : isSuspended
-            ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20'
-            : 'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20'
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 w-full justify-between ${
+        disabled
+          ? 'opacity-80 bg-slate-50 cursor-not-allowed border-slate-200'
+          : error
+            ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20 hover:shadow-md active:scale-95 focus:ring-2'
+            : isSuspended
+              ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20 hover:shadow-md active:scale-95 focus:ring-2'
+              : 'bg-white border-slate-200 hover:border-primary/50 focus:border-primary focus:ring-primary/20 hover:shadow-md active:scale-95 focus:ring-2'
       } ${className}`}
     >
       <div className="flex items-center truncate">
@@ -74,13 +88,12 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
         >
           {label}:
         </span>
-        <span
-          className={`text-[13px] font-semibold truncate ${
-            isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'
-          }`}
+        <TruncatedText
+          text={String('' + value || 'Select' + '')}
+          containerClassName={`text-[13px] font-semibold ${isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'}`}
         >
           {value || 'Select'}
-        </span>
+        </TruncatedText>
       </div>
       <ChevronDown
         className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`}
@@ -110,6 +123,7 @@ export default function ProjectProfileModal() {
   const [popoverOpen, setPopoverOpen] = useState<string | null>(null);
   const [teamworkLink, setTeamworkLink] = useState('');
   const [editingTeamworkLink, setEditingTeamworkLink] = useState(false);
+  const { hasPermission } = usePermissions();
 
   const isOpen = isDrawerOpen('project');
   const drawerData = getDrawerData('project');
@@ -525,42 +539,46 @@ export default function ProjectProfileModal() {
                             className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
                           <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateName();
-                              }}
-                              className="h-8 w-8 text-primary/80 hover:text-primary hover:bg-primary/10 shadow-sm"
-                              title="Save"
-                            >
-                              <Check className="w-5 h-5 stroke-[2.5]" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditNameValue(project?.name || '');
-                                setIsEditingName(false);
-                              }}
-                              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 shadow-sm"
-                              title="Cancel"
-                            >
-                              <X className="w-5 h-5" />
-                            </Button>
+                            <Tooltip content="Save">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateName();
+                                }}
+                                className="h-8 w-8 text-primary/80 hover:text-primary hover:bg-primary/10 shadow-sm flex items-center justify-center rounded"
+                              >
+                                <Check className="w-5 h-5 stroke-[2.5]" />
+                              </button>
+                            </Tooltip>
+                            <Tooltip content="Cancel">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditNameValue(project?.name || '');
+                                  setIsEditingName(false);
+                                }}
+                                className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 shadow-sm flex items-center justify-center rounded"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </Tooltip>
                           </div>
                         </div>
                       ) : (
                         <div
-                          className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
-                          onClick={() => setIsEditingName(true)}
+                          className={`group flex items-start justify-between rounded-xl -mx-3 px-3 py-2 transition-colors ${hasPermission('project_edit_details') ? 'cursor-pointer hover:bg-slate-200/50' : ''}`}
+                          onClick={() => {
+                            if (hasPermission('project_edit_details')) {
+                              setIsEditingName(true);
+                            }
+                          }}
                         >
                           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
                             {project?.name || 'Unnamed Project'}
                           </h2>
-                          <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          {hasPermission('project_edit_details') && (
+                            <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -590,11 +608,13 @@ export default function ProjectProfileModal() {
                                   }))}
                                   value={project?.projectStatus || 'Active'}
                                   onChange={(val) => handleUpdateStatus(val)}
+                                  disabled={!hasPermission('project_edit_details')}
                                   trigger={
                                     <TokenTrigger
                                       label="Status"
                                       value={project?.projectStatus || 'Active'}
                                       icon={getStatusIcon(project?.projectStatus || 'Active')}
+                                      disabled={!hasPermission('project_edit_details')}
                                     />
                                   }
                                 />
@@ -607,11 +627,13 @@ export default function ProjectProfileModal() {
                                   )}
                                   value={project?.assignee || ''}
                                   onChange={(val) => handleUpdateManager(val)}
+                                  disabled={!hasPermission('project_edit_details')}
                                   trigger={
                                     <TokenTrigger
                                       label="Manager"
                                       value={project?.assignee || 'Unassigned'}
                                       icon={User}
+                                      disabled={!hasPermission('project_edit_details')}
                                     />
                                   }
                                 />
@@ -621,6 +643,7 @@ export default function ProjectProfileModal() {
                                 <DatePicker
                                   value={project?.releaseDateVal}
                                   onChange={(val) => handleUpdateGeneric('releaseDateVal', val)}
+                                  disabled={!hasPermission('project_edit_details')}
                                   trigger={
                                     <TokenTrigger
                                       label="Release"
@@ -633,6 +656,7 @@ export default function ProjectProfileModal() {
                                           : 'No Date'
                                       }
                                       icon={Calendar}
+                                      disabled={!hasPermission('project_edit_details')}
                                     />
                                   }
                                 />
@@ -650,8 +674,9 @@ export default function ProjectProfileModal() {
                             </div>
                             <input
                               type="number"
-                              className="w-[140px] h-10 rounded-full border border-slate-200 bg-white pl-[84px] pr-4 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-[13px] font-semibold text-slate-900 transition-all hover:border-primary/50 hover:shadow-md"
+                              className="w-[160px] h-10 rounded-full border border-slate-200 bg-white pl-[84px] pr-4 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-[13px] font-semibold text-slate-900 transition-all hover:border-primary/50 hover:shadow-md disabled:opacity-80 disabled:cursor-not-allowed"
                               defaultValue={project?.units || 0}
+                              disabled={!hasPermission('project_edit_details')}
                               onBlur={(e) =>
                                 handleUpdateGeneric('units', parseInt(e.target.value) || 0)
                               }
@@ -673,16 +698,18 @@ export default function ProjectProfileModal() {
                               open={popoverOpen === 'devClients'}
                               onOpenChange={(o) => setPopoverOpen(o ? 'devClients' : null)}
                             >
-                              <Popover.Trigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
-                                >
-                                  <Pencil className="w-3 h-3" />
-                                  Edit
-                                </Button>
-                              </Popover.Trigger>
+                              {hasPermission('project_edit_details') && (
+                                <Popover.Trigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    Edit
+                                  </Button>
+                                </Popover.Trigger>
+                              )}
                               <Popover.Content
                                 side="right"
                                 sideOffset={12}
@@ -715,9 +742,12 @@ export default function ProjectProfileModal() {
                                           }
                                           className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
                                         >
-                                          <span className="truncate text-left">
+                                          <TruncatedText
+                                            text={String('' + c.companyName + '')}
+                                            containerClassName="text-left"
+                                          >
                                             {c.companyName}
-                                          </span>
+                                          </TruncatedText>
                                           {isSelected && <Check className="w-4 h-4 shrink-0" />}
                                         </Button>
                                       );
@@ -734,7 +764,7 @@ export default function ProjectProfileModal() {
                                   className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
                                 >
                                   <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                  <span className="truncate">{cName}</span>
+                                  <TruncatedText text={cName}>{cName}</TruncatedText>
                                 </div>
                               ))}
                             </div>
@@ -755,16 +785,18 @@ export default function ProjectProfileModal() {
                               open={popoverOpen === 'smClients'}
                               onOpenChange={(o) => setPopoverOpen(o ? 'smClients' : null)}
                             >
-                              <Popover.Trigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
-                                >
-                                  <Pencil className="w-3 h-3" />
-                                  Edit
-                                </Button>
-                              </Popover.Trigger>
+                              {hasPermission('project_edit_details') && (
+                                <Popover.Trigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    Edit
+                                  </Button>
+                                </Popover.Trigger>
+                              )}
                               <Popover.Content
                                 side="right"
                                 sideOffset={12}
@@ -797,9 +829,12 @@ export default function ProjectProfileModal() {
                                           }
                                           className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
                                         >
-                                          <span className="truncate text-left">
+                                          <TruncatedText
+                                            text={String('' + c.companyName + '')}
+                                            containerClassName="text-left"
+                                          >
                                             {c.companyName}
-                                          </span>
+                                          </TruncatedText>
                                           {isSelected && <Check className="w-4 h-4 shrink-0" />}
                                         </Button>
                                       );
@@ -817,7 +852,7 @@ export default function ProjectProfileModal() {
                                   className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
                                 >
                                   <Target className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                  <span className="truncate">{cName}</span>
+                                  <TruncatedText text={cName}>{cName}</TruncatedText>
                                 </div>
                               ))}
                             </div>
@@ -931,50 +966,55 @@ export default function ProjectProfileModal() {
                                   None
                                 </span>
                               )}
-                              <button
-                                onClick={() => setEditingTeamworkLink(true)}
-                                className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors"
-                                title="Edit URL"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
+                              {hasPermission('project_edit_details') && (
+                                <Tooltip content="Edit URL">
+                                  <button
+                                    onClick={() => setEditingTeamworkLink(true)}
+                                    className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors"
+                                  >
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </Tooltip>
+                              )}
                             </div>
                           )}
                         </div>
                       </div>
 
                       {/* Danger Zone */}
-                      <div className="pt-4 mt-auto border-t border-slate-200/60">
-                        {isConfirmingDelete ? (
-                          <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                            <p className="text-[11px] font-medium text-red-600 text-center">
-                              Archive this project?
-                            </p>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => setIsConfirmingDelete(false)}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={handleDelete}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
-                              >
-                                Archive
-                              </button>
+                      {hasPermission('project_archive') && (
+                        <div className="pt-4 mt-auto border-t border-slate-200/60">
+                          {isConfirmingDelete ? (
+                            <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                              <p className="text-[11px] font-medium text-red-600 text-center">
+                                Archive this project?
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setIsConfirmingDelete(false)}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={handleDelete}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                                >
+                                  Archive
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setIsConfirmingDelete(true)}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
-                          >
-                            <LucideIcons.Archive className="w-4 h-4" />
-                            Archive Project
-                          </button>
-                        )}
-                      </div>
+                          ) : (
+                            <button
+                              onClick={() => setIsConfirmingDelete(true)}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
+                            >
+                              <LucideIcons.Archive className="w-4 h-4" />
+                              Archive Project
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1045,6 +1085,7 @@ export default function ProjectProfileModal() {
                           {activeTab === 'notes' && project && (
                             <TimelineTab
                               notes={project.notes || []}
+                              disabled={!hasPermission('project_add_notes')}
                               onSaveNotes={async (updatedNotes: any[]) => {
                                 await updateProjectRecord(
                                   { ...project, notes: updatedNotes } as any,

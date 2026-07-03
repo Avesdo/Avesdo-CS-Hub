@@ -34,6 +34,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     services: [],
     archivedServices: [],
     user: null,
+    simulatedRoleId: null,
     timestamp: new Date().getTime().toString(),
     pendingAliasesCount: 0,
     ready: {
@@ -802,6 +803,78 @@ export async function resolveAlias(
   } catch (err) {
     console.error('Failed to resolve alias', err);
     toast.error('Failed to resolve alias');
+    throw err;
+  }
+}
+
+export async function createInvitation(email: string, roleId: string, inviterEmail: string) {
+  try {
+    const inviteRef = doc(db, 'invitations', email.toLowerCase());
+    const inviteData = {
+      email: email.toLowerCase(),
+      roleId,
+      invitedAt: new Date().getTime(),
+      invitedBy: inviterEmail,
+    };
+    await setDoc(inviteRef, inviteData);
+
+    const webhookUrl = import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL;
+    if (webhookUrl) {
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'send_invitation',
+          payload: inviteData,
+        }),
+      }).catch((err) => console.error('Webhook trigger failed:', err));
+    }
+
+    toast.success(`Invitation sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to create invitation', err);
+    toast.error('Failed to create invitation');
+    throw err;
+  }
+}
+
+export async function updateUserRole(uid: string, roleId: string) {
+  try {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { roleId });
+    toast.success('User role updated successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to update user role', err);
+    toast.error('Failed to update user role');
+    throw err;
+  }
+}
+
+export async function revokeInvitation(email: string) {
+  try {
+    await deleteDoc(doc(db, 'invitations', email));
+    toast.success('Invitation revoked successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to revoke invitation', err);
+    toast.error('Failed to revoke invitation');
+    throw err;
+  }
+}
+
+export async function toggleUserActiveStatus(uid: string, deactivate: boolean) {
+  try {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { isDeactivated: deactivate });
+    toast.success(deactivate ? 'User deactivated successfully' : 'User activated successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to toggle user active status', err);
+    toast.error('Failed to toggle user active status');
     throw err;
   }
 }

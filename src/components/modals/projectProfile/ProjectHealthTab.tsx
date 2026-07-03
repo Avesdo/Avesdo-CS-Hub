@@ -22,7 +22,9 @@ import {
 } from 'lucide-react';
 import { getHealthHistory } from '../../../api/dbService';
 import { calculateProjectHealth } from '../../../utils/scoringUtils';
+import { format } from 'date-fns';
 import { useAppStore } from '../../../store/useAppStore';
+import { Tooltip } from '../../ui/Tooltip';
 import OnboardingCsatFormModal from '../OnboardingCsatFormModal';
 import { motion } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
@@ -785,13 +787,14 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 </UITooltip>
 
                 {(project?.health?.onboardingCsat || project?.onboardingCsat) && (
-                  <button
-                    onClick={() => setShowCsatModal(true)}
-                    className="absolute -right-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary transition-opacity bg-white border border-slate-200 p-1 rounded-full shadow-sm"
-                    title="View Sentiment Details"
-                  >
-                    <Eye className="w-3 h-3" />
-                  </button>
+                  <Tooltip content="View Sentiment Details">
+                    <button
+                      onClick={() => setShowCsatModal(true)}
+                      className="absolute -right-7 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-primary transition-opacity bg-white border border-slate-200 p-1 rounded-full shadow-sm"
+                    >
+                      <Eye className="w-3 h-3" />
+                    </button>
+                  </Tooltip>
                 )}
               </div>
             </div>

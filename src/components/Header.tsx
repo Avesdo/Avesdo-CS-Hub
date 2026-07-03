@@ -14,6 +14,8 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { format } from 'date-fns';
 import { useUIStore } from '../store/useUIStore';
+import { useAppStore } from '../store/useAppStore';
+import { Tooltip } from './ui/Tooltip';
 import { useScheduleData } from '../hooks/useScheduleData';
 import {
   Calendar as CalendarIcon,
@@ -132,16 +134,17 @@ function NotificationBell() {
                     </p>
                   </div>
                   {!n.read && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        markNotificationAsRead(n.id);
-                      }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-primary/10 text-primary transition-all"
-                      title="Mark as read"
-                    >
-                      <Check className="w-4 h-4" />
-                    </button>
+                    <Tooltip content="Mark as read">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markNotificationAsRead(n.id);
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-primary/10 text-primary transition-all"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                    </Tooltip>
                   )}
                 </div>
               ))}

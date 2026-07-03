@@ -14,11 +14,14 @@ import {
 } from 'lucide-react';
 import { Tooltip } from './ui/Tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { usePermissions } from '../hooks/usePermissions';
+import { TruncatedText } from '../components/ui/TruncatedText';
 
 export default function Sidebar() {
   const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
   const { user: authUser, logout } = useAuth();
   const navigate = useNavigate();
+  const { hasAnySettingsPermission } = usePermissions();
 
   const getInitials = (name?: string | null, email?: string | null) => {
     if (name) {
@@ -85,24 +88,26 @@ export default function Sidebar() {
           </ul>
         </nav>
 
-        <div className="px-3 flex flex-col gap-1">
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
-            }
-          >
-            <div className="flex items-center gap-3">
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </div>
-            {pendingAliasesCount > 0 && (
-              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full animate-in zoom-in">
-                {pendingAliasesCount}
-              </span>
-            )}
-          </NavLink>
-        </div>
+        {hasAnySettingsPermission() && (
+          <div className="px-3 flex flex-col gap-1">
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
+              }
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="w-4 h-4" />
+                <span>Settings</span>
+              </div>
+              {pendingAliasesCount > 0 && (
+                <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full animate-in zoom-in">
+                  {pendingAliasesCount}
+                </span>
+              )}
+            </NavLink>
+          </div>
+        )}
 
         <div className="px-3 py-4 mt-auto shrink-0">
           <div className="flex items-center gap-3 p-2 w-full text-left rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group">
@@ -113,7 +118,12 @@ export default function Sidebar() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 text-left min-w-0">
-              <div className="font-medium text-sm truncate">{authUser?.displayName || 'User'}</div>
+              <TruncatedText
+                text={authUser?.displayName || 'User'}
+                containerClassName="font-medium text-sm"
+              >
+                {authUser?.displayName || 'User'}
+              </TruncatedText>
             </div>
             <Tooltip content="Log Out" position="top">
               <button

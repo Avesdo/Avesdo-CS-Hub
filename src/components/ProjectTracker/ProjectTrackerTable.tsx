@@ -28,6 +28,7 @@ import EmptyState from '../EmptyState';
 import { ColumnFilter } from '../TableFilters';
 import { MonthRangePicker } from '../ui/MonthRangePicker';
 import { DatePicker } from '../ui/DatePicker';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -142,6 +143,7 @@ const ProjectRow = React.memo(
     virtualRow,
     useRelativeDate,
   }: any) => {
+    const { hasPermission } = usePermissions();
     return (
       <motion.tr
         variants={itemVariants}
@@ -214,9 +216,12 @@ const ProjectRow = React.memo(
             onChange={(val, str) => {
               onUpdateProject(p.id, 'releaseDateVal', val);
             }}
+            disabled={!hasPermission('project_edit_details')}
             className="w-auto"
             trigger={
-              <div className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md group">
+              <div
+                className={`flex items-center gap-2 text-muted-foreground hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md group ${hasPermission('project_edit_details') ? 'hover:text-primary transition-colors cursor-pointer' : 'opacity-80'}`}
+              >
                 <Calendar className="w-4 h-4 opacity-50" />
                 <span className="whitespace-nowrap">
                   {p.releaseDateVal
@@ -242,9 +247,12 @@ const ProjectRow = React.memo(
                 value: m,
               }))}
               onChange={(val) => onUpdateProject(p.id, 'assignee', val)}
+              disabled={!hasPermission('project_edit_details')}
               hideCheckmark={true}
               trigger={
-                <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                <div
+                  className={`hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block ${hasPermission('project_edit_details') ? 'cursor-pointer group-hover:text-primary' : 'opacity-80'}`}
+                >
                   {getSettingBadge('managers', p.assignee, settings)}
                 </div>
               }
@@ -260,9 +268,12 @@ const ProjectRow = React.memo(
                 value: s,
               }))}
               onChange={(val) => onUpdateProject(p.id, 'projectStatus', val)}
+              disabled={!hasPermission('project_edit_details')}
               hideCheckmark={true}
               trigger={
-                <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                <div
+                  className={`hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block ${hasPermission('project_edit_details') ? 'cursor-pointer group-hover:text-primary' : 'opacity-80'}`}
+                >
                   {getSettingBadge('statuses', p.projectStatus, settings)}
                 </div>
               }
@@ -279,9 +290,12 @@ const ProjectRow = React.memo(
                   value: t,
                 }))}
                 onChange={(val) => onUpdateProject(p.id, 'timelineStatus', val)}
+                disabled={!hasPermission('project_edit_details')}
                 hideCheckmark={true}
                 trigger={
-                  <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                  <div
+                    className={`hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block ${hasPermission('project_edit_details') ? 'cursor-pointer group-hover:text-primary' : 'opacity-80'}`}
+                  >
                     {getSettingBadge('timelines', p.timelineStatus, settings)}
                   </div>
                 }
@@ -299,9 +313,12 @@ const ProjectRow = React.memo(
                   value: ph,
                 }))}
                 onChange={(val) => onUpdateProject(p.id, 'onboardingPhase', val)}
+                disabled={!hasPermission('project_edit_details')}
                 hideCheckmark={true}
                 trigger={
-                  <div className="cursor-pointer hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block group-hover:text-primary">
+                  <div
+                    className={`hover:bg-primary/5 active:scale-95 px-2 py-1 -ml-2 rounded-md transition-all inline-block ${hasPermission('project_edit_details') ? 'cursor-pointer group-hover:text-primary' : 'opacity-80'}`}
+                  >
                     {getSettingBadge('phases', p.onboardingPhase, settings)}
                   </div>
                 }

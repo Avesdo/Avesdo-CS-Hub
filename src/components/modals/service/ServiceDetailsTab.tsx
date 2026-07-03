@@ -4,6 +4,7 @@ import * as LucideIcons from 'lucide-react';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import { updateServiceRecord, addAutoLog, addProjectAutoLog } from '../../../api/dbService';
 import { useAppStore } from '../../../store/useAppStore';
+import { usePermissions } from '../../../hooks/usePermissions';
 
 interface ServiceDetailsTabProps {
   service: any;
@@ -11,6 +12,7 @@ interface ServiceDetailsTabProps {
 
 export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
   const user = useAppStore((state) => state.user);
+  const { hasPermission } = usePermissions();
 
   const handleUpdate = async (
     field: string,
@@ -298,8 +300,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                 <span className="text-2xl font-light text-slate-400">$</span>
                 <input
                   type="text"
-                  className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200"
+                  className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200 disabled:opacity-80"
                   value={serviceValueDraft}
+                  disabled={!hasPermission('service_edit_financials')}
                   onChange={(e) => setServiceValueDraft(e.target.value)}
                   onBlur={handleServiceValueBlur}
                   placeholder="0.00"
@@ -329,8 +332,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                     <span className="text-2xl font-light text-slate-400">$</span>
                     <input
                       type="text"
-                      className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200"
+                      className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200 disabled:opacity-80"
                       value={priceDraft}
+                      disabled={!hasPermission('service_edit_financials')}
                       onChange={(e) => setPriceDraft(e.target.value)}
                       onBlur={handlePriceBlur}
                       placeholder="0.00"
@@ -348,8 +352,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                     <span className="text-lg font-medium text-slate-400">$</span>
                     <input
                       type="text"
-                      className="text-xl font-medium text-slate-700 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200"
+                      className="text-xl font-medium text-slate-700 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200 disabled:opacity-80"
                       value={serviceValueDraft}
+                      disabled={!hasPermission('service_edit_financials')}
                       onChange={(e) => setServiceValueDraft(e.target.value)}
                       onBlur={handleServiceValueBlur}
                       placeholder="0.00"
@@ -370,8 +375,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   <input
                     type="text"
                     placeholder="e.g. INV-1002"
-                    className="text-[15px] font-medium text-slate-700 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-300"
+                    className="text-[15px] font-medium text-slate-700 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-300 disabled:opacity-80"
                     value={invoiceDraft}
+                    disabled={!hasPermission('service_edit_financials')}
                     onChange={(e) => handleInvoiceChange(e.target.value)}
                     onBlur={handleInvoiceBlur}
                   />
@@ -389,6 +395,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   <input
                     type="checkbox"
                     checked={service?.invoiceSent || false}
+                    disabled={!hasPermission('service_edit_financials')}
                     onChange={(e) =>
                       handleUpdate(
                         'invoiceSent',
@@ -412,6 +419,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   <input
                     type="checkbox"
                     checked={service?.invoicePaid || false}
+                    disabled={!hasPermission('service_edit_financials')}
                     onChange={(e) =>
                       handleUpdate(
                         'invoicePaid',
@@ -449,7 +457,8 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                     </label>
                     <button
                       onClick={autoCalcCommission}
-                      className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1 opacity-80 hover:opacity-100"
+                      disabled={!hasPermission('service_edit_financials')}
+                      className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1 opacity-80 hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LucideIcons.Sparkles className="w-3 h-3" />
                       Auto-calculate 20%
@@ -459,8 +468,9 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                     <span className="text-2xl font-light text-slate-400">$</span>
                     <input
                       type="text"
-                      className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200"
+                      className="text-4xl font-light text-slate-800 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-full placeholder:text-slate-200 disabled:opacity-80"
                       value={commDraft}
+                      disabled={!hasPermission('service_edit_financials')}
                       onChange={(e) => setCommDraft(e.target.value)}
                       onBlur={handleCommBlur}
                       placeholder="0.00"
@@ -481,6 +491,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                 <input
                   type="checkbox"
                   checked={service?.commPaid || false}
+                  disabled={!hasPermission('service_edit_financials')}
                   onChange={(e) => handleCommPaidToggle(e.target.checked)}
                   className="hidden"
                 />
@@ -497,6 +508,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                   <div className="w-64">
                     <DatePicker
                       value={service?.commDateVal}
+                      disabled={!hasPermission('service_edit_financials')}
                       onChange={(val, str) =>
                         handleUpdate(
                           'commDateVal',

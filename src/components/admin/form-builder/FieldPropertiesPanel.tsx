@@ -1,10 +1,12 @@
 import React from 'react';
 import { FormField } from '../TemplateDesigner';
 import { Plus, Trash2, ChevronDown, GripVertical, Blocks } from 'lucide-react';
+import { Tooltip } from '../../ui/Tooltip';
 import { Select } from '../../ui/Select';
 import { MultiSelect } from '../../ui/MultiSelect';
 import { RichTextEditor } from '../../ui/RichTextEditor';
 import { getFieldMeta } from './FormSidebar';
+import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 export function PropertiesPanel({ field, index, fields, handleUpdateField, features }: any) {
   const [draggedOptionIdx, setDraggedOptionIdx] = React.useState<number | null>(null);
@@ -40,12 +42,19 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                   }))}
                   trigger={
                     <div className="flex items-center justify-between h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-700 hover:border-primary-300 transition-all w-full shadow-sm">
-                      <span className="truncate">
+                      <TruncatedText
+                        text={String(
+                          '' + field.dependsOn?.fieldId
+                            ? otherFields.find((f: any) => f.id === field.dependsOn?.fieldId)
+                                ?.label || 'Unnamed'
+                            : 'Question...' + ''
+                        )}
+                      >
                         {field.dependsOn?.fieldId
                           ? otherFields.find((f: any) => f.id === field.dependsOn?.fieldId)
                               ?.label || 'Unnamed'
                           : 'Question...'}
-                      </span>
+                      </TruncatedText>
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1.5" />
                     </div>
                   }
@@ -77,9 +86,13 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                   ]}
                   trigger={
                     <div className="flex items-center justify-between h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-700 hover:border-primary-300 shadow-sm transition-all w-full">
-                      <span className="truncate">
+                      <TruncatedText
+                        text={String(
+                          '' + field.dependsOn?.condition?.replace(/_/g, ' ') || 'Decision...' + ''
+                        )}
+                      >
                         {field.dependsOn?.condition?.replace(/_/g, ' ') || 'Decision...'}
-                      </span>
+                      </TruncatedText>
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1.5" />
                     </div>
                   }
@@ -113,9 +126,13 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                           }))}
                           trigger={
                             <div className="flex items-center justify-between min-h-[36px] py-1 rounded-lg border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-700 hover:border-primary-300 shadow-sm w-full">
-                              <span className="truncate">
+                              <TruncatedText
+                                text={String(
+                                  valuesArray.length > 0 ? valuesArray.join(', ') : 'Answer...'
+                                )}
+                              >
                                 {valuesArray.length > 0 ? valuesArray.join(', ') : 'Answer...'}
-                              </span>
+                              </TruncatedText>
                               <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1.5" />
                             </div>
                           }
@@ -136,11 +153,17 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                         }))}
                         trigger={
                           <div className="flex items-center justify-between h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-700 hover:border-primary-300 shadow-sm w-full">
-                            <span className="truncate">
+                            <TruncatedText
+                              text={String(
+                                '' + typeof currentVal === 'string' && currentVal
+                                  ? currentVal
+                                  : 'Answer...' + ''
+                              )}
+                            >
                               {typeof currentVal === 'string' && currentVal
                                 ? currentVal
                                 : 'Answer...'}
-                            </span>
+                            </TruncatedText>
                             <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1.5" />
                           </div>
                         }
@@ -187,7 +210,17 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                 ]}
                 trigger={
                   <div className="flex items-center justify-between h-10 rounded-lg border border-slate-200 bg-white px-3 text-[13px] font-medium text-slate-700 hover:border-primary-300 shadow-sm w-full">
-                    <span className="truncate">
+                    <TruncatedText
+                      text={String(
+                        '' + field.dependsOn?.action === 'hide'
+                          ? field.type === 'page_break'
+                            ? 'Skip this page'
+                            : 'Hide this question'
+                          : field.type === 'page_break'
+                            ? 'Show this page'
+                            : 'Show this question' + ''
+                      )}
+                    >
                       {field.dependsOn?.action === 'hide'
                         ? field.type === 'page_break'
                           ? 'Skip this page'
@@ -195,7 +228,7 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                         : field.type === 'page_break'
                           ? 'Show this page'
                           : 'Show this question'}
-                    </span>
+                    </TruncatedText>
                     <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                   </div>
                 }
@@ -319,13 +352,14 @@ export function PropertiesPanel({ field, index, fields, handleUpdateField, featu
                   value="Other..."
                   className="flex-1 text-[13px] font-medium bg-transparent border-0 border-b border-slate-200 px-0 py-2.5 outline-none text-slate-500 cursor-not-allowed"
                 />
-                <button
-                  onClick={() => handleUpdateField(index, { allowOther: false })}
-                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors opacity-0 group-hover/option:opacity-100 shrink-0"
-                  title="Remove 'Other' option"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <Tooltip content="Remove 'Other' option">
+                  <button
+                    onClick={() => handleUpdateField(index, { allowOther: false })}
+                    className="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors opacity-0 group-hover/option:opacity-100 shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </Tooltip>
               </div>
             )}
 

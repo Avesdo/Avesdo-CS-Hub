@@ -2,6 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Tooltip } from '../../ui/Tooltip';
 import {
   DndContext,
   closestCenter,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 import { MultiSelect } from '../../ui/MultiSelect';
 import { SortableChecklistItem } from './SortableChecklistItem';
+import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 export function SortableChecklistSection({
   section,
@@ -119,13 +121,14 @@ export function SortableChecklistSection({
 
             <div className="w-px h-4 bg-slate-200 mx-1" />
 
-            <button
-              onClick={() => handleRemoveSection(index)}
-              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
-              title="Delete Section"
-            >
-              <Trash2 className="w-[18px] h-[18px]" />
-            </button>
+            <Tooltip content="Delete Section">
+              <button
+                onClick={() => handleRemoveSection(index)}
+                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+              >
+                <Trash2 className="w-[18px] h-[18px]" />
+              </button>
+            </Tooltip>
           </div>
         </div>
 
@@ -146,13 +149,23 @@ export function SortableChecklistSection({
                   options={features?.map((f: string) => ({ label: f, value: f })) || []}
                   trigger={
                     <div className="flex items-center justify-between h-10 rounded-lg border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 hover:border-slate-300 transition-colors shadow-sm min-w-[240px] max-w-[500px] flex-1">
-                      <span className="truncate">
+                      <TruncatedText
+                        text={String(
+                          '' + section.dependsOnFeature?.length
+                            ? section.dependsOnFeature.join(', ')
+                            : (
+                                <span className="text-slate-400 font-normal">
+                                  Select features...
+                                </span>
+                              ) + ''
+                        )}
+                      >
                         {section.dependsOnFeature?.length ? (
                           section.dependsOnFeature.join(', ')
                         ) : (
                           <span className="text-slate-400 font-normal">Select features...</span>
                         )}
-                      </span>
+                      </TruncatedText>
                       <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
                     </div>
                   }

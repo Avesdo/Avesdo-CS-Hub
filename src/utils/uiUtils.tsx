@@ -232,9 +232,12 @@ export const getSettingBadge = (
           className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
         >
           <LucideIcons.User className={iconSize} />
-          <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+          <TruncatedText
+            text={String(value)}
+            containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
+          >
             {value}
-          </span>
+          </TruncatedText>
         </span>
       );
     }
@@ -242,9 +245,12 @@ export const getSettingBadge = (
       <span
         className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center shrink-0`}
       >
-        <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+        <TruncatedText
+          text={String(value)}
+          containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
+        >
           {value}
-        </span>
+        </TruncatedText>
       </span>
     );
   }
@@ -261,9 +267,12 @@ export const getSettingBadge = (
       }}
     >
       {item.icon && renderIcon(item.icon, iconSize)}
-      <span className={truncateText ? 'truncate max-w-[180px]' : 'whitespace-nowrap'}>
+      <TruncatedText
+        text={String(item.name)}
+        containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
+      >
         {item.name}
-      </span>
+      </TruncatedText>
     </span>
   );
 };

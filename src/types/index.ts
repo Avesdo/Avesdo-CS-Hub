@@ -102,7 +102,36 @@ export interface Settings {
     manager: string;
     type?: string;
   }[];
+  roles?: CustomRole[];
+  rolePermissions?: Record<string, Record<string, boolean>>;
   [key: string]: any;
+}
+
+export interface CustomRole {
+  id: string;
+  name: string;
+  permissions: string[];
+  isDefault?: boolean;
+}
+
+export interface Invitation {
+  email: string;
+  roleId: string;
+  invitedAt: number;
+  invitedBy: string;
+}
+
+export interface AppUser {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+  roleId: string;
+  createdAt: number;
+  lastLogin: number;
+  name?: string;
+  initials?: string;
+  isDeactivated?: boolean;
 }
 
 export interface AppState {
@@ -113,7 +142,7 @@ export interface AppState {
   archivedProjects: Project[];
   services: Service[];
   archivedServices: Service[];
-  user: any;
+  user: AppUser | null;
   timestamp: string;
   pendingAliasesCount: number;
   ready: {
@@ -123,4 +152,5 @@ export interface AppState {
     services: boolean;
     aliases: boolean;
   };
+  simulatedRoleId: string | null;
 }

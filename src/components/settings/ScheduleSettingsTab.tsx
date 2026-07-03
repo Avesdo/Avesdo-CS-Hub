@@ -7,6 +7,7 @@ import { DateRangePicker } from '../ui/DateRangePicker';
 import { Select } from '../ui/Select';
 import { Input } from '../ui/input';
 import { format } from 'date-fns';
+import { Tooltip } from '../ui/Tooltip';
 import * as LucideIcons from 'lucide-react';
 import {
   Check,
@@ -357,38 +358,42 @@ export function ScheduleSettingsTab() {
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                const sDate = new Date(
-                                  `${t.startDate || t.date}T00:00:00`
-                                ).getTime();
-                                const eDate = new Date(`${t.endDate || t.date}T00:00:00`).getTime();
-                                setEditTimeOffStart(sDate);
-                                setEditTimeOffEnd(eDate);
-                                setEditTimeOffManager(t.manager);
-                                setEditingTimeOffIndex(i);
-                              }}
-                              className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
-                              title="Edit time off"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                const newTimeOff = (settings?.timeOff || []).filter(
-                                  (_, index) => index !== i
-                                );
-                                saveSettings({ ...(settings as any), timeOff: newTimeOff });
-                              }}
-                              className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                              title="Remove time off"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <Tooltip content="Edit time off">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const sDate = new Date(
+                                    `${t.startDate || t.date}T00:00:00`
+                                  ).getTime();
+                                  const eDate = new Date(
+                                    `${t.endDate || t.date}T00:00:00`
+                                  ).getTime();
+                                  setEditTimeOffStart(sDate);
+                                  setEditTimeOffEnd(eDate);
+                                  setEditTimeOffManager(t.manager);
+                                  setEditingTimeOffIndex(i);
+                                }}
+                                className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Remove time off">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newTimeOff = (settings?.timeOff || []).filter(
+                                    (_, index) => index !== i
+                                  );
+                                  saveSettings({ ...(settings as any), timeOff: newTimeOff });
+                                }}
+                                className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </Tooltip>
                           </div>
                         </>
                       )}
@@ -591,39 +596,44 @@ export function ScheduleSettingsTab() {
                               <span className="font-medium text-slate-700">{h.name}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  const dTime = new Date(`${h.date}T00:00:00`).getTime();
-                                  setEditHolidayDate(dTime);
-                                  setEditHolidayName(h.name);
-                                  setEditingHolidayIndex(i);
-                                }}
-                                className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
-                                title="Edit holiday"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  const newHolidays = (settings?.statHolidays || []).filter(
-                                    (_, index) => index !== i
-                                  );
-                                  saveSettings({ ...(settings as any), statHolidays: newHolidays });
-                                  if (editingHolidayIndex === i) {
-                                    setEditingHolidayIndex(null);
-                                    setNewHolidayDate(null);
-                                    setNewHolidayName('');
-                                  }
-                                }}
-                                className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                                title="Remove holiday"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                              <Tooltip content="Edit holiday">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const dTime = new Date(`${h.date}T00:00:00`).getTime();
+                                    setEditHolidayDate(dTime);
+                                    setEditHolidayName(h.name);
+                                    setEditingHolidayIndex(i);
+                                  }}
+                                  className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip content="Remove holiday">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newHolidays = (settings?.statHolidays || []).filter(
+                                      (_, index) => index !== i
+                                    );
+                                    saveSettings({
+                                      ...(settings as any),
+                                      statHolidays: newHolidays,
+                                    });
+                                    if (editingHolidayIndex === i) {
+                                      setEditingHolidayIndex(null);
+                                      setNewHolidayDate(null);
+                                      setNewHolidayName('');
+                                    }
+                                  }}
+                                  className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
                             </div>
                           </>
                         )}

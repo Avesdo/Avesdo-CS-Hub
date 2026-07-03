@@ -4,6 +4,7 @@ import { AppState } from '../types';
 interface AppStore extends AppState {
   setAppState: (state: AppState) => void;
   setUser: (user: any) => void;
+  setSimulatedRoleId: (id: string | null) => void;
 }
 
 const defaultState: AppState = {
@@ -24,10 +25,12 @@ const defaultState: AppState = {
     services: false,
     aliases: false,
   },
+  simulatedRoleId: null,
 };
 
 export const useAppStore = create<AppStore>((set) => ({
   ...defaultState,
   setAppState: (state) => set(state),
   setUser: (user) => set({ user }),
+  setSimulatedRoleId: (id) => set({ simulatedRoleId: id }),
 }));

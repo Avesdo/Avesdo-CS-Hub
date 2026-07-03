@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { RadialBarChart, RadialBar, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { SupportTicket } from '../../store/useSupportStore';
 import { useTrueCostAnalytics } from '../../hooks/useTrueCostAnalytics';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 interface TrueCostReportProps {
   tickets: SupportTicket[];
@@ -158,12 +159,12 @@ export const TrueCostReport: React.FC<TrueCostReportProps> = ({ tickets }) => {
                       key={idx}
                       className="flex justify-between items-center p-3 rounded-lg bg-slate-50 border border-slate-100"
                     >
-                      <div
-                        className="font-medium text-sm text-slate-700 truncate pr-2"
-                        title={cat.name}
+                      <TruncatedText
+                        text={String('' + cat.name + '')}
+                        containerClassName="font-medium text-sm text-slate-700 pr-2"
                       >
                         {cat.name}
-                      </div>
+                      </TruncatedText>
                       <div className="flex items-center gap-4 text-sm whitespace-nowrap shrink-0">
                         <div className="text-right">
                           <span className="font-semibold text-slate-700">

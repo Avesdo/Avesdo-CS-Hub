@@ -16,12 +16,14 @@ interface TimelineTabProps {
   notes: Note[];
   onSaveNotes: (updatedNotes: Note[]) => Promise<void>;
   emptyStateMessage?: string;
+  disabled?: boolean;
 }
 
 export function TimelineTab({
   notes,
   onSaveNotes,
   emptyStateMessage = 'No activity recorded yet.',
+  disabled = false,
 }: TimelineTabProps) {
   const user = useAppStore((state) => state.user);
   const [newNote, setNewNote] = useState('');
@@ -115,8 +117,9 @@ export function TimelineTab({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => setIsComposerExpanded(true)}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-400 hover:text-slate-600 transition-colors cursor-text shadow-sm"
+                onClick={() => !disabled && setIsComposerExpanded(true)}
+                disabled={disabled}
+                className={`w-full flex items-center gap-3 px-4 py-3 border rounded-xl text-slate-400 transition-colors shadow-sm ${disabled ? 'bg-slate-50 border-slate-200 opacity-80 cursor-not-allowed' : 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:text-slate-600 cursor-text'}`}
               >
                 <Edit3 className="w-4 h-4" />
                 <span className="text-sm font-medium">Write a note...</span>

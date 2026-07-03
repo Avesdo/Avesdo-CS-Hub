@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import { Select } from './Select';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -174,15 +175,20 @@ export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
                         type="button"
                         className="w-full flex items-center justify-between border border-input rounded-md px-3 py-2 text-sm bg-white hover:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all h-[38px]"
                       >
-                        <span
-                          className={
-                            localStartMonth ? 'text-foreground' : 'text-muted-foreground truncate'
+                        <TruncatedText
+                          text={String(
+                            '' + localStartMonth
+                              ? months.find((m) => m.value === localStartMonth)?.label
+                              : 'Select Month' + ''
+                          )}
+                          containerClassName={
+                            localStartMonth ? 'text-foreground' : 'text-muted-foreground'
                           }
                         >
                           {localStartMonth
                             ? months.find((m) => m.value === localStartMonth)?.label
                             : 'Select Month'}
-                        </span>
+                        </TruncatedText>
                         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 opacity-50" />
                       </button>
                     }
@@ -199,13 +205,14 @@ export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
                         type="button"
                         className="w-full flex items-center justify-between border border-input rounded-md px-3 py-2 text-sm bg-white hover:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all h-[38px]"
                       >
-                        <span
-                          className={
-                            localStartYear ? 'text-foreground' : 'text-muted-foreground truncate'
+                        <TruncatedText
+                          text={String('' + localStartYear || 'Select Year' + '')}
+                          containerClassName={
+                            localStartYear ? 'text-foreground' : 'text-muted-foreground'
                           }
                         >
                           {localStartYear || 'Select Year'}
-                        </span>
+                        </TruncatedText>
                         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 opacity-50" />
                       </button>
                     }
@@ -225,15 +232,20 @@ export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
                         type="button"
                         className="w-full flex items-center justify-between border border-input rounded-md px-3 py-2 text-sm bg-white hover:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all h-[38px]"
                       >
-                        <span
-                          className={
-                            localEndMonth ? 'text-foreground' : 'text-muted-foreground truncate'
+                        <TruncatedText
+                          text={String(
+                            '' + localEndMonth
+                              ? months.find((m) => m.value === localEndMonth)?.label
+                              : 'Select Month' + ''
+                          )}
+                          containerClassName={
+                            localEndMonth ? 'text-foreground' : 'text-muted-foreground'
                           }
                         >
                           {localEndMonth
                             ? months.find((m) => m.value === localEndMonth)?.label
                             : 'Select Month'}
-                        </span>
+                        </TruncatedText>
                         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 opacity-50" />
                       </button>
                     }
@@ -250,13 +262,14 @@ export const MonthRangePicker = ({ dateRange, setDateRange }: any) => {
                         type="button"
                         className="w-full flex items-center justify-between border border-input rounded-md px-3 py-2 text-sm bg-white hover:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all h-[38px]"
                       >
-                        <span
-                          className={
-                            localEndYear ? 'text-foreground' : 'text-muted-foreground truncate'
+                        <TruncatedText
+                          text={String('' + localEndYear || 'Select Year' + '')}
+                          containerClassName={
+                            localEndYear ? 'text-foreground' : 'text-muted-foreground'
                           }
                         >
                           {localEndYear || 'Select Year'}
-                        </span>
+                        </TruncatedText>
                         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 opacity-50" />
                       </button>
                     }

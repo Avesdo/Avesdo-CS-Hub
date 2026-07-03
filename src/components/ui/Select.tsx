@@ -4,6 +4,7 @@ import { Check, ChevronDown, Search, Ghost } from 'lucide-react';
 import { type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
 import { formControlVariants } from './form-controls';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export interface SelectOption {
   label: React.ReactNode;
@@ -124,9 +125,12 @@ export function Select({
                 disabled={disabled}
                 className={twMerge(formControlVariants({ variant }), 'cursor-pointer')}
               >
-                <span className={twMerge('truncate', !value && 'text-muted-foreground')}>
+                <TruncatedText
+                  text={String(selectedOption ? selectedOption.label : placeholder)}
+                  containerClassName={twMerge('', !value && 'text-muted-foreground')}
+                >
                   {selectedOption ? selectedOption.label : placeholder}
-                </span>
+                </TruncatedText>
                 <ChevronDown
                   className={twMerge(
                     'h-4 w-4 opacity-50 shrink-0 transition-transform',
@@ -180,7 +184,9 @@ export function Select({
                   className="w-full text-left px-3 py-2 rounded-md text-sm font-semibold text-primary hover:bg-primary/5 transition-colors flex items-center"
                 >
                   <span className="mr-2 opacity-60 shrink-0">Create</span>
-                  <span className="truncate">"{searchTerm.trim()}"</span>
+                  <TruncatedText text={String('"' + searchTerm.trim() + '"')}>
+                    "{searchTerm.trim()}"
+                  </TruncatedText>
                 </button>
               )}
 
@@ -202,14 +208,15 @@ export function Select({
                         : 'text-foreground hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary'
                     )}
                   >
-                    <span
-                      className={twMerge(
-                        'font-medium truncate flex-1 pr-2',
+                    <TruncatedText
+                      text={String('' + opt.label + '')}
+                      containerClassName={twMerge(
+                        'font-medium flex-1 pr-2',
                         value === opt.value ? 'font-semibold' : ''
                       )}
                     >
                       {opt.label}
-                    </span>
+                    </TruncatedText>
                     {!hideCheckmark && value === opt.value && (
                       <Check className="w-4 h-4 text-primary shrink-0 ml-auto" />
                     )}

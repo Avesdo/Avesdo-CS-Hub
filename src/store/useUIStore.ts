@@ -111,9 +111,9 @@ export const useUIStore = create<UIStore>((set, get) => {
       set((state) => {
         if (modal === null) return { activeModals: [], activeModal: null };
         const newModals = [...state.activeModals, modal];
-        return { 
-          activeModals: newModals, 
-          activeModal: modal 
+        return {
+          activeModals: newModals,
+          activeModal: modal,
         };
       });
     },
@@ -123,7 +123,7 @@ export const useUIStore = create<UIStore>((set, get) => {
         const newModals = state.activeModals.slice(0, -1);
         return {
           activeModals: newModals,
-          activeModal: newModals.length > 0 ? newModals[newModals.length - 1] : null
+          activeModal: newModals.length > 0 ? newModals[newModals.length - 1] : null,
         };
       });
     },
@@ -162,7 +162,8 @@ export const useUIStore = create<UIStore>((set, get) => {
           const nextDrawers = s.activeDrawers.filter((d) => !d.isClosing);
           return {
             activeDrawers: nextDrawers,
-            activeDrawer: nextDrawers.length > 0 ? nextDrawers[nextDrawers.length - 1] : { type: null }
+            activeDrawer:
+              nextDrawers.length > 0 ? nextDrawers[nextDrawers.length - 1] : { type: null },
           };
         });
       }, 300);
@@ -195,10 +196,13 @@ export const useUIStore = create<UIStore>((set, get) => {
           if (state.activeDrawers.some((d) => d.type === drawer && d.entityId === drawerId)) {
             return state;
           }
-          const nextDrawers = [...state.activeDrawers, { type: drawer, entityId: drawerId || undefined }];
+          const nextDrawers = [
+            ...state.activeDrawers,
+            { type: drawer, entityId: drawerId || undefined },
+          ];
           return {
             activeDrawers: nextDrawers,
-            activeDrawer: nextDrawers[nextDrawers.length - 1]
+            activeDrawer: nextDrawers[nextDrawers.length - 1],
           };
         });
       } else {
@@ -218,7 +222,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('popstate', () => {
     useUIStore.getState().syncFromUrl();
   });
-  
+
   // Global Esc listener for drawers (Modals handle themselves via Radix)
   window.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape') {

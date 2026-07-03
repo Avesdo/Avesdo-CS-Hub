@@ -12,6 +12,7 @@ import { getSafeHex, hexToRgba } from '../../utils/uiUtils';
 import { Select } from '../ui/Select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 interface ProjectTrackerCalendarProps {
   openDrawer: (type: string, id: string, data?: any) => void;
@@ -88,14 +89,17 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
             backgroundColor: hexToRgba(borderHex, 0.08),
           }}
         >
-          <div className="font-bold truncate text-slate-800 leading-tight mb-1 text-[11px]">
+          <TruncatedText
+            text={String('' + pName + '')}
+            containerClassName="font-bold text-slate-800 leading-tight mb-1 text-[11px]"
+          >
             {pName}
-          </div>
+          </TruncatedText>
           <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-normal overflow-hidden">
             <User className="w-3 h-3 shrink-0 opacity-70" />
-            <span className="truncate">{mgr}</span>
+            <TruncatedText text={mgr}>{mgr}</TruncatedText>
             <span className="mx-0.5 opacity-50 shrink-0">•</span>
-            <span className="truncate">{pPhase}</span>
+            <TruncatedText text={pPhase}>{pPhase}</TruncatedText>
           </div>
         </div>
       );

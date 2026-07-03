@@ -35,19 +35,32 @@ import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
 import { Tooltip } from '../ui/Tooltip';
 import { DatePicker } from '../ui/DatePicker';
+import { usePermissions } from '../../hooks/usePermissions';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
-const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = '' }: any) => {
+const TokenTrigger = ({
+  label,
+  value,
+  icon: Icon,
+  error,
+  onClick,
+  className = '',
+  disabled,
+}: any) => {
   const isSuspended = value === 'Lost' || value === 'Not Accepted';
   return (
     <button
       type="button"
-      onClick={onClick}
-      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 active:scale-95 w-full justify-between ${
-        error
-          ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20'
-          : isSuspended
-            ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20'
-            : 'bg-white border-slate-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20'
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`group flex items-center h-10 px-4 rounded-full border shadow-sm transition-all duration-200 w-full justify-between ${
+        disabled
+          ? 'opacity-80 bg-slate-50 cursor-not-allowed border-slate-200'
+          : error
+            ? 'border-destructive bg-white focus:border-destructive focus:ring-destructive/20 active:scale-95'
+            : isSuspended
+              ? 'bg-red-50/80 border-red-200 hover:border-red-300 focus:border-red-400 focus:ring-red-500/20 active:scale-95'
+              : 'bg-white border-slate-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20 active:scale-95'
       } ${className}`}
     >
       <div className="flex items-center truncate">
@@ -61,13 +74,12 @@ const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = ''
         >
           {label}:
         </span>
-        <span
-          className={`text-[13px] font-semibold truncate ${
-            isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'
-          }`}
+        <TruncatedText
+          text={String('' + value || 'Select' + '')}
+          containerClassName={`text-[13px] font-semibold ${isSuspended ? 'text-red-700' : value ? 'text-slate-900' : 'text-slate-400'}`}
         >
           {value || 'Select'}
-        </span>
+        </TruncatedText>
       </div>
       <ChevronDown
         className={`w-3.5 h-3.5 ml-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSuspended ? 'text-red-400' : 'text-slate-400'}`}
@@ -81,31 +93,34 @@ const ReadOnlyPill = ({ label, value, icon: Icon }: any) => (
     <div className="flex items-center w-full">
       {Icon && <Icon className="w-4 h-4 text-slate-400 mr-2 shrink-0" />}
       <span className="text-[13px] font-medium mr-2 text-slate-500 shrink-0">{label}:</span>
-      <span
-        className="text-[13px] font-semibold truncate text-slate-700 flex-1 min-w-0"
-        title={value || 'N/A'}
+      <TruncatedText
+        text={String('' + value || 'N/A' + '')}
+        containerClassName="text-[13px] font-semibold text-slate-700 flex-1 min-w-0"
       >
         {value || 'N/A'}
-      </span>
+      </TruncatedText>
     </div>
   </div>
 );
 
-const ContactInputPill = ({ value, onChange, onBlur }: any) => (
+const ContactInputPill = ({ value, onChange, onBlur, disabled }: any) => (
   <div
-    className="flex items-center h-10 px-4 rounded-full border border-slate-200 bg-white hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-sm w-full transition-all cursor-text"
-    onClick={(e) => (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()}
+    className={`flex items-center h-10 px-4 rounded-full border border-slate-200 bg-white shadow-sm w-full transition-all ${disabled ? 'opacity-80 bg-slate-50 cursor-not-allowed' : 'hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 cursor-text'}`}
+    onClick={(e) =>
+      !disabled && (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()
+    }
   >
     <div className="flex items-center w-full">
       <User className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
       <span className="text-[13px] font-medium mr-2 text-slate-500 shrink-0">Contact:</span>
       <input
         type="text"
-        className="flex-1 w-full min-w-0 text-[13px] font-semibold text-slate-900 bg-transparent outline-none placeholder:text-slate-400 font-sans truncate"
+        className="flex-1 w-full min-w-0 text-[13px] font-semibold text-slate-900 bg-transparent outline-none placeholder:text-slate-400 font-sans truncate disabled:opacity-80"
         value={value}
         onChange={onChange}
         onBlur={onBlur}
         placeholder="Enter name..."
+        disabled={disabled}
       />
     </div>
   </div>
@@ -126,6 +141,7 @@ export default function ServiceProfileModal() {
   const [editNameValue, setEditNameValue] = useState('');
   const [contactNameDraft, setContactNameDraft] = useState('');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     if (isConfirmingDelete) {
@@ -522,38 +538,46 @@ export default function ServiceProfileModal() {
                             className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
                           <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateName();
-                              }}
-                              className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
-                              title="Save"
-                            >
-                              <Check className="w-5 h-5 stroke-[2.5]" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditNameValue(service?.name || '');
-                                setIsEditingName(false);
-                              }}
-                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
-                              title="Cancel"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
+                            <Tooltip content="Save">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateName();
+                                }}
+                                className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
+                              >
+                                <Check className="w-5 h-5 stroke-[2.5]" />
+                              </button>
+                            </Tooltip>
+                            <Tooltip content="Cancel">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditNameValue(service?.name || '');
+                                  setIsEditingName(false);
+                                }}
+                                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </Tooltip>
                           </div>
                         </div>
                       ) : (
                         <div
-                          className="group flex items-start justify-between cursor-pointer rounded-xl -mx-3 px-3 py-2 hover:bg-slate-200/50 transition-colors"
-                          onClick={() => setIsEditingName(true)}
+                          className={`group flex items-start justify-between rounded-xl -mx-3 px-3 py-2 transition-colors ${hasPermission('service_edit_details') ? 'cursor-pointer hover:bg-slate-200/50' : ''}`}
+                          onClick={() => {
+                            if (hasPermission('service_edit_details')) {
+                              setIsEditingName(true);
+                            }
+                          }}
                         >
                           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance break-words">
                             {service?.name || 'Unnamed Service'}
                           </h2>
-                          <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          {hasPermission('service_edit_details') && (
+                            <Pencil className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -568,11 +592,13 @@ export default function ServiceProfileModal() {
                             }))}
                             value={service?.type || 'Unknown'}
                             onChange={(val) => handleUpdateType(val)}
+                            disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Type"
                                 value={service?.type || 'Unknown'}
                                 icon={Briefcase}
+                                disabled={!hasPermission('service_edit_details')}
                               />
                             }
                           />
@@ -584,11 +610,13 @@ export default function ServiceProfileModal() {
                             )}
                             value={service?.manager || ''}
                             onChange={(val) => handleUpdateManager(val)}
+                            disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Manager"
                                 value={service?.manager || 'Unassigned'}
                                 icon={User}
+                                disabled={!hasPermission('service_edit_details')}
                               />
                             }
                           />
@@ -600,11 +628,13 @@ export default function ServiceProfileModal() {
                               .map((s: any) => ({ label: s.name, value: s.name }))}
                             value={service?.status || 'Unknown'}
                             onChange={(val) => handleUpdateStatus(val)}
+                            disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Status"
                                 value={service?.status || 'Unknown'}
                                 icon={getStatusIcon(service?.status || 'Unknown')}
+                                disabled={!hasPermission('service_edit_details')}
                               />
                             }
                           />
@@ -616,11 +646,13 @@ export default function ServiceProfileModal() {
                               .map((s: any) => ({ label: s.name, value: s.name }))}
                             value={service?.outcome || 'Unknown'}
                             onChange={(val) => handleUpdateOutcome(val)}
+                            disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Outcome"
                                 value={service?.outcome || 'Unknown'}
                                 icon={Target}
+                                disabled={!hasPermission('service_edit_details')}
                               />
                             }
                           />
@@ -640,6 +672,7 @@ export default function ServiceProfileModal() {
                                 user?.name
                               );
                             }}
+                            disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Completion"
@@ -653,6 +686,7 @@ export default function ServiceProfileModal() {
                                     : 'No Date'
                                 }
                                 icon={Calendar}
+                                disabled={!hasPermission('service_edit_details')}
                               />
                             }
                           />
@@ -668,8 +702,14 @@ export default function ServiceProfileModal() {
                           onChange={handleUpdateClient}
                           searchable
                           searchPlaceholder="Search Clients..."
+                          disabled={!hasPermission('service_edit_details')}
                           trigger={
-                            <TokenTrigger label="Client" value={clientNames} icon={Building} />
+                            <TokenTrigger
+                              label="Client"
+                              value={clientNames}
+                              icon={Building}
+                              disabled={!hasPermission('service_edit_details')}
+                            />
                           }
                         />
                         <MultiSelect
@@ -683,12 +723,19 @@ export default function ServiceProfileModal() {
                           onChange={handleUpdateProject}
                           searchable
                           searchPlaceholder="Search Projects..."
+                          disabled={!hasPermission('service_edit_details')}
                           trigger={
-                            <TokenTrigger label="Project" value={projectName} icon={FileText} />
+                            <TokenTrigger
+                              label="Project"
+                              value={projectName}
+                              icon={FileText}
+                              disabled={!hasPermission('service_edit_details')}
+                            />
                           }
                         />
                         <ContactInputPill
                           value={contactNameDraft}
+                          disabled={!hasPermission('service_edit_details')}
                           onChange={(e: any) => setContactNameDraft(e.target.value)}
                           onBlur={async () => {
                             if (!service || contactNameDraft === service.contactName) return;
@@ -706,37 +753,39 @@ export default function ServiceProfileModal() {
                       </div>
 
                       {/* Danger Zone */}
-                      <div className="pt-4 mt-auto border-t border-slate-200/60">
-                        {isConfirmingDelete ? (
-                          <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
-                            <p className="text-[11px] font-medium text-red-600 text-center">
-                              Archive this service?
-                            </p>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => setIsConfirmingDelete(false)}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={handleConfirmDelete}
-                                className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
-                              >
-                                Archive
-                              </button>
+                      {hasPermission('service_archive') && (
+                        <div className="pt-4 mt-auto border-t border-slate-200/60">
+                          {isConfirmingDelete ? (
+                            <div className="flex flex-col gap-2 p-3 bg-red-50/50 border border-red-100 rounded-xl">
+                              <p className="text-[11px] font-medium text-red-600 text-center">
+                                Archive this service?
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setIsConfirmingDelete(false)}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={handleConfirmDelete}
+                                  className="flex-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors"
+                                >
+                                  Archive
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setIsConfirmingDelete(true)}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
-                          >
-                            <LucideIcons.Archive className="w-4 h-4" />
-                            Archive Service
-                          </button>
-                        )}
-                      </div>
+                          ) : (
+                            <button
+                              onClick={() => setIsConfirmingDelete(true)}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-[12px] font-medium text-slate-400 hover:bg-red-50/50 hover:text-red-500 rounded-lg transition-colors"
+                            >
+                              <LucideIcons.Archive className="w-4 h-4" />
+                              Archive Service
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -746,13 +795,14 @@ export default function ServiceProfileModal() {
 
                     {/* Close Button overlay */}
                     <div className="absolute top-4 right-4 z-10">
-                      <button
-                        onClick={closeDrawer}
-                        className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
-                        title="Close"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      <Tooltip content="Close">
+                        <button
+                          onClick={closeDrawer}
+                          className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
                     </div>
 
                     {/* Horizontal Tabs Header */}
@@ -814,6 +864,7 @@ export default function ServiceProfileModal() {
                           {activeTab === 'notes' && service && (
                             <TimelineTab
                               notes={service.notes || []}
+                              disabled={!hasPermission('service_add_notes')}
                               onSaveNotes={async (updatedNotes) => {
                                 await updateServiceRecord(
                                   { ...service, notes: updatedNotes } as any,

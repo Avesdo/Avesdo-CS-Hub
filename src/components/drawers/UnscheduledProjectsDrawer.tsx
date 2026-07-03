@@ -3,6 +3,7 @@ import { X, Calendar, User, Target } from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { getSettingBadge } from '../../utils/uiUtils';
+import { TruncatedText } from '../../components/ui/TruncatedText';
 
 export default function UnscheduledProjectsDrawer() {
   const { isDrawerOpen, closeDrawer, openDrawer, activeDrawers } = useUIStore();
@@ -52,12 +53,18 @@ export default function UnscheduledProjectsDrawer() {
                 <Calendar className="w-5 h-5" />
               </div>
               <div className="flex flex-col min-w-0">
-                <h2 className="text-xl font-bold text-foreground tracking-tight truncate">
+                <TruncatedText
+                  text={String('Unscheduled Projects')}
+                  containerClassName="text-xl font-bold text-foreground tracking-tight"
+                >
                   Unscheduled Projects
-                </h2>
-                <p className="text-sm text-muted-foreground mt-0.5 font-medium truncate">
+                </TruncatedText>
+                <TruncatedText
+                  text={String('Projects missing a release date')}
+                  containerClassName="text-sm text-muted-foreground mt-0.5 font-medium"
+                >
                   Projects missing a release date
-                </p>
+                </TruncatedText>
               </div>
             </div>
             <button
@@ -91,19 +98,19 @@ export default function UnscheduledProjectsDrawer() {
                     className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 cursor-pointer group flex flex-col relative overflow-hidden"
                   >
                     <div className="flex justify-between items-start mb-1">
-                      <h3
-                        className="font-bold text-sm text-foreground group-hover:text-primary transition-colors truncate pr-2"
-                        title={p.name}
+                      <TruncatedText
+                        text={String('' + p.name + '')}
+                        containerClassName="font-bold text-sm text-foreground group-hover:text-primary transition-colors pr-2"
                       >
                         {p.name}
-                      </h3>
+                      </TruncatedText>
                     </div>
-                    <p
-                      className="text-xs text-muted-foreground truncate font-medium"
-                      title={clientDisplay}
+                    <TruncatedText
+                      text={String('' + clientDisplay || 'Unknown Client' + '')}
+                      containerClassName="text-xs text-muted-foreground font-medium"
                     >
                       {clientDisplay || 'Unknown Client'}
-                    </p>
+                    </TruncatedText>
                     <div className="flex justify-between items-center pt-3 mt-3 border-t border-border gap-2 flex-wrap sm:flex-nowrap">
                       <div className="flex flex-col gap-1 items-start justify-center shrink-0">
                         {getSettingBadge('managers', p.assignee, settings)}
