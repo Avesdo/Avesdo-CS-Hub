@@ -68,12 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             // Failsafe bootstrap for you
-            if (
-              emailKey === 'roell.pereira@avesdo.com' ||
-              emailKey === 'roell@avesdo.com' ||
-              emailKey === 'roell.pererira@avesdo.com' ||
-              emailKey === 'support@avesdo.com'
-            ) {
+            if (emailKey === 'support@avesdo.com') {
               roleId = 'super_admin';
             }
 
@@ -101,10 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Failsafe bootstrap for existing but wrong role
             if (
-              (emailKey === 'roell.pereira@avesdo.com' ||
-                emailKey === 'roell@avesdo.com' ||
-                emailKey === 'roell.pererira@avesdo.com' ||
-                emailKey === 'support@avesdo.com') &&
+              emailKey === 'support@avesdo.com' &&
               finalAppUser.roleId !== 'super_admin'
             ) {
               finalAppUser.roleId = 'super_admin';

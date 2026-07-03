@@ -189,7 +189,7 @@ export default function Settings() {
 
         {/* MAIN CONTENT AREA */}
         <div
-          className={`flex-1 bg-white relative ${!['templates', 'roles', 'user_access'].includes(activeTab) ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
+          className={`flex-1 bg-white relative ${!['templates', 'roles'].includes(activeTab) ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
         >
           {activeTab !== 'templates' && (
             <div className="flex-shrink-0 z-30 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
@@ -203,7 +203,7 @@ export default function Settings() {
           )}
           <div
             className={
-              ['templates', 'roles', 'user_access'].includes(activeTab)
+              ['templates', 'roles'].includes(activeTab)
                 ? `flex-1 flex flex-col overflow-hidden min-h-0 ${activeTab !== 'templates' ? 'px-10 pb-10' : ''}`
                 : 'px-10 pb-10'
             }
