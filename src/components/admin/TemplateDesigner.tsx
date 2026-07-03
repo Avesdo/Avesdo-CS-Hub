@@ -152,10 +152,14 @@ export const FIELD_PALETTE_CATEGORIES = [
   },
 ];
 
+import { usePermissions } from '../../hooks/usePermissions';
+
 // ---- Main Template Designer ----
 export default function TemplateDesigner() {
   const settings = useAppStore((state) => state.settings);
   const features = settings?.features || [];
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission('edit_form_templates');
   const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
 
   const defaultTemplates: Record<string, Template> = {
@@ -287,16 +291,18 @@ export default function TemplateDesigner() {
                           {tpl.name}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1.5 h-7 px-3 text-xs shadow-sm"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                          Edit
-                        </Button>
-                      </div>
+                      {canEdit && (
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1.5 h-7 px-3 text-xs shadow-sm"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            Edit
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -352,12 +358,14 @@ export default function TemplateDesigner() {
           >
             <Eye className="w-4 h-4" /> Preview
           </Button>
-          <Button
-            onClick={handleSave}
-            className="flex items-center gap-2 shadow-md hover:shadow-lg"
-          >
-            <Save className="w-4 h-4" /> Save
-          </Button>
+          {canEdit && (
+            <Button
+              onClick={handleSave}
+              className="flex items-center gap-2 shadow-md hover:shadow-lg"
+            >
+              <Save className="w-4 h-4" /> Save
+            </Button>
+          )}
         </div>
       </div>
 

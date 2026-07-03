@@ -11,11 +11,14 @@ import {
   Shield,
   LogOut,
   LifeBuoy,
+  X,
 } from 'lucide-react';
 import { Tooltip } from './ui/Tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { usePermissions } from '../hooks/usePermissions';
 import { TruncatedText } from '../components/ui/TruncatedText';
+import * as Popover from '@radix-ui/react-popover';
+import { Button } from './ui/button';
 
 export default function Sidebar() {
   const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
@@ -125,14 +128,39 @@ export default function Sidebar() {
                 {authUser?.displayName || 'User'}
               </TruncatedText>
             </div>
-            <Tooltip content="Log Out" position="top">
-              <button
-                onClick={logout}
-                className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors rounded-md shrink-0 md:opacity-0 group-hover:opacity-100"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </Tooltip>
+            <Popover.Root>
+              <Popover.Trigger asChild>
+                <button className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors rounded-md shrink-0 md:opacity-0 group-hover:opacity-100">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content
+                  sideOffset={10}
+                  side="top"
+                  align="end"
+                  className="z-[200] bg-white rounded-lg shadow-xl border border-slate-200/60 p-2 animate-in fade-in zoom-in-95 duration-200 relative flex items-center gap-3"
+                >
+                  <span className="text-sm font-medium text-slate-700 pl-1">Confirm Logout?</span>
+                  <div className="flex items-center gap-1">
+                    <Popover.Close asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md text-slate-400 hover:text-slate-600">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </Popover.Close>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={logout}
+                      className="h-7 w-7 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border-none shadow-none"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                  <Popover.Arrow className="fill-white" />
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
           </div>
         </div>
       </aside>

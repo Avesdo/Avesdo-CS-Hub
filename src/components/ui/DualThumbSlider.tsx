@@ -9,6 +9,7 @@ interface DualThumbSliderProps {
   value: { warning: number; healthy: number };
   onChange: (value: { warning: number; healthy: number }) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export function DualThumbSlider({
@@ -17,6 +18,7 @@ export function DualThumbSlider({
   value,
   onChange,
   className,
+  disabled,
 }: DualThumbSliderProps) {
   const [warningVal, setWarningVal] = useState(value.warning);
   const [healthyVal, setHealthyVal] = useState(value.healthy);
@@ -71,7 +73,8 @@ export function DualThumbSlider({
         value={warningVal}
         ref={warningRef}
         onChange={handleWarningChange}
-        className="thumb thumb--left absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-10"
+        disabled={disabled}
+        className="thumb thumb--left absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-10 disabled:opacity-50 disabled:cursor-not-allowed"
         style={{ '--thumb-color': '#f43f5e' } as React.CSSProperties}
       />
 
@@ -82,7 +85,8 @@ export function DualThumbSlider({
         value={healthyVal}
         ref={healthyRef}
         onChange={handleHealthyChange}
-        className="thumb thumb--right absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-20"
+        disabled={disabled}
+        className="thumb thumb--right absolute top-1/2 -translate-y-1/2 w-full h-2 appearance-none bg-transparent pointer-events-none z-20 disabled:opacity-50 disabled:cursor-not-allowed"
         style={{ '--thumb-color': '#10b981' } as React.CSSProperties}
       />
 

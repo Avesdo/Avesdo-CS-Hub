@@ -22,8 +22,12 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
+import { usePermissions } from '../../hooks/usePermissions';
+
 export function ScheduleSettingsTab() {
   const settings = useAppStore((state) => state.settings);
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission('edit_schedule');
 
   // Time off state
   const [newTimeOffStart, setNewTimeOffStart] = useState<number | null>(null);
@@ -67,6 +71,7 @@ export function ScheduleSettingsTab() {
             <div>
               <MultiSelect
                 variant="inline"
+                disabled={!canEdit}
                 options={(settings?.managers || []).map((m: any) => ({
                   value: m.name,
                   label: m.name,
@@ -91,6 +96,7 @@ export function ScheduleSettingsTab() {
             <div>
               <MultiSelect
                 variant="inline"
+                disabled={!canEdit}
                 options={(settings?.managers || []).map((m: any) => ({
                   value: m.name,
                   label: m.name,
@@ -150,7 +156,7 @@ export function ScheduleSettingsTab() {
                 </div>
                 <span className="text-sm font-semibold text-slate-700">Show past</span>
               </label>
-              {!isAddingTimeOff && (
+              {canEdit && !isAddingTimeOff && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -357,44 +363,46 @@ export function ScheduleSettingsTab() {
                               <span className="font-medium text-slate-700">{t.manager}</span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Tooltip content="Edit time off">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  const sDate = new Date(
-                                    `${t.startDate || t.date}T00:00:00`
-                                  ).getTime();
-                                  const eDate = new Date(
-                                    `${t.endDate || t.date}T00:00:00`
-                                  ).getTime();
-                                  setEditTimeOffStart(sDate);
-                                  setEditTimeOffEnd(eDate);
-                                  setEditTimeOffManager(t.manager);
-                                  setEditingTimeOffIndex(i);
-                                }}
-                                className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                            </Tooltip>
-                            <Tooltip content="Remove time off">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  const newTimeOff = (settings?.timeOff || []).filter(
-                                    (_, index) => index !== i
-                                  );
-                                  saveSettings({ ...(settings as any), timeOff: newTimeOff });
-                                }}
-                                className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </Tooltip>
-                          </div>
+                          {canEdit && (
+                            <div className="flex items-center gap-1">
+                              <Tooltip content="Edit time off">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const sDate = new Date(
+                                      `${t.startDate || t.date}T00:00:00`
+                                    ).getTime();
+                                    const eDate = new Date(
+                                      `${t.endDate || t.date}T00:00:00`
+                                    ).getTime();
+                                    setEditTimeOffStart(sDate);
+                                    setEditTimeOffEnd(eDate);
+                                    setEditTimeOffManager(t.manager);
+                                    setEditingTimeOffIndex(i);
+                                  }}
+                                  className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip content="Remove time off">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newTimeOff = (settings?.timeOff || []).filter(
+                                      (_, index) => index !== i
+                                    );
+                                    saveSettings({ ...(settings as any), timeOff: newTimeOff });
+                                  }}
+                                  className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </Tooltip>
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
@@ -439,7 +447,7 @@ export function ScheduleSettingsTab() {
                 </div>
                 <span className="text-sm font-semibold text-slate-700">Show past</span>
               </label>
-              {!isAddingHoliday && (
+              {canEdit && !isAddingHoliday && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -595,46 +603,48 @@ export function ScheduleSettingsTab() {
                               <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                               <span className="font-medium text-slate-700">{h.name}</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Tooltip content="Edit holiday">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const dTime = new Date(`${h.date}T00:00:00`).getTime();
-                                    setEditHolidayDate(dTime);
-                                    setEditHolidayName(h.name);
-                                    setEditingHolidayIndex(i);
-                                  }}
-                                  className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip content="Remove holiday">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const newHolidays = (settings?.statHolidays || []).filter(
-                                      (_, index) => index !== i
-                                    );
-                                    saveSettings({
-                                      ...(settings as any),
-                                      statHolidays: newHolidays,
-                                    });
-                                    if (editingHolidayIndex === i) {
-                                      setEditingHolidayIndex(null);
-                                      setNewHolidayDate(null);
-                                      setNewHolidayName('');
-                                    }
-                                  }}
-                                  className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </Tooltip>
-                            </div>
+                            {canEdit && (
+                              <div className="flex items-center gap-1">
+                                <Tooltip content="Edit holiday">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      const dTime = new Date(`${h.date}T00:00:00`).getTime();
+                                      setEditHolidayDate(dTime);
+                                      setEditHolidayName(h.name);
+                                      setEditingHolidayIndex(i);
+                                    }}
+                                    className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                </Tooltip>
+                                <Tooltip content="Remove holiday">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      const newHolidays = (settings?.statHolidays || []).filter(
+                                        (_, index) => index !== i
+                                      );
+                                      saveSettings({
+                                        ...(settings as any),
+                                        statHolidays: newHolidays,
+                                      });
+                                      if (editingHolidayIndex === i) {
+                                        setEditingHolidayIndex(null);
+                                        setNewHolidayDate(null);
+                                        setNewHolidayName('');
+                                      }
+                                    }}
+                                    className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>

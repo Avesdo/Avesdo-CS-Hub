@@ -6,9 +6,12 @@ import { DonutChart } from '../ui/DonutChart';
 import { DualThumbSlider } from '../ui/DualThumbSlider';
 import { Tooltip } from '../ui/Tooltip';
 import { AlertCircle } from 'lucide-react';
+import { usePermissions } from '../../hooks/usePermissions';
 
 export function ScoringSettingsTab() {
   const settings = useAppStore((state) => state.settings);
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission('edit_health_scoring');
 
   const [projectWeights, setProjectWeights] = useState({
     opActivity: 35,
@@ -176,7 +179,8 @@ export function ScoringSettingsTab() {
                   type="range"
                   min="0"
                   max="100"
-                  className="flex-1 appearance-none bg-transparent cursor-pointer premium-slider"
+                  disabled={!canEdit}
+                  className="flex-1 appearance-none bg-transparent cursor-pointer premium-slider disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ '--slider-color': item.color } as React.CSSProperties}
                   value={item.val}
                   onChange={(e) =>
@@ -225,15 +229,17 @@ export function ScoringSettingsTab() {
         </div>
 
         <div className="mt-6 flex justify-end items-center">
-          <div className="flex gap-4 items-center">
-            <button
-              onClick={handleSaveScoring}
-              disabled={totalProjectWeights !== 100}
-              className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Save Weights
-            </button>
-          </div>
+          {canEdit && (
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={handleSaveScoring}
+                disabled={totalProjectWeights !== 100}
+                className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save Weights
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -251,6 +257,7 @@ export function ScoringSettingsTab() {
           <DualThumbSlider
             value={{ warning: thresholds.warning, healthy: thresholds.healthy }}
             onChange={({ warning, healthy }) => setThresholds({ warning, healthy })}
+            disabled={!canEdit}
           />
           <div className="flex justify-between items-center mt-3">
             <div className="text-center w-24">
@@ -275,12 +282,14 @@ export function ScoringSettingsTab() {
         </div>
 
         <div className="mt-6 flex justify-end items-center">
-          <button
-            onClick={handleSaveScoring}
-            className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
-          >
-            Save Thresholds
-          </button>
+          {canEdit && (
+            <button
+              onClick={handleSaveScoring}
+              className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
+            >
+              Save Thresholds
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -38,10 +38,12 @@ export function SettingsList({
   title,
   desc,
   fieldName,
+  canEdit = true,
 }: {
   title: string;
   desc: string;
   fieldName: string;
+  canEdit?: boolean;
 }) {
   const settings = useAppStore((state) => state.settings);
   const projects = useAppStore((state) => state.projects);
@@ -388,7 +390,7 @@ export function SettingsList({
           <h3 className="text-lg font-semibold text-foreground tracking-tight">{title}</h3>
           <p className="text-sm text-muted-foreground mt-1">{desc}</p>
         </div>
-        {!isAdding && (
+        {canEdit && !isAdding && (
           <button
             onClick={() => setIsAdding(true)}
             className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
@@ -402,7 +404,7 @@ export function SettingsList({
         <Reorder.Group
           axis="y"
           values={items}
-          onReorder={setLocalOrder}
+          onReorder={canEdit ? setLocalOrder : () => {}}
           className="divide-y divide-border relative list-none m-0 p-0"
         >
           <AnimatePresence initial={false}>
@@ -563,52 +565,56 @@ export function SettingsList({
                     )}
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Tooltip content="Drag to reorder">
-                      <div className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors">
-                        <GripVertical className="w-4 h-4" />
-                      </div>
-                    </Tooltip>
-                    <Tooltip content="Move Up">
-                      <button
-                        onClick={() => moveItem(i, -1, items)}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <ChevronUp className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Move Down">
-                      <button
-                        onClick={() => moveItem(i, 1, items)}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <ChevronDown className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Edit">
-                      <button
-                        onClick={() => {
-                          setEditingItem({ idx: i, globalIdx });
-                          setEditForm(
-                            isStringList
-                              ? { name }
-                              : isServices
-                                ? { name, price: item.price }
-                                : { name, color: item.color, icon: item.icon }
-                          );
-                        }}
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip content="Archive">
-                      <button
-                        onClick={() => setDeletingItem({ idx: i, globalIdx })}
-                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </Tooltip>
+                    {canEdit && (
+                      <>
+                        <Tooltip content="Drag to reorder">
+                          <div className="cursor-grab active:cursor-grabbing p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors">
+                            <GripVertical className="w-4 h-4" />
+                          </div>
+                        </Tooltip>
+                        <Tooltip content="Move Up">
+                          <button
+                            onClick={() => moveItem(i, -1, items)}
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Move Down">
+                          <button
+                            onClick={() => moveItem(i, 1, items)}
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Edit">
+                          <button
+                            onClick={() => {
+                              setEditingItem({ idx: i, globalIdx });
+                              setEditForm(
+                                isStringList
+                                  ? { name }
+                                  : isServices
+                                    ? { name, price: item.price }
+                                    : { name, color: item.color, icon: item.icon }
+                              );
+                            }}
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 rounded-md transition-colors"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Archive">
+                          <button
+                            onClick={() => setDeletingItem({ idx: i, globalIdx })}
+                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </Tooltip>
+                      </>
+                    )}
                   </div>
                 </Reorder.Item>
               );
