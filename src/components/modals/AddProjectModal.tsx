@@ -327,6 +327,7 @@ export default function AddProjectModal() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
+              className="mb-6"
             >
               <Controller
                 name="name"
@@ -342,7 +343,7 @@ export default function AddProjectModal() {
                 )}
               />
               {errors.name && (
-                <p className="text-destructive text-xs font-medium ml-1 mb-4">
+                <p className="text-destructive text-xs font-medium ml-1 mt-2">
                   {errors.name.message}
                 </p>
               )}

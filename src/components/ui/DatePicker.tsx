@@ -13,6 +13,7 @@ import {
   getDay,
   startOfDay,
 } from 'date-fns';
+import { Button } from './button';
 
 interface DatePickerProps {
   value: number | null | undefined;
@@ -116,19 +117,23 @@ export function DatePicker({
     return (
       <div className="w-[260px]">
         <div className="flex items-center justify-between mb-4 px-2">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setCalMonth(subMonths(calMonth, 1))}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+            className="w-8 h-8 rounded-full text-slate-600"
           >
             <ChevronLeft className="w-5 h-5" />
-          </button>
+          </Button>
           <div className="font-semibold text-slate-800">{format(month, 'MMM yyyy')}</div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setCalMonth(addMonths(calMonth, 1))}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+            className="w-8 h-8 rounded-full text-slate-600"
           >
             <ChevronRight className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
         <div className="grid grid-cols-7 gap-y-1 gap-x-0">
           {daysOfWeek.map((d) => (
@@ -154,13 +159,14 @@ export function DatePicker({
                 key={idx}
                 className={`w-8 h-8 flex items-center justify-center relative ${bgClass} ${roundedClass}`}
               >
-                <button
+                <Button
+                  variant="ghost"
                   type="button"
                   onClick={() => handleDayClick(day)}
-                  className={`w-8 h-8 flex items-center justify-center text-sm transition-colors z-10 ${textClass} rounded-md`}
+                  className={`w-8 h-8 p-0 flex items-center justify-center text-sm z-10 ${textClass} rounded-md`}
                 >
                   {format(day, 'd')}
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -174,7 +180,7 @@ export function DatePicker({
 
   if (!trigger) {
     buttonClass = isOutline
-      ? `flex w-full items-center gap-2 justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-slate-400/20 transition-all duration-200 h-10 ${className}`
+      ? `flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-50 gap-2 h-10 ${className}`
       : `group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 focus:outline-none focus:ring-2 focus:ring-slate-400/20 ${className}`;
   }
 
@@ -184,7 +190,7 @@ export function DatePicker({
         {trigger ? (
           <div className={`relative popover-container inline-block ${className}`}>{trigger}</div>
         ) : (
-          <button className={buttonClass}>
+          <Button variant={isOutline ? 'outline' : 'secondary'} className={buttonClass}>
             {isOutline ? (
               <>
                 <span
@@ -202,7 +208,7 @@ export function DatePicker({
                 <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
               </>
             )}
-          </button>
+          </Button>
         )}
       </Popover.Trigger>
 
@@ -226,13 +232,14 @@ export function DatePicker({
           <div>{renderCalendar(calMonth)}</div>
 
           <div className="mt-2 pt-3 border-t border-slate-100 flex">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={handleToday}
-              className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/5 rounded-md transition-colors w-full"
+              className="text-primary hover:bg-primary/5 hover:text-primary w-full"
             >
               Select Today
-            </button>
+            </Button>
           </div>
         </Popover.Content>
       </Popover.Portal>

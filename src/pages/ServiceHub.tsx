@@ -448,7 +448,7 @@ export default function ServiceHub() {
     >
       <div>
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-2 bg-white z-40">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-2 bg-white z-30">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
               Services

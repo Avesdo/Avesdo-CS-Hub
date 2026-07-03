@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Trash2, GripVertical, ChevronDown } from 'lucide-react';
 import { Select } from '../../ui/Select';
+import { Button } from '../../ui/button';
 
 export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleRemoveItem }: any) {
   const [isEditingNote, setIsEditingNote] = React.useState(false);
@@ -41,12 +42,14 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
             placeholder={`Deliverable ${itemIdx + 1}`}
           />
           {!item.defaultNote && !isEditingNote ? (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsEditingNote(true)}
-              className="text-[11px] font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1"
+              className="text-[11px] h-auto p-0 hover:bg-transparent font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1"
             >
               <Plus className="w-3 h-3" /> Add note
-            </button>
+            </Button>
           ) : (
             <input
               type="text"
@@ -63,13 +66,15 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
         </div>
 
         <div className="flex flex-col justify-between items-end shrink-0 pl-3 border-l border-slate-100">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => handleRemoveItem(itemIdx)}
-            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 opacity-0 group-hover/item:opacity-100"
+            className="w-7 h-7 text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/item:opacity-100"
             title="Delete deliverable"
           >
             <Trash2 className="w-[14px] h-[14px]" />
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2 pt-1">
             <span className="text-[11px] font-bold text-slate-400">Priority</span>
@@ -78,10 +83,14 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
               onChange={(val) => handleUpdateItem(itemIdx, { defaultPriority: val })}
               options={['Low', 'Normal', 'High', 'Critical'].map((p) => ({ label: p, value: p }))}
               trigger={
-                <button className="text-[12px] font-semibold text-slate-700 bg-slate-50 border border-slate-200 hover:border-slate-300 hover:bg-slate-100 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 shadow-sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[12px] bg-slate-50 flex items-center gap-1.5 shadow-sm font-semibold"
+                >
                   {item.defaultPriority || 'Normal'}
                   <ChevronDown className="w-3 h-3 text-slate-400" />
-                </button>
+                </Button>
               }
             />
           </div>

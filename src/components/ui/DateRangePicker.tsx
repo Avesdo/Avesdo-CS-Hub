@@ -14,6 +14,7 @@ import {
   getDay,
   startOfDay,
 } from 'date-fns';
+import { Button } from './button';
 
 type PresetRange = '7d' | '30d' | '90d' | 'ytd' | 'all' | 'custom';
 
@@ -176,27 +177,31 @@ export function DateRangePicker({
     return (
       <div className="flex-1 w-[260px]">
         <div className="flex items-center justify-between mb-4 px-2">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() =>
               isLeft
                 ? setLeftMonth(subMonths(leftMonth, 1))
                 : setRightMonth(subMonths(rightMonth, 1))
             }
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+            className="w-8 h-8 rounded-full text-slate-600"
           >
             <ChevronLeft className="w-5 h-5" />
-          </button>
+          </Button>
           <div className="font-semibold text-slate-800">{format(month, 'MMM yyyy')}</div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() =>
               isLeft
                 ? setLeftMonth(addMonths(leftMonth, 1))
                 : setRightMonth(addMonths(rightMonth, 1))
             }
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+            className="w-8 h-8 rounded-full text-slate-600"
           >
             <ChevronRight className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
         <div className="grid grid-cols-7 gap-y-1 gap-x-0">
           {daysOfWeek.map((d) => (
@@ -238,14 +243,15 @@ export function DateRangePicker({
                 key={idx}
                 className={`w-8 h-8 flex items-center justify-center relative ${bgClass} ${roundedClass}`}
               >
-                <button
+                <Button
+                  variant="ghost"
                   type="button"
                   disabled={isDisabled}
                   onClick={() => handleDayClick(day)}
-                  className={`w-8 h-8 flex items-center justify-center text-sm transition-colors z-10 ${textClass} ${!isSelected && !isBetween ? 'rounded-md' : roundedClass}`}
+                  className={`w-8 h-8 p-0 flex items-center justify-center text-sm z-10 ${textClass} ${!isSelected && !isBetween ? 'rounded-md' : roundedClass} hover:bg-transparent`}
                 >
                   {format(day, 'd')}
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -256,13 +262,13 @@ export function DateRangePicker({
 
   const isOutline = variant === 'outline';
   const buttonClass = isOutline
-    ? `flex items-center gap-2 justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-slate-400/20 transition-all duration-200 h-10 ${className}`
+    ? `flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-50 gap-2 h-10 ${className}`
     : `group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-slate-400/20 ${className}`;
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <button className={buttonClass}>
+        <Button variant={isOutline ? 'outline' : 'secondary'} className={buttonClass}>
           {isOutline ? (
             <>
               <span
@@ -280,7 +286,7 @@ export function DateRangePicker({
               <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
             </>
           )}
-        </button>
+        </Button>
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -322,15 +328,18 @@ export function DateRangePicker({
           {!hidePresets && (
             <div className="w-48 bg-transparent border-l border-slate-200/60 p-2 flex flex-col gap-1">
               {PRESETS.map((p) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={p.value}
                   onClick={() => handlePresetClick(p.value)}
-                  className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 w-full text-left ${
-                    localPreset === p.value ? 'text-primary' : ''
+                  className={`justify-start w-full px-2 py-2 h-auto text-sm font-medium ${
+                    localPreset === p.value
+                      ? 'text-primary bg-primary/5 hover:text-primary hover:bg-primary/5'
+                      : ''
                   }`}
                 >
                   {p.label}
-                </button>
+                </Button>
               ))}
             </div>
           )}

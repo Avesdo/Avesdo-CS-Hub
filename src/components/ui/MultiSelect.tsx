@@ -5,9 +5,10 @@ import { SelectOption } from './Select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
 import { AnimatePresence, motion } from 'framer-motion';
+import { formControlVariants } from './form-controls';
 
 const multiSelectTriggerVariants = cva(
-  'flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[38px]',
+  twMerge(formControlVariants(), 'cursor-pointer min-h-[38px]'),
   {
     variants: {
       variant: {

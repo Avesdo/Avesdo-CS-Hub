@@ -17,6 +17,7 @@ import { ChecklistSection } from '../admin/TemplateDesigner';
 import DeliverablesMasterRow from './DeliverablesMasterRow';
 import DeliverablesDetailPane from './DeliverablesDetailPane';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { Button } from './button';
 
 interface DeliverablesGridProps {
   template: { sections?: ChecklistSection[] };
@@ -195,10 +196,13 @@ export default function DeliverablesGrid({
               <ExternalLink className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               <span>Open Teamwork</span>
             </a>
-            <button className="group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-5 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none">
+            <Button
+              variant="secondary"
+              className="gap-2 px-5 py-2 h-9 border-transparent hover:bg-slate-200"
+            >
               <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
               <span>Export CSV</span>
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -233,25 +237,29 @@ export default function DeliverablesGrid({
                 <div key={section.id} className="mb-4">
                   <div className="flex items-center justify-between px-4 py-1.5 mb-1 group/secheader">
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => toggleCollapseSection(section.id)}
-                        className="p-0.5 text-slate-400 hover:text-slate-700 transition-colors bg-white hover:bg-slate-100 rounded-md border border-transparent hover:border-slate-200"
+                        className="w-5 h-5 p-0.5 text-slate-400 hover:text-slate-700"
                       >
                         {isCollapsed ? (
                           <ChevronRight className="w-4 h-4" />
                         ) : (
                           <ChevronDown className="w-4 h-4" />
                         )}
-                      </button>
+                      </Button>
                       <h3
                         className={`text-[13px] font-bold capitalize text-slate-700 ${isSectionHidden ? 'opacity-50' : ''}`}
                       >
                         {section.name}
                       </h3>
                       {!readOnly && !isClientPortal && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => toggleHideSection(section.id)}
-                          className="p-1 opacity-0 group-hover/secheader:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity"
+                          className="w-6 h-6 p-1 opacity-0 group-hover/secheader:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity"
                           title={
                             isSectionHidden ? 'Unhide Section' : 'Exclude Section from Project'
                           }
@@ -261,7 +269,7 @@ export default function DeliverablesGrid({
                           ) : (
                             <EyeOff className="w-3.5 h-3.5" />
                           )}
-                        </button>
+                        </Button>
                       )}
                     </div>
                     {isSectionHidden && !isClientPortal && (
@@ -300,16 +308,18 @@ export default function DeliverablesGrid({
               <div className="mb-4">
                 <div className="flex items-center px-4 py-1.5 mb-1">
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => toggleCollapseSection('custom')}
-                      className="p-0.5 text-slate-400 hover:text-slate-700 transition-colors bg-white hover:bg-slate-100 rounded-md border border-transparent hover:border-slate-200"
+                      className="w-5 h-5 p-0.5 text-slate-400 hover:text-slate-700"
                     >
                       {collapsedSections.includes('custom') ? (
                         <ChevronRight className="w-4 h-4" />
                       ) : (
                         <ChevronDown className="w-4 h-4" />
                       )}
-                    </button>
+                    </Button>
                     <h3 className="text-[13px] font-bold capitalize text-amber-600">
                       Additional Items
                     </h3>
@@ -341,12 +351,13 @@ export default function DeliverablesGrid({
             {/* Add Custom Button */}
             {!readOnly && (
               <div className="px-4 mt-2 mb-6">
-                <button
+                <Button
+                  variant="outline"
                   onClick={handleCustomItemAdd}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-[12px] font-semibold text-slate-500 hover:text-primary hover:bg-primary/5 border border-dashed border-slate-300 hover:border-primary/40 rounded-xl transition-all w-full bg-transparent"
+                  className="w-full text-[12px] text-slate-500 hover:text-primary hover:bg-primary/5 border-dashed"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Additional Item
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -382,9 +393,13 @@ export default function DeliverablesGrid({
                 onChange={(val) => handleBulkUpdate('status', val)}
                 position="top"
                 trigger={
-                  <button className="px-3 py-1.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors focus:outline-none">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium text-[13px] hover:text-slate-900"
+                  >
                     Status...
-                  </button>
+                  </Button>
                 }
               />
 
@@ -394,9 +409,13 @@ export default function DeliverablesGrid({
                 onChange={(val) => handleBulkUpdate('priority', val)}
                 position="top"
                 trigger={
-                  <button className="px-3 py-1.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors focus:outline-none">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium text-[13px] hover:text-slate-900"
+                  >
                     Priority...
-                  </button>
+                  </Button>
                 }
               />
 
@@ -405,9 +424,13 @@ export default function DeliverablesGrid({
                 onChange={(val) => handleBulkUpdate('date', val)}
                 placeholder="Target Date"
                 trigger={
-                  <button className="px-3 py-1.5 text-[13px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors focus:outline-none">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium text-[13px] hover:text-slate-900"
+                  >
                     Target Date...
-                  </button>
+                  </Button>
                 }
               />
 
@@ -426,12 +449,14 @@ export default function DeliverablesGrid({
               />
             </div>
 
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setSelectedItems([])}
-              className="ml-2 p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors focus:outline-none"
+              className="ml-2 w-7 h-7 text-slate-400 hover:text-red-600 hover:bg-red-50"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

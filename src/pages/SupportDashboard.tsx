@@ -21,6 +21,19 @@ import { TimeAndEffortQuadrantWidget } from '../components/support/TimeAndEffort
 import { HighFrictionSourcesWidget } from '../components/support/HighFrictionSourcesWidget';
 import { WorkloadMatrixWidget } from '../components/support/WorkloadMatrixWidget';
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
+};
+
 export default function SupportDashboard() {
   const {
     tickets,
@@ -108,7 +121,7 @@ export default function SupportDashboard() {
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       {/* FIXED HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-40">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-30">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             Support Dashboard
@@ -281,19 +294,36 @@ export default function SupportDashboard() {
 
       <div className="flex-1 overflow-y-auto pb-20 custom-thin-scroll">
         <SupportKPIs kpis={kpis} />
-        <div className="px-4 md:px-6">
-          <OperationsTrendWidget chartData={chartData} />
-          <OriginsAndClassificationsWidget
-            doughnutData={doughnutData}
-            chartData={chartData}
-            selectedRingCategory={selectedRingCategory}
-            setSelectedRingCategory={setSelectedRingCategory}
-          />
-          <ActivityHeatmapWidget chartData={chartData} hasTickets={filteredTickets.length > 0} />
-          <TimeAndEffortQuadrantWidget chartData={chartData} />
-          <HighFrictionSourcesWidget chartData={chartData} />
-          <WorkloadMatrixWidget chartData={chartData} managerFilter={managerFilter} />
-        </div>
+        <motion.div
+          className="px-4 md:px-6 flex flex-col gap-5 pb-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants}>
+            <OperationsTrendWidget chartData={chartData} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <OriginsAndClassificationsWidget
+              doughnutData={doughnutData}
+              chartData={chartData}
+              selectedRingCategory={selectedRingCategory}
+              setSelectedRingCategory={setSelectedRingCategory}
+            />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <ActivityHeatmapWidget chartData={chartData} hasTickets={filteredTickets.length > 0} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <TimeAndEffortQuadrantWidget chartData={chartData} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <HighFrictionSourcesWidget chartData={chartData} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <WorkloadMatrixWidget chartData={chartData} managerFilter={managerFilter} />
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

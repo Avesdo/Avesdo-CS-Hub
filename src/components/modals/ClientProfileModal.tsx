@@ -324,6 +324,7 @@ export default function ClientProfileModal() {
               style={{ zIndex: zIndexBase }}
             >
               <Dialog.Content
+                onOpenAutoFocus={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => {
                   e.preventDefault();
                   if (activeDrawer?.type === 'client') closeDrawer();

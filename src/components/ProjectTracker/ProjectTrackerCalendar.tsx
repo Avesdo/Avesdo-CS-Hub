@@ -11,6 +11,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { getSafeHex, hexToRgba } from '../../utils/uiUtils';
 import { Select } from '../ui/Select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Button } from '../ui/button';
 
 interface ProjectTrackerCalendarProps {
   openDrawer: (type: string, id: string, data?: any) => void;
@@ -152,9 +153,13 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
                 <div className="relative w-full text-center mt-1">
                   <Popover modal={false}>
                     <PopoverTrigger asChild>
-                      <button className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors bg-transparent hover:bg-slate-50 w-full py-1 rounded-md active:scale-95 duration-200">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-[11px] py-1 h-auto active:scale-95 duration-200 text-slate-500 hover:text-primary hover:bg-slate-50"
+                      >
                         +{hiddenCount} More
-                      </button>
+                      </Button>
                     </PopoverTrigger>
                     <PopoverContent
                       className="w-64 p-2 shadow-xl border-slate-200 rounded-xl"
@@ -225,24 +230,30 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/95 backdrop-blur-md sm:rounded-b-none sticky top-0 z-20 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 bg-white rounded-lg border border-border shadow-sm p-1">
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handlePrevMonth}
-                className="p-1 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-md transition-colors"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
               >
                 <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleToday}
-                className="px-3 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                className="px-3 text-muted-foreground hover:text-foreground"
               >
                 Today
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleNextMonth}
-                className="p-1 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-md transition-colors"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
               >
                 <ChevronRight className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
             <div className="flex items-center gap-2">
               <Select
@@ -270,9 +281,10 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
             </div>
           </div>
 
-          <button
+          <Button
+            variant="outline"
             onClick={() => openDrawer('unscheduledProjects', '')}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all group ${
+            className={`flex items-center gap-2 transition-all group ${
               unscheduledProjects.length > 0
                 ? 'bg-orange-50/50 border-orange-200 hover:bg-orange-50 hover:border-orange-300 shadow-sm'
                 : 'bg-transparent border-transparent hover:bg-slate-100 text-slate-600'
@@ -291,7 +303,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
                 {unscheduledProjects.length}
               </span>
             )}
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1">

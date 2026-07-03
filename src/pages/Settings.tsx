@@ -158,7 +158,7 @@ export default function Settings() {
           className={`flex-1 bg-white relative ${activeTab !== 'templates' ? 'overflow-y-auto custom-thin-scroll' : 'flex flex-col overflow-hidden'}`}
         >
           {activeTab !== 'templates' && (
-            <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
+            <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md px-10 pt-8 pb-6 border-b border-transparent">
               <h1 className="text-2xl font-semibold text-slate-800 tracking-tight mb-1">
                 {tabTitleMap[activeTab]}
               </h1>

@@ -19,6 +19,7 @@ import {
   Plus,
   X,
 } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export function ScheduleSettingsTab() {
   const settings = useAppStore((state) => state.settings);
@@ -149,12 +150,14 @@ export function ScheduleSettingsTab() {
                 <span className="text-sm font-semibold text-slate-700">Show past</span>
               </label>
               {!isAddingTimeOff && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setIsAddingTimeOff(true)}
-                  className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
+                  className="text-primary hover:text-primary hover:bg-primary/5 font-medium flex items-center gap-1.5 px-3"
                 >
                   <Plus className="w-4 h-4" /> Add Time Off
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -163,12 +166,14 @@ export function ScheduleSettingsTab() {
             <div className="mb-6 bg-slate-50/50 border border-slate-200 rounded-2xl p-4">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-sm font-semibold text-slate-700">New Time Off Record</h4>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsAddingTimeOff(false)}
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                  className="w-8 h-8 text-slate-400 hover:text-slate-600"
                 >
                   <X className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
               <div className="flex flex-col md:flex-row gap-3">
                 <DateRangePicker
@@ -192,15 +197,18 @@ export function ScheduleSettingsTab() {
                     value: m.name,
                   }))}
                   trigger={
-                    <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 md:max-w-[220px]">
+                    <Button
+                      variant="outline"
+                      className="flex-1 md:max-w-[220px] font-normal justify-between"
+                    >
                       {newTimeOffManager || (
                         <span className="text-muted-foreground">Select Manager...</span>
                       )}
                       <ChevronDown className="w-4 h-4 text-slate-400" />
-                    </button>
+                    </Button>
                   }
                 />
-                <button
+                <Button
                   onClick={() => {
                     if (newTimeOffStart && newTimeOffEnd && newTimeOffManager) {
                       const newEntry = {
@@ -223,10 +231,10 @@ export function ScheduleSettingsTab() {
                     }
                   }}
                   disabled={!newTimeOffStart || !newTimeOffEnd || !newTimeOffManager}
-                  className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
+                  className="px-6 whitespace-nowrap"
                 >
                   Add Time Off
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -274,16 +282,20 @@ export function ScheduleSettingsTab() {
                               value: m.name,
                             }))}
                             trigger={
-                              <button className="h-10 rounded-md border border-input bg-white px-3 py-2 text-sm outline-none flex items-center justify-between flex-1 max-w-[200px]">
+                              <Button
+                                variant="outline"
+                                className="flex-1 max-w-[200px] font-normal justify-between"
+                              >
                                 {editTimeOffManager || (
                                   <span className="text-muted-foreground">Select Manager...</span>
                                 )}
                                 <ChevronDown className="w-4 h-4 text-slate-400" />
-                              </button>
+                              </Button>
                             }
                           />
                           <div className="flex items-center gap-2 ml-auto">
-                            <button
+                            <Button
+                              size="sm"
                               onClick={() => {
                                 if (editTimeOffStart && editTimeOffEnd && editTimeOffManager) {
                                   const newEntry = {
@@ -305,21 +317,22 @@ export function ScheduleSettingsTab() {
                                   setEditTimeOffManager('');
                                 }
                               }}
-                              className="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                              className="bg-green-500 hover:bg-green-600 text-white"
                             >
                               Save
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
                               onClick={() => {
                                 setEditingTimeOffIndex(null);
                                 setEditTimeOffStart(null);
                                 setEditTimeOffEnd(null);
                                 setEditTimeOffManager('');
                               }}
-                              className="text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium transition-colors"
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : (
@@ -344,7 +357,9 @@ export function ScheduleSettingsTab() {
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => {
                                 const sDate = new Date(
                                   `${t.startDate || t.date}T00:00:00`
@@ -355,23 +370,25 @@ export function ScheduleSettingsTab() {
                                 setEditTimeOffManager(t.manager);
                                 setEditingTimeOffIndex(i);
                               }}
-                              className="text-slate-400 hover:text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors"
+                              className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
                               title="Edit time off"
                             >
                               <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => {
                                 const newTimeOff = (settings?.timeOff || []).filter(
                                   (_, index) => index !== i
                                 );
                                 saveSettings({ ...(settings as any), timeOff: newTimeOff });
                               }}
-                              className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                              className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
                               title="Remove time off"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </div>
                         </>
                       )}
@@ -418,12 +435,14 @@ export function ScheduleSettingsTab() {
                 <span className="text-sm font-semibold text-slate-700">Show past</span>
               </label>
               {!isAddingHoliday && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setIsAddingHoliday(true)}
-                  className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
+                  className="text-primary hover:text-primary hover:bg-primary/5 font-medium flex items-center gap-1.5 px-3"
                 >
                   <Plus className="w-4 h-4" /> Add Holiday
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -432,12 +451,14 @@ export function ScheduleSettingsTab() {
             <div className="mb-6 bg-slate-50/50 border border-slate-200 rounded-2xl p-4">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-sm font-semibold text-slate-700">New Holiday</h4>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsAddingHoliday(false)}
-                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                  className="w-8 h-8 text-slate-400 hover:text-slate-600"
                 >
                   <X className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
               <div className="flex flex-col md:flex-row gap-3">
                 <DatePicker
@@ -452,7 +473,7 @@ export function ScheduleSettingsTab() {
                   placeholder="e.g. Christmas Day"
                   className="flex-1 h-10"
                 />
-                <button
+                <Button
                   onClick={() => {
                     if (newHolidayDate && newHolidayName) {
                       const dateStr = new Date(
@@ -472,10 +493,10 @@ export function ScheduleSettingsTab() {
                     }
                   }}
                   disabled={!newHolidayDate || !newHolidayName}
-                  className="bg-primary text-white px-6 h-10 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
+                  className="px-6 whitespace-nowrap"
                 >
                   Add Holiday
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -515,7 +536,8 @@ export function ScheduleSettingsTab() {
                               className="flex-1 h-10"
                             />
                             <div className="flex items-center gap-2 ml-auto">
-                              <button
+                              <Button
+                                size="sm"
                                 onClick={() => {
                                   if (editHolidayDate && editHolidayName) {
                                     const dateStr = new Date(
@@ -542,20 +564,21 @@ export function ScheduleSettingsTab() {
                                     setEditHolidayName('');
                                   }
                                 }}
-                                className="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                className="bg-green-500 hover:bg-green-600 text-white"
                               >
                                 Save
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                size="sm"
                                 onClick={() => {
                                   setEditingHolidayIndex(null);
                                   setEditHolidayDate(null);
                                   setEditHolidayName('');
                                 }}
-                                className="text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium transition-colors"
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         ) : (
@@ -568,19 +591,23 @@ export function ScheduleSettingsTab() {
                               <span className="font-medium text-slate-700">{h.name}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                   const dTime = new Date(`${h.date}T00:00:00`).getTime();
                                   setEditHolidayDate(dTime);
                                   setEditHolidayName(h.name);
                                   setEditingHolidayIndex(i);
                                 }}
-                                className="text-slate-400 hover:text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors"
+                                className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
                                 title="Edit holiday"
                               >
                                 <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                   const newHolidays = (settings?.statHolidays || []).filter(
                                     (_, index) => index !== i
@@ -592,11 +619,11 @@ export function ScheduleSettingsTab() {
                                     setNewHolidayName('');
                                   }
                                 }}
-                                className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
                                 title="Remove holiday"
                               >
                                 <Trash2 className="w-4 h-4" />
-                              </button>
+                              </Button>
                             </div>
                           </>
                         )}

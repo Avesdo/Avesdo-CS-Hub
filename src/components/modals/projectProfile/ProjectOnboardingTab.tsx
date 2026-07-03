@@ -34,6 +34,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { getSettingBadge } from '../../../utils/uiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Dialog from '@radix-ui/react-dialog';
+import { Button } from '../../ui/button';
 
 interface ProjectOnboardingTabProps {
   project: any;
@@ -387,18 +388,20 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-4">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 navigator.clipboard.writeText(
                   `${window.location.origin}/portal/${project?.slug || project?.id}`
                 );
                 toast.success('Portal Link copied to clipboard');
               }}
-              className="p-1.5 hover:bg-slate-200 text-slate-500 hover:text-slate-700 rounded-md transition-colors"
+              className="w-8 h-8 text-slate-500 hover:text-slate-700 transition-colors"
               title="Copy Link"
             >
               <Copy className="w-4 h-4" />
-            </button>
+            </Button>
             <a
               href={`${window.location.origin}/portal/${project?.slug || project?.id}`}
               target="_blank"
@@ -425,12 +428,14 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
               </span>
             </div>
           </div>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setIsKycModalOpen(true)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 rounded-lg font-semibold text-[12px] transition-all shadow-sm flex items-center gap-1.5"
+            className="px-3 bg-slate-50 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 shadow-sm flex items-center gap-1.5"
           >
             <FileText className="w-3.5 h-3.5" /> View KYC
-          </button>
+          </Button>
         </div>
 
         {/* 2. Middle Section Header (Now Sticky) */}
@@ -460,9 +465,11 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
             <div className="relative popover-container flex items-center gap-2">
               <span className="text-[12px] font-semibold text-slate-500">Schedule:</span>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
-                className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+                className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
               >
                 {getSettingBadge(
                   'timelines',
@@ -471,7 +478,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                   true,
                   false
                 )}
-              </button>
+              </Button>
               <AnimatePresence>
                 {openPop === 'timeline' && (
                   <motion.div
@@ -482,16 +489,17 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
                   >
                     {settings?.timelines?.map((t: any) => (
-                      <button
+                      <Button
+                        variant="ghost"
                         key={t.name}
                         onClick={() => {
                           handleUpdate('timelineStatus', t.name, project?.timelineStatus);
                           setOpenPop(null);
                         }}
-                        className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-primary/5 transition-colors whitespace-nowrap group"
+                        className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
                       >
                         {getSettingBadge('timelines', t.name, settings, true, false)}
-                      </button>
+                      </Button>
                     ))}
                   </motion.div>
                 )}
@@ -500,9 +508,11 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
             <div className="relative popover-container flex items-center gap-2">
               <span className="text-[12px] font-semibold text-slate-500">Phase:</span>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
-                className="text-left hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+                className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
               >
                 {getSettingBadge(
                   'phases',
@@ -511,7 +521,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                   true,
                   false
                 )}
-              </button>
+              </Button>
               <AnimatePresence>
                 {openPop === 'phase' && (
                   <motion.div
@@ -522,16 +532,17 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
                   >
                     {settings?.phases?.map((p: any) => (
-                      <button
+                      <Button
+                        variant="ghost"
                         key={p.name}
                         onClick={() => {
                           handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
                           setOpenPop(null);
                         }}
-                        className="w-full text-left px-2 py-1.5 text-sm font-medium rounded-md hover:bg-primary/5 transition-colors whitespace-nowrap group"
+                        className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
                       >
                         {getSettingBadge('phases', p.name, settings, true, false)}
-                      </button>
+                      </Button>
                     ))}
                   </motion.div>
                 )}
@@ -655,7 +666,9 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                   {milestone.modal &&
                     milestone.getActionLabel(hasData, project?.onboardingPhase) && (
                       <div className="shrink-0">
-                        <button
+                        <Button
+                          variant={hasData || (!isPending && !isActive) ? 'outline' : 'default'}
+                          size="sm"
                           onClick={async () => {
                             const actionLabel = milestone.getActionLabel(
                               hasData,
@@ -690,10 +703,10 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                             setActiveModal(milestone.modal);
                           }}
                           disabled={isPending && !hasData}
-                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all shadow-sm ${
+                          className={`inline-flex items-center gap-2 ${
                             hasData || (!isPending && !isActive)
-                              ? 'bg-white border border-slate-200 text-slate-700 hover:text-primary hover:border-primary/30 hover:bg-slate-50'
-                              : 'bg-primary text-white hover:bg-primary/90 border border-transparent'
+                              ? 'bg-white text-slate-700 hover:text-primary hover:border-primary/30 hover:bg-slate-50 shadow-sm'
+                              : 'shadow-sm'
                           } ${isPending && !hasData ? 'opacity-50 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200' : ''}`}
                         >
                           {hasData ? (
@@ -702,7 +715,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                             <ExternalLink className="w-4 h-4" />
                           )}
                           {milestone.getActionLabel(hasData, project?.onboardingPhase)}
-                        </button>
+                        </Button>
                       </div>
                     )}
                 </div>
@@ -733,25 +746,32 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
               </div>
               <div className="flex items-center gap-2">
                 {!isKycEditing && (
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsKycEditing(true)}
-                    className="px-3 py-1.5 text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                    className="flex items-center gap-1.5 shadow-sm"
                   >
                     <Pencil className="w-4 h-4" /> Edit
-                  </button>
+                  </Button>
                 )}
                 {isKycEditing && (
-                  <button
+                  <Button
+                    size="sm"
                     onClick={handleSaveKyc}
-                    className="px-3 py-1.5 text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                    className="flex items-center gap-1.5 shadow-sm"
                   >
                     <Check className="w-4 h-4" /> Save
-                  </button>
+                  </Button>
                 )}
                 <Dialog.Close asChild>
-                  <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition-colors ml-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-8 h-8 text-slate-400 hover:text-slate-600 ml-1"
+                  >
                     <X className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </Dialog.Close>
               </div>
             </div>
@@ -782,12 +802,13 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     <div className="flex flex-col items-center justify-center py-12 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
                       <FileText className="w-10 h-10 mb-3 opacity-20" />
                       <p className="text-sm font-medium">No KYC details have been added yet.</p>
-                      <button
+                      <Button
+                        variant="outline"
                         onClick={() => setIsKycEditing(true)}
-                        className="mt-4 px-4 py-2 text-sm text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 rounded-lg font-semibold transition-colors shadow-sm"
+                        className="mt-4 text-blue-600 bg-blue-50 border-blue-100 hover:bg-blue-100 shadow-sm"
                       >
                         Add Details Now
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>

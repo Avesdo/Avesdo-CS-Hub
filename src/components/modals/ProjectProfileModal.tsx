@@ -47,6 +47,7 @@ import { TimelineTab } from '../ui/TimelineTab';
 import { Select } from '../ui/Select';
 import { DatePicker } from '../ui/DatePicker';
 import toast from 'react-hot-toast';
+import { Button } from '../ui/button';
 
 const TokenTrigger = ({ label, value, icon: Icon, error, onClick, className = '' }: any) => {
   const isSuspended = value === 'Suspended' || value === 'On Hold';
@@ -471,6 +472,7 @@ export default function ProjectProfileModal() {
               style={{ zIndex: zIndexBase }}
             >
               <Dialog.Content
+                onOpenAutoFocus={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => {
                   e.preventDefault();
                   if (activeDrawers[activeDrawers.length - 1]?.type === 'project') closeDrawer();
@@ -523,27 +525,31 @@ export default function ProjectProfileModal() {
                             className="flex-1 w-full min-w-0 bg-transparent border-none p-0 text-2xl font-extrabold text-slate-900 tracking-tight leading-tight resize-none focus:outline-none focus:ring-0 overflow-hidden"
                           />
                           <div className="flex flex-col gap-1 shrink-0 ml-4 mt-1">
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleUpdateName();
                               }}
-                              className="p-1.5 text-primary/80 hover:text-primary hover:bg-primary/10 rounded-md transition-colors shadow-sm"
+                              className="h-8 w-8 text-primary/80 hover:text-primary hover:bg-primary/10 shadow-sm"
                               title="Save"
                             >
                               <Check className="w-5 h-5 stroke-[2.5]" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditNameValue(project?.name || '');
                                 setIsEditingName(false);
                               }}
-                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors shadow-sm"
+                              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 shadow-sm"
                               title="Cancel"
                             >
                               <X className="w-5 h-5" />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : (
@@ -668,10 +674,14 @@ export default function ProjectProfileModal() {
                               onOpenChange={(o) => setPopoverOpen(o ? 'devClients' : null)}
                             >
                               <Popover.Trigger asChild>
-                                <button className="opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/dev-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                >
                                   <Pencil className="w-3 h-3" />
                                   Edit
-                                </button>
+                                </Button>
                               </Popover.Trigger>
                               <Popover.Content
                                 side="right"
@@ -697,18 +707,19 @@ export default function ProjectProfileModal() {
                                         project?.developerIds?.includes(c.clientId || c.id) ||
                                         project?.clientIds?.includes(c.clientId || c.id);
                                       return (
-                                        <button
+                                        <Button
+                                          variant="ghost"
                                           key={c.clientId || c.id}
                                           onClick={() =>
                                             toggleClientArrayItem(c.clientId || c.id, c.companyName)
                                           }
-                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
                                         >
                                           <span className="truncate text-left">
                                             {c.companyName}
                                           </span>
                                           {isSelected && <Check className="w-4 h-4 shrink-0" />}
-                                        </button>
+                                        </Button>
                                       );
                                     })}
                                 </div>
@@ -745,10 +756,14 @@ export default function ProjectProfileModal() {
                               onOpenChange={(o) => setPopoverOpen(o ? 'smClients' : null)}
                             >
                               <Popover.Trigger asChild>
-                                <button className="opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/sm-clients:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                >
                                   <Pencil className="w-3 h-3" />
                                   Edit
-                                </button>
+                                </Button>
                               </Popover.Trigger>
                               <Popover.Content
                                 side="right"
@@ -774,18 +789,19 @@ export default function ProjectProfileModal() {
                                         project?.salesMarketingIds?.includes(c.clientId || c.id) ||
                                         project?.clientIds?.includes(c.clientId || c.id);
                                       return (
-                                        <button
+                                        <Button
+                                          variant="ghost"
                                           key={c.clientId || c.id}
                                           onClick={() =>
                                             toggleClientArrayItem(c.clientId || c.id, c.companyName)
                                           }
-                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
                                         >
                                           <span className="truncate text-left">
                                             {c.companyName}
                                           </span>
                                           {isSelected && <Check className="w-4 h-4 shrink-0" />}
-                                        </button>
+                                        </Button>
                                       );
                                     })}
                                 </div>

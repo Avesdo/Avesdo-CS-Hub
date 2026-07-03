@@ -470,6 +470,7 @@ export default function ServiceProfileModal() {
               style={{ zIndex: zIndexBase }}
             >
               <Dialog.Content
+                onOpenAutoFocus={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => {
                   e.preventDefault();
                   if (activeDrawer?.type === 'service') closeDrawer();

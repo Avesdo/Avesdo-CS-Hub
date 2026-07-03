@@ -1,33 +1,19 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { Check, ChevronDown, Search, Ghost } from 'lucide-react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
+import { formControlVariants } from './form-controls';
 
 export interface SelectOption {
   label: React.ReactNode;
   value: string;
 }
 
-const selectTriggerVariants = cva(
-  'flex w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
-  {
-    variants: {
-      variant: {
-        default: '',
-        inline: 'border-transparent bg-transparent shadow-none hover:bg-slate-50',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-);
-
 interface SelectProps
   extends
     Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
-    VariantProps<typeof selectTriggerVariants> {
+    VariantProps<typeof formControlVariants> {
   options: SelectOption[] | { label: string; value: string }[] | string[];
   value: string;
   onChange: (val: string) => void;
@@ -136,7 +122,7 @@ export function Select({
               <button
                 type="button"
                 disabled={disabled}
-                className={selectTriggerVariants({ variant })}
+                className={twMerge(formControlVariants({ variant }), 'cursor-pointer')}
               >
                 <span className={twMerge('truncate', !value && 'text-muted-foreground')}>
                   {selectedOption ? selectedOption.label : placeholder}

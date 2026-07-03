@@ -254,7 +254,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-full flex-col min-h-0 bg-white relative overflow-hidden">
       {/* FIXED HEADER */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-40">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-30">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             Executive Dashboard
@@ -389,71 +389,88 @@ export default function Dashboard() {
         {/* SCROLLABLE MAIN CONTENT */}
         <div className="px-4 md:px-6 flex flex-col min-h-0">
           {/* MAIN BENTO GRID */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 relative z-10 animate-in fade-in duration-700 delay-300 fill-mode-both">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5 relative z-10"
+          >
             {/* LEFT COLUMN: Data & Analytics (2/3 Width) */}
             <div className="lg:col-span-2 flex flex-col gap-5">
-              <ClientHealthWidget
-                totalScored={totalScored}
-                activeClients={activeClients}
-                healthyThresh={healthyThresh}
-                warningThresh={warningThresh}
-                healthyCount={healthyCount}
-                warningCount={warningCount}
-                riskCount={riskCount}
-                openDrawer={openDrawer}
-                suspendedProjects={suspendedProjects}
-                atRiskClients={atRiskClients}
-                hasSus={hasSus}
-                hasRisk={hasRisk}
-                settings={settings}
-                movers={movers}
-                isFetchingHistory={isFetchingHistory}
-              />
+              <motion.div variants={itemVariants}>
+                <ClientHealthWidget
+                  totalScored={totalScored}
+                  activeClients={activeClients}
+                  healthyThresh={healthyThresh}
+                  warningThresh={warningThresh}
+                  healthyCount={healthyCount}
+                  warningCount={warningCount}
+                  riskCount={riskCount}
+                  openDrawer={openDrawer}
+                  suspendedProjects={suspendedProjects}
+                  atRiskClients={atRiskClients}
+                  hasSus={hasSus}
+                  hasRisk={hasRisk}
+                  settings={settings}
+                  movers={movers}
+                  isFetchingHistory={isFetchingHistory}
+                />
+              </motion.div>
 
-              <ProjectDeliveryWidget
-                onboardingPhases={onboardingPhases}
-                settings={settings}
-                filteredProjects={filteredProjects}
-                projects={projects}
-                openDrawer={openDrawer}
-                deliveryTimelines={deliveryTimelines}
-              />
+              <motion.div variants={itemVariants}>
+                <ProjectDeliveryWidget
+                  onboardingPhases={onboardingPhases}
+                  settings={settings}
+                  filteredProjects={filteredProjects}
+                  projects={projects}
+                  openDrawer={openDrawer}
+                  deliveryTimelines={deliveryTimelines}
+                />
+              </motion.div>
 
-              <FeatureAdoptionWidget
-                featureAdoptionCombined={featureAdoptionCombined}
-                filteredProjects={filteredProjects}
-                openDrawer={openDrawer}
-              />
+              <motion.div variants={itemVariants}>
+                <FeatureAdoptionWidget
+                  featureAdoptionCombined={featureAdoptionCombined}
+                  filteredProjects={filteredProjects}
+                  openDrawer={openDrawer}
+                />
+              </motion.div>
             </div>
 
             {/* RIGHT COLUMN: People & Activity (1/3 Width) */}
             <div className="flex flex-col gap-5 h-full lg:block lg:relative">
               <div className="flex flex-col gap-5 lg:absolute lg:inset-0">
-                <ManagerWorkloadWidget
-                  managerWorkload={managerWorkload}
-                  settings={settings}
-                  filteredProjects={filteredProjects}
-                  openDrawer={openDrawer}
-                />
+                <motion.div variants={itemVariants}>
+                  <ManagerWorkloadWidget
+                    managerWorkload={managerWorkload}
+                    settings={settings}
+                    filteredProjects={filteredProjects}
+                    openDrawer={openDrawer}
+                  />
+                </motion.div>
 
-                <UpcomingActivityWidget
-                  upcomingActivity={upcomingActivity}
-                  getServiceIcon={getServiceIcon}
-                  settings={settings}
-                  openDrawer={openDrawer}
-                />
+                <motion.div variants={itemVariants}>
+                  <UpcomingActivityWidget
+                    upcomingActivity={upcomingActivity}
+                    getServiceIcon={getServiceIcon}
+                    settings={settings}
+                    openDrawer={openDrawer}
+                  />
+                </motion.div>
 
-                <RecentActivityWidget
-                  recentActivity={recentActivity}
-                  recentServices={recentServices}
-                  recentLaunches={recentLaunches}
-                  getServiceIcon={getServiceIcon}
-                  settings={settings}
-                  openDrawer={openDrawer}
-                />
+                <motion.div variants={itemVariants}>
+                  <RecentActivityWidget
+                    recentActivity={recentActivity}
+                    recentServices={recentServices}
+                    recentLaunches={recentLaunches}
+                    getServiceIcon={getServiceIcon}
+                    settings={settings}
+                    openDrawer={openDrawer}
+                  />
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
           {/* Bottom Spacer */}
           <div className="h-6 shrink-0 w-full" />
         </div>
