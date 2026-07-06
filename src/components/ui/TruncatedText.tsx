@@ -72,7 +72,7 @@ export function TruncatedText({
               style={{ bottom: '-6px', left: '50%', marginLeft: '-6px' }}
             />
             {/* Tooltip Body */}
-            <div className="relative bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl whitespace-nowrap font-medium">
+            <div className="relative bg-white/95 backdrop-blur-md text-slate-800 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-sm px-3 py-2 rounded-xl max-w-xs break-words font-medium">
               <div className="relative z-10">{text}</div>
             </div>
           </div>,

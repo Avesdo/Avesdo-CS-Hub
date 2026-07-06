@@ -798,7 +798,7 @@ export default function ServiceProfileModal() {
                     {/* Decorative Aura */}
 
                     {/* Close Button overlay */}
-                    <div className="absolute top-4 right-4 z-10">
+                    <div className="absolute top-4 right-4 z-50">
                       <Tooltip content="Close">
                         <button
                           onClick={closeDrawer}

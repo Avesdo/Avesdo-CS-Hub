@@ -83,9 +83,8 @@ export function UserAccessManager() {
   const handleRevoke = async (email: string) => {
     try {
       await revokeInvitation(email);
-      toast.success('Invitation revoked');
     } catch (err) {
-      toast.error('Failed to revoke invitation');
+      // Error handled by service
     }
   };
 

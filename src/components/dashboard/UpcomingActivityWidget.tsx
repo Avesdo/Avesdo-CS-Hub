@@ -146,10 +146,10 @@ export function UpcomingActivityWidget({
                       </div>
                       {isService ? (
                         <TruncatedText
-                          text={String('' + act.projectName + '&bull;' + act.clientName + '')}
+                          text={String('' + act.projectName + ' • ' + act.clientName + '')}
                           containerClassName="text-[11px] text-muted-foreground font-medium mt-0.5"
                         >
-                          {act.projectName}&bull; {act.clientName}
+                          {act.projectName} • {act.clientName}
                         </TruncatedText>
                       ) : (
                         <TruncatedText

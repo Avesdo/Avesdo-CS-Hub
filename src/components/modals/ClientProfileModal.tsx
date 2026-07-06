@@ -644,7 +644,7 @@ export default function ClientProfileModal() {
                   {/* RIGHT PANE: Main Content */}
                   <div className="flex-1 flex flex-col bg-white overflow-hidden relative rounded-r-3xl">
                     {/* Close Button overlay */}
-                    <div className="absolute top-4 right-4 z-10">
+                    <div className="absolute top-4 right-4 z-50">
                       <button
                         onClick={closeDrawer}
                         className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-full transition-colors"

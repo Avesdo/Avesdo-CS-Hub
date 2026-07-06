@@ -449,7 +449,7 @@ export default function Dashboard() {
                   />
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="flex-1 flex flex-col min-h-0">
                   <UpcomingActivityWidget
                     upcomingActivity={upcomingActivity}
                     getServiceIcon={getServiceIcon}
@@ -458,7 +458,7 @@ export default function Dashboard() {
                   />
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="flex-1 flex flex-col min-h-0">
                   <RecentActivityWidget
                     recentActivity={recentActivity}
                     recentServices={recentServices}
