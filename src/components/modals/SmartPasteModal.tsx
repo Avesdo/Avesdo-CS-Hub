@@ -14,6 +14,10 @@ interface SmartPasteModalProps {
 
 const promptTemplate = `Return the result strictly as a JSON array of objects, with NO markdown formatting (no \`\`\`json) or extra text.
 
+CRITICAL JSON RULES:
+1. NEVER use double quotes inside the text strings. If you need to quote a word or phrase, you MUST use single quotes ('like this') instead of double quotes ("like this").
+2. Your output must be perfectly valid JSON. Unescaped double quotes will break the system.
+
 Schema of each object MUST exactly match:
 {
   "id": "A unique string ID (e.g. q1)",
