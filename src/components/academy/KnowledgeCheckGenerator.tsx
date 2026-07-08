@@ -226,17 +226,17 @@ export default function KnowledgeCheckGenerator() {
                   <div className="mt-4 text-sm text-slate-500 italic pl-4 border-l-2 border-slate-200">
                     <span className="font-medium not-italic block mb-1">Explanation:</span>
                     {isReadOnly ? (
-                      <p>{q.explanation}</p>
+                      <p className="whitespace-pre-wrap">{q.explanation.replace(/\s*\(Source Article:/g, '\n(Source Article:').trim()}</p>
                     ) : (
                       <textarea
-                        defaultValue={q.explanation}
+                        defaultValue={q.explanation.replace(/\s*\(Source Article:/g, '\n(Source Article:').trim()}
                         onBlur={(e) => {
                           if (e.target.value !== q.explanation) {
                             handleUpdateQuestion(q.id, { explanation: e.target.value });
                           }
                         }}
-                        className="w-full bg-transparent border border-transparent hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 rounded p-1 -ml-1 resize-none min-h-[3rem] transition-colors"
-                        rows={2}
+                        className="w-full bg-transparent border border-transparent hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 rounded p-1 -ml-1 resize-none min-h-[4rem] transition-colors whitespace-pre-wrap"
+                        rows={3}
                       />
                     )}
                   </div>
