@@ -24,7 +24,7 @@ Schema of each object MUST exactly match:
   "text": "The question text",
   "options": ["Option A", "Option B", "Option C", "Option D"],
   "correctAnswer": "The exact string of the correct option",
-  "explanation": "Why this answer is correct. (Include the name of the source article here as well)",
+  "explanation": "Why this answer is correct.\\n(Source Article: [Article Name])",
   "sourceArticleId": "The ID of the article"
 }`;
 

@@ -129,7 +129,7 @@ export default function KnowledgeCheckGenerator() {
           <button
             onClick={handleDiscard}
             disabled={isReadOnly || !draftQuiz}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-red-500/20 shadow-sm ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-red-500/20 shadow-sm whitespace-nowrap shrink-0 ${
               isReadOnly || !draftQuiz
                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed hidden'
                 : 'bg-white text-red-500 border border-red-200 hover:bg-red-50'
@@ -226,10 +226,16 @@ export default function KnowledgeCheckGenerator() {
                   <div className="mt-4 text-sm text-slate-500 italic pl-4 border-l-2 border-slate-200">
                     <span className="font-medium not-italic block mb-1">Explanation:</span>
                     {isReadOnly ? (
-                      <p className="whitespace-pre-wrap">{q.explanation.replace(/\s*\(Source Article:/g, '\n(Source Article:').trim()}</p>
+                      <p className="whitespace-pre-wrap">
+                        {q.explanation
+                          .replace(/\s*\(Source Article:/g, '\n(Source Article:')
+                          .trim()}
+                      </p>
                     ) : (
                       <textarea
-                        defaultValue={q.explanation.replace(/\s*\(Source Article:/g, '\n(Source Article:').trim()}
+                        defaultValue={q.explanation
+                          .replace(/\s*\(Source Article:/g, '\n(Source Article:')
+                          .trim()}
                         onBlur={(e) => {
                           if (e.target.value !== q.explanation) {
                             handleUpdateQuestion(q.id, { explanation: e.target.value });
