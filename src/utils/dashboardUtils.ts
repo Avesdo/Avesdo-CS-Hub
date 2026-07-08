@@ -270,10 +270,10 @@ export const calculateFeatureAdoption = (
 
 export const calculateManagerWorkload = (
   projects: Project[],
-  managers: Settings['managers']
+  managers: string[]
 ): [string, { active: number; onboarding: number }][] => {
   const wl: Record<string, { active: number; onboarding: number }> = {};
-  const activeManagers = managers?.map((m: any) => m.name) || [];
+  const activeManagers = managers || [];
 
   activeManagers.forEach((m: string) => (wl[m] = { active: 0, onboarding: 0 }));
 

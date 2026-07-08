@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useUIStore } from '../../store/useUIStore';
 import { useAppStore } from '../../store/useAppStore';
 import { saveSettings } from '../../api/dbService';
 import { MultiSelect } from '../ui/MultiSelect';
@@ -25,7 +26,9 @@ import { Button } from '../ui/button';
 import { usePermissions } from '../../hooks/usePermissions';
 
 export function ScheduleSettingsTab() {
+  const { openModal } = useUIStore();
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('edit_schedule');
 
@@ -72,10 +75,12 @@ export function ScheduleSettingsTab() {
               <MultiSelect
                 variant="inline"
                 disabled={!canEdit}
-                options={(settings?.managers || []).map((m: any) => ({
-                  value: m.name,
-                  label: m.name,
-                }))}
+                options={users
+                  .filter((u) => u.isAccountManager && !u.isDeactivated)
+                  .map((u) => ({
+                    value: u.uid,
+                    label: u.displayName || u.email,
+                  }))}
                 values={settings?.estManagers || []}
                 onChange={(vals) => saveSettings({ ...(settings as any), estManagers: vals })}
                 placeholder="Select managers..."
@@ -97,10 +102,12 @@ export function ScheduleSettingsTab() {
               <MultiSelect
                 variant="inline"
                 disabled={!canEdit}
-                options={(settings?.managers || []).map((m: any) => ({
-                  value: m.name,
-                  label: m.name,
-                }))}
+                options={users
+                  .filter((u) => u.isAccountManager && !u.isDeactivated)
+                  .map((u) => ({
+                    value: u.uid,
+                    label: u.displayName || u.email,
+                  }))}
                 values={settings?.pstManagers || []}
                 onChange={(vals) => saveSettings({ ...(settings as any), pstManagers: vals })}
                 placeholder="Select managers..."
@@ -199,10 +206,12 @@ export function ScheduleSettingsTab() {
                 <Select
                   value={newTimeOffManager}
                   onChange={(val) => setNewTimeOffManager(val)}
-                  options={(settings?.managers || []).map((m: any) => ({
-                    label: m.name,
-                    value: m.name,
-                  }))}
+                  options={users
+                    .filter((u) => u.isAccountManager && !u.isDeactivated)
+                    .map((u) => ({
+                      value: u.uid,
+                      label: u.displayName || u.email,
+                    }))}
                   trigger={
                     <Button
                       variant="outline"
@@ -284,10 +293,12 @@ export function ScheduleSettingsTab() {
                           <Select
                             value={editTimeOffManager}
                             onChange={(val) => setEditTimeOffManager(val)}
-                            options={(settings?.managers || []).map((m: any) => ({
-                              label: m.name,
-                              value: m.name,
-                            }))}
+                            options={users
+                              .filter((u) => u.isAccountManager && !u.isDeactivated)
+                              .map((u) => ({
+                                value: u.uid,
+                                label: u.displayName || u.email,
+                              }))}
                             trigger={
                               <Button
                                 variant="outline"

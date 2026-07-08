@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -8,23 +8,40 @@ import {
   ListTodo,
   Briefcase,
   Settings,
-  Shield,
   LogOut,
   LifeBuoy,
   X,
+  GraduationCap,
 } from 'lucide-react';
-import { Tooltip } from './ui/Tooltip';
+
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { usePermissions } from '../hooks/usePermissions';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import * as Popover from '@radix-ui/react-popover';
 import { Button } from './ui/button';
+import { useAcademyStore } from '../store/useAcademyStore';
 
 export default function Sidebar() {
   const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
   const { user: authUser, logout } = useAuth();
-  const navigate = useNavigate();
-  const { hasAnySettingsPermission } = usePermissions();
+  const { hasPermission, hasAnySettingsPermission } = usePermissions();
+  const activeQuizzes = useAcademyStore((state) => state.activeQuizzes);
+  const isAcademyAdmin = hasPermission('manage_academy');
+  const quizAttempts = useAcademyStore((state) => state.quizAttempts);
+
+  const hasActiveQuizBadge = activeQuizzes.some((q) => {
+    if (isAcademyAdmin && q.status === 'draft') return true;
+    if (q.status === 'published') {
+      const isEnrolled =
+        !q.enrolledUserIds ||
+        q.enrolledUserIds.length === 0 ||
+        (authUser && q.enrolledUserIds.includes(authUser.uid));
+      const hasCompleted =
+        authUser && quizAttempts.some((a) => a.quizId === q.id && a.userId === authUser.uid);
+      return isEnrolled && !hasCompleted;
+    }
+    return false;
+  });
 
   const getInitials = (name?: string | null, email?: string | null) => {
     if (name) {
@@ -75,19 +92,32 @@ export default function Sidebar() {
               { to: '/projects', icon: <ListTodo className="w-4 h-4" />, label: 'Projects' },
               { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Services' },
               { to: '/support', icon: <LifeBuoy className="w-4 h-4" />, label: 'Support' },
-            ].map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
-                  }
-                >
-                  {link.icon}
-                  <span>{link.label}</span>
-                </NavLink>
-              </li>
-            ))}
+              {
+                to: '/academy',
+                icon: <GraduationCap className="w-4 h-4" />,
+                label: 'Academy',
+                requiredPermission: 'view_academy',
+              },
+            ].map((link) => {
+              if (link.requiredPermission && !hasPermission(link.requiredPermission)) return null;
+
+              return (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
+                    }
+                  >
+                    {link.icon}
+                    <span>{link.label}</span>
+                    {link.to === '/academy' && hasActiveQuizBadge && (
+                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-sm ml-auto" />
+                    )}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -144,7 +174,11 @@ export default function Sidebar() {
                   <span className="text-sm font-medium text-slate-700 pl-1">Confirm Logout?</span>
                   <div className="flex items-center gap-1">
                     <Popover.Close asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md text-slate-400 hover:text-slate-600">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 rounded-md text-slate-400 hover:text-slate-600"
+                      >
                         <X className="w-4 h-4" />
                       </Button>
                     </Popover.Close>

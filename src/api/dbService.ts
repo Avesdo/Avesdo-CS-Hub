@@ -14,7 +14,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { AppState, Client, Project, Service, Settings } from '../types';
+import { AppState, Client, Project, Service, Settings, AppUser } from '../types';
 import { ClientSchema, ProjectSchema, ServiceSchema, SettingsSchema } from '../types/schemas';
 import { toast } from '../utils/toast';
 
@@ -27,6 +27,7 @@ export type ToastConfig = {
 export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
   const state: AppState = {
     settings: null,
+    users: [],
     clients: [],
     archivedClients: [],
     projects: [],
@@ -43,6 +44,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
       projects: false,
       services: false,
       aliases: false,
+      users: false,
     },
   };
 
@@ -52,7 +54,8 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
       state.ready.clients &&
       state.ready.projects &&
       state.ready.services &&
-      state.ready.aliases
+      state.ready.aliases &&
+      state.ready.users
     ) {
       state.timestamp = new Date().getTime().toString();
       onUpdate({ ...state });
@@ -164,12 +167,20 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     checkReady();
   });
 
+  const usersQuery = query(collection(db, 'users'));
+  const unsubUsers = onSnapshot(usersQuery, (snap) => {
+    state.users = snap.docs.map((d) => d.data() as AppUser);
+    state.ready.users = true;
+    checkReady();
+  });
+
   return () => {
     unsubSettings();
     unsubClients();
     unsubProjects();
     unsubServices();
     unsubAliases();
+    unsubUsers();
   };
 }
 
@@ -876,6 +887,19 @@ export async function toggleUserActiveStatus(uid: string, deactivate: boolean) {
   } catch (err) {
     console.error('Failed to toggle user active status', err);
     toast.error('Failed to toggle user active status');
+    throw err;
+  }
+}
+
+export async function updateUserRecord(uid: string, data: Partial<AppUser>) {
+  try {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, data);
+    toast.success('User updated successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to update user', err);
+    toast.error('Failed to update user');
     throw err;
   }
 }

@@ -49,6 +49,7 @@ export default function AddClientModal() {
   const settings = useAppStore((state) => state.settings);
   const clients = useAppStore((state) => state.clients);
   const user = useAppStore((state) => state.user);
+  const users = useAppStore((state) => state.users);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -272,12 +273,20 @@ export default function AddClientModal() {
                 render={({ field }) => (
                   <Select
                     value={field.value || ''}
-                    options={(settings?.managers?.map((m) => m.name) || []).map((m) => ({
-                      label: m,
-                      value: m,
-                    }))}
+                    options={users
+                      .filter((u) => u.isAccountManager && !u.isDeactivated)
+                      .map((u) => ({
+                        label: u.displayName || u.email,
+                        value: u.uid,
+                      }))}
                     onChange={field.onChange}
-                    trigger={<TokenTrigger label="Manager" value={field.value} icon={User} />}
+                    trigger={
+                      <TokenTrigger
+                        label="Manager"
+                        value={users.find((u) => u.uid === field.value)?.displayName || field.value}
+                        icon={User}
+                      />
+                    }
                   />
                 )}
               />

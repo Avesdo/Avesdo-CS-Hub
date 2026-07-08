@@ -1,6 +1,7 @@
 import React from 'react';
 import { hexToRgba, getSafeHex } from '../../utils/uiUtils';
 import { TruncatedText } from '../../components/ui/TruncatedText';
+import { useAppStore } from '../../store/useAppStore';
 
 export interface ManagerWorkloadWidgetProps {
   managerWorkload: any[];
@@ -15,6 +16,7 @@ export function ManagerWorkloadWidget({
   filteredProjects,
   openDrawer,
 }: ManagerWorkloadWidgetProps) {
+  const users = useAppStore((state) => state.users);
   return (
     <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md overflow-hidden">
       <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-0.5 p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
@@ -32,19 +34,18 @@ export function ManagerWorkloadWidget({
           </span>
         )}
         {managerWorkload.map(([manager, counts]) => {
+          const userObj = users.find((u) => u.uid === manager);
+          const displayName = userObj?.displayName || manager;
           const initials =
             manager !== 'Unassigned'
-              ? manager
+              ? displayName
                   .split(' ')
                   .map((n: string) => n[0])
                   .join('')
                   .substring(0, 2)
                   .toUpperCase()
               : '?';
-          const mHex = getSafeHex(
-            settings?.managers?.find((m: any) => m.name === manager)?.color,
-            'slate'
-          );
+          const mHex = getSafeHex(userObj?.color, 'slate');
           const total = counts.active + counts.onboarding;
 
           return (
@@ -66,10 +67,10 @@ export function ManagerWorkloadWidget({
                   </div>
                   <div className="flex flex-col">
                     <TruncatedText
-                      text={String('' + manager + '')}
+                      text={String('' + displayName + '')}
                       containerClassName="text-sm font-bold text-foreground"
                     >
-                      {manager}
+                      {displayName}
                     </TruncatedText>
                     <div className="flex items-center gap-2 mt-1">
                       <button
@@ -77,7 +78,7 @@ export function ManagerWorkloadWidget({
                           openDrawer('dashDrilldown', undefined, {
                             contextType: 'managerWorkloadActive',
                             title: 'Active Projects',
-                            subtitle: manager,
+                            subtitle: displayName,
                             viewAllPath: '/projects',
                             viewAllState: {
                               ptTab: 'All Projects',
@@ -101,7 +102,7 @@ export function ManagerWorkloadWidget({
                           openDrawer('dashDrilldown', undefined, {
                             contextType: 'managerWorkloadOnboarding',
                             title: 'Onboarding Projects',
-                            subtitle: manager,
+                            subtitle: displayName,
                             viewAllPath: '/projects',
                             viewAllState: {
                               ptTab: 'All Projects',

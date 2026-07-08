@@ -1,6 +1,7 @@
 import React from 'react';
 import { hexToRgba, getSafeHex, renderIcon } from '../../utils/uiUtils';
 import { TruncatedText } from '../ui/TruncatedText';
+import { useAppStore } from '../../store/useAppStore';
 
 export interface UpcomingActivityWidgetProps {
   upcomingActivity: any[];
@@ -15,6 +16,7 @@ export function UpcomingActivityWidget({
   settings,
   openDrawer,
 }: UpcomingActivityWidgetProps) {
+  const users = useAppStore((state) => state.users);
   return (
     <div className="flex flex-col gap-0 rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md min-h-[300px] lg:min-h-0 lg:flex-1 overflow-hidden">
       <div className="flex items-center justify-between p-4 pb-3 border-b border-border bg-white/95 backdrop-blur-md shrink-0">
@@ -83,9 +85,11 @@ export function UpcomingActivityWidget({
               badgeClass = 'bg-slate-50 text-slate-600 border border-slate-200/50';
             }
 
+            const userObj = users.find((u) => u.uid === act.manager);
+            const displayName = userObj?.displayName || act.manager;
             const initials =
               act.manager !== 'Unassigned'
-                ? act.manager
+                ? displayName
                     .split(' ')
                     .map((n: string) => n[0])
                     .join('')
@@ -93,10 +97,7 @@ export function UpcomingActivityWidget({
                     .toUpperCase()
                 : '?';
 
-            const mHex = getSafeHex(
-              settings?.managers?.find((m: any) => m.name === act.manager)?.color,
-              'slate'
-            );
+            const mHex = getSafeHex(userObj?.color, 'slate');
 
             return (
               <div key={act.id} className="flex items-center gap-4 relative py-2 group">
@@ -163,7 +164,7 @@ export function UpcomingActivityWidget({
                     <div className="flex flex-col items-end shrink-0 pl-2">
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm transition-all group-hover:scale-110 group-hover:shadow-md"
-                        title={act.manager}
+                        title={displayName}
                         style={{
                           backgroundColor: hexToRgba(mHex, 0.1),
                           color: mHex,

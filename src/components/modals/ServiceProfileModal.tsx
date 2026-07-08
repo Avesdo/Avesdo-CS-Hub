@@ -133,6 +133,7 @@ export default function ServiceProfileModal() {
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
+  const users = useAppStore((state) => state.users);
   const clients = useAppStore((state) => state.clients);
   const projects = useAppStore((state) => state.projects);
 
@@ -307,16 +308,21 @@ export default function ServiceProfileModal() {
     }
   };
 
-  const handleUpdateManager = async (manager: string) => {
-    if (!service || service.manager === manager) return;
-    const oldManager = service.manager || 'Unassigned';
+  const handleUpdateManagers = async (vals: string[]) => {
+    if (!service) return;
+    const managers = vals.length > 0 ? vals : ['Unassigned'];
+    const newManagerStr = managers.join(', ');
+    const oldManagerStr = service.managers?.join(', ') || service.manager || 'Unassigned';
+
+    if (newManagerStr === oldManagerStr) return;
+
     await updateServiceRecord(
-      { ...service, manager },
+      { ...service, managers, manager: managers[0] },
       {
-        successMsg: `Manager successfully updated for '${service.name}'.`,
-        errorMsg: `Failed to update manager for '${service.name}'.`,
+        successMsg: `Managers successfully updated for '${service.name}'.`,
+        errorMsg: `Failed to update managers for '${service.name}'.`,
       },
-      `Manager changed from ${oldManager} to ${manager}`,
+      `Managers changed from ${oldManagerStr} to ${newManagerStr}`,
       user?.name
     );
   };
@@ -608,17 +614,35 @@ export default function ServiceProfileModal() {
                           />
                         </div>
                         <div>
-                          <Select
-                            options={(settings?.managers?.map((m: any) => m.name) || []).map(
-                              (o: string) => ({ label: o, value: o })
-                            )}
-                            value={service?.manager || ''}
-                            onChange={(val) => handleUpdateManager(val)}
+                          <MultiSelect
+                            options={users
+                              .filter((u) => u.isAccountManager && !u.isDeactivated)
+                              .map((u) => ({
+                                label: u.displayName || u.email,
+                                value: u.uid,
+                              }))}
+                            values={
+                              service?.managers ||
+                              (service?.manager && service.manager !== 'Unassigned'
+                                ? [service.manager]
+                                : [])
+                            }
+                            onChange={(vals) => handleUpdateManagers(vals)}
                             disabled={!hasPermission('service_edit_details')}
                             trigger={
                               <TokenTrigger
                                 label="Manager"
-                                value={service?.manager || 'Unassigned'}
+                                value={
+                                  (service?.managers?.length || 0) > 1
+                                    ? `${service?.managers?.length} Managers`
+                                    : users.find(
+                                        (u) =>
+                                          u.uid === (service?.managers?.[0] || service?.manager)
+                                      )?.displayName ||
+                                      service?.managers?.[0] ||
+                                      service?.manager ||
+                                      'Unassigned'
+                                }
                                 icon={User}
                                 disabled={!hasPermission('service_edit_details')}
                               />

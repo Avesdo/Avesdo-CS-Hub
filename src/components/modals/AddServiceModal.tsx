@@ -93,6 +93,7 @@ export default function AddServiceModal() {
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
+  const users = useAppStore((state) => state.users);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -201,8 +202,10 @@ export default function AddServiceModal() {
   );
   const managerOptions = useMemo(
     () =>
-      (settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({ label: m, value: m })),
-    [settings?.managers]
+      users
+        .filter((u) => u.isAccountManager && !u.isDeactivated)
+        .map((u) => ({ label: u.displayName || u.email, value: u.uid })),
+    [users]
   );
 
   const handleClose = (force?: boolean | any) => {
@@ -621,7 +624,14 @@ export default function AddServiceModal() {
                         trigger={
                           <TokenTrigger
                             label="Manager"
-                            value={field.value.length ? field.value.join(', ') : ''}
+                            value={
+                              field.value.length === 1
+                                ? managerOptions.find((o) => o.value === field.value[0])?.label ||
+                                  ''
+                                : field.value.length > 1
+                                  ? `${field.value.length} Managers`
+                                  : ''
+                            }
                             icon={User}
                             error={errors.assignees}
                           />

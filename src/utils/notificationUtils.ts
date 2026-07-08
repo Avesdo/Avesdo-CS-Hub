@@ -3,10 +3,11 @@ import { db } from '../api/firebase';
 
 export interface AppNotification {
   id: string;
-  projectId: string;
-  projectName: string;
-  type: 'submission' | 'update';
-  formName: string;
+  projectId?: string;
+  projectName?: string;
+  type: 'submission' | 'update' | 'academy';
+  formName?: string;
+  title?: string;
   createdAt: string;
   read: boolean;
 }
@@ -15,7 +16,7 @@ export interface AppNotification {
 export async function createNotification(
   projectId: string,
   projectName: string,
-  type: 'submission' | 'update',
+  type: 'submission' | 'update' | 'academy',
   formName: string
 ) {
   try {

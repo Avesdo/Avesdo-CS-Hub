@@ -69,6 +69,8 @@ const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   service_add_notes: 'Add notes to services',
   service_archive: 'Archive services',
   service_export: 'Export service data',
+  view_academy: 'View the Academy and take Knowledge Checks',
+  manage_academy: 'Manage Academy settings, KB ingestion, and review Quizzes',
 };
 
 const NODE_GROUPS = [
@@ -136,6 +138,10 @@ const NODE_GROUPS = [
       'service_archive',
       'service_export',
     ],
+  },
+  {
+    title: 'Academy',
+    nodes: ['view_academy', 'manage_academy'],
   },
 ];
 

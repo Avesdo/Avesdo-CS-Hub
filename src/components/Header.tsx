@@ -29,6 +29,7 @@ import {
   CalendarDays,
   Users,
   User,
+  CheckCheck,
 } from 'lucide-react';
 
 function NotificationBell() {
@@ -75,24 +76,26 @@ function NotificationBell() {
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
           <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
             {unreadCount > 0 && (
-              <Button
-                variant="link"
-                className="h-auto p-0 text-xs text-primary"
-                onClick={() => markAllNotificationsAsRead(notifications)}
-              >
-                <Check className="w-3 h-3 mr-1" /> Mark all read
-              </Button>
+              <Tooltip content="Mark all as read" position="bottom-right">
+                <button
+                  onClick={() => markAllNotificationsAsRead(notifications)}
+                  className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                >
+                  <CheckCheck className="w-4 h-4" />
+                </button>
+              </Tooltip>
             )}
             {notifications.length > 0 && (
-              <Button
-                variant="link"
-                className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive"
-                onClick={() => clearAllNotifications(notifications)}
-              >
-                <Trash2 className="w-3 h-3 mr-1" /> Clear all
-              </Button>
+              <Tooltip content="Clear all notifications" position="bottom-right">
+                <button
+                  onClick={() => clearAllNotifications(notifications)}
+                  className="p-1.5 rounded-full hover:bg-destructive/10 text-slate-400 hover:text-destructive transition-colors focus:outline-none"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </Tooltip>
             )}
           </div>
         </div>
@@ -123,29 +126,48 @@ function NotificationBell() {
                   <div
                     className={`w-2 h-2 rounded-full mt-1.5 shrink-0 shadow-sm ${!n.read ? 'bg-primary shadow-primary/40' : 'bg-transparent shadow-none'}`}
                   />
-                  <div className="flex-1 pr-6">
+                  <div className="flex-1 pr-16">
                     <p className="text-sm text-foreground leading-tight">
-                      <span className="font-semibold">{n.projectName}</span>{' '}
-                      {n.type === 'submission' ? 'submitted' : 'updated'}{' '}
-                      <span className="font-medium">{n.formName}</span>.
+                      {n.type === 'academy' ? (
+                        <span className="font-semibold">{n.title}</span>
+                      ) : (
+                        <>
+                          <span className="font-semibold">{n.projectName}</span>{' '}
+                          {n.type === 'submission' ? 'submitted' : 'updated'}{' '}
+                          <span className="font-medium">{n.formName}</span>.
+                        </>
+                      )}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1.5 font-medium">
                       {format(new Date(n.createdAt), 'MMM d, yyyy')}
                     </p>
                   </div>
-                  {!n.read && (
-                    <Tooltip content="Mark as read">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+                    {!n.read && (
+                      <Tooltip content="Mark as read" position="bottom-right">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            markNotificationAsRead(n.id);
+                          }}
+                          className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    )}
+                    <Tooltip content="Clear notification" position="bottom-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          markNotificationAsRead(n.id);
+                          clearAllNotifications([n]);
                         }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-primary/10 text-primary transition-all"
+                        className="p-1.5 rounded-full hover:bg-destructive/10 text-slate-400 hover:text-destructive transition-colors focus:outline-none"
                       >
-                        <Check className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                       </button>
                     </Tooltip>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

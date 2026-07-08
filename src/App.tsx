@@ -35,6 +35,7 @@ const ProjectTracker = React.lazy(() => import('./pages/ProjectTracker'));
 const ServiceHub = React.lazy(() => import('./pages/ServiceHub'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
+const Academy = React.lazy(() => import('./pages/Academy'));
 
 const Login = React.lazy(() => import('./pages/Login'));
 const ClientPortal = React.lazy(() => import('./pages/ClientPortal'));
@@ -89,10 +90,22 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
           generateDailyHealthSnapshots().catch(console.error);
         });
       }
+
+      // Trigger background Academy Reminder check for admins
+      import('./api/academyReminder').then(({ checkAcademyReminders }) => {
+        checkAcademyReminders().catch(console.error);
+      });
     }
   }, [ready, settings]);
 
-  if (!ready.settings || !ready.clients || !ready.projects || !ready.services || !ready.aliases) {
+  if (
+    !ready.settings ||
+    !ready.clients ||
+    !ready.projects ||
+    !ready.services ||
+    !ready.aliases ||
+    !ready.users
+  ) {
     return <AppLoadingSkeleton />;
   }
 
@@ -145,7 +158,7 @@ function MainLayout() {
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const { hasAnySettingsPermission } = usePermissions();
+  const { hasPermission, hasAnySettingsPermission } = usePermissions();
 
   return (
     <AnimatePresence mode="wait">
@@ -196,6 +209,16 @@ function AnimatedRoutes() {
             <PermissionRoute hasPermission={hasAnySettingsPermission()}>
               <PageWrapper>
                 <Settings />
+              </PageWrapper>
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/academy"
+          element={
+            <PermissionRoute hasPermission={hasPermission('view_academy')}>
+              <PageWrapper>
+                <Academy />
               </PageWrapper>
             </PermissionRoute>
           }

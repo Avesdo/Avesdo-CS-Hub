@@ -95,10 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             };
 
             // Failsafe bootstrap for existing but wrong role
-            if (
-              emailKey === 'support@avesdo.com' &&
-              finalAppUser.roleId !== 'super_admin'
-            ) {
+            if (emailKey === 'support@avesdo.com' && finalAppUser.roleId !== 'super_admin') {
               finalAppUser.roleId = 'super_admin';
             }
 

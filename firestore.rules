@@ -74,9 +74,33 @@ service cloud.firestore {
       allow delete: if hasPermission('hard_delete_archives');
     }
 
+    match /notifications/{notifId} {
+      allow read, write: if isAvesdoEmployee();
+    }
+
+    match /support_tickets/{ticketId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('resolve_imports') || hasPermission('manage_user_access') || isSuperAdmin();
+    }
+
     match /aliases/{aliasId} {
       allow read: if isAvesdoEmployee();
       allow write: if hasPermission('resolve_imports');
+    }
+
+    match /kb_articles/{articleId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('manage_academy');
+    }
+
+    match /quizzes/{quizId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('manage_academy');
+    }
+
+    match /quiz_attempts/{attemptId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if isAvesdoEmployee();
     }
   }
 }

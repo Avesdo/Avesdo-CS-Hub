@@ -102,6 +102,7 @@ export default function ClientHealth() {
   const clients = useAppStore((state) => state.clients);
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
   const { openDrawer, openModal } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const { hasPermission } = usePermissions();
@@ -270,10 +271,12 @@ export default function ClientHealth() {
             <div className="inline-block relative">
               <Select
                 value={c.accountManager || 'Unassigned'}
-                options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
-                  label: getSettingBadge('managers', m, settings),
-                  value: m,
-                }))}
+                options={users
+                  .filter((u) => u.isAccountManager && !u.isDeactivated)
+                  .map((u) => ({
+                    label: getSettingBadge('managers', u.uid, settings),
+                    value: u.uid,
+                  }))}
                 onChange={(val) => handleUpdateManager(c.clientId, val)}
                 disabled={!hasPermission('client_edit_profile')}
                 hideCheckmark={true}

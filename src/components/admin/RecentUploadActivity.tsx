@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ThumbsUp,
   LifeBuoy,
+  BookOpen,
 } from 'lucide-react';
 import { TruncatedText } from '../../components/ui/TruncatedText';
 
@@ -107,6 +108,12 @@ export const RecentUploadActivity: React.FC<RecentUploadActivityProps> = ({
                   ) {
                     Icon = LifeBuoy;
                     colorClass = 'bg-rose-50 text-rose-500 border-rose-100';
+                  } else if (
+                    entityNameLower.includes('knowledge') ||
+                    entityNameLower.includes('kb')
+                  ) {
+                    Icon = BookOpen;
+                    colorClass = 'bg-purple-50 text-purple-500 border-purple-100';
                   }
 
                   const timeString = new Date(log.timestamp).toLocaleTimeString('en-US', {

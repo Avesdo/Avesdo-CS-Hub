@@ -145,5 +145,59 @@ export const SettingsSchema = z
         weights: { opActivity: 20, featAdoption: 20, userVol: 20, csat: 20, financial: 20 },
         thresholds: { healthy: 70, warning: 40 },
       }),
+    geminiApiKey: z.string().optional(),
+    academyEnrollments: z.array(z.string()).optional(),
   })
   .passthrough();
+
+export const RoleSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    permissions: z.array(z.enum(['view_academy', 'manage_academy'])).catch([]),
+    isDefault: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const KBArticleSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  content: z.string(),
+  url: z.string(),
+  category: z.string(),
+  uploadDate: z.number(),
+});
+
+export const QuizQuestionSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  options: z.array(z.string()),
+  correctAnswer: z.string(),
+  explanation: z.string(),
+  sourceArticleId: z.string().optional(),
+  rejectedOptions: z.array(z.string()).optional(),
+});
+
+export const QuizSchema = z.object({
+  id: z.string(),
+  targetMonth: z.number(),
+  targetYear: z.number(),
+  status: z.enum(['draft', 'reviewing', 'scheduled', 'published']),
+  questions: z.array(QuizQuestionSchema),
+  createdAt: z.number(),
+  publishedAt: z.number().optional(),
+  createdBy: z.string(),
+  enrolledUserIds: z.array(z.string()).optional(),
+  rejectedQuestions: z.array(z.string()).optional(),
+});
+
+export const QuizAttemptSchema = z.object({
+  id: z.string(),
+  quizId: z.string(),
+  userId: z.string(),
+  score: z.number(),
+  answers: z.record(z.string(), z.string()),
+  completedAt: z.number(),
+});
+
+export type QuizAttempt = z.infer<typeof QuizAttemptSchema>;

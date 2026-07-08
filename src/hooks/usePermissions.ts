@@ -31,6 +31,10 @@ export const PERMISSION_NODES = [
   'view_roles',
   'manage_roles',
 
+  // Academy
+  'view_academy',
+  'manage_academy',
+
   // Client Management
   'client_create',
   'client_edit_profile',

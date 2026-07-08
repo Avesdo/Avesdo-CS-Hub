@@ -29,6 +29,7 @@ import {
   Rocket,
   HousePlus,
   Calendar,
+  Check,
 } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
 import { useUIStore } from '../store/useUIStore';
@@ -95,6 +96,7 @@ export default function Dashboard() {
   const projects = useAppStore((state) => state.projects);
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
   const { openModal, openDrawer } = useUIStore();
   const navigate = useNavigate();
   const [managerFilter, setManagerFilter] = useState('All Managers');
@@ -136,8 +138,8 @@ export default function Dashboard() {
   }, []);
 
   const allManagers = useMemo(() => {
-    return settings?.managers?.map((m) => m.name) || [];
-  }, [settings]);
+    return users?.filter((u) => u.isAccountManager && !u.isDeactivated).map((u) => u.uid) || [];
+  }, [users]);
 
   const filteredProjects = useMemo(
     () => getFilteredProjects(projects, managerFilter),
@@ -190,8 +192,8 @@ export default function Dashboard() {
   );
 
   const managerWorkload = useMemo(
-    () => calculateManagerWorkload(projects, settings?.managers || []),
-    [projects, settings?.managers]
+    () => calculateManagerWorkload(projects, allManagers),
+    [projects, allManagers]
   );
 
   const recentServices = useMemo(() => getRecentServices(filteredServices), [filteredServices]);
@@ -272,7 +274,10 @@ export default function Dashboard() {
               className="group inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-all duration-300 border border-transparent bg-slate-100 hover:bg-slate-200 active:scale-95 hover:-translate-y-0.5 text-slate-700 px-4 py-2 h-9 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-slate-400/20"
             >
               <div className="flex items-center gap-1.5 flex-1 text-left">
-                <TruncatedText text={managerFilter} className="text-foreground font-bold" />
+                <TruncatedText
+                  text={users?.find((u) => u.uid === managerFilter)?.displayName || managerFilter}
+                  className="text-foreground font-bold"
+                />
               </div>
               <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
             </button>
@@ -297,20 +302,27 @@ export default function Dashboard() {
                     All Managers
                   </div>
                   <div className="border-t border-slate-100 my-1"></div>
-                  {allManagers.map((m) => (
-                    <div
-                      key={m}
-                      className={`group px-2 py-2 text-sm font-medium rounded-md hover:bg-primary/5 cursor-pointer transition-colors hover:text-primary mt-0.5 ${
-                        managerFilter === m ? 'text-primary' : ''
-                      }`}
-                      onClick={() => {
-                        setManagerFilter(m);
-                        setShowAmMenu(false);
-                      }}
-                    >
-                      {m}
-                    </div>
-                  ))}
+                  <div className="py-1 px-1">
+                    {allManagers.map((m) => {
+                      const mUser = users?.find((u) => u.uid === m);
+                      const mName = mUser?.displayName || mUser?.email || m;
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => {
+                            setManagerFilter(m);
+                            setShowAmMenu(false);
+                          }}
+                          className={`w-full text-left px-2 py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-between mt-0.5 ${managerFilter === m ? 'bg-primary/5 text-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-primary'}`}
+                        >
+                          <span className="truncate">{mName}</span>
+                          {managerFilter === m && (
+                            <Check className="w-4 h-4 text-primary shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

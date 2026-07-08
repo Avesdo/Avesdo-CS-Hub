@@ -19,6 +19,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   LifeBuoy,
+  BookOpen,
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { doc, updateDoc, collection, writeBatch, getDocs, setDoc } from 'firebase/firestore';
@@ -26,6 +27,7 @@ import { db } from '../../api/firebase';
 import { toast } from '../../utils/toast';
 import { Tooltip } from '../ui/Tooltip';
 import { TruncatedText } from '../../components/ui/TruncatedText';
+import { academyService } from '../../api/academyService';
 
 type FileState = {
   file: File | null;
@@ -67,6 +69,11 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     parsedData: null,
     error: null,
   });
+  const [knowledgeBaseFile, setKnowledgeBaseFile] = useState<FileState>({
+    file: null,
+    parsedData: null,
+    error: null,
+  });
 
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileStep, setCompileStep] = useState(0);
@@ -88,7 +95,14 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         return;
       }
 
-      let type: 'satisfaction' | 'sessions' | 'views' | 'nps' | 'happyfox' | null = null;
+      let type:
+        | 'satisfaction'
+        | 'sessions'
+        | 'views'
+        | 'nps'
+        | 'happyfox'
+        | 'knowledge_base'
+        | null = null;
       if (
         file.name.toLowerCase().includes('satisfaction') ||
         file.name.toLowerCase().includes('customer')
@@ -105,9 +119,14 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         file.name.toLowerCase().includes('tabular_export')
       ) {
         type = 'happyfox';
+      } else if (
+        file.name.toLowerCase().includes('knowledge_base') ||
+        file.name.toLowerCase().includes('kb')
+      ) {
+        type = 'knowledge_base';
       } else {
         toast.error(
-          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', 'nps', or 'happyfox'.`
+          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', 'nps', 'happyfox', or 'knowledge_base'.`
         );
         return;
       }
@@ -124,6 +143,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
           if (type === 'views') setViewsFile({ file, parsedData: result.data, error: null });
           if (type === 'nps') setNpsFile({ file, parsedData: result.data, error: null });
           if (type === 'happyfox') setHappyfoxFile({ file, parsedData: result.data, error: null });
+          if (type === 'knowledge_base')
+            setKnowledgeBaseFile({ file, parsedData: result.data, error: null });
         } catch (err: any) {
           if (type === 'satisfaction')
             setSatisfactionFile({ file, parsedData: null, error: err.message });
@@ -131,6 +152,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
           if (type === 'views') setViewsFile({ file, parsedData: null, error: err.message });
           if (type === 'nps') setNpsFile({ file, parsedData: null, error: err.message });
           if (type === 'happyfox') setHappyfoxFile({ file, parsedData: null, error: err.message });
+          if (type === 'knowledge_base')
+            setKnowledgeBaseFile({ file, parsedData: null, error: err.message });
         }
       };
       reader.readAsText(file);
@@ -744,6 +767,25 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         await Promise.all(updatePromises);
       }
 
+      // 5. Process Knowledge Base
+      if (knowledgeBaseFile.parsedData) {
+        const kbData = knowledgeBaseFile.parsedData;
+        totalParsed += kbData.length;
+        const mappedData = kbData
+          .map((row: any) => ({
+            title: row['Title'] || '',
+            content: row['Content'] || '',
+            url: row['URL'] || '',
+            category: row['Category'] || '',
+          }))
+          .filter((item: any) => item.title && item.content);
+
+        if (mappedData.length > 0) {
+          await academyService.uploadKBArticles(mappedData);
+          updateCount += mappedData.length;
+        }
+      }
+
       setCompileStep(3); // 3: Updating Scores
       await new Promise((r) => setTimeout(r, 600));
 
@@ -755,6 +797,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         viewsFile.file?.name,
         npsFile.file?.name,
         happyfoxFile.file?.name,
+        knowledgeBaseFile.file?.name,
       ]
         .filter(Boolean)
         .join(', ');
@@ -765,6 +808,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       if (viewsFile.file) uploadedTypes.push('Userpilot Page Views');
       if (npsFile.file) uploadedTypes.push('Userpilot NPS');
       if (happyfoxFile.file) uploadedTypes.push('Happyfox Support Metrics');
+      if (knowledgeBaseFile.file) uploadedTypes.push('Knowledge Base');
 
       const formattedEntityName = uploadedTypes.join(', ');
 
@@ -801,6 +845,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       setSessionsFile({ file: null, parsedData: null, error: null });
       setViewsFile({ file: null, parsedData: null, error: null });
       setHappyfoxFile({ file: null, parsedData: null, error: null });
+      setKnowledgeBaseFile({ file: null, parsedData: null, error: null });
     } catch (err: any) {
       console.error(err);
       toast.error('Compiler error: ' + err.message);
@@ -814,7 +859,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     sessionsFile.parsedData ||
     viewsFile.parsedData ||
     npsFile.parsedData ||
-    happyfoxFile.parsedData;
+    happyfoxFile.parsedData ||
+    knowledgeBaseFile.parsedData;
 
   const stagedFiles = [
     {
@@ -861,6 +907,15 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
       color: 'text-rose-500',
       bg: 'bg-rose-50',
       border: 'border-rose-200',
+    },
+    {
+      type: 'knowledge_base',
+      label: 'Knowledge Base',
+      data: knowledgeBaseFile,
+      icon: BookOpen,
+      color: 'text-purple-500',
+      bg: 'bg-purple-50',
+      border: 'border-purple-200',
     },
   ].filter((f) => f.data.file || f.data.error);
 
@@ -949,7 +1004,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
 
               <div className="relative z-20 pointer-events-auto">
                 <Tooltip
-                  content="Filenames must contain 'satisfaction' (or 'customer'), 'sessions', 'views', 'nps', or 'happyfox' (or 'tabular_export') to be auto-mapped."
+                  content="Filenames must contain 'satisfaction' (or 'customer'), 'sessions', 'views', 'nps', 'happyfox' (or 'tabular_export'), or 'knowledge_base' (or 'kb') to be auto-mapped."
                   position="bottom"
                 >
                   <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 bg-white hover:bg-slate-50 transition-colors px-3 py-1.5 rounded-full border border-slate-200 shadow-sm cursor-help">

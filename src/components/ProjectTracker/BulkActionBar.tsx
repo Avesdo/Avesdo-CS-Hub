@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
 import { Select } from '../ui/Select';
 import { getSettingBadge } from '../../utils/uiUtils';
+import { useAppStore } from '../../store/useAppStore';
 
 interface BulkActionBarProps {
   selectedCount: number;
@@ -16,6 +17,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
   onClearSelection,
   onBulkUpdate,
 }) => {
+  const users = useAppStore((state) => state.users);
   const [pendingUpdates, setPendingUpdates] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -48,12 +50,14 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         {/* Manager Select */}
         <div className="relative">
           <Select
-            value={pendingUpdates.assignee || ''}
-            options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
-              label: getSettingBadge('managers', m, settings),
-              value: m,
-            }))}
-            onChange={(val) => setPendingUpdates({ ...pendingUpdates, assignee: val })}
+            value={pendingUpdates.assignee || 'Unassigned'}
+            options={users
+              .filter((u) => u.isAccountManager && !u.isDeactivated)
+              .map((u) => ({
+                label: getSettingBadge('managers', u.uid, settings),
+                value: u.uid,
+              }))}
+            onChange={(val) => setPendingUpdates((prev) => ({ ...prev, assignee: val }))}
             hideCheckmark={false}
             position="top"
             trigger={

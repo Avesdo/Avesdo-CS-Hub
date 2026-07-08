@@ -104,6 +104,8 @@ export interface Settings {
   }[];
   roles?: CustomRole[];
   rolePermissions?: Record<string, Record<string, boolean>>;
+  geminiApiKey?: string;
+  academyEnrollments?: string[];
   [key: string]: any;
 }
 
@@ -132,6 +134,8 @@ export interface AppUser {
   name?: string;
   initials?: string;
   isDeactivated?: boolean;
+  isAccountManager?: boolean;
+  color?: string;
 }
 
 export interface AppState {
@@ -143,6 +147,7 @@ export interface AppState {
   services: Service[];
   archivedServices: Service[];
   user: AppUser | null;
+  users: AppUser[];
   timestamp: string;
   pendingAliasesCount: number;
   ready: {
@@ -151,6 +156,48 @@ export interface AppState {
     projects: boolean;
     services: boolean;
     aliases: boolean;
+    users: boolean;
   };
   simulatedRoleId: string | null;
+}
+
+export interface KBArticle {
+  id: string;
+  title: string;
+  content: string;
+  url: string;
+  category: string;
+  uploadDate: number;
+}
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+  sourceArticleId?: string;
+  rejectedOptions?: string[];
+}
+
+export interface Quiz {
+  id: string;
+  targetMonth: number;
+  targetYear: number;
+  status: 'draft' | 'reviewing' | 'scheduled' | 'published';
+  questions: QuizQuestion[];
+  createdAt: number;
+  publishedAt?: number;
+  createdBy: string;
+  enrolledUserIds?: string[];
+  rejectedQuestions?: string[];
+}
+
+export interface QuizAttempt {
+  id: string;
+  quizId: string;
+  userId: string;
+  score: number;
+  answers: Record<string, string>;
+  completedAt: number;
 }

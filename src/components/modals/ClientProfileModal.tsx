@@ -101,6 +101,7 @@ export default function ClientProfileModal() {
   const settings = useAppStore((state) => state.settings);
   const projects = useAppStore((state) => state.projects);
   const user = useAppStore((state) => state.user);
+  const users = useAppStore((state) => state.users);
   const services = useAppStore((state) => state.services);
   const { hasPermission } = usePermissions();
 
@@ -466,16 +467,24 @@ export default function ClientProfileModal() {
 
                         <div>
                           <Select
-                            options={(settings?.managers?.map((m: any) => m.name) || []).map(
-                              (o: string) => ({ label: o, value: o })
-                            )}
+                            options={users
+                              .filter((u) => u.isAccountManager && !u.isDeactivated)
+                              .map((u) => ({
+                                label: u.displayName || u.email,
+                                value: u.uid,
+                              }))}
                             value={client?.accountManager || ''}
                             onChange={(val) => handleUpdateManager(val)}
                             disabled={!hasPermission('client_edit_profile')}
                             trigger={
                               <TokenTrigger
                                 label="Manager"
-                                value={client?.accountManager || 'Unassigned'}
+                                value={
+                                  users.find((u) => u.uid === client?.accountManager)
+                                    ?.displayName ||
+                                  client?.accountManager ||
+                                  'Unassigned'
+                                }
                                 icon={User}
                                 disabled={!hasPermission('client_edit_profile')}
                               />

@@ -29,6 +29,7 @@ import { ColumnFilter } from '../TableFilters';
 import { MonthRangePicker } from '../ui/MonthRangePicker';
 import { DatePicker } from '../ui/DatePicker';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useAppStore } from '../../store/useAppStore';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -143,6 +144,7 @@ const ProjectRow = React.memo(
     virtualRow,
     useRelativeDate,
   }: any) => {
+    const users = useAppStore((state) => state.users);
     const { hasPermission } = usePermissions();
     return (
       <motion.tr
@@ -242,10 +244,12 @@ const ProjectRow = React.memo(
           <div className="inline-block relative">
             <Select
               value={p.assignee || 'Unassigned'}
-              options={(settings?.managers?.map((m: any) => m.name) || []).map((m: any) => ({
-                label: getSettingBadge('managers', m, settings),
-                value: m,
-              }))}
+              options={users
+                .filter((u) => u.isAccountManager && !u.isDeactivated)
+                .map((u) => ({
+                  label: getSettingBadge('managers', u.uid, settings),
+                  value: u.uid,
+                }))}
               onChange={(val) => onUpdateProject(p.id, 'assignee', val)}
               disabled={!hasPermission('project_edit_details')}
               hideCheckmark={true}

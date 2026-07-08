@@ -3,6 +3,7 @@ import * as LucideIcons from 'lucide-react';
 import { CircleDashed } from 'lucide-react';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import { Tooltip } from '../components/ui/Tooltip';
+import { useAppStore } from '../store/useAppStore';
 
 export const ICONS = [
   'Activity',
@@ -194,6 +195,50 @@ export const getSettingBadge = (
     );
   }
 
+  if (listName === 'managers' || listName === 'accountManager' || listName === 'assignee') {
+    const storeUsers = useAppStore.getState().users || [];
+    let user = storeUsers.find((u) => u.uid === value);
+    if (!user) {
+      user = storeUsers.find((u) => u.displayName === value || u.name === value);
+    }
+
+    if (user) {
+      const hex = COLOR_MAP[user.color || 'slate'] || COLOR_MAP.slate;
+      return (
+        <span
+          className={`${sizeClasses} font-medium rounded-md inline-flex items-center gap-1.5 shrink-0`}
+          style={{
+            backgroundColor: hexToRgba(hex, 0.1),
+            color: hex,
+            boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}`,
+          }}
+        >
+          <LucideIcons.User className={iconSize} />
+          <TruncatedText
+            text={String(user.displayName || user.name || value)}
+            containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
+          >
+            {user.displayName || user.name || value}
+          </TruncatedText>
+        </span>
+      );
+    } else {
+      return (
+        <span
+          className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
+        >
+          <LucideIcons.User className={iconSize} />
+          <TruncatedText
+            text={String(value)}
+            containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
+          >
+            {value}
+          </TruncatedText>
+        </span>
+      );
+    }
+  }
+
   let item: any = null;
 
   // settingsData contains Outcomes and Statuses
@@ -226,21 +271,6 @@ export const getSettingBadge = (
 
   if (!item || typeof item === 'string') {
     // Fallback badge if not found or if it's just a string array (e.g. features)
-    if (listName === 'managers' || listName === 'accountManager' || listName === 'assignee') {
-      return (
-        <span
-          className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center gap-1.5 shrink-0`}
-        >
-          <LucideIcons.User className={iconSize} />
-          <TruncatedText
-            text={String(value)}
-            containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
-          >
-            {value}
-          </TruncatedText>
-        </span>
-      );
-    }
     return (
       <span
         className={`${sizeClasses} font-medium rounded-md bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200 inline-flex items-center shrink-0`}

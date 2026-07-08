@@ -110,6 +110,7 @@ export default function ProjectProfileModal() {
   const settings = useAppStore((state) => state.settings);
   const clients = useAppStore((state) => state.clients);
   const user = useAppStore((state) => state.user);
+  const users = useAppStore((state) => state.users);
   const services = useAppStore((state) => state.services);
 
   const [activeTab, setActiveTab] = useState<
@@ -626,16 +627,24 @@ export default function ProjectProfileModal() {
 
                               <div>
                                 <Select
-                                  options={(settings?.managers?.map((m: any) => m.name) || []).map(
-                                    (o: string) => ({ label: o, value: o })
-                                  )}
+                                  options={users
+                                    .filter((u) => u.isAccountManager && !u.isDeactivated)
+                                    .map((u) => ({
+                                      label: u.displayName || u.email,
+                                      value: u.uid,
+                                    }))}
                                   value={project?.assignee || ''}
                                   onChange={(val) => handleUpdateManager(val)}
                                   disabled={!hasPermission('project_edit_details')}
                                   trigger={
                                     <TokenTrigger
                                       label="Manager"
-                                      value={project?.assignee || 'Unassigned'}
+                                      value={
+                                        users.find((u) => u.uid === project?.assignee)
+                                          ?.displayName ||
+                                        project?.assignee ||
+                                        'Unassigned'
+                                      }
                                       icon={User}
                                       disabled={!hasPermission('project_edit_details')}
                                     />

@@ -16,6 +16,7 @@ const defaultState: AppState = {
   archivedProjects: [],
   archivedServices: [],
   user: null,
+  users: [],
   timestamp: '',
   pendingAliasesCount: 0,
   ready: {
@@ -24,6 +25,7 @@ const defaultState: AppState = {
     projects: false,
     services: false,
     aliases: false,
+    users: false,
   },
   simulatedRoleId: null,
 };

@@ -36,6 +36,33 @@ function doPost(e) {
           '</div>' +
         '</div>' +
       '</div>';
+    } else if (data.action === 'assign_quiz') {
+      var payload = data.payload || {};
+      emailTo = payload.email || 'team@avesdo.com';
+      subject = payload.subject || 'Your Knowledge Check is Ready';
+      var quizMonthYear = payload.quizMonthYear || 'Knowledge Check';
+      var appUrl = 'https://avesdo-cs-hub.web.app';
+
+      htmlContent = '<div style="background-color: #f8fafc; padding: 40px 20px; font-family: \'Inter\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">' +
+        '<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">' +
+          '<div style="background-color: #00bdd9; padding: 32px 40px; text-align: left;">' +
+            '<h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;">Avesdo CS Hub</h1>' +
+            '<p style="margin: 8px 0 0 0; color: #e0f8fb; font-size: 15px;">Academy</p>' +
+          '</div>' +
+          '<div style="padding: 40px;">' +
+            '<p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #475569;">Hello team,</p>' +
+            '<h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: #0f172a;">Your ' + quizMonthYear + ' Knowledge Check is Ready.</h2>' +
+            '<p style="margin: 0 0 32px 0; font-size: 16px; line-height: 1.6; color: #475569;">Please log in and submit your answers by the end of the current week.</p>' +
+            '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">' +
+              '<tr><td align="left">' +
+                '<a href="' + appUrl + '" style="display: inline-block; padding: 14px 28px; background-color: #00bdd9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 15px; box-shadow: 0 4px 14px 0 rgba(0, 189, 217, 0.25);">Sign in to Start Assessment</a>' +
+              '</td></tr>' +
+            '</table>' +
+            '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />' +
+            '<p style="margin: 0; font-size: 13px; color: #94a3b8; line-height: 1.5;">This is an automated notification from the Avesdo CS Hub.</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
       
     } else {
       // Handle Standard CS Hub Alert (fallback)
