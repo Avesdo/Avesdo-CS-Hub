@@ -16,7 +16,15 @@ import {
 } from 'date-fns';
 import { Button } from './button';
 
-type PresetRange = '7d' | '30d' | '90d' | 'ytd' | 'all' | 'custom';
+type PresetRange =
+  | '7d'
+  | 'thisMonth'
+  | 'lastMonth'
+  | 'thisQuarter'
+  | 'lastQuarter'
+  | 'ytd'
+  | 'all'
+  | 'custom';
 
 interface DateRangePickerProps {
   preset: PresetRange;
@@ -33,8 +41,10 @@ interface DateRangePickerProps {
 
 const PRESETS: { label: string; value: PresetRange }[] = [
   { label: 'Last 7 Days', value: '7d' },
-  { label: 'Last 30 Days', value: '30d' },
-  { label: 'Last 90 Days', value: '90d' },
+  { label: 'This Month', value: 'thisMonth' },
+  { label: 'Last Month', value: 'lastMonth' },
+  { label: 'This Quarter', value: 'thisQuarter' },
+  { label: 'Last Quarter', value: 'lastQuarter' },
   { label: 'Year to Date', value: 'ytd' },
   { label: 'All Time', value: 'all' },
   { label: 'Custom Range', value: 'custom' },

@@ -27,6 +27,7 @@ import { db } from '../../api/firebase';
 import { toast } from '../../utils/toast';
 import { Tooltip } from '../ui/Tooltip';
 import { TruncatedText } from '../../components/ui/TruncatedText';
+import { DatePicker } from '../ui/DatePicker';
 import { academyService } from '../../api/academyService';
 
 type FileState = {
@@ -73,6 +74,10 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     file: null,
     parsedData: null,
     error: null,
+  });
+
+  const [satisfactionDate, setSatisfactionDate] = useState<number>(() => {
+    return new Date().getTime();
   });
 
   const [isCompiling, setIsCompiling] = useState(false);
@@ -469,9 +474,42 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
             users: usersArray,
           };
 
-          // Compare existing to save writes
+          // Handle history by matching the YYYY-MM
+          const d = new Date(satisfactionDate);
+          const reportDateStr = isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+          const reportMonth = reportDateStr.substring(0, 7); // YYYY-MM
+
+          const newHistory = targetClient.supportCsatHistory
+            ? [...targetClient.supportCsatHistory]
+            : [];
+          const existingMonthIndex = newHistory.findIndex(
+            (entry: any) => entry.submittedAt && entry.submittedAt.startsWith(reportMonth)
+          );
+
+          let historyChanged = false;
+          const historyEntry = { ...supportCsatObj, submittedAt: reportDateStr };
+
+          if (existingMonthIndex >= 0) {
+            const existingEntry = newHistory[existingMonthIndex];
+            if (
+              existingEntry.score !== csat ||
+              existingEntry.totalUsers !== data.feedback ||
+              existingEntry.promoters !== data.happy ||
+              existingEntry.passives !== data.neutral ||
+              existingEntry.detractors !== data.unhappy ||
+              JSON.stringify(existingEntry.users) !== JSON.stringify(usersArray)
+            ) {
+              newHistory[existingMonthIndex] = historyEntry;
+              historyChanged = true;
+            }
+          } else {
+            newHistory.push(historyEntry);
+            historyChanged = true;
+          }
+
           const existingObj = targetClient.supportCsat;
-          let needsUpdate = false;
+          let needsUpdate = historyChanged;
+
           if (!existingObj) needsUpdate = true;
           else if (
             existingObj.score !== csat ||
@@ -488,6 +526,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
             updatePromises.push(
               updateDoc(doc(db, 'clients', clientId), {
                 supportCsat: supportCsatObj,
+                supportCsatHistory: newHistory,
               })
             );
             updateCount++;
@@ -611,9 +650,21 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
 
             if (targetClient) {
               const clientId = targetClient.clientId || targetClient.id;
-              if (!clientNpsMap.has(clientId)) {
-                clientNpsMap.set(clientId, {
+
+              const rawDate =
+                row['Submitted At'] || row['Created At'] || row['Date'] || new Date().toISOString();
+              const d = new Date(rawDate);
+              const monthYearKey = !isNaN(d.getTime())
+                ? `${d.getFullYear()}-${d.getMonth()}`
+                : 'unknown-date';
+
+              const mapKey = `${clientId}_${monthYearKey}`;
+
+              if (!clientNpsMap.has(mapKey)) {
+                clientNpsMap.set(mapKey, {
                   client: targetClient,
+                  monthYearKey,
+                  dateObj: d,
                   promoters: 0,
                   passives: 0,
                   detractors: 0,
@@ -622,7 +673,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                 });
               }
 
-              const clientData = clientNpsMap.get(clientId);
+              const clientData = clientNpsMap.get(mapKey);
               clientData.total++;
 
               if (score >= 9) clientData.promoters++;
@@ -642,8 +693,20 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
           }
         }
 
-        // Now save the aggregated NPS data per client
-        for (const [clientId, data] of clientNpsMap.entries()) {
+        // Now save the aggregated NPS data per client + month
+        // Group by client first to minimize document updates
+        const updatesByClient = new Map<string, any>();
+
+        for (const [mapKey, data] of clientNpsMap.entries()) {
+          const clientId = data.client.clientId || data.client.id;
+
+          if (!updatesByClient.has(clientId)) {
+            updatesByClient.set(clientId, {
+              client: data.client,
+              monthlyData: [],
+            });
+          }
+
           const npsScore =
             data.total > 0
               ? Math.round(
@@ -651,22 +714,75 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                 )
               : 0;
 
-          const targetClient = data.client;
-          const npsObj = {
+          updatesByClient.get(clientId).monthlyData.push({
             score: npsScore,
             totalUsers: data.total,
             promoters: data.promoters,
             passives: data.passives,
             detractors: data.detractors,
             feedback: data.feedback,
-          };
+            dateObj: data.dateObj,
+          });
+        }
 
-          updatePromises.push(
-            updateDoc(doc(db, 'clients', clientId), {
-              clientNps: npsObj,
-            })
-          );
-          updateCount++;
+        for (const [clientId, data] of updatesByClient.entries()) {
+          const targetClient = data.client;
+          const newHistory =
+            targetClient.clientNpsHistory && Array.isArray(targetClient.clientNpsHistory)
+              ? [...targetClient.clientNpsHistory]
+              : [];
+
+          let historyChanged = false;
+          let latestNpsObj = targetClient.clientNps || null;
+          let latestDate = 0;
+
+          data.monthlyData.forEach((monthData: any) => {
+            const d = monthData.dateObj;
+            const historyEntry = {
+              score: monthData.score,
+              submittedAt: d.toISOString(),
+            };
+
+            if (!isNaN(d.getTime())) {
+              if (d.getTime() > latestDate) {
+                latestDate = d.getTime();
+                latestNpsObj = {
+                  score: monthData.score,
+                  totalUsers: monthData.totalUsers,
+                  promoters: monthData.promoters,
+                  passives: monthData.passives,
+                  detractors: monthData.detractors,
+                  feedback: monthData.feedback,
+                };
+              }
+
+              const existingMonthIndex = newHistory.findIndex((h: any) => {
+                if (!h.submittedAt) return false;
+                const hd = new Date(h.submittedAt);
+                return hd.getMonth() === d.getMonth() && hd.getFullYear() === d.getFullYear();
+              });
+
+              if (existingMonthIndex !== -1) {
+                if (newHistory[existingMonthIndex].score !== historyEntry.score) {
+                  newHistory[existingMonthIndex] = historyEntry;
+                  historyChanged = true;
+                }
+              } else {
+                newHistory.push(historyEntry);
+                historyChanged = true;
+              }
+            }
+          });
+
+          if (historyChanged || latestNpsObj !== targetClient.clientNps) {
+            updatePromises.push(
+              updateDoc(doc(db, 'clients', clientId), {
+                clientNps: latestNpsObj,
+                clientNpsHistory: newHistory,
+              })
+            );
+            updateCount++;
+          }
         }
 
         for (const [rawName, email] of unmatchedNames.entries()) {
@@ -803,10 +919,18 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         .join(', ');
 
       const uploadedTypes = [];
-      if (satisfactionFile.file) uploadedTypes.push('Happyfox Support CSAT');
+      if (satisfactionFile.file) {
+        const d = new Date(satisfactionDate);
+        const monthName = !isNaN(d.getTime())
+          ? d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          : '';
+        uploadedTypes.push(`Happyfox Support CSAT${monthName ? ` (${monthName})` : ''}`);
+      }
       if (sessionsFile.file) uploadedTypes.push('Userpilot Sessions');
       if (viewsFile.file) uploadedTypes.push('Userpilot Page Views');
-      if (npsFile.file) uploadedTypes.push('Userpilot NPS');
+      if (npsFile.file) {
+        uploadedTypes.push(`Userpilot NPS (Auto-dated)`);
+      }
       if (happyfoxFile.file) uploadedTypes.push('Happyfox Support Metrics');
       if (knowledgeBaseFile.file) uploadedTypes.push('Knowledge Base');
 
@@ -1052,7 +1176,20 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                           </TruncatedText>
                         </div>
                       </div>
-                      <div className="shrink-0 flex items-center">
+                      <div className="shrink-0 flex items-center gap-4">
+                        {f.type === 'satisfaction' && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-medium text-slate-500">
+                              Report Date:
+                            </span>
+                            <div className="w-[140px]">
+                              <DatePicker
+                                value={satisfactionDate}
+                                onChange={(val) => setSatisfactionDate(val || new Date().getTime())}
+                              />
+                            </div>
+                          </div>
+                        )}
                         {f.data.parsedData ? (
                           <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
                             <CheckCircle2 className="w-3.5 h-3.5" />

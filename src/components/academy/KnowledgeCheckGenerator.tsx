@@ -139,7 +139,6 @@ export default function KnowledgeCheckGenerator() {
             Discard Draft
           </button>
 
-
           <button
             disabled={isReadOnly || !draftQuiz}
             onClick={async () => {
@@ -147,34 +146,52 @@ export default function KnowledgeCheckGenerator() {
               try {
                 const { useAppStore } = await import('../../store/useAppStore');
                 const users = useAppStore.getState().users;
-                
-                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
-                const activeAccountManagers = users.filter((u) => !u.isDeactivated && u.isAccountManager);
-                const targetUserIds = draftQuiz.enrolledUserIds?.length ? draftQuiz.enrolledUserIds : activeAccountManagers.map((u) => u.uid);
-                
-                const targetUsers = users.filter(u => targetUserIds.includes(u.uid));
-                const enrolledEmails = targetUsers.map(u => u.email).filter(Boolean).join(',');
 
-                const updatedQuiz = { 
-                  ...draftQuiz, 
+                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
+                const activeAccountManagers = users.filter(
+                  (u) => !u.isDeactivated && u.isAccountManager
+                );
+                const targetUserIds = draftQuiz.enrolledUserIds?.length
+                  ? draftQuiz.enrolledUserIds
+                  : activeAccountManagers.map((u) => u.uid);
+
+                const targetUsers = users.filter((u) => targetUserIds.includes(u.uid));
+                const enrolledEmails = targetUsers
+                  .map((u) => u.email)
+                  .filter(Boolean)
+                  .join(',');
+
+                const updatedQuiz = {
+                  ...draftQuiz,
                   status: 'published' as const,
                   enrolledUserIds: targetUserIds,
                   targetMonth: new Date().getMonth() + 1,
-                  targetYear: new Date().getFullYear()
+                  targetYear: new Date().getFullYear(),
                 };
-                
+
                 await academyService.createDraftQuiz(updatedQuiz);
                 setActiveQuizzes(
-                  activeQuizzes.map((q) =>
-                    q.id === draftQuiz.id ? updatedQuiz : q
-                  )
+                  activeQuizzes.map((q) => (q.id === draftQuiz.id ? updatedQuiz : q))
                 );
 
                 // Trigger Email Webhook
                 if (import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL) {
                   try {
-                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                    const monthName = monthNames[updatedQuiz.targetMonth - 1] || "";
+                    const monthNames = [
+                      'January',
+                      'February',
+                      'March',
+                      'April',
+                      'May',
+                      'June',
+                      'July',
+                      'August',
+                      'September',
+                      'October',
+                      'November',
+                      'December',
+                    ];
+                    const monthName = monthNames[updatedQuiz.targetMonth - 1] || '';
 
                     await fetch(import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL, {
                       method: 'POST',
@@ -189,18 +206,23 @@ export default function KnowledgeCheckGenerator() {
                         payload: {
                           email: enrolledEmails || 'support@avesdo.com',
                           subject: `[Avesdo Academy] Your Knowledge Check is Ready`,
-                          quizMonthYear: `${monthName} ${updatedQuiz.targetYear}`
-                        }
-                      })
+                          quizMonthYear: `${monthName} ${updatedQuiz.targetYear}`,
+                        },
+                      }),
                     });
                   } catch (err) {
                     console.error('Failed to trigger email webhook', err);
                   }
                 }
-                
+
                 // Add in-app notification
                 import('../../utils/notificationUtils').then(({ createNotification }) => {
-                  createNotification('system', 'Academy', 'academy', 'New Knowledge Check available!');
+                  createNotification(
+                    'system',
+                    'Academy',
+                    'academy',
+                    'New Knowledge Check available!'
+                  );
                 });
                 setSelectedQuizId(null);
               } catch (error) {
@@ -224,15 +246,19 @@ export default function KnowledgeCheckGenerator() {
               try {
                 const { useAppStore } = await import('../../store/useAppStore');
                 const users = useAppStore.getState().users;
-                
-                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
-                const activeAccountManagers = users.filter((u) => !u.isDeactivated && u.isAccountManager);
-                const targetUserIds = draftQuiz.enrolledUserIds?.length ? draftQuiz.enrolledUserIds : activeAccountManagers.map((u) => u.uid);
 
-                const updatedQuiz = { 
-                  ...draftQuiz, 
+                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
+                const activeAccountManagers = users.filter(
+                  (u) => !u.isDeactivated && u.isAccountManager
+                );
+                const targetUserIds = draftQuiz.enrolledUserIds?.length
+                  ? draftQuiz.enrolledUserIds
+                  : activeAccountManagers.map((u) => u.uid);
+
+                const updatedQuiz = {
+                  ...draftQuiz,
                   status: 'scheduled' as const,
-                  enrolledUserIds: targetUserIds
+                  enrolledUserIds: targetUserIds,
                 };
                 await academyService.createDraftQuiz(updatedQuiz);
                 setActiveQuizzes([...activeQuizzes, updatedQuiz]);

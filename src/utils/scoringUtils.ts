@@ -76,12 +76,31 @@ export function calculateProjectHealth(
       (k) => !['submittedAt', 'updatedAt'].includes(k)
     ).length > 0
   ) {
-    const csatValues = Object.values(project.health.onboardingCsat);
+    const csatEntries = Object.entries(project.health.onboardingCsat);
     let totalScore = 0;
     let count = 0;
 
-    csatValues.forEach((val) => {
-      if (typeof val === 'string') {
+    csatEntries.forEach(([key, val]) => {
+      if (['submittedAt', 'updatedAt'].includes(key)) return;
+
+      if (
+        typeof val === 'number' ||
+        (typeof val === 'string' && !isNaN(parseFloat(val)) && !isNaN(Number(val)))
+      ) {
+        const numVal = typeof val === 'number' ? val : parseFloat(val);
+        if (numVal > 10) {
+          totalScore += numVal;
+        } else if (
+          key.toLowerCase().includes('nps') ||
+          numVal > 5 ||
+          key.toLowerCase().includes('10')
+        ) {
+          totalScore += (numVal / 10) * 100;
+        } else {
+          totalScore += (numVal / 5) * 100;
+        }
+        count++;
+      } else if (typeof val === 'string') {
         const lowerVal = val.toLowerCase();
         if (lowerVal.includes('extremely satisfied') || lowerVal.includes('very satisfied')) {
           totalScore += 100;
@@ -108,8 +127,12 @@ export function calculateProjectHealth(
     if (count > 0) {
       csat = Math.round(totalScore / count);
     }
-  } else if (project.onboardingCsat && typeof project.onboardingCsat.score === 'number') {
-    csat = project.onboardingCsat.score;
+  } else if (project.onboardingCsat !== undefined) {
+    const parsed =
+      typeof project.onboardingCsat === 'object'
+        ? parseFloat(project.onboardingCsat.score)
+        : parseFloat(project.onboardingCsat);
+    if (!isNaN(parsed)) csat = parsed;
   } else if (project.csat === 'Satisfied') {
     csat = 100;
   } else if (project.csat === 'Neutral') {

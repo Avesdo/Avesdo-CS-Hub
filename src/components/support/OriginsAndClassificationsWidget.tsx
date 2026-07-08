@@ -63,6 +63,7 @@ export function OriginsAndClassificationsWidget({
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <RechartsTooltip
+                  wrapperStyle={{ zIndex: 100 }}
                   cursor={{ fill: '#f8fafa' }}
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {

@@ -1,5 +1,13 @@
 import React from 'react';
-import { ChevronRight, FileText, Calendar, CheckCircle2, Clock, AlertCircle, Trash2 } from 'lucide-react';
+import {
+  ChevronRight,
+  FileText,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Trash2,
+} from 'lucide-react';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAppStore } from '../../store/useAppStore';
@@ -96,9 +104,10 @@ export default function QuizListDashboard() {
     const answeredCount = quizAttemptsList.length;
     const enrolledCount = quiz.enrolledUserIds?.length || 0;
     const pendingCount = Math.max(0, enrolledCount - answeredCount);
-    const averageScore = answeredCount > 0
-      ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
-      : null;
+    const averageScore =
+      answeredCount > 0
+        ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
+        : null;
     const isDraft = quiz.status === 'draft' || quiz.status === 'reviewing';
 
     return (
@@ -158,7 +167,9 @@ export default function QuizListDashboard() {
                   </span>
                 )}
                 {averageScore !== null && (
-                  <span className={`px-2.5 py-1 rounded-lg border font-semibold ${averageScore >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}>
+                  <span
+                    className={`px-2.5 py-1 rounded-lg border font-semibold ${averageScore >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}
+                  >
                     Avg: {averageScore}%
                   </span>
                 )}
@@ -179,18 +190,19 @@ export default function QuizListDashboard() {
       (a) => a.quizId === quiz.id && (a.userId === currentUserId || quiz.id.startsWith('mock'))
     );
     const scorePercentage =
-      attempt && quiz.questions?.length > 0
-        ? Math.round(attempt.score)
-        : null;
+      attempt && quiz.questions?.length > 0 ? Math.round(attempt.score) : null;
 
     const quizAttemptsList = quizAttempts.filter((a) => a.quizId === quiz.id);
     const answeredCount = quizAttemptsList.length;
-    const averageAdminScore = answeredCount > 0
-      ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
-      : null;
+    const averageAdminScore =
+      answeredCount > 0
+        ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
+        : null;
 
-    const statusColor = attempt 
-      ? (scorePercentage! >= 80 ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-white to-white' : 'border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-white')
+    const statusColor = attempt
+      ? scorePercentage! >= 80
+        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-white to-white'
+        : 'border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-white'
       : 'border-slate-200 bg-gradient-to-br from-slate-50/80 via-white to-white';
 
     return (
@@ -225,19 +237,28 @@ export default function QuizListDashboard() {
         <div className="mt-auto">
           {canManage ? (
             <div className="flex items-end gap-3 h-8">
-              <span className="text-lg font-bold tracking-tight text-slate-800">{answeredCount} <span className="text-sm font-medium text-slate-500">Ans.</span></span>
+              <span className="text-lg font-bold tracking-tight text-slate-800">
+                {answeredCount} <span className="text-sm font-medium text-slate-500">Ans.</span>
+              </span>
               {averageAdminScore !== null && (
-                <span className={`text-lg font-bold tracking-tight ${averageAdminScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                  {averageAdminScore}% <span className="text-sm font-medium text-slate-500">Avg.</span>
+                <span
+                  className={`text-lg font-bold tracking-tight ${averageAdminScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}
+                >
+                  {averageAdminScore}%{' '}
+                  <span className="text-sm font-medium text-slate-500">Avg.</span>
                 </span>
               )}
             </div>
           ) : attempt ? (
             <div className="flex items-end gap-2">
-              <span className={`text-3xl font-black tracking-tight leading-none ${scorePercentage! >= 80 ? 'text-emerald-700' : 'text-amber-700'}`}>
+              <span
+                className={`text-3xl font-black tracking-tight leading-none ${scorePercentage! >= 80 ? 'text-emerald-700' : 'text-amber-700'}`}
+              >
                 {scorePercentage}%
               </span>
-              <span className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}>
+              <span
+                className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+              >
                 Score
               </span>
             </div>
@@ -324,7 +345,9 @@ export default function QuizListDashboard() {
                 History
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">{past.map((q) => renderHistoryRow(q))}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {past.map((q) => renderHistoryRow(q))}
+            </div>
           </section>
         )}
       </div>

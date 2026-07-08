@@ -170,12 +170,10 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
   const isSuspended =
     project?.projectStatus === 'Suspended' || project?.invoiceStatus === 'Suspended';
   const isOnboarding = project?.projectStatus === 'Onboarding' || project?.status === 'Onboarding';
-  const isClosed =
-    project?.projectStatus === 'Closed' ||
-    project?.projectStatus === 'Completed' ||
-    project?.projectStatus === 'Churned';
+  const isClosed = project?.projectStatus === 'Closed' || project?.projectStatus === 'Completed';
+  const isChurned = project?.projectStatus === 'Churned';
   const isCancelled = project?.projectStatus === 'Cancelled';
-  const isActive = !isOnboarding && !isClosed && !isCancelled;
+  const isActive = !isOnboarding && !isClosed && !isCancelled && !isChurned;
 
   // Chart Data
   const rechartsData = useMemo(() => {
@@ -237,6 +235,10 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
               <div className="p-2 bg-slate-200 rounded-xl">
                 <XCircle className="w-5 h-5 text-slate-600" />
               </div>
+            ) : isChurned ? (
+              <div className="p-2 bg-red-100 rounded-xl">
+                <TrendingDown className="w-5 h-5 text-red-600" />
+              </div>
             ) : (
               <div className="p-2 bg-slate-200 rounded-xl">
                 <Archive className="w-5 h-5 text-slate-600" />
@@ -255,7 +257,9 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                     ? 'Onboarding Phase'
                     : isCancelled
                       ? 'Project Cancelled'
-                      : project?.projectStatus || 'Status Unknown'}
+                      : isChurned
+                        ? 'Project Churned'
+                        : project?.projectStatus || 'Status Unknown'}
               </h3>
               <p
                 className={`text-xs font-medium mt-0.5 ${
@@ -272,7 +276,9 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                     ? 'Metrics will begin calculating upon project release.'
                     : isCancelled
                       ? 'Project was cancelled. No health tracking or historical data was recorded.'
-                      : 'Historical data is preserved, but active tracking has concluded.'}
+                      : isChurned
+                        ? 'Project was cancelled post-launch. Historical data is preserved.'
+                        : 'Historical data is preserved, but active tracking has concluded.'}
               </p>
             </div>
           </div>
@@ -280,7 +286,7 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
       )}
 
       {/* 2. HERO DASHBOARD (Merged Gauge + Chart) */}
-      {isOnboarding || isClosed || isCancelled ? (
+      {isOnboarding || isClosed || isCancelled || isChurned ? (
         <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden min-h-[280px] flex flex-col items-center justify-center relative">
           <div className="absolute inset-0 bg-slate-50/50 pointer-events-none"></div>
           <div className="relative z-10 flex flex-col items-center text-center p-8 max-w-md">
@@ -290,13 +296,17 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                   ? 'bg-primary/5 border border-primary/10 text-primary'
                   : isClosed
                     ? 'bg-slate-100 border border-slate-200 text-slate-500'
-                    : 'bg-slate-100 border border-slate-200 text-slate-500'
+                    : isChurned
+                      ? 'bg-red-50 border border-red-100 text-red-500'
+                      : 'bg-slate-100 border border-slate-200 text-slate-500'
               }`}
             >
               {isOnboarding ? (
                 <Wrench className="w-8 h-8" />
               ) : isClosed ? (
                 <Archive className="w-8 h-8" />
+              ) : isChurned ? (
+                <TrendingDown className="w-8 h-8" />
               ) : (
                 <XCircle className="w-8 h-8" />
               )}
@@ -306,14 +316,18 @@ export default function ProjectHealthTab({ project }: ProjectHealthTabProps) {
                 ? 'Health Tracking Pending'
                 : isClosed
                   ? 'Project Closed'
-                  : 'Project Cancelled'}
+                  : isChurned
+                    ? 'Project Churned'
+                    : 'Project Cancelled'}
             </h3>
             <p className="text-sm text-slate-500 leading-relaxed">
               {isOnboarding
                 ? 'Health metrics, trajectories, and scores will begin calculating automatically once this project is officially released from onboarding.'
                 : isClosed
                   ? 'This project has been closed. Active health tracking and scoring have been disabled, but you can still view historical activity.'
-                  : 'This project was cancelled before launch. No health metrics or trajectory data were generated.'}
+                  : isChurned
+                    ? 'This project was cancelled post-launch. Active health tracking is disabled, but historical activity is preserved.'
+                    : 'This project was cancelled before launch. No health metrics or trajectory data were generated.'}
             </p>
           </div>
         </div>

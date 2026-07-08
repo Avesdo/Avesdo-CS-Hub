@@ -56,7 +56,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
         else if (status === 'Active' || status === 'Suspended') {
           act++;
           if (status === 'Suspended') suspended = true;
-        } else if (['Closed', 'Completed', 'Lost', 'Churned'].includes(status)) cls++;
+        } else if (['Closed', 'Completed', 'Lost'].includes(status)) cls++;
       });
 
       return {
@@ -87,7 +87,8 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
       const status = p.status || p.projectStatus;
 
       if (filter === 'All') return true;
-      if (filter === 'Closed') return ['Closed', 'Completed', 'Lost', 'Churned'].includes(status);
+      if (filter === 'Closed')
+        return ['Closed', 'Completed', 'Lost', 'Churned', 'Cancelled'].includes(status);
       if (filter === 'Active') return status === 'Active';
       if (filter === 'Onboarding') return status === 'Onboarding';
       if (filter === 'Suspended') return status === 'Suspended';

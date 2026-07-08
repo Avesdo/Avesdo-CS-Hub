@@ -702,7 +702,14 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                     </div>
                     {setStatusFilter && (
                       <ColumnFilter
-                        options={['Onboarding', 'Active', 'Suspended', 'Closed']}
+                        options={[
+                          'Onboarding',
+                          'Active',
+                          'Suspended',
+                          'Closed',
+                          'Churned',
+                          'Cancelled',
+                        ]}
                         selected={statusFilter || []}
                         onChange={setStatusFilter}
                       />

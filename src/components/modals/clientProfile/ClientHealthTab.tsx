@@ -203,8 +203,8 @@ export const ClientHealthTab = React.memo(
                   <AlertCircle className="w-5 h-5 text-red-600" />
                 </div>
               ) : isChurned ? (
-                <div className="p-2 bg-slate-200 rounded-xl">
-                  <XCircle className="w-5 h-5 text-slate-600" />
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <TrendingDown className="w-5 h-5 text-red-600" />
                 </div>
               ) : (
                 <div className="p-2 bg-slate-200 rounded-xl">
@@ -246,11 +246,11 @@ export const ClientHealthTab = React.memo(
               <div
                 className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-inner ${
                   isChurned
-                    ? 'bg-slate-100 border border-slate-200 text-slate-500'
+                    ? 'bg-red-50 border border-red-100 text-red-500'
                     : 'bg-slate-100 border border-slate-200 text-slate-500'
                 }`}
               >
-                <XCircle className="w-8 h-8" />
+                {isChurned ? <TrendingDown className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
               </div>
               <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-2">
                 Client Churned

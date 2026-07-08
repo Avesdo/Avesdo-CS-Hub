@@ -90,12 +90,19 @@ export const academyService = {
     return snapshot.docs.map((doc) => doc.data() as QuizAttempt);
   },
 
-  saveQuizProgress: async (quizId: string, userId: string, answers: Record<string, string>): Promise<void> => {
+  saveQuizProgress: async (
+    quizId: string,
+    userId: string,
+    answers: Record<string, string>
+  ): Promise<void> => {
     const progressRef = doc(db, 'quiz_progress', `${quizId}_${userId}`);
     await setDoc(progressRef, { quizId, userId, answers, updatedAt: Date.now() }, { merge: true });
   },
 
-  getQuizProgress: async (quizId: string, userId: string): Promise<Record<string, string> | null> => {
+  getQuizProgress: async (
+    quizId: string,
+    userId: string
+  ): Promise<Record<string, string> | null> => {
     const progressRef = collection(db, 'quiz_progress');
     const q = query(progressRef, where('quizId', '==', quizId), where('userId', '==', userId));
     const snapshot = await getDocs(q);

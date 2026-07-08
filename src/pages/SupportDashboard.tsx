@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSupportStore } from '../store/useSupportStore';
+import { useAcademyStore } from '../store/useAcademyStore';
 import { ChevronDown, Loader2, Search } from 'lucide-react';
 import { TruncatedText } from '../components/ui/TruncatedText';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +21,7 @@ import { ActivityHeatmapWidget } from '../components/support/ActivityHeatmapWidg
 import { TimeAndEffortQuadrantWidget } from '../components/support/TimeAndEffortQuadrantWidget';
 import { HighFrictionSourcesWidget } from '../components/support/HighFrictionSourcesWidget';
 import { WorkloadMatrixWidget } from '../components/support/WorkloadMatrixWidget';
+import { QualityMetricsWidget } from '../components/support/QualityMetricsWidget';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -45,6 +47,8 @@ export default function SupportDashboard() {
     customEndDate,
     setCustomDates,
   } = useSupportStore();
+
+  const fetchQuizzes = useAcademyStore((state) => state.fetchQuizzes);
 
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
@@ -89,7 +93,8 @@ export default function SupportDashboard() {
 
   useEffect(() => {
     fetchTickets();
-  }, [fetchTickets]);
+    fetchQuizzes(true);
+  }, [fetchTickets, fetchQuizzes]);
 
   const kpis = useMemo(() => {
     return calculateKPIs(filteredTickets, prevTickets);
@@ -322,6 +327,9 @@ export default function SupportDashboard() {
           </motion.div>
           <motion.div variants={itemVariants}>
             <WorkloadMatrixWidget chartData={chartData} managerFilter={managerFilter} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <QualityMetricsWidget />
           </motion.div>
         </motion.div>
       </div>

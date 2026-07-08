@@ -53,17 +53,20 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
       }
     }
     loadProgress();
-    
-    return () => { isMounted = false; };
+
+    return () => {
+      isMounted = false;
+    };
   }, [draftQuiz, user]);
 
   // Auto-save when answers change
   useEffect(() => {
     if (isLoading || !draftQuiz || !user || Object.keys(selectedAnswers).length === 0) return;
-    
+
     setIsSaving(true);
     const handler = setTimeout(() => {
-      academyService.saveQuizProgress(draftQuiz.id, user.uid, selectedAnswers)
+      academyService
+        .saveQuizProgress(draftQuiz.id, user.uid, selectedAnswers)
         .catch(console.error)
         .finally(() => setIsSaving(false));
     }, 1000);
@@ -102,7 +105,7 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
       setShowReview(true);
     }
   };
-  
+
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
@@ -126,7 +129,7 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
         answers: selectedAnswers,
         completedAt: Date.now(),
       });
-      
+
       await academyService.deleteQuizProgress(draftQuiz.id, user?.uid || 'unknown-user');
     } catch (err) {
       console.error('Failed to save quiz attempt', err);
@@ -157,15 +160,20 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
     return (
       <div className="flex flex-col h-full bg-white overflow-auto relative">
         <div className="max-w-3xl mx-auto w-full flex flex-col flex-1 px-6 pt-12 pb-20">
-          
           <div className="flex flex-col items-center justify-center py-8 text-center mb-4">
             <div className="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-5 shadow-inner border border-primary/20">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-2">Knowledge Check Complete!</h2>
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-2">
+              Knowledge Check Complete!
+            </h2>
             <p className="text-base text-slate-500 mb-6">
-              You scored <span className="font-semibold text-slate-800">{score}</span> out of {questions.length} (
-              <span className="font-semibold text-slate-800">{Math.round((score / questions.length) * 100)}%</span>)
+              You scored <span className="font-semibold text-slate-800">{score}</span> out of{' '}
+              {questions.length} (
+              <span className="font-semibold text-slate-800">
+                {Math.round((score / questions.length) * 100)}%
+              </span>
+              )
             </p>
             <Button onClick={() => window.location.reload()} size="lg" className="px-8 shadow-md">
               Return to Dashboard
@@ -175,15 +183,12 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
           <div className="border-b border-slate-200 pb-4 mb-2">
             <h3 className="text-xl font-bold text-slate-800 tracking-tight">Results Breakdown</h3>
           </div>
-          
+
           <div className="flex-1">
             {questions.map((q, idx) => {
               const isCorrect = selectedAnswers[q.id] === q.correctAnswer;
               return (
-                <div
-                  key={q.id}
-                  className="py-8 border-b border-slate-100 last:border-0"
-                >
+                <div key={q.id} className="py-8 border-b border-slate-100 last:border-0">
                   <div className="flex gap-4">
                     <div className="mt-0.5 shrink-0">
                       {isCorrect ? (
@@ -196,18 +201,24 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
                       <h4 className="font-medium text-slate-800 text-base mb-4">
                         {idx + 1}. {q.text}
                       </h4>
-                      
+
                       <div className="space-y-3">
                         <div className="flex items-start gap-3">
-                          <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">Your Answer:</span>
-                          <span className={`text-sm font-medium leading-relaxed ${isCorrect ? 'text-slate-800' : 'text-slate-400 line-through'}`}>
+                          <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">
+                            Your Answer:
+                          </span>
+                          <span
+                            className={`text-sm font-medium leading-relaxed ${isCorrect ? 'text-slate-800' : 'text-slate-400 line-through'}`}
+                          >
                             {selectedAnswers[q.id] || 'No answer selected'}
                           </span>
                         </div>
-                        
+
                         {!isCorrect && (
                           <div className="flex items-start gap-3">
-                            <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">Correct Answer:</span>
+                            <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">
+                              Correct Answer:
+                            </span>
                             <span className="text-sm font-medium text-emerald-700 leading-relaxed bg-emerald-50 px-2 py-0.5 rounded">
                               {q.correctAnswer}
                             </span>
@@ -216,10 +227,19 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
 
                         {q.explanation && (
                           <div className="mt-5 flex gap-3 p-4 bg-slate-50/80 rounded-xl text-sm text-slate-600 border border-slate-100">
-                            <div className="font-semibold text-slate-700 shrink-0">Explanation:</div>
+                            <div className="font-semibold text-slate-700 shrink-0">
+                              Explanation:
+                            </div>
                             <div className="leading-relaxed">
                               {q.explanation.split(/(?=\(Source)/).map((part, i) => (
-                                <span key={i} className={part.startsWith('(Source') ? 'block mt-1.5 text-slate-500 italic text-xs' : ''}>
+                                <span
+                                  key={i}
+                                  className={
+                                    part.startsWith('(Source')
+                                      ? 'block mt-1.5 text-slate-500 italic text-xs'
+                                      : ''
+                                  }
+                                >
                                   {part}
                                 </span>
                               ))}
@@ -239,14 +259,14 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
   }
 
   if (showReview) {
-    const unansweredCount = questions.filter(q => !selectedAnswers[q.id]).length;
+    const unansweredCount = questions.filter((q) => !selectedAnswers[q.id]).length;
     return (
       <div className="flex flex-col h-full bg-white overflow-auto relative">
         <div className="max-w-3xl mx-auto w-full flex flex-col flex-1 px-6 pt-6">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Review Answers</h2>
             <p className="text-slate-500 mt-1">
-              Please review your selections before submitting. 
+              Please review your selections before submitting.
               {unansweredCount > 0 && (
                 <span className="text-amber-600 font-medium ml-2">
                   You have {unansweredCount} unanswered question{unansweredCount > 1 ? 's' : ''}.
@@ -265,12 +285,14 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
                     </h4>
                     <div className="flex items-center gap-2.5">
                       <span className="text-sm font-semibold text-slate-500">Your Answer:</span>
-                      <span className={`text-sm font-medium ${selectedAnswers[q.id] ? 'text-primary' : 'text-slate-400 italic'}`}>
+                      <span
+                        className={`text-sm font-medium ${selectedAnswers[q.id] ? 'text-primary' : 'text-slate-400 italic'}`}
+                      >
                         {selectedAnswers[q.id] || 'No answer selected'}
                       </span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       setCurrentStep(idx);
                       setShowReview(false);
@@ -300,12 +322,8 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
               <ChevronLeft className="w-4 h-4" />
               Back to Last Question
             </Button>
-            
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="gap-2 px-8"
-            >
+
+            <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2 px-8">
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -336,20 +354,20 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
             <div className="flex items-center gap-3 mt-1.5">
               <div className="flex items-center gap-1.5">
                 {isSaving ? (
-                   <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
                 ) : (
-                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                 )}
                 <span className="text-slate-500 text-sm">
                   {isSaving ? 'Saving progress...' : 'Progress automatically saved'}
                 </span>
               </div>
-              
+
               {onCancel && (
                 <>
                   <span className="text-slate-300 text-sm">•</span>
-                  <button 
-                    onClick={onCancel} 
+                  <button
+                    onClick={onCancel}
                     className="text-sm font-medium text-slate-500 hover:text-primary hover:underline underline-offset-2 transition-all"
                   >
                     Save & Exit
@@ -405,11 +423,7 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
 
           <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
             {currentStep > 0 ? (
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                className="gap-2 px-6"
-              >
+              <Button variant="outline" onClick={handleBack} className="gap-2 px-6">
                 <ChevronLeft className="w-4 h-4" />
                 Back
               </Button>
@@ -428,10 +442,7 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               )}
-              <Button
-                onClick={handleNext}
-                className="gap-2 px-8"
-              >
+              <Button onClick={handleNext} className="gap-2 px-8">
                 {currentStep < questions.length - 1 ? (
                   <>
                     Next Question

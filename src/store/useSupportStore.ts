@@ -38,8 +38,26 @@ interface SupportState {
   tickets: SupportTicket[];
   isLoading: boolean;
   hasFetched: boolean;
-  dateRange: '7d' | '30d' | '90d' | 'ytd' | 'all' | 'custom';
-  setDateRange: (range: '7d' | '30d' | '90d' | 'ytd' | 'all' | 'custom') => void;
+  dateRange:
+    | '7d'
+    | 'thisMonth'
+    | 'lastMonth'
+    | 'thisQuarter'
+    | 'lastQuarter'
+    | 'ytd'
+    | 'all'
+    | 'custom';
+  setDateRange: (
+    range:
+      | '7d'
+      | 'thisMonth'
+      | 'lastMonth'
+      | 'thisQuarter'
+      | 'lastQuarter'
+      | 'ytd'
+      | 'all'
+      | 'custom'
+  ) => void;
   customStartDate: number | null;
   customEndDate: number | null;
   setCustomDates: (start: number | null, end: number | null) => void;
@@ -50,7 +68,7 @@ export const useSupportStore = create<SupportState>((set, get) => ({
   tickets: [],
   isLoading: false,
   hasFetched: false,
-  dateRange: '30d',
+  dateRange: 'lastMonth',
   setDateRange: (range) => set({ dateRange: range }),
   customStartDate: null,
   customEndDate: null,

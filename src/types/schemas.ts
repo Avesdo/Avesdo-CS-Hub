@@ -8,6 +8,8 @@ export const ClientSchema = z
     activeProjectCount: z.number().catch(0),
     healthScore: z.union([z.number(), z.literal('N/A')]).catch('N/A'),
     isArchived: z.boolean().optional().catch(false),
+    supportCsat: z.any().optional(),
+    supportCsatHistory: z.array(z.any()).optional().catch([]),
   })
   .passthrough();
 

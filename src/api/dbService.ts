@@ -63,7 +63,25 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
   };
 
   const unsubSettings = onSnapshot(doc(db, 'settings', 'global_config'), async (snap) => {
-    state.settings = snap.exists() ? (SettingsSchema.parse(snap.data()) as Settings) : null;
+    const rawData = snap.exists() ? snap.data() : null;
+    state.settings = rawData ? (SettingsSchema.parse(rawData) as Settings) : null;
+
+    if (state.settings) {
+      let updated = false;
+      if (!state.settings.statuses.some((s) => s.name === 'Churned')) {
+        state.settings.statuses.push({ name: 'Churned', color: 'red', icon: 'TrendingDown' });
+        updated = true;
+      }
+      if (!state.settings.statuses.some((s) => s.name === 'Cancelled')) {
+        state.settings.statuses.push({ name: 'Cancelled', color: 'slate', icon: 'XCircle' });
+        updated = true;
+      }
+      if (updated) {
+        updateDoc(doc(db, 'settings', 'global_config'), {
+          statuses: state.settings.statuses,
+        }).catch(console.error);
+      }
+    }
     if (!state.settings) {
       state.settings = {
         managers: [
@@ -98,6 +116,8 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
           { name: 'Active', color: 'green', icon: 'Activity' },
           { name: 'Suspended', color: 'red', icon: 'AlertTriangle' },
           { name: 'Closed', color: 'slate', icon: 'Archive' },
+          { name: 'Churned', color: 'red', icon: 'TrendingDown' },
+          { name: 'Cancelled', color: 'slate', icon: 'XCircle' },
         ],
         timelines: [
           { name: 'Not Started', color: 'slate', icon: 'Circle' },

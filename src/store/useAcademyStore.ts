@@ -42,19 +42,29 @@ export const useAcademyStore = create<AcademyState>((set) => ({
 
       if (canManage) {
         const attempts = await academyService.getAllQuizAttempts();
-        const deduped = Object.values(attempts.reduce((acc, curr) => {
-          const key = `${curr.quizId}_${curr.userId}`;
-          if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
-          return acc;
-        }, {} as Record<string, any>));
+        const deduped = Object.values(
+          attempts.reduce(
+            (acc, curr) => {
+              const key = `${curr.quizId}_${curr.userId}`;
+              if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+              return acc;
+            },
+            {} as Record<string, any>
+          )
+        );
         set({ quizAttempts: deduped });
       } else if (userId) {
         const attempts = await academyService.getAllUserQuizAttempts(userId);
-        const deduped = Object.values(attempts.reduce((acc, curr) => {
-          const key = `${curr.quizId}_${curr.userId}`;
-          if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
-          return acc;
-        }, {} as Record<string, any>));
+        const deduped = Object.values(
+          attempts.reduce(
+            (acc, curr) => {
+              const key = `${curr.quizId}_${curr.userId}`;
+              if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+              return acc;
+            },
+            {} as Record<string, any>
+          )
+        );
         set({ quizAttempts: deduped });
       }
     } catch (error: any) {
@@ -65,11 +75,16 @@ export const useAcademyStore = create<AcademyState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       const attempts = await academyService.getQuizAttempts(quizId);
-      const deduped = Object.values(attempts.reduce((acc, curr) => {
-        const key = `${curr.quizId}_${curr.userId}`;
-        if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
-        return acc;
-      }, {} as Record<string, any>));
+      const deduped = Object.values(
+        attempts.reduce(
+          (acc, curr) => {
+            const key = `${curr.quizId}_${curr.userId}`;
+            if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+            return acc;
+          },
+          {} as Record<string, any>
+        )
+      );
       set({ quizAttempts: deduped, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });

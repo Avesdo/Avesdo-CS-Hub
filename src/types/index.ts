@@ -6,6 +6,26 @@ export interface Client {
   activeProjectCount: number;
   healthScore: number | 'N/A';
   isArchived?: boolean;
+  supportCsat?: {
+    score: number;
+    totalUsers: number;
+    promoters: number;
+    passives: number;
+    detractors: number;
+    users: any[];
+  };
+  supportCsatHistory?: {
+    score: number;
+    totalUsers: number;
+    promoters: number;
+    passives: number;
+    detractors: number;
+    submittedAt: string;
+  }[];
+  clientNpsHistory?: {
+    score: number;
+    submittedAt: string;
+  }[];
   [key: string]: any; // Allow other properties while migrating
 }
 

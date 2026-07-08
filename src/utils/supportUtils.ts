@@ -2,14 +2,17 @@ import { SupportTicket } from '../store/useSupportStore';
 import {
   format,
   subDays,
-  isAfter,
-  isBefore,
   startOfDay,
-  getDay,
-  getHours,
   startOfWeek,
   startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfQuarter,
+  endOfQuarter,
+  subQuarters,
   differenceInDays,
+  getDay,
+  getHours,
 } from 'date-fns';
 
 const parseDate = (dateStr?: string) => {
@@ -52,59 +55,73 @@ export function getBaseTickets(
   if (!tickets || tickets.length === 0) return { currentPeriodBase: [], previousPeriodBase: [] };
 
   const now = new Date();
-  let daysToSubtract = 30;
-  if (dateRange === '7d') daysToSubtract = 7;
-  else if (dateRange === '90d') daysToSubtract = 90;
-  else if (dateRange === 'ytd') {
-    daysToSubtract = Math.floor(
-      (now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24)
-    );
+  let start = new Date(0);
+  let end = new Date(now);
+  let prevStart = new Date(0);
+  let prevEnd = new Date(0);
+
+  if (dateRange === '7d') {
+    start = subDays(startOfDay(now), 6);
+    end = now;
+    prevEnd = subDays(start, 1);
+    prevEnd.setHours(23, 59, 59, 999);
+    prevStart = subDays(startOfDay(prevEnd), 6);
+  } else if (dateRange === 'thisMonth') {
+    start = startOfMonth(now);
+    end = now;
+    prevStart = startOfMonth(subMonths(now, 1));
+    prevEnd = endOfMonth(subMonths(now, 1));
+    prevEnd.setHours(23, 59, 59, 999);
+  } else if (dateRange === 'lastMonth') {
+    start = startOfMonth(subMonths(now, 1));
+    end = endOfMonth(subMonths(now, 1));
+    end.setHours(23, 59, 59, 999);
+    prevStart = startOfMonth(subMonths(now, 2));
+    prevEnd = endOfMonth(subMonths(now, 2));
+    prevEnd.setHours(23, 59, 59, 999);
+  } else if (dateRange === 'thisQuarter') {
+    start = startOfQuarter(now);
+    end = now;
+    prevStart = startOfQuarter(subQuarters(now, 1));
+    prevEnd = endOfQuarter(subQuarters(now, 1));
+    prevEnd.setHours(23, 59, 59, 999);
+  } else if (dateRange === 'lastQuarter') {
+    start = startOfQuarter(subQuarters(now, 1));
+    end = endOfQuarter(subQuarters(now, 1));
+    end.setHours(23, 59, 59, 999);
+    prevStart = startOfQuarter(subQuarters(now, 2));
+    prevEnd = endOfQuarter(subQuarters(now, 2));
+    prevEnd.setHours(23, 59, 59, 999);
+  } else if (dateRange === 'ytd') {
+    start = new Date(now.getFullYear(), 0, 1);
+    end = now;
+    prevStart = new Date(now.getFullYear() - 1, 0, 1);
+    prevEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+  } else if (dateRange === 'all') {
+    start = new Date(0);
+    end = now;
+    prevStart = new Date(0);
+    prevEnd = new Date(0);
+  } else if (dateRange === 'custom') {
+    start = customStartDate ? startOfDay(new Date(customStartDate)) : new Date(0);
+    const customEnd = customEndDate ? startOfDay(new Date(customEndDate)) : new Date();
+    end = new Date(customEnd.getTime() + 86400000 - 1);
+    const duration = end.getTime() - start.getTime() + 1;
+    prevStart = new Date(start.getTime() - duration);
+    prevEnd = new Date(start.getTime() - 1);
   }
 
-  let currentPeriod: SupportTicket[] = [];
-  let previousPeriod: SupportTicket[] = [];
+  const currentPeriodBase = tickets.filter((t) => {
+    const created = parseDate(t['Created At']);
+    return created && created >= start && created <= end;
+  });
 
-  if (dateRange === 'custom') {
-    const start = customStartDate ? startOfDay(new Date(customStartDate)) : new Date(0);
-    const end = customEndDate ? startOfDay(new Date(customEndDate)) : new Date();
-    const endPlusOne = new Date(end.getTime() + 86400000);
+  const previousPeriodBase = tickets.filter((t) => {
+    const created = parseDate(t['Created At']);
+    return created && dateRange !== 'all' && created >= prevStart && created <= prevEnd;
+  });
 
-    currentPeriod = tickets.filter((t) => {
-      const created = parseDate(t['Created At']);
-      return created && created >= start && created < endPlusOne;
-    });
-
-    const duration = end.getTime() - start.getTime();
-    const prevStart = new Date(start.getTime() - duration);
-
-    previousPeriod = tickets.filter((t) => {
-      const created = parseDate(t['Created At']);
-      return created && created >= prevStart && created < start;
-    });
-  } else {
-    const cutoffDate = dateRange === 'all' ? new Date(0) : subDays(now, daysToSubtract);
-    const prevCutoffDate = dateRange === 'all' ? new Date(0) : subDays(cutoffDate, daysToSubtract);
-
-    currentPeriod = tickets.filter((t) => {
-      const created = parseDate(t['Created At']);
-      return created && (dateRange === 'all' || isAfter(created, cutoffDate));
-    });
-
-    previousPeriod = tickets.filter((t) => {
-      const created = parseDate(t['Created At']);
-      return (
-        created &&
-        dateRange !== 'all' &&
-        isAfter(created, prevCutoffDate) &&
-        isBefore(created, cutoffDate)
-      );
-    });
-  }
-
-  return {
-    currentPeriodBase: currentPeriod,
-    previousPeriodBase: previousPeriod,
-  };
+  return { currentPeriodBase, previousPeriodBase };
 }
 
 export function getFilteredTicketsData(
@@ -278,20 +295,25 @@ export function getChartData(
 
   const getGroupKey = (d: Date) => {
     if (dateRange === '7d') {
-      return format(d, 'EEEE');
-    } else if (dateRange === '30d' || dateRange === '90d') {
-      return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM dd')}`;
+      return format(d, 'EEE'); // Mon, Tue
+    } else if (
+      dateRange === 'thisMonth' ||
+      dateRange === 'lastMonth' ||
+      dateRange === 'thisQuarter' ||
+      dateRange === 'lastQuarter'
+    ) {
+      return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM d')}`;
     } else if (dateRange === 'ytd' || dateRange === 'all') {
-      return format(startOfMonth(d), 'MMM yyyy');
+      return format(startOfMonth(d), 'MMM yy');
     } else if (dateRange === 'custom') {
       const start = customStartDate ? new Date(customStartDate) : new Date(0);
       const end = customEndDate ? new Date(customEndDate) : new Date();
       const diff = differenceInDays(end, start);
-      if (diff > 90) return format(startOfMonth(d), 'MMM yyyy');
-      if (diff > 21) return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM dd')}`;
-      return format(d, 'MMM dd');
+      if (diff <= 7) return format(d, 'EEE');
+      if (diff <= 90) return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM d')}`;
+      return format(startOfMonth(d), 'MMM yy');
     }
-    return format(d, 'MMM dd');
+    return format(d, 'MMM d');
   };
 
   filteredTickets.forEach((t) => {

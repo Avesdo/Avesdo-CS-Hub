@@ -46,7 +46,7 @@ export default function KnowledgeCheckResults() {
     users.filter((u) => !u.isDeactivated && u.isAccountManager).map((u) => u.uid);
 
   const isEnrolled = authUser?.uid ? enrolledIds.includes(authUser.uid) : false;
-  const hasTaken = authUser?.uid ? quizAttempts.some(a => a.userId === authUser.uid) : false;
+  const hasTaken = authUser?.uid ? quizAttempts.some((a) => a.userId === authUser.uid) : false;
 
   const userResults = enrolledIds.map((userId) => {
     const user = users.find((u) => u.uid === userId);
@@ -85,9 +85,10 @@ export default function KnowledgeCheckResults() {
   const completedCount = quizAttempts.length;
   const enrolledCount = enrolledIds.length;
   const pendingCount = enrolledCount - completedCount;
-  const averageScore = completedCount > 0 
-    ? quizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount 
-    : 0;
+  const averageScore =
+    completedCount > 0
+      ? quizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount
+      : 0;
 
   if (isTakingQuiz) {
     return (
@@ -106,12 +107,12 @@ export default function KnowledgeCheckResults() {
         </div>
         <div className="flex items-center gap-4">
           {isEnrolled && !hasTaken && (
-             <button
-               onClick={() => setIsTakingQuiz(true)}
-               className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
-             >
-               Take Knowledge Check
-             </button>
+            <button
+              onClick={() => setIsTakingQuiz(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              Take Knowledge Check
+            </button>
           )}
           <div className="relative w-64">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -128,7 +129,9 @@ export default function KnowledgeCheckResults() {
 
       <div className="mb-2">
         <div className="flex items-baseline gap-2">
-          <span className={`text-4xl font-black tracking-tight ${completedCount > 0 ? (averageScore >= 80 ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-300'}`}>
+          <span
+            className={`text-4xl font-black tracking-tight ${completedCount > 0 ? (averageScore >= 80 ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-300'}`}
+          >
             {completedCount > 0 ? Math.round(averageScore) : 0}%
           </span>
           <span className="text-lg font-medium text-slate-500">Average Score</span>
@@ -148,28 +151,93 @@ export default function KnowledgeCheckResults() {
         ) : filteredResults.length > 0 ? (
           <div className="pb-20">
             {/* Completed Section */}
-            {filteredResults.filter(r => r.attempt).length > 0 && (
+            {filteredResults.filter((r) => r.attempt).length > 0 && (
               <div className="mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {filteredResults.filter(r => r.attempt).map(({ user, attempt }) => {
-                    const isPassing = attempt && attempt.score >= 80;
-                    const statusColor = isPassing 
-                      ? 'bg-gradient-to-br from-emerald-50/80 via-white to-white border-emerald-200/50 hover:border-emerald-300/50' 
-                      : 'bg-gradient-to-br from-amber-50/80 via-white to-white border-amber-200/50 hover:border-amber-300/50';
-                    const correctCount = attempt ? Math.round((attempt.score / 100) * (quiz?.questions.length || 0)) : 0;
+                  {filteredResults
+                    .filter((r) => r.attempt)
+                    .map(({ user, attempt }) => {
+                      const isPassing = attempt && attempt.score >= 80;
+                      const statusColor = isPassing
+                        ? 'bg-gradient-to-br from-emerald-50/80 via-white to-white border-emerald-200/50 hover:border-emerald-300/50'
+                        : 'bg-gradient-to-br from-amber-50/80 via-white to-white border-amber-200/50 hover:border-amber-300/50';
+                      const correctCount = attempt
+                        ? Math.round((attempt.score / 100) * (quiz?.questions.length || 0))
+                        : 0;
 
-                    return (
+                      return (
+                        <div
+                          key={user.id}
+                          onClick={() => setSelectedAttempt(attempt!)}
+                          className={`group flex flex-col p-5 rounded-2xl border ${statusColor} hover:shadow-md transition-all cursor-pointer relative overflow-hidden`}
+                        >
+                          <div className="flex items-center justify-between mb-6 mt-1">
+                            <div className="flex items-center gap-3">
+                              {user.photoURL ? (
+                                <img
+                                  src={user.photoURL}
+                                  alt={user.name}
+                                  className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-700 font-semibold border border-slate-200 shadow-sm">
+                                  {user.name.charAt(0)}
+                                </div>
+                              )}
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-800">{user.name}</h3>
+                                <p className="text-xs text-slate-500 font-medium">
+                                  {new Date(attempt!.completedAt!).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+                              <Eye className="w-5 h-5" />
+                            </div>
+                          </div>
+
+                          <div className="mt-auto">
+                            <div className="flex items-end gap-2">
+                              <span
+                                className={`text-3xl font-black tracking-tight leading-none ${isPassing ? 'text-emerald-700' : 'text-amber-700'}`}
+                              >
+                                {Math.round(attempt!.score)}%
+                              </span>
+                              <span
+                                className={`text-sm font-medium mb-0.5 ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                              >
+                                ({correctCount} of {quiz?.questions.length} correct)
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* Pending Section */}
+            {filteredResults.filter((r) => !r.attempt).length > 0 && (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredResults
+                    .filter((r) => !r.attempt)
+                    .map(({ user }) => (
                       <div
                         key={user.id}
-                        onClick={() => setSelectedAttempt(attempt!)}
-                        className={`group flex flex-col p-5 rounded-2xl border ${statusColor} hover:shadow-md transition-all cursor-pointer relative overflow-hidden`}
+                        className="group flex flex-col p-5 rounded-2xl border bg-gradient-to-br from-slate-50/80 via-white to-white border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all cursor-default relative overflow-hidden"
                       >
                         <div className="flex items-center justify-between mb-6 mt-1">
                           <div className="flex items-center gap-3">
                             {user.photoURL ? (
-                              <img 
-                                src={user.photoURL} 
-                                alt={user.name} 
+                              <img
+                                src={user.photoURL}
+                                alt={user.name}
                                 className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
                               />
                             ) : (
@@ -179,74 +247,24 @@ export default function KnowledgeCheckResults() {
                             )}
                             <div>
                               <h3 className="text-sm font-bold text-slate-800">{user.name}</h3>
-                              <p className="text-xs text-slate-500 font-medium">
-                                {new Date(attempt!.completedAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </p>
+                              <p className="text-xs text-slate-500 font-medium">Not started</p>
                             </div>
-                          </div>
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-primary">
-                            <Eye className="w-5 h-5" />
                           </div>
                         </div>
 
                         <div className="mt-auto">
-                          <div className="flex items-end gap-2">
-                            <span className={`text-3xl font-black tracking-tight leading-none ${isPassing ? 'text-emerald-700' : 'text-amber-700'}`}>
-                              {Math.round(attempt!.score)}%
-                            </span>
-                            <span className={`text-sm font-medium mb-0.5 ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}>
-                              ({correctCount} of {quiz?.questions.length} correct)
+                          <div className="flex items-end gap-2 h-8">
+                            <span className="text-lg font-bold tracking-tight text-slate-400">
+                              Pending
                             </span>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Pending Section */}
-            {filteredResults.filter(r => !r.attempt).length > 0 && (
-              <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {filteredResults.filter(r => !r.attempt).map(({ user }) => (
-                    <div
-                      key={user.id}
-                      className="group flex flex-col p-5 rounded-2xl border bg-gradient-to-br from-slate-50/80 via-white to-white border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all cursor-default relative overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between mb-6 mt-1">
-                        <div className="flex items-center gap-3">
-                          {user.photoURL ? (
-                            <img 
-                              src={user.photoURL} 
-                              alt={user.name} 
-                              className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-700 font-semibold border border-slate-200 shadow-sm">
-                              {user.name.charAt(0)}
-                            </div>
-                          )}
-                          <div>
-                            <h3 className="text-sm font-bold text-slate-800">{user.name}</h3>
-                            <p className="text-xs text-slate-500 font-medium">Not started</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-auto">
-                        <div className="flex items-end gap-2 h-8">
-                          <span className="text-lg font-bold tracking-tight text-slate-400">Pending</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
           </div>
-
         ) : (
           <div className="flex items-center justify-center py-12 text-slate-500">
             No results found.
@@ -275,7 +293,11 @@ export default function KnowledgeCheckResults() {
                 <p className="text-sm text-slate-500 font-medium">Completed</p>
                 <p className="text-sm font-medium text-slate-800">
                   {selectedAttempt?.completedAt
-                    ? new Date(selectedAttempt.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    ? new Date(selectedAttempt.completedAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
                     : 'N/A'}
                 </p>
               </div>
@@ -285,10 +307,7 @@ export default function KnowledgeCheckResults() {
               const userAnswer = selectedAttempt?.answers[q.id];
               const isCorrect = userAnswer === q.correctAnswer;
               return (
-                <div
-                  key={q.id}
-                  className="py-6 border-b border-slate-100 last:border-0"
-                >
+                <div key={q.id} className="py-6 border-b border-slate-100 last:border-0">
                   <div className="flex gap-4">
                     <div className="mt-0.5 shrink-0">
                       {isCorrect ? (
@@ -301,18 +320,24 @@ export default function KnowledgeCheckResults() {
                       <h4 className="font-medium text-slate-800 text-base mb-4">
                         {idx + 1}. {q.text}
                       </h4>
-                      
+
                       <div className="space-y-3">
                         <div className="flex items-start gap-3">
-                          <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">User Answer:</span>
-                          <span className={`text-sm font-medium leading-relaxed ${isCorrect ? 'text-slate-800' : 'text-slate-400 line-through'}`}>
+                          <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">
+                            User Answer:
+                          </span>
+                          <span
+                            className={`text-sm font-medium leading-relaxed ${isCorrect ? 'text-slate-800' : 'text-slate-400 line-through'}`}
+                          >
                             {userAnswer || 'Not answered'}
                           </span>
                         </div>
-                        
+
                         {!isCorrect && (
                           <div className="flex items-start gap-3">
-                            <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">Correct Answer:</span>
+                            <span className="text-sm font-semibold text-slate-400 shrink-0 mt-0.5">
+                              Correct Answer:
+                            </span>
                             <span className="text-sm font-medium text-emerald-700 leading-relaxed bg-emerald-50 px-2 py-0.5 rounded">
                               {q.correctAnswer}
                             </span>
@@ -321,10 +346,19 @@ export default function KnowledgeCheckResults() {
 
                         {q.explanation && (
                           <div className="mt-5 flex gap-3 p-4 bg-slate-50/80 rounded-xl text-sm text-slate-600 border border-slate-100">
-                            <div className="font-semibold text-slate-700 shrink-0">Explanation:</div>
+                            <div className="font-semibold text-slate-700 shrink-0">
+                              Explanation:
+                            </div>
                             <div className="leading-relaxed">
                               {q.explanation.split(/(?=\(Source)/).map((part, i) => (
-                                <span key={i} className={part.startsWith('(Source') ? 'block mt-1.5 text-slate-500 italic text-xs' : ''}>
+                                <span
+                                  key={i}
+                                  className={
+                                    part.startsWith('(Source')
+                                      ? 'block mt-1.5 text-slate-500 italic text-xs'
+                                      : ''
+                                  }
+                                >
                                   {part}
                                 </span>
                               ))}
