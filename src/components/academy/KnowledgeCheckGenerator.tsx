@@ -151,6 +151,83 @@ export default function KnowledgeCheckGenerator() {
                 // Use the enrolled users the user manually selected, or fallback to all active account managers if none
                 const activeAccountManagers = users.filter((u) => !u.isDeactivated && u.isAccountManager);
                 const targetUserIds = draftQuiz.enrolledUserIds?.length ? draftQuiz.enrolledUserIds : activeAccountManagers.map((u) => u.uid);
+                
+                const targetUsers = users.filter(u => targetUserIds.includes(u.uid));
+                const enrolledEmails = targetUsers.map(u => u.email).filter(Boolean).join(',');
+
+                const updatedQuiz = { 
+                  ...draftQuiz, 
+                  status: 'published' as const,
+                  enrolledUserIds: targetUserIds,
+                  targetMonth: new Date().getMonth() + 1,
+                  targetYear: new Date().getFullYear()
+                };
+                
+                await academyService.createDraftQuiz(updatedQuiz);
+                setActiveQuizzes(
+                  activeQuizzes.map((q) =>
+                    q.id === draftQuiz.id ? updatedQuiz : q
+                  )
+                );
+
+                // Trigger Email Webhook
+                if (import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL) {
+                  try {
+                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    const monthName = monthNames[updatedQuiz.targetMonth - 1] || "";
+
+                    await fetch(import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL, {
+                      method: 'POST',
+                      mode: 'no-cors',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        action: 'assign_quiz',
+                        emailTo: enrolledEmails || 'support@avesdo.com', // Added here for old script compatibility
+                        projectName: `Avesdo Academy`, // For old script compatibility
+                        formName: `Knowledge Check`, // For old script compatibility
+                        projectUrl: `https://avesdo-cs-hub.web.app/?drawer=academy`, // For old script compatibility
+                        payload: {
+                          email: enrolledEmails || 'support@avesdo.com',
+                          subject: `[Avesdo Academy] Your Knowledge Check is Ready`,
+                          quizMonthYear: `${monthName} ${updatedQuiz.targetYear}`
+                        }
+                      })
+                    });
+                  } catch (err) {
+                    console.error('Failed to trigger email webhook', err);
+                  }
+                }
+                
+                // Add in-app notification
+                import('../../utils/notificationUtils').then(({ createNotification }) => {
+                  createNotification('system', 'Academy', 'academy', 'New Knowledge Check available!');
+                });
+                setSelectedQuizId(null);
+              } catch (error) {
+                console.error('Failed to publish quiz:', error);
+                alert('Failed to publish quiz instantly.');
+              }
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/50 group whitespace-nowrap shrink-0 ${
+              isReadOnly || !draftQuiz
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed hidden'
+                : 'bg-white text-amber-600 border border-amber-200 hover:bg-amber-50 shadow-sm'
+            }`}
+          >
+            Publish Now
+          </button>
+
+          <button
+            disabled={isReadOnly || !draftQuiz}
+            onClick={async () => {
+              if (!draftQuiz) return;
+              try {
+                const { useAppStore } = await import('../../store/useAppStore');
+                const users = useAppStore.getState().users;
+                
+                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
+                const activeAccountManagers = users.filter((u) => !u.isDeactivated && u.isAccountManager);
+                const targetUserIds = draftQuiz.enrolledUserIds?.length ? draftQuiz.enrolledUserIds : activeAccountManagers.map((u) => u.uid);
 
                 const updatedQuiz = { 
                   ...draftQuiz, 
