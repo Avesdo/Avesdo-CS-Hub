@@ -139,9 +139,31 @@ export default function KnowledgeCheckGenerator() {
             Discard Draft
           </button>
 
+
           <button
             disabled={isReadOnly || !draftQuiz}
-            onClick={handleApproveAndSchedule}
+            onClick={async () => {
+              if (!draftQuiz) return;
+              try {
+                const { useAppStore } = await import('../../store/useAppStore');
+                const users = useAppStore.getState().users;
+                
+                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
+                const activeAccountManagers = users.filter((u) => !u.isDeactivated && u.isAccountManager);
+                const targetUserIds = draftQuiz.enrolledUserIds?.length ? draftQuiz.enrolledUserIds : activeAccountManagers.map((u) => u.uid);
+
+                const updatedQuiz = { 
+                  ...draftQuiz, 
+                  status: 'scheduled' as const,
+                  enrolledUserIds: targetUserIds
+                };
+                await academyService.createDraftQuiz(updatedQuiz);
+                setActiveQuizzes([...activeQuizzes, updatedQuiz]);
+                setSelectedQuizId(null);
+              } catch (error) {
+                console.error('Failed to schedule quiz:', error);
+              }
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 group whitespace-nowrap shrink-0 ${
               isReadOnly || !draftQuiz
                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'

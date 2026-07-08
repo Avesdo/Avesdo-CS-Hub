@@ -129,7 +129,7 @@ function NotificationBell() {
                   <div className="flex-1 pr-16">
                     <p className="text-sm text-foreground leading-tight">
                       {n.type === 'academy' ? (
-                        <span className="font-semibold">{n.title}</span>
+                        <span className="font-semibold">{n.title || n.formName}</span>
                       ) : (
                         <>
                           <span className="font-semibold">{n.projectName}</span>{' '}

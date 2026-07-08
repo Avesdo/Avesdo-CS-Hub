@@ -15,7 +15,7 @@ interface AcademyState {
   setDraftQuiz: (quiz: Quiz | null) => void;
   setSelectedQuizId: (id: string | null) => void;
   setKBArticles: (articles: KBArticle[]) => void;
-  fetchQuizzes: () => Promise<void>;
+  fetchQuizzes: (canManage?: boolean, userId?: string) => Promise<void>;
   fetchQuizAttempts: (quizId: string) => Promise<void>;
   setIsLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
@@ -34,11 +34,29 @@ export const useAcademyStore = create<AcademyState>((set) => ({
   setDraftQuiz: (draftQuiz) => set({ draftQuiz }),
   setSelectedQuizId: (selectedQuizId) => set({ selectedQuizId }),
   setKBArticles: (kbArticles) => set({ kbArticles }),
-  fetchQuizzes: async () => {
+  fetchQuizzes: async (canManage?: boolean, userId?: string) => {
     try {
       set({ isLoading: true, error: null });
       const quizzes = await academyService.getQuizzes();
       set({ activeQuizzes: quizzes, isLoading: false });
+
+      if (canManage) {
+        const attempts = await academyService.getAllQuizAttempts();
+        const deduped = Object.values(attempts.reduce((acc, curr) => {
+          const key = `${curr.quizId}_${curr.userId}`;
+          if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+          return acc;
+        }, {} as Record<string, any>));
+        set({ quizAttempts: deduped });
+      } else if (userId) {
+        const attempts = await academyService.getAllUserQuizAttempts(userId);
+        const deduped = Object.values(attempts.reduce((acc, curr) => {
+          const key = `${curr.quizId}_${curr.userId}`;
+          if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+          return acc;
+        }, {} as Record<string, any>));
+        set({ quizAttempts: deduped });
+      }
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }
@@ -47,7 +65,12 @@ export const useAcademyStore = create<AcademyState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       const attempts = await academyService.getQuizAttempts(quizId);
-      set({ quizAttempts: attempts, isLoading: false });
+      const deduped = Object.values(attempts.reduce((acc, curr) => {
+        const key = `${curr.quizId}_${curr.userId}`;
+        if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+        return acc;
+      }, {} as Record<string, any>));
+      set({ quizAttempts: deduped, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }

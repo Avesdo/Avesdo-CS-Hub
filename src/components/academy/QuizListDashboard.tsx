@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, FileText, Calendar, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { ChevronRight, FileText, Calendar, CheckCircle2, Clock, AlertCircle, Trash2 } from 'lucide-react';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAppStore } from '../../store/useAppStore';
@@ -92,14 +92,26 @@ export default function QuizListDashboard() {
         ? Math.round((attempt.score / quiz.questions.length) * 100)
         : null;
 
-    const answeredCount = quizAttempts.filter((a) => a.quizId === quiz.id).length;
+    const quizAttemptsList = quizAttempts.filter((a) => a.quizId === quiz.id);
+    const answeredCount = quizAttemptsList.length;
     const enrolledCount = quiz.enrolledUserIds?.length || 0;
     const pendingCount = Math.max(0, enrolledCount - answeredCount);
+    const averageScore = answeredCount > 0
+      ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
+      : null;
     const isDraft = quiz.status === 'draft' || quiz.status === 'reviewing';
 
     return (
-      <button
+      <div
         key={quiz.id}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setSelectedQuizId(quiz.id);
+          }
+        }}
         onClick={() => setSelectedQuizId(quiz.id)}
         className="group relative flex flex-row items-center justify-between p-6 bg-white border border-slate-200 shadow-sm rounded-2xl hover:border-primary/40 hover:shadow-md transition-all duration-200 text-left w-full overflow-hidden"
       >
@@ -140,9 +152,16 @@ export default function QuizListDashboard() {
                 <span className="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
                   {answeredCount} Answered
                 </span>
-                <span className="text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
-                  {pendingCount} Pending
-                </span>
+                {pendingCount > 0 && (
+                  <span className="text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
+                    {pendingCount} Pending
+                  </span>
+                )}
+                {averageScore !== null && (
+                  <span className={`px-2.5 py-1 rounded-lg border font-semibold ${averageScore >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}>
+                    Avg: {averageScore}%
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -151,7 +170,7 @@ export default function QuizListDashboard() {
             <ChevronRight className="w-5 h-5" />
           </div>
         </div>
-      </button>
+      </div>
     );
   };
 
@@ -161,50 +180,74 @@ export default function QuizListDashboard() {
     );
     const scorePercentage =
       attempt && quiz.questions?.length > 0
-        ? Math.round((attempt.score / quiz.questions.length) * 100)
+        ? Math.round(attempt.score)
         : null;
 
-    const answeredCount = quizAttempts.filter((a) => a.quizId === quiz.id).length;
+    const quizAttemptsList = quizAttempts.filter((a) => a.quizId === quiz.id);
+    const answeredCount = quizAttemptsList.length;
+    const averageAdminScore = answeredCount > 0
+      ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
+      : null;
+
+    const statusColor = attempt 
+      ? (scorePercentage! >= 80 ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-white to-white' : 'border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-white')
+      : 'border-slate-200 bg-gradient-to-br from-slate-50/80 via-white to-white';
 
     return (
-      <button
+      <div
         key={quiz.id}
         onClick={() => setSelectedQuizId(quiz.id)}
-        className="group flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-primary/30 hover:shadow-sm transition-all text-left w-full"
+        className={`group flex flex-col p-5 rounded-2xl border ${statusColor} hover:shadow-md transition-all cursor-pointer relative overflow-hidden`}
       >
-        <div className="flex items-center gap-4">
-          <div className="p-2.5 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg group-hover:bg-primary/5 group-hover:border-primary/20 group-hover:text-primary transition-colors">
-            <Calendar className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-6 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-white border border-slate-100 text-slate-400 rounded-lg shadow-sm">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">
+                {getMonthName(quiz.targetMonth)} {quiz.targetYear}
+              </h3>
+              {!canManage && (
+                <p className="text-xs text-slate-500 font-medium">
+                  {attempt
+                    ? `Submitted ${format(new Date(attempt.completedAt), 'MMM d, yyyy')}`
+                    : 'Expired'}
+                </p>
+              )}
+            </div>
           </div>
-          <div>
-            <h4 className="font-semibold text-slate-800">
-              {getMonthName(quiz.targetMonth)} {quiz.targetYear}
-            </h4>
-            {!canManage && (
-              <span className="text-xs font-medium text-slate-500">
-                {attempt
-                  ? `Submitted ${format(new Date(attempt.completedAt), 'MMM d, yyyy')}`
-                  : 'Expired'}
-              </span>
-            )}
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+            <ChevronRight className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="mt-auto">
           {canManage ? (
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
-              {answeredCount} Answered
-            </span>
+            <div className="flex items-end gap-3 h-8">
+              <span className="text-lg font-bold tracking-tight text-slate-800">{answeredCount} <span className="text-sm font-medium text-slate-500">Ans.</span></span>
+              {averageAdminScore !== null && (
+                <span className={`text-lg font-bold tracking-tight ${averageAdminScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {averageAdminScore}% <span className="text-sm font-medium text-slate-500">Avg.</span>
+                </span>
+              )}
+            </div>
           ) : attempt ? (
-            <span
-              className={`text-xs font-bold px-3 py-1 rounded-md ${scorePercentage && scorePercentage >= 80 ? 'text-emerald-700 bg-emerald-50' : 'text-amber-700 bg-amber-50'}`}
-            >
-              Score: {scorePercentage}%
-            </span>
-          ) : null}
-          <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
+            <div className="flex items-end gap-2">
+              <span className={`text-3xl font-black tracking-tight leading-none ${scorePercentage! >= 80 ? 'text-emerald-700' : 'text-amber-700'}`}>
+                {scorePercentage}%
+              </span>
+              <span className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}>
+                Score
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-end gap-2 h-8">
+              <span className="text-lg font-bold tracking-tight text-slate-400">Missed</span>
+            </div>
+          )}
         </div>
-      </button>
+      </div>
     );
   };
 
@@ -277,11 +320,11 @@ export default function QuizListDashboard() {
         {past.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-slate-400" /> History
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                History
               </h3>
             </div>
-            <div className="flex flex-col gap-3">{past.map((q) => renderHistoryRow(q))}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">{past.map((q) => renderHistoryRow(q))}</div>
           </section>
         )}
       </div>

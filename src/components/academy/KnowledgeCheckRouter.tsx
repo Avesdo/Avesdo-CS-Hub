@@ -52,7 +52,7 @@ export default function KnowledgeCheckRouter() {
       }
 
       if (quiz.status === 'published' || quiz.status === 'scheduled') {
-        return <KnowledgeCheckTaker />;
+        return <KnowledgeCheckTaker onCancel={() => setSelectedQuizId(null)} />;
       } else {
         return null;
       }
