@@ -13,7 +13,8 @@ const originalWarn = console.warn;
 console.warn = (...args) => {
   if (
     typeof args[0] === 'string' &&
-    args[0].includes('The width(-1) and height(-1) of chart should be greater than 0')
+    (args[0].includes('The width(-1) and height(-1) of chart should be greater than 0') ||
+      args[0].includes('BloomFilter error'))
   ) {
     return;
   }

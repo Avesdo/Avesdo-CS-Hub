@@ -57,6 +57,11 @@ export function ScheduleSettingsTab() {
 
   if (!settings) return null;
 
+  const getUserName = (id: string) => {
+    const u = users.find((user) => user.uid === id);
+    return u ? u.displayName || u.name || u.email || id : id;
+  };
+
   return (
     <div className="max-w-4xl animate-in fade-in duration-300">
       <div className="space-y-8 mt-6">
@@ -79,7 +84,7 @@ export function ScheduleSettingsTab() {
                   .filter((u) => u.isAccountManager && !u.isDeactivated)
                   .map((u) => ({
                     value: u.uid,
-                    label: u.displayName || u.email,
+                    label: getUserName(u.uid),
                   }))}
                 values={settings?.estManagers || []}
                 onChange={(vals) => saveSettings({ ...(settings as any), estManagers: vals })}
@@ -106,7 +111,7 @@ export function ScheduleSettingsTab() {
                   .filter((u) => u.isAccountManager && !u.isDeactivated)
                   .map((u) => ({
                     value: u.uid,
-                    label: u.displayName || u.email,
+                    label: getUserName(u.uid),
                   }))}
                 values={settings?.pstManagers || []}
                 onChange={(vals) => saveSettings({ ...(settings as any), pstManagers: vals })}
@@ -210,7 +215,7 @@ export function ScheduleSettingsTab() {
                     .filter((u) => u.isAccountManager && !u.isDeactivated)
                     .map((u) => ({
                       value: u.uid,
-                      label: u.displayName || u.email,
+                      label: getUserName(u.uid),
                     }))}
                   trigger={
                     <Button
@@ -297,7 +302,7 @@ export function ScheduleSettingsTab() {
                               .filter((u) => u.isAccountManager && !u.isDeactivated)
                               .map((u) => ({
                                 value: u.uid,
-                                label: u.displayName || u.email,
+                                label: getUserName(u.uid),
                               }))}
                             trigger={
                               <Button
@@ -371,7 +376,9 @@ export function ScheduleSettingsTab() {
                               <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
                                 <User className="w-3.5 h-3.5 text-primary" />
                               </div>
-                              <span className="font-medium text-slate-700">{t.manager}</span>
+                              <span className="font-medium text-slate-700">
+                                {getUserName(t.manager)}
+                              </span>
                             </div>
                           </div>
                           {canEdit && (

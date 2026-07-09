@@ -199,7 +199,9 @@ export const getSettingBadge = (
     const storeUsers = useAppStore.getState().users || [];
     let user = storeUsers.find((u) => u.uid === value);
     if (!user) {
-      user = storeUsers.find((u) => u.displayName === value || u.name === value);
+      user = storeUsers.find(
+        (u) => u.displayName === value || u.name === value || u.email === value
+      );
     }
 
     if (user) {
@@ -215,10 +217,10 @@ export const getSettingBadge = (
         >
           <LucideIcons.User className={iconSize} />
           <TruncatedText
-            text={String(user.displayName || user.name || value)}
+            text={String(user.displayName || user.name || user.email || value)}
             containerClassName={truncateText ? 'max-w-[180px]' : 'whitespace-nowrap'}
           >
-            {user.displayName || user.name || value}
+            {user.displayName || user.name || user.email || value}
           </TruncatedText>
         </span>
       );

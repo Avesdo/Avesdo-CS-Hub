@@ -98,6 +98,11 @@ export function MultiSelect({
     return result;
   }, [normalizedOptions, searchable, creatable, searchTerm, values]);
 
+  const getLabelForValue = (val: string) => {
+    const opt = normalizedOptions.find((o) => o.value === val);
+    return opt ? opt.label : val;
+  };
+
   const showCreateOption =
     creatable &&
     searchTerm.trim() !== '' &&
@@ -146,8 +151,8 @@ export function MultiSelect({
             exit={{ opacity: 0, scale: 0.8 }}
             className="flex items-center gap-1.5 px-3 py-1 bg-primary text-white hover:bg-primary/90 transition-colors font-bold text-2xl rounded-md shadow-sm"
           >
-            <TruncatedText text={val} containerClassName="max-w-[300px]">
-              {val}
+            <TruncatedText text={String(getLabelForValue(val))} containerClassName="max-w-[300px]">
+              {getLabelForValue(val)}
             </TruncatedText>
             <button
               type="button"
@@ -197,7 +202,7 @@ export function MultiSelect({
               key={val}
               className="bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1"
             >
-              {val}
+              {getLabelForValue(val)}
               <button
                 type="button"
                 onClick={(e) => removeValue(val, e)}

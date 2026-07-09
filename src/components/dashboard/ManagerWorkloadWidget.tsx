@@ -35,7 +35,7 @@ export function ManagerWorkloadWidget({
         )}
         {managerWorkload.map(([manager, counts]) => {
           const userObj = users.find((u) => u.uid === manager);
-          const displayName = userObj?.displayName || manager;
+          const displayName = userObj?.displayName || userObj?.name || userObj?.email || manager;
           const initials =
             manager !== 'Unassigned'
               ? displayName

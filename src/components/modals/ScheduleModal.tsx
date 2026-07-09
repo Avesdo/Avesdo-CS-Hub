@@ -34,6 +34,12 @@ export default function ScheduleModal() {
 
   const { scheduleData, loading, error } = useScheduleData();
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
+
+  const getUserName = (id: string) => {
+    const u = users.find((user) => user.uid === id);
+    return u ? u.displayName || u.name || u.email || id : id;
+  };
 
   const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
@@ -86,7 +92,7 @@ export default function ScheduleModal() {
           const eDate = new Date(`${t.endDate || t.date}T00:00:00`).getTime();
           return dTime.getTime() >= sDate && dTime.getTime() <= eDate;
         })
-        .map((t) => t.manager);
+        .map((t) => getUserName(t.manager));
 
       return {
         date: dTime,

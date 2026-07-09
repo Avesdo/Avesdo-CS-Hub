@@ -12,6 +12,12 @@ export default function GlobalSearch() {
   const projects = useAppStore((state) => state.projects);
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
+
+  const getUserName = (id: string) => {
+    const u = users.find((user) => user.uid === id);
+    return u ? u.displayName || u.name || u.email || id : id;
+  };
   const { openDrawer, closeDrawer, closeModal, activeDrawers, activeModal } = useUIStore();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -328,7 +334,8 @@ export default function GlobalSearch() {
                               {s.name}
                             </span>
                             <span className="text-xs text-muted-foreground font-medium mt-0.5">
-                              {s.clientName || 'Not Set'} {s.manager ? `• ${s.manager}` : ''}
+                              {s.clientName || 'Not Set'}{' '}
+                              {s.manager ? `• ${getUserName(s.manager)}` : ''}
                             </span>
                           </div>
                           <div className="shrink-0 ml-4">

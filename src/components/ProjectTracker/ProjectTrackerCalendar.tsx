@@ -22,6 +22,13 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
   ({ openDrawer }) => {
     const projects = useAppStore((state) => state.projects);
     const settings = useAppStore((state) => state.settings);
+    const users = useAppStore((state) => state.users);
+
+    const getUserName = (id: string) => {
+      const u = users.find((user) => user.uid === id);
+      return u ? u.displayName || u.name || u.email || id : id;
+    };
+
     const currentDateState = useState(new Date());
     const currentDate = currentDateState[0];
     const setCurrentDate = currentDateState[1];
@@ -76,7 +83,8 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
     const renderProjectBlock = (p: any) => {
       const borderHex = getTimelineHex(p.timelineStatus);
       const pName = p.name || 'Not Set';
-      const mgr = p.assignee || 'Unassigned';
+      const mgrId = p.assignee;
+      const mgr = mgrId ? getUserName(mgrId) : 'Unassigned';
       const pPhase = p.onboardingPhase || 'Not Set';
 
       return (
@@ -97,9 +105,13 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
           </TruncatedText>
           <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-normal overflow-hidden">
             <User className="w-3 h-3 shrink-0 opacity-70" />
-            <TruncatedText text={mgr}>{mgr}</TruncatedText>
+            <TruncatedText text={mgr} containerClassName="flex-shrink truncate min-w-0">
+              {mgr}
+            </TruncatedText>
             <span className="mx-0.5 opacity-50 shrink-0">•</span>
-            <TruncatedText text={pPhase}>{pPhase}</TruncatedText>
+            <TruncatedText text={pPhase} containerClassName="flex-shrink truncate min-w-0">
+              {pPhase}
+            </TruncatedText>
           </div>
         </div>
       );

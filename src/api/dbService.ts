@@ -213,11 +213,17 @@ export async function getHealthHistory(entityId?: string) {
     const historySnap = await getDoc(doc(db, 'settings', 'health_history'));
     if (historySnap.exists()) {
       const data = historySnap.data();
-      return entityId
-        ? data.historyMap
-          ? data.historyMap[entityId] || []
-          : []
-        : data.historyMap || {};
+      let historyMap: Record<string, any> = {};
+      if (data.historyMapJSON) {
+        try {
+          historyMap = JSON.parse(data.historyMapJSON);
+        } catch (e) {
+          console.error('Failed to parse historyMapJSON', e);
+        }
+      } else if (data.historyMap) {
+        historyMap = data.historyMap;
+      }
+      return entityId ? (historyMap ? historyMap[entityId] || [] : []) : historyMap || {};
     } else {
       return entityId ? [] : {};
     }

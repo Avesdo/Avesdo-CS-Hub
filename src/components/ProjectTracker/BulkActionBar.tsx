@@ -20,6 +20,11 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
   const users = useAppStore((state) => state.users);
   const [pendingUpdates, setPendingUpdates] = useState<Record<string, any>>({});
 
+  const getUserName = (id: string) => {
+    const u = users.find((user) => user.uid === id);
+    return u ? u.displayName || u.name || u.email || id : id;
+  };
+
   useEffect(() => {
     if (selectedCount === 0) {
       setPendingUpdates({});
@@ -64,7 +69,9 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
               <button
                 className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors focus:outline-none ${pendingUpdates.assignee ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
               >
-                {pendingUpdates.assignee ? `Manager: ${pendingUpdates.assignee}` : 'Manager...'}
+                {pendingUpdates.assignee
+                  ? `Manager: ${getUserName(pendingUpdates.assignee)}`
+                  : 'Manager...'}
               </button>
             }
           />

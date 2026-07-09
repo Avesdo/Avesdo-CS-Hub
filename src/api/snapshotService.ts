@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, getDocs, collection } from 'firebase/firestore';
+import { doc, getDoc, setDoc, getDocs, collection, deleteField } from 'firebase/firestore';
 import { db } from './firebase';
 import { calculateClientHealth, calculateProjectHealth } from '../utils/scoringUtils';
 import { Client, Project, Settings } from '../types';
@@ -23,8 +23,19 @@ export async function generateDailyHealthSnapshots() {
     // 2. Fetch the existing health_history document
     const historyRef = doc(db, 'settings', 'health_history');
     const historyDoc = await getDoc(historyRef);
-    const historyMap =
-      historyDoc.exists() && historyDoc.data().historyMap ? historyDoc.data().historyMap : {};
+    let historyMap: Record<string, any[]> = {};
+    if (historyDoc.exists()) {
+      const data = historyDoc.data();
+      if (data.historyMapJSON) {
+        try {
+          historyMap = JSON.parse(data.historyMapJSON);
+        } catch (e) {
+          console.error('Failed to parse historyMapJSON', e);
+        }
+      } else if (data.historyMap) {
+        historyMap = data.historyMap;
+      }
+    }
 
     const now = new Date();
     const todayStr = now.toDateString();
@@ -100,7 +111,14 @@ export async function generateDailyHealthSnapshots() {
 
     // 5. Save history Map
     if (hasUpdates) {
-      await setDoc(historyRef, { historyMap }, { merge: true });
+      await setDoc(
+        historyRef,
+        {
+          historyMapJSON: JSON.stringify(historyMap),
+          historyMap: deleteField(),
+        },
+        { merge: true }
+      );
     }
 
     // 5. Update lastSnapshotDate so this doesn't run again today

@@ -182,8 +182,14 @@ function TeamScheduleWidget() {
   const { openModal } = useUIStore();
   const [isOpen, setIsOpen] = useState(false);
   const { scheduleData, loading, getTodaySchedule } = useScheduleData();
+  const users = useAppStore((state) => state.users);
 
   const todayData = getTodaySchedule();
+
+  const getUserName = (id: string) => {
+    const u = users.find((user) => user.uid === id);
+    return u ? u.displayName || u.name || u.email || id : id;
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -357,11 +363,9 @@ function TeamScheduleWidget() {
                     className={`text-sm font-medium ${shift.managers.length > 0 ? (isActive ? 'text-emerald-700' : 'text-slate-600') : 'text-slate-400 italic'}`}
                   >
                     {shift.managers.length > 0
-                      ? typeof shift.managers === 'string'
-                        ? shift.managers
-                        : shift.managers
-                            .map((m: any) => (typeof m === 'object' ? m.name : m))
-                            .join(', ')
+                      ? shift.managers
+                          .map((m: any) => getUserName(typeof m === 'object' ? m.name : m))
+                          .join(', ')
                       : 'Unassigned'}
                   </span>
                 </div>
@@ -391,7 +395,7 @@ function TeamScheduleWidget() {
                 <span className="text-sm font-medium text-red-700">
                   {todayData.peopleOffToday.map((m: string, i: number) => (
                     <React.Fragment key={m}>
-                      {m}
+                      {getUserName(m)}
                       {i < todayData.peopleOffToday.length - 1 ? ', ' : ''}
                     </React.Fragment>
                   ))}
@@ -426,7 +430,7 @@ function TeamScheduleWidget() {
                   <div className="space-y-2">
                     {todayData.upcomingTimeOff.map((t: any, i: number) => (
                       <div key={i} className="text-xs flex justify-between items-center gap-2">
-                        <span className="font-medium text-slate-700">{t.manager}</span>
+                        <span className="font-medium text-slate-700">{getUserName(t.manager)}</span>
                         <span className="text-slate-500 text-[10.5px] bg-slate-100/50 px-1.5 py-0.5 rounded">
                           {formatDates(t.dates)}
                         </span>
