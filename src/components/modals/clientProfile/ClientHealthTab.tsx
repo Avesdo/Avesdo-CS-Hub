@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { getHealthHistory } from '../../../api/dbService';
 import { calculateClientHealth } from '../../../utils/scoringUtils';
+import { getClientComputedStatus } from '../../../utils/clientUtils';
 import { useAppStore } from '../../../store/useAppStore';
 import { motion } from 'framer-motion';
 import { Tooltip as UITooltip } from '../../ui/Tooltip';
@@ -142,9 +143,14 @@ export const ClientHealthTab = React.memo(
     };
 
     // Status Logic
-    const isSuspended = client?.status === 'Suspended';
-    const isChurned = client?.status === 'Churned';
-    const isActive = !isSuspended && !isChurned;
+    const computedStatus =
+      client?.statusOverride ||
+      (projects ? getClientComputedStatus(client, projects) : client?.status || 'Inactive');
+    const isSuspended = computedStatus === 'Suspended' || client?.status === 'Suspended';
+    const isChurned = computedStatus === 'Churned';
+    const isInactive = computedStatus === 'Inactive';
+    const isLost = computedStatus === 'Lost';
+    const isActive = !isSuspended && !isChurned && !isInactive && !isLost;
 
     // Chart Data
     const rechartsData = useMemo(() => {
@@ -202,7 +208,7 @@ export const ClientHealthTab = React.memo(
                 <div className="p-2 bg-red-100 rounded-xl">
                   <AlertCircle className="w-5 h-5 text-red-600" />
                 </div>
-              ) : isChurned ? (
+              ) : isChurned || isLost ? (
                 <div className="p-2 bg-red-100 rounded-xl">
                   <TrendingDown className="w-5 h-5 text-red-600" />
                 </div>
@@ -218,9 +224,11 @@ export const ClientHealthTab = React.memo(
                 >
                   {isSuspended
                     ? 'Client Suspended'
-                    : isChurned
-                      ? 'Client Churned'
-                      : client?.status || 'Status Unknown'}
+                    : isLost || isChurned
+                      ? 'Client Lost'
+                      : isInactive
+                        ? 'Client Inactive'
+                        : computedStatus}
                 </h3>
                 <p
                   className={`text-xs font-medium mt-0.5 ${
@@ -229,9 +237,11 @@ export const ClientHealthTab = React.memo(
                 >
                   {isSuspended
                     ? 'This client is suspended. Health tracking is paused.'
-                    : isChurned
-                      ? 'Client has churned. No health tracking or historical data is actively recorded.'
-                      : 'Historical data is preserved, but active tracking has concluded.'}
+                    : isLost || isChurned
+                      ? 'Client was lost. No health tracking or historical data is actively recorded.'
+                      : isInactive
+                        ? 'Historical data is preserved, but active tracking has concluded.'
+                        : 'Active tracking has concluded.'}
                 </p>
               </div>
             </div>
@@ -239,25 +249,30 @@ export const ClientHealthTab = React.memo(
         )}
 
         {/* 2. HERO DASHBOARD (Merged Gauge + Chart) */}
-        {isChurned ? (
+        {isChurned || isLost || isInactive ? (
           <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden min-h-[280px] flex flex-col items-center justify-center relative">
             <div className="absolute inset-0 bg-slate-50/50 pointer-events-none"></div>
             <div className="relative z-10 flex flex-col items-center text-center p-8 max-w-md">
               <div
                 className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-inner ${
-                  isChurned
+                  isLost || isChurned
                     ? 'bg-red-50 border border-red-100 text-red-500'
                     : 'bg-slate-100 border border-slate-200 text-slate-500'
                 }`}
               >
-                {isChurned ? <TrendingDown className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
+                {isLost || isChurned ? (
+                  <TrendingDown className="w-8 h-8" />
+                ) : (
+                  <Archive className="w-8 h-8" />
+                )}
               </div>
               <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-2">
-                Client Churned
+                {isLost || isChurned ? 'Client Lost' : 'Client Inactive'}
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
-                This client has churned. Active health tracking and scoring have been disabled, but
-                you can still view historical activity below.
+                {isLost || isChurned
+                  ? 'This client has been marked as lost. Active health tracking and scoring have been disabled, but you can still view historical activity.'
+                  : 'This client is inactive. Active health tracking and scoring have been disabled, but you can still view historical activity.'}
               </p>
             </div>
           </div>

@@ -140,6 +140,23 @@ export default function ProjectProfileModal() {
     }
   }, [isConfirmingDelete]);
 
+  const setAgreementOwner = async (clientId: string | null) => {
+    if (!project) return;
+    try {
+      await updateProjectRecord(
+        { ...project, agreementOwnerId: clientId || '' },
+        {
+          successMsg: clientId ? 'Agreement Owner set.' : 'Agreement Owner removed.',
+          errorMsg: 'Failed to update Agreement Owner.',
+        },
+        clientId
+          ? `Set Agreement Owner to ${clients.find((c) => c.clientId === clientId || c.id === clientId)?.companyName || clientId}`
+          : `Removed Agreement Owner`,
+        user?.name
+      );
+    } catch (err) {}
+  };
+
   useEffect(() => {
     if (project) {
       setEditNameValue(project.name || '');
@@ -769,17 +786,62 @@ export default function ProjectProfileModal() {
                               </Popover.Content>
                             </Popover.Root>
                           </div>
-                          {project?.developers && project.developers.length > 0 ? (
+                          {project?.developerIds && project.developerIds.length > 0 ? (
                             <div className="flex flex-col gap-1.5">
-                              {project.developers.map((cName: string, i: number) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
-                                >
-                                  <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                  <TruncatedText text={cName}>{cName}</TruncatedText>
-                                </div>
-                              ))}
+                              {project.developerIds.map((cId: string, i: number) => {
+                                const cName =
+                                  project.developers?.[i] ||
+                                  clients.find((c) => c.clientId === cId || c.id === cId)
+                                    ?.companyName ||
+                                  'Unknown Client';
+                                const isOwner = project.agreementOwnerId === cId;
+                                return (
+                                  <div
+                                    key={i}
+                                    className={`group flex items-center gap-2 text-[13px] font-medium px-3 py-2 rounded-xl shadow-sm relative overflow-hidden transition-all ${
+                                      isOwner
+                                        ? 'bg-primary/5 border border-primary/20 text-primary-dark pr-12'
+                                        : 'bg-white border border-slate-200/60 text-slate-700 pr-12'
+                                    }`}
+                                  >
+                                    {isOwner ? (
+                                      <LucideIcons.Crown className="w-3.5 h-3.5 text-primary shrink-0" />
+                                    ) : (
+                                      <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    )}
+                                    <TruncatedText text={cName}>{cName}</TruncatedText>
+
+                                    {hasPermission('project_edit_details') && (
+                                      <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center bg-inherit">
+                                        {isOwner ? (
+                                          <Tooltip content="Remove Owner">
+                                            <button
+                                              onClick={() => setAgreementOwner(null)}
+                                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                              <div className="relative flex items-center justify-center w-3.5 h-3.5">
+                                                <LucideIcons.Crown className="w-full h-full" />
+                                                <div className="absolute w-[120%] h-[1.5px] bg-current -rotate-45 rounded-full" />
+                                              </div>
+                                            </button>
+                                          </Tooltip>
+                                        ) : (
+                                          !project.agreementOwnerId && (
+                                            <Tooltip content="Set as Agreement Owner">
+                                              <button
+                                                onClick={() => setAgreementOwner(cId)}
+                                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                              >
+                                                <LucideIcons.Crown className="w-3.5 h-3.5" />
+                                              </button>
+                                            </Tooltip>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           ) : (
                             <span className="text-[12px] italic text-slate-400 px-1">
@@ -856,18 +918,62 @@ export default function ProjectProfileModal() {
                               </Popover.Content>
                             </Popover.Root>
                           </div>
-                          {project?.salesMarketingClients &&
-                          project.salesMarketingClients.length > 0 ? (
+                          {project?.salesMarketingIds && project.salesMarketingIds.length > 0 ? (
                             <div className="flex flex-col gap-1.5">
-                              {project.salesMarketingClients.map((cName: string, i: number) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
-                                >
-                                  <Target className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                  <TruncatedText text={cName}>{cName}</TruncatedText>
-                                </div>
-                              ))}
+                              {project.salesMarketingIds.map((cId: string, i: number) => {
+                                const cName =
+                                  project.salesMarketingClients?.[i] ||
+                                  clients.find((c) => c.clientId === cId || c.id === cId)
+                                    ?.companyName ||
+                                  'Unknown Client';
+                                const isOwner = project.agreementOwnerId === cId;
+                                return (
+                                  <div
+                                    key={i}
+                                    className={`group flex items-center gap-2 text-[13px] font-medium px-3 py-2 rounded-xl shadow-sm relative overflow-hidden transition-all ${
+                                      isOwner
+                                        ? 'bg-primary/5 border border-primary/20 text-primary-dark pr-12'
+                                        : 'bg-white border border-slate-200/60 text-slate-700 pr-12'
+                                    }`}
+                                  >
+                                    {isOwner ? (
+                                      <LucideIcons.Crown className="w-3.5 h-3.5 text-primary shrink-0" />
+                                    ) : (
+                                      <Target className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    )}
+                                    <TruncatedText text={cName}>{cName}</TruncatedText>
+
+                                    {hasPermission('project_edit_details') && (
+                                      <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center bg-inherit">
+                                        {isOwner ? (
+                                          <Tooltip content="Remove Owner">
+                                            <button
+                                              onClick={() => setAgreementOwner(null)}
+                                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                              <div className="relative flex items-center justify-center w-3.5 h-3.5">
+                                                <LucideIcons.Crown className="w-full h-full" />
+                                                <div className="absolute w-[120%] h-[1.5px] bg-current -rotate-45 rounded-full" />
+                                              </div>
+                                            </button>
+                                          </Tooltip>
+                                        ) : (
+                                          !project.agreementOwnerId && (
+                                            <Tooltip content="Set as Agreement Owner">
+                                              <button
+                                                onClick={() => setAgreementOwner(cId)}
+                                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                              >
+                                                <LucideIcons.Crown className="w-3.5 h-3.5" />
+                                              </button>
+                                            </Tooltip>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           ) : (
                             <span className="text-[12px] italic text-slate-400 px-1">

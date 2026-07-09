@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export interface FilterGroup {
   label: string;
-  values: string[];
+  values: string[] | { label: string; value: string }[];
   onRemove: (value: string) => void;
 }
 
@@ -15,11 +15,15 @@ interface ActiveFilterBarProps {
 
 export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
   const activeItems = filters.flatMap((group) =>
-    group.values.map((val) => ({
-      groupLabel: group.label,
-      value: val,
-      onRemove: group.onRemove,
-    }))
+    group.values.map((val) => {
+      const isObj = typeof val !== 'string';
+      return {
+        groupLabel: group.label,
+        value: isObj ? val.value : (val as string),
+        displayValue: isObj ? val.label : (val as string),
+        onRemove: group.onRemove,
+      };
+    })
   );
 
   if (activeItems.length === 0) return null;
@@ -47,7 +51,7 @@ export function ActiveFilterBar({ filters, onClearAll }: ActiveFilterBarProps) {
             key={`${item.groupLabel}-${item.value}-${idx}`}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary/5 text-primary border border-primary/10 shadow-sm"
           >
-            {item.groupLabel}: <span className="text-primary font-bold">{item.value}</span>
+            {item.groupLabel}: <span className="text-primary font-bold">{item.displayValue}</span>
             <button
               onClick={() => item.onRemove(item.value)}
               className="hover:bg-primary/20 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 rounded-full p-0.5"

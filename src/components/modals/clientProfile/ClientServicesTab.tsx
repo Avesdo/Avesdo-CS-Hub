@@ -341,8 +341,10 @@ export default function ClientServicesTab({ client }: ClientServicesTabProps) {
                           {(() => {
                             const managerId = s.manager || s.owner || s.assignedTo;
                             if (!managerId) return 'Unassigned';
-                            const user = Array.isArray(users) ? users.find((u: any) => u.uid === managerId || u.id === managerId) : null;
-                            return user ? (user.name || user.displayName) : managerId;
+                            const user = Array.isArray(users)
+                              ? users.find((u: any) => u.uid === managerId || u.id === managerId)
+                              : null;
+                            return user ? user.name || user.displayName : managerId;
                           })()}
                         </span>
                       </div>

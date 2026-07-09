@@ -1,4 +1,5 @@
 import { Settings } from '../types';
+import { getClientComputedStatus } from './clientUtils';
 
 export interface ProjectHealthResult {
   totalScore: number | 'N/A';
@@ -370,6 +371,11 @@ export function calculateClientHealth(
   if (totalWeight > 0) {
     totalScore = Math.round(((totalScore as number) / totalWeight) * 100);
   } else {
+    totalScore = 'N/A';
+  }
+
+  const computedStatus = getClientComputedStatus(client, projects);
+  if (computedStatus === 'Inactive' || computedStatus === 'Lost') {
     totalScore = 'N/A';
   }
 

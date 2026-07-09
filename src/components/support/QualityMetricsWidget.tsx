@@ -48,9 +48,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                   className="w-2.5 h-2.5 rounded-[3px] shadow-sm"
                   style={{ backgroundColor: entry.color }}
                 />
-                <span className="text-[13px] font-medium text-muted-foreground">
-                  {entry.name}
-                </span>
+                <span className="text-[13px] font-medium text-muted-foreground">{entry.name}</span>
               </div>
               <span className="text-[14px] font-bold text-foreground">
                 {entry.value}

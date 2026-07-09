@@ -11,14 +11,14 @@ export const ColumnFilter = ({
   onChange,
   searchable = false,
 }: {
-  options: string[];
+  options: string[] | { label: string; value: string }[];
   selected: string[];
   onChange: (val: string[]) => void;
   searchable?: boolean;
 }) => {
   return (
     <MultiSelect
-      options={options.map((opt) => ({ label: opt, value: opt }))}
+      options={options.map((opt) => (typeof opt === 'string' ? { label: opt, value: opt } : opt))}
       values={selected}
       onChange={onChange}
       searchable={searchable}

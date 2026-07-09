@@ -3,7 +3,13 @@ import { useAppStore } from '../store/useAppStore';
 import { useUIStore } from '../store/useUIStore';
 import { useLocation } from 'react-router-dom';
 import { usePermissions } from '../hooks/usePermissions';
-import { getHealthBadge, getSettingBadge, getSafeHex, hexToRgba } from '../utils/uiUtils';
+import {
+  getHealthBadge,
+  getSettingBadge,
+  getClientStatusBadge,
+  getSafeHex,
+  hexToRgba,
+} from '../utils/uiUtils';
 import { universalExportCSV } from '../utils/exportUtils';
 import { PageHeader } from '../components/PageHeader';
 import { TrendIndicator } from '../components/TrendIndicator';
@@ -59,7 +65,14 @@ import {
   getAllManagers,
 } from '../utils/clientUtils';
 
-type SortCol = 'companyName' | 'type' | 'healthScore' | 'projectCount' | 'manager' | 'trend';
+type SortCol =
+  | 'companyName'
+  | 'type'
+  | 'healthScore'
+  | 'projectCount'
+  | 'manager'
+  | 'trend'
+  | 'status';
 
 // --- Sparkline Component ---
 const Sparkline = React.memo(({ data }: { data: number[] }) => {
@@ -102,6 +115,7 @@ export default function ClientHealth() {
   const clients = useAppStore((state) => state.clients);
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
+  const appUsers = useAppStore((state) => state.users);
   const users = useAppStore((state) => state.users);
   const { openDrawer, openModal } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -160,6 +174,9 @@ export default function ClientHealth() {
                 Unassigned
               </span>
             )}
+          </td>
+          <td className="px-6 py-2 text-muted-foreground border-l-0">
+            {getClientStatusBadge(c.computedStatus || 'Inactive', settings)}
           </td>
           <td
             className="px-6 py-2"
@@ -333,6 +350,7 @@ export default function ClientHealth() {
   const [healthFilter, setHealthFilter] = useState<string[]>([]);
   const [projectFilter, setProjectFilter] = useState<string[]>([]);
   const [managerFilter, setManagerFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   // Sorting
   const [sortCol, setSortCol] = useState<SortCol>('healthScore');
@@ -372,7 +390,8 @@ export default function ClientHealth() {
     typeFilter.length +
     healthFilter.length +
     projectFilter.length +
-    managerFilter.length;
+    managerFilter.length +
+    statusFilter.length;
 
   const removeFilterItem = (filterSetter: any, filterArray: string[], item: string) => {
     filterSetter(filterArray.filter((i: string) => i !== item));
@@ -384,17 +403,26 @@ export default function ClientHealth() {
     setHealthFilter([]);
     setProjectFilter([]);
     setManagerFilter([]);
+    setStatusFilter([]);
   };
 
   // Filter Options
   const allCompanyNames = useMemo(() => getAllCompanyNames(clients), [clients]);
   const allTypes = useMemo(() => getAllClientTypes(clients, settings), [clients, settings]);
-  const allManagers = useMemo(() => getAllManagers(clients, settings), [clients, settings]);
+  const allManagersIds = useMemo(() => getAllManagers(clients, settings), [clients, settings]);
+  const allManagers = useMemo(() => {
+    return allManagersIds.map((id) => {
+      if (id === 'Unassigned') return { label: 'Unassigned', value: 'Unassigned' };
+      const user = appUsers.find((u: any) => u.uid === id);
+      return { label: user ? user.displayName || user.name || id : id, value: id };
+    });
+  }, [allManagersIds, appUsers]);
+  const allStatuses = useMemo(() => ['Active', 'Inactive', 'Lost'], []);
 
   // Calculate Client Enhancements
   const enhancedClients = useMemo(
-    () => getEnhancedClients(clients, projects, healthHistory),
-    [clients, projects, healthHistory]
+    () => getEnhancedClients(clients, projects, healthHistory, settings),
+    [clients, projects, healthHistory, settings]
   );
 
   // Calculate Top KPIs on Unfiltered array
@@ -415,7 +443,8 @@ export default function ClientHealth() {
         typeFilter,
         healthFilter,
         projectFilter,
-        managerFilter
+        managerFilter,
+        statusFilter
       ),
     [
       enhancedClients,
@@ -424,6 +453,7 @@ export default function ClientHealth() {
       healthFilter,
       managerFilter,
       projectFilter,
+      statusFilter,
       settings,
       activeTab,
       globalSearch,
@@ -769,8 +799,19 @@ export default function ClientHealth() {
                 },
                 {
                   label: 'Manager',
-                  values: managerFilter,
+                  values: managerFilter.map((id) => {
+                    const matchedUser = appUsers.find((u: any) => u.uid === id);
+                    return {
+                      label: matchedUser ? matchedUser.displayName || matchedUser.name || id : id,
+                      value: id,
+                    };
+                  }),
                   onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
+                },
+                {
+                  label: 'Status',
+                  values: statusFilter,
+                  onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v),
                 },
               ]}
               onClearAll={clearAllFilters}
@@ -810,7 +851,7 @@ export default function ClientHealth() {
                       />
                     </div>
                   </th>
-                  <th className="w-[15%] border-b border-border px-6 py-2 hidden md:table-cell group/th">
+                  <th className="w-[12%] border-b border-border px-6 py-2 hidden md:table-cell group/th">
                     <div className="flex items-center">
                       <div
                         className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
@@ -826,7 +867,23 @@ export default function ClientHealth() {
                       />
                     </div>
                   </th>
-                  <th className="w-[20%] border-b border-border px-6 py-2 group/th">
+                  <th className="w-[12%] border-b border-border px-6 py-2 group/th">
+                    <div className="flex items-center">
+                      <div
+                        className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors text-slate-500 font-bold"
+                        onClick={() => handleSort('status')}
+                      >
+                        Status
+                        {renderSortArrow('status')}
+                      </div>
+                      <ColumnFilter
+                        options={allStatuses}
+                        selected={statusFilter}
+                        onChange={setStatusFilter}
+                      />
+                    </div>
+                  </th>
+                  <th className="w-[15%] border-b border-border px-6 py-2 group/th">
                     <div className="flex items-center">
                       <div
                         className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
@@ -842,7 +899,7 @@ export default function ClientHealth() {
                       />
                     </div>
                   </th>
-                  <th className="w-[20%] border-b border-border px-6 py-2 hidden sm:table-cell group/th">
+                  <th className="w-[16%] border-b border-border px-6 py-2 hidden sm:table-cell group/th">
                     <div className="flex items-center">
                       <div
                         className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"

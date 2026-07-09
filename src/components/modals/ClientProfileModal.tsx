@@ -40,6 +40,8 @@ import toast from 'react-hot-toast';
 import { renderIcon } from '../../utils/uiUtils';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TruncatedText } from '../../components/ui/TruncatedText';
+import { getClientComputedStatus } from '../../utils/clientUtils';
+import { getClientStatusBadge } from '../../utils/uiUtils';
 
 const TokenTrigger = ({
   label,
@@ -247,6 +249,41 @@ export default function ClientProfileModal() {
     );
   };
 
+  const handleUpdateStatus = async (val: string) => {
+    if (!client) return;
+    const oldVal = client.statusOverride || 'Auto (Default)';
+    const overrideVal = val === 'Auto (Default)' ? '' : val;
+    if ((client.statusOverride || '') === overrideVal) return;
+
+    await updateClientRecord(
+      { ...client, statusOverride: overrideVal },
+      {
+        successMsg: `Client Status successfully updated`,
+        errorMsg: `Failed to update Client Status`,
+      },
+      `Client Status override changed from ${oldVal} to ${val}`,
+      user?.name
+    );
+  };
+
+  const getStatusIcon = (statusName: string) => {
+    let mappedProjectStatus = statusName;
+    if (statusName === 'Inactive') mappedProjectStatus = 'Closed';
+    if (statusName === 'Lost') {
+      mappedProjectStatus = (settings?.statuses || []).some((s: any) => s.name === 'Churned')
+        ? 'Churned'
+        : 'Cancelled';
+    }
+
+    const s = (settings?.statuses || []).find((x: any) => x.name === mappedProjectStatus);
+    const iconName = s?.icon;
+    if (!iconName) return Activity;
+    const IconMatch = Object.entries(LucideIcons).find(
+      ([key]) => key.toLowerCase() === iconName.toLowerCase().replace(/-/g, '')
+    )?.[1] as any;
+    return IconMatch || Activity;
+  };
+
   const toggleProjectArrayItem = async (projectId: string, projectName: string) => {
     if (!client) return;
     const targetProject = projects.find((p) => p.id === projectId);
@@ -443,6 +480,76 @@ export default function ClientProfileModal() {
                     <div className="flex-1 overflow-y-auto custom-thin-scroll px-6 pb-6 flex flex-col gap-5">
                       {/* Top Priority: Metadata Tokens */}
                       <div className="flex flex-col gap-3">
+                        {(() => {
+                          const computedValue = client
+                            ? getClientComputedStatus(client, projects)
+                            : 'Inactive';
+                          const displayValue = client?.statusOverride
+                            ? `${client.statusOverride} (Override)`
+                            : computedValue;
+                          const activeStatus = client?.statusOverride || computedValue;
+
+                          const ActiveIcon = getStatusIcon('Active');
+                          const InactiveIcon = getStatusIcon('Inactive');
+                          const LostIcon = getStatusIcon('Lost');
+
+                          return (
+                            <div>
+                              <Select
+                                options={[
+                                  {
+                                    label: (
+                                      <div className="flex items-center gap-2">
+                                        <Activity className="w-4 h-4 text-slate-400" />
+                                        <span>Auto (Default)</span>
+                                      </div>
+                                    ),
+                                    value: 'Auto (Default)',
+                                  },
+                                  {
+                                    label: (
+                                      <div className="flex items-center gap-2">
+                                        <ActiveIcon className="w-4 h-4 text-slate-400" />
+                                        <span>Active</span>
+                                      </div>
+                                    ),
+                                    value: 'Active',
+                                  },
+                                  {
+                                    label: (
+                                      <div className="flex items-center gap-2">
+                                        <InactiveIcon className="w-4 h-4 text-slate-400" />
+                                        <span>Inactive</span>
+                                      </div>
+                                    ),
+                                    value: 'Inactive',
+                                  },
+                                  {
+                                    label: (
+                                      <div className="flex items-center gap-2">
+                                        <LostIcon className="w-4 h-4 text-slate-400" />
+                                        <span>Lost</span>
+                                      </div>
+                                    ),
+                                    value: 'Lost',
+                                  },
+                                ]}
+                                value={client?.statusOverride || 'Auto (Default)'}
+                                onChange={(val) => handleUpdateStatus(val)}
+                                disabled={!hasPermission('client_edit_profile')}
+                                trigger={
+                                  <TokenTrigger
+                                    label="Status"
+                                    value={displayValue}
+                                    icon={getStatusIcon(activeStatus)}
+                                    disabled={!hasPermission('client_edit_profile')}
+                                  />
+                                }
+                              />
+                            </div>
+                          );
+                        })()}
+
                         <div>
                           <Select
                             options={(

@@ -350,6 +350,57 @@ export const getTypeBadgeIconOnly = (value: string, settings: any) => {
   );
 };
 
+export const getClientStatusBadge = (
+  status: string,
+  settings: any,
+  size: 'sm' | 'md' | 'lg' | boolean = false
+) => {
+  let mappedProjectStatus = status;
+  if (status === 'Inactive') mappedProjectStatus = 'Closed';
+  if (status === 'Lost') {
+    mappedProjectStatus = (settings?.statuses || []).some((s: any) => s.name === 'Churned')
+      ? 'Churned'
+      : 'Cancelled';
+  }
+
+  const list = settings?.statuses || [];
+  let item = list.find((i: any) => i.name === mappedProjectStatus);
+  if (!item) {
+    const archivedList = settings?.archivedData?.statuses || [];
+    item = archivedList.find((i: any) => i.name === mappedProjectStatus);
+  }
+
+  const syntheticItem = item
+    ? { ...item, name: status }
+    : { name: status, color: 'slate', icon: 'CircleDashed' };
+
+  let sizeClasses = 'px-2.5 py-1 text-[11px]';
+  let iconSize = 'w-3 h-3';
+  if (size === true || size === 'lg') {
+    sizeClasses = 'px-3 py-1.5 text-sm';
+    iconSize = 'w-4 h-4';
+  } else if (size === 'md') {
+    sizeClasses = 'px-2.5 py-1 text-[13px]';
+    iconSize = 'w-3.5 h-3.5';
+  }
+
+  const hex = COLOR_MAP[syntheticItem.color] || COLOR_MAP.slate;
+
+  return (
+    <span
+      className={`${sizeClasses} font-medium rounded-md inline-flex items-center gap-1.5 shrink-0`}
+      style={{
+        backgroundColor: hexToRgba(hex, 0.1),
+        color: hex,
+        boxShadow: `inset 0 0 0 1px ${hexToRgba(hex, 0.2)}`,
+      }}
+    >
+      {syntheticItem.icon && renderIcon(syntheticItem.icon, iconSize)}
+      {syntheticItem.name}
+    </span>
+  );
+};
+
 export const getHealthBadge = (score: number | string | undefined | null, settings: any) => {
   if (score === undefined || score === null || score === 'N/A' || typeof score !== 'number') {
     return (

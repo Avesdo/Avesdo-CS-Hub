@@ -67,6 +67,7 @@ export default function ProjectTracker() {
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
+  const appUsers = useAppStore((state) => state.users);
   const { openModal, openDrawer } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -802,7 +803,15 @@ export default function ProjectTracker() {
                     },
                     {
                       label: 'Manager',
-                      values: managerFilter,
+                      values: managerFilter.map((id) => {
+                        const matchedUser = appUsers.find((u: any) => u.uid === id);
+                        return {
+                          label: matchedUser
+                            ? matchedUser.displayName || matchedUser.name || id
+                            : id,
+                          value: id,
+                        };
+                      }),
                       onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
                     },
                     {

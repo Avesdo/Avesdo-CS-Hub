@@ -1,6 +1,7 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '../../store/useAppStore';
 import {
   ArrowUpDown,
   ArrowUp,
@@ -28,8 +29,8 @@ import EmptyState from '../EmptyState';
 import { ColumnFilter } from '../TableFilters';
 import { MonthRangePicker } from '../ui/MonthRangePicker';
 import { DatePicker } from '../ui/DatePicker';
+import { ProjectTrackerCalendar } from './ProjectTrackerCalendar';
 import { usePermissions } from '../../hooks/usePermissions';
-import { useAppStore } from '../../store/useAppStore';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -437,6 +438,8 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
     footerContent,
     parentRef,
   }) => {
+    const appUsers = useAppStore((state) => state.users);
+
     const groupA = [
       'Actively Onboarding',
       'Upcoming (> 45 Days)',
@@ -464,9 +467,15 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
       useMemo(() => {
         const names = Array.from(new Set(baseProjects.map((p) => p.name || 'Not Set'))).sort();
         const clients = Array.from(new Set(baseProjects.flatMap((p) => p.clients || []))).sort();
-        const managers = Array.from(
+        const managersIds = Array.from(
           new Set(baseProjects.map((p) => p.assignee || 'Unassigned'))
         ).sort();
+        const managers = managersIds.map((id) => {
+          if (id === 'Unassigned') return { label: 'Unassigned', value: 'Unassigned' };
+          const user = appUsers.find((u: any) => u.uid === id);
+          return { label: user ? user.displayName || user.name || id : id, value: id };
+        });
+
         const timelines = Array.from(
           new Set(baseProjects.map((p) => p.timelineStatus || 'Not Set'))
         ).sort();
@@ -497,7 +506,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
           allPhases: phases,
           allFeatures: features,
         };
-      }, [baseProjects, settings]);
+      }, [baseProjects, settings, appUsers]);
 
     const toggleAll = useCallback(() => {
       if (selectedRows.length === projects.length && projects.length > 0) {

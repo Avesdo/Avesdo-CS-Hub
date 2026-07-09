@@ -6,12 +6,46 @@ export interface EnhancedClient extends Client {
   onboardingProjectsCount: number;
   closedProjectsCount: number;
   trendData: number[];
+  computedStatus: string;
 }
+
+export function getClientComputedStatus(c: Client, projects: Project[]): string {
+  if (c.statusOverride) return c.statusOverride;
+
+  const cProjects = projects.filter((p) => (p.clients || []).includes(c.companyName || ''));
+  const activeProjectsCount = cProjects.filter(
+    (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
+  ).length;
+  const onboardingProjectsCount = cProjects.filter((p) => p.projectStatus === 'Onboarding').length;
+  const closedProjectsCount = cProjects.filter(
+    (p) => p.projectStatus === 'Closed' || p.projectStatus === 'Completed'
+  ).length;
+  const lostProjectsCount = cProjects.filter(
+    (p) =>
+      p.projectStatus === 'Cancelled' || p.projectStatus === 'Churned' || p.projectStatus === 'Lost'
+  ).length;
+
+  if (
+    activeProjectsCount > 0 ||
+    onboardingProjectsCount > 0 ||
+    cProjects.some((p) => p.projectStatus === 'Pre-launch')
+  ) {
+    return 'Active';
+  } else if (lostProjectsCount > 0 && closedProjectsCount === 0 && cProjects.length > 0) {
+    return 'Lost';
+  } else if (cProjects.length > 0) {
+    return 'Inactive';
+  }
+  return 'Inactive';
+}
+
+import { calculateClientHealth } from './scoringUtils';
 
 export function getEnhancedClients(
   clients: Client[],
   projects: Project[],
-  healthHistory: Record<string, any[]>
+  healthHistory: Record<string, any[]>,
+  settings: Settings | null
 ): EnhancedClient[] {
   const thirtyDaysAgo = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
   return clients.map((c) => {
@@ -26,17 +60,29 @@ export function getEnhancedClients(
       (p) => p.projectStatus === 'Closed' || p.projectStatus === 'Completed'
     ).length;
 
+    const lostProjectsCount = cProjects.filter(
+      (p) =>
+        p.projectStatus === 'Cancelled' ||
+        p.projectStatus === 'Churned' ||
+        p.projectStatus === 'Lost'
+    ).length;
+
+    const computedStatus = getClientComputedStatus(c, projects);
+
     const hist = healthHistory[c.clientId] || [];
     const sortedHist = [...hist]
       .filter((x: any) => x.timeVal >= thirtyDaysAgo)
       .sort((a: any, b: any) => a.timeVal - b.timeVal);
 
+    const healthRes = calculateClientHealth(c, cProjects, settings);
+    const healthScore = healthRes.totalScore;
+
     const trendData = sortedHist.map((h: any) => h.score);
-    if (typeof c.healthScore === 'number') {
-      trendData.push(c.healthScore);
+    if (typeof healthScore === 'number') {
+      trendData.push(healthScore);
     }
-    if (trendData.length === 1 && typeof c.healthScore === 'number') {
-      trendData.unshift(c.healthScore);
+    if (trendData.length === 1 && typeof healthScore === 'number') {
+      trendData.unshift(healthScore);
     }
 
     return {
@@ -46,6 +92,8 @@ export function getEnhancedClients(
       onboardingProjectsCount,
       closedProjectsCount,
       trendData,
+      computedStatus,
+      healthScore,
     };
   });
 }
@@ -139,7 +187,8 @@ export function getFilteredClients(
   typeFilter: string[],
   healthFilter: string[],
   projectFilter: string[],
-  managerFilter: string[]
+  managerFilter: string[],
+  statusFilter: string[] = []
 ): EnhancedClient[] {
   const thresholds = settings?.scoring?.thresholds || { healthy: 80, warning: 50 };
 
@@ -198,6 +247,10 @@ export function getFilteredClients(
       if (!matchesProjectFilter) return false;
     }
 
+    if (statusFilter && statusFilter.length > 0) {
+      if (!statusFilter.includes(c.computedStatus)) return false;
+    }
+
     return true;
   });
 }
@@ -226,6 +279,9 @@ export function getSortedClients(
     } else if (sortCol === 'manager') {
       valA = (a.accountManager || '').toLowerCase();
       valB = (b.accountManager || '').toLowerCase();
+    } else if (sortCol === 'status') {
+      valA = (a.computedStatus || '').toLowerCase();
+      valB = (b.computedStatus || '').toLowerCase();
     }
 
     if (valA < valB) return sortAsc ? -1 : 1;

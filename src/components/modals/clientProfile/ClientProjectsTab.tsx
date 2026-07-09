@@ -324,8 +324,10 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
                           {(() => {
                             const managerId = proj.manager || proj.owner || proj.assignee;
                             if (!managerId) return 'Unassigned';
-                            const user = Array.isArray(users) ? users.find((u: any) => u.uid === managerId || u.id === managerId) : null;
-                            return user ? (user.name || user.displayName) : managerId;
+                            const user = Array.isArray(users)
+                              ? users.find((u: any) => u.uid === managerId || u.id === managerId)
+                              : null;
+                            return user ? user.name || user.displayName : managerId;
                           })()}
                         </span>
                       </div>

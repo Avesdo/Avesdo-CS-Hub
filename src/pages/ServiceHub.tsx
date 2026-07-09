@@ -171,6 +171,7 @@ export default function ServiceHub() {
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
+  const appUsers = useAppStore((state) => state.users);
   const { openModal, openDrawer } = useUIStore();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -256,10 +257,17 @@ export default function ServiceHub() {
   const allProjects = useMemo(() => getAllServiceProjects(services), [services]);
   const allClients = useMemo(() => getAllServiceClients(services), [services]);
   const allTypes = useMemo(() => getAllServiceTypes(settings), [settings]);
-  const allManagers = useMemo(
+  const allManagersIds = useMemo(
     () => getAllServiceManagers(services, settings),
     [services, settings]
   );
+  const allManagers = useMemo(() => {
+    return allManagersIds.map((id) => {
+      if (id === 'Unassigned') return { label: 'Unassigned', value: 'Unassigned' };
+      const userObj = appUsers.find((u: any) => u.uid === id);
+      return { label: userObj ? userObj.displayName || userObj.name || id : id, value: id };
+    });
+  }, [allManagersIds, appUsers]);
   const allStatuses = useMemo(() => getAllServiceStatuses(settings), [settings]);
 
   const handleStatusChange = useCallback(
@@ -702,7 +710,13 @@ export default function ServiceHub() {
               },
               {
                 label: 'Manager',
-                values: managerFilter,
+                values: managerFilter.map((id) => {
+                  const matchedUser = appUsers.find((u: any) => u.uid === id);
+                  return {
+                    label: matchedUser ? matchedUser.displayName || matchedUser.name || id : id,
+                    value: id,
+                  };
+                }),
                 onRemove: (v) => removeFilterItem(setManagerFilter, managerFilter, v),
               },
               {

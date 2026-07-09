@@ -6,6 +6,7 @@ export interface Client {
   activeProjectCount: number;
   healthScore: number | 'N/A';
   isArchived?: boolean;
+  statusOverride?: string;
   supportCsat?: {
     score: number;
     totalUsers: number;
@@ -62,6 +63,7 @@ export interface Project {
   totalOutstanding?: number;
   outstandingInvoiceCount?: number;
   healthScore?: number | 'N/A';
+  agreementOwnerId?: string;
   trendData?: any[];
   onboardingCsat?: {
     quality: string;

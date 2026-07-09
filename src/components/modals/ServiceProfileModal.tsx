@@ -19,7 +19,7 @@ import {
   Building,
   Search,
   Folder,
-  FolderOpen
+  FolderOpen,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
@@ -107,7 +107,6 @@ const ReadOnlyPill = ({ label, value, icon: Icon }: any) => (
     </div>
   </div>
 );
-
 
 export default function ServiceProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
@@ -241,7 +240,7 @@ export default function ServiceProfileModal() {
   const toggleClientArrayItem = async (clientId: string, clientName: string) => {
     if (!service) return;
     const isSelected = service.clientIds?.[0] === clientId || service.clientIds?.includes(clientId);
-    
+
     if (isSelected) {
       await updateServiceRecord(
         {
@@ -277,19 +276,21 @@ export default function ServiceProfileModal() {
 
   const toggleProjectArrayItem = async (projectId: string, projectName: string) => {
     if (!service) return;
-    const currentIds = service.projectIds || (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
+    const currentIds =
+      service.projectIds ||
+      (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
     const isSelected = currentIds.includes(projectId);
-    
+
     let newIds;
     if (isSelected) {
-      newIds = currentIds.filter(id => id !== projectId);
+      newIds = currentIds.filter((id) => id !== projectId);
     } else {
       newIds = [...currentIds, projectId];
     }
-    
+
     const projectObjs = projects.filter((p) => newIds.includes(p.id));
     const projectNames = projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A';
-    
+
     await updateServiceRecord(
       {
         ...service,
@@ -783,12 +784,10 @@ export default function ServiceProfileModal() {
                             }
                           />
                         </div>
-
                       </div>
 
                       {/* Entities Links */}
                       <div className="flex flex-col gap-6 pt-6 border-t border-slate-200/60">
-                        
                         {/* Associated Client */}
                         <div className="flex flex-col gap-2 group/assoc-client">
                           <div className="flex items-center justify-between mb-1">
@@ -829,12 +828,19 @@ export default function ServiceProfileModal() {
                                 </div>
                                 <div className="overflow-y-auto p-1 custom-thin-scroll">
                                   {filteredClients.map((c) => {
-                                    const isSelected = service?.clientIds?.[0] === c.clientId || service?.clientIds?.includes(c.clientId || c.id);
+                                    const isSelected =
+                                      service?.clientIds?.[0] === c.clientId ||
+                                      service?.clientIds?.includes(c.clientId || c.id);
                                     return (
                                       <Button
                                         variant="ghost"
                                         key={c.clientId || c.id}
-                                        onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName || c.name)}
+                                        onClick={() =>
+                                          toggleClientArrayItem(
+                                            c.clientId || c.id,
+                                            c.companyName || c.name
+                                          )
+                                        }
                                         className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
                                       >
                                         <TruncatedText
@@ -851,11 +857,15 @@ export default function ServiceProfileModal() {
                               </Popover.Content>
                             </Popover.Root>
                           </div>
-                          {service?.clientName && service.clientName !== 'N/A' && service.clientName !== 'None' ? (
+                          {service?.clientName &&
+                          service.clientName !== 'N/A' &&
+                          service.clientName !== 'None' ? (
                             <div className="flex flex-col gap-1.5">
                               <div className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm">
                                 <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                <TruncatedText text={service.clientName}>{service.clientName}</TruncatedText>
+                                <TruncatedText text={service.clientName}>
+                                  {service.clientName}
+                                </TruncatedText>
                               </div>
                             </div>
                           ) : (
@@ -905,7 +915,12 @@ export default function ServiceProfileModal() {
                                 </div>
                                 <div className="overflow-y-auto p-1 custom-thin-scroll">
                                   {filteredProjects.map((p) => {
-                                    const isSelected = (service?.projectIds || (service?.projectId && service.projectId !== 'N/A' ? [service.projectId] : [])).includes(p.id);
+                                    const isSelected = (
+                                      service?.projectIds ||
+                                      (service?.projectId && service.projectId !== 'N/A'
+                                        ? [service.projectId]
+                                        : [])
+                                    ).includes(p.id);
                                     return (
                                       <Button
                                         variant="ghost"
@@ -936,7 +951,7 @@ export default function ServiceProfileModal() {
                           {service?.projectIds && service.projectIds.length > 0 ? (
                             <div className="flex flex-col gap-1.5">
                               {service.projectIds.map((pId: string, i: number) => {
-                                const pObj = projects.find(pr => pr.id === pId);
+                                const pObj = projects.find((pr) => pr.id === pId);
                                 const pName = pObj ? pObj.name : 'Unknown Project';
                                 return (
                                   <div
@@ -1006,7 +1021,9 @@ export default function ServiceProfileModal() {
                             />
                           ) : (
                             <div className="flex items-center gap-2 w-full rounded-xl border border-slate-200/60 bg-white px-3 py-2 shadow-sm transition-all group">
-                              {service?.contactName && service.contactName !== 'N/A' && service.contactName !== 'None' ? (
+                              {service?.contactName &&
+                              service.contactName !== 'N/A' &&
+                              service.contactName !== 'None' ? (
                                 <span className="flex-1 text-[13px] font-medium text-slate-700 truncate">
                                   {service.contactName}
                                 </span>
@@ -1031,7 +1048,6 @@ export default function ServiceProfileModal() {
                             </div>
                           )}
                         </div>
-
                       </div>
 
                       {/* Danger Zone */}

@@ -376,7 +376,6 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
     <div className="pb-10" ref={popRef}>
       {/* Sticky Header Group */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md pt-8 pb-4 px-10 -mx-10 -mt-10 shadow-[0_10px_20px_-15px_rgba(0,0,0,0.1)] flex flex-col gap-4 mb-8">
-        
         {/* 1. Top Section: Global Setup & Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Client Portal Link */}
@@ -452,7 +451,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
         <div className="flex flex-col gap-4 mt-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h3 className="text-lg font-bold text-slate-900">Implementation Timeline</h3>
-            
+
             {/* Phase Overrides & Schedule Status */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <div className="relative popover-container flex items-center gap-2">
