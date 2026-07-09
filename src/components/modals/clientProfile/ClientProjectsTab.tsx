@@ -25,6 +25,7 @@ interface ClientProjectsTabProps {
 export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
   const projects = useAppStore((state) => state.projects);
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
   const { openDrawer, openModal } = useUIStore();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +34,12 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
     const cId = client?.clientId || client?.id;
     return projects
       .filter((p) => p.clientIds?.includes(cId))
-      .sort((a, b) => b.updatedAt - a.updatedAt);
+      .sort((a, b) => {
+        const aDate = a.releaseDateVal || (a.releaseDate ? new Date(a.releaseDate).getTime() : 0);
+        const bDate = b.releaseDateVal || (b.releaseDate ? new Date(b.releaseDate).getTime() : 0);
+        if (bDate !== aDate) return bDate - aDate;
+        return (b.updatedAt || 0) - (a.updatedAt || 0);
+      });
   }, [projects, client]);
 
   const { totalProjects, onboardingCount, activeCount, closedCount, hasSuspended, totalUnits } =
@@ -201,7 +207,7 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
       </div>
 
       {/* Glassmorphic Filter Tabs & Search */}
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-2 pb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-8 pb-4 !mt-0 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="inline-flex bg-slate-100/80 p-1 rounded-xl shadow-inner overflow-x-auto custom-thin-scroll max-w-full">
           {filterTabs.map((t) => {
             const isActive = filter === t;
@@ -315,7 +321,12 @@ export default function ClientProjectsTab({ client }: ClientProjectsTabProps) {
                         <div className="w-1 h-1 rounded-full bg-slate-300"></div>
                         <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
                           <User className="w-3.5 h-3.5 text-slate-400" />
-                          {proj.manager || proj.owner || proj.assignee || 'Unassigned'}
+                          {(() => {
+                            const managerId = proj.manager || proj.owner || proj.assignee;
+                            if (!managerId) return 'Unassigned';
+                            const user = Array.isArray(users) ? users.find((u: any) => u.uid === managerId || u.id === managerId) : null;
+                            return user ? (user.name || user.displayName) : managerId;
+                          })()}
                         </span>
                       </div>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as Popover from '@radix-ui/react-popover';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -16,6 +17,9 @@ import {
   Briefcase,
   Calendar,
   Building,
+  Search,
+  Folder,
+  FolderOpen
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
@@ -35,6 +39,7 @@ import { Select } from '../ui/Select';
 import { MultiSelect } from '../ui/MultiSelect';
 import { Tooltip } from '../ui/Tooltip';
 import { DatePicker } from '../ui/DatePicker';
+import { Button } from '../ui/button';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TruncatedText } from '../../components/ui/TruncatedText';
 
@@ -103,28 +108,6 @@ const ReadOnlyPill = ({ label, value, icon: Icon }: any) => (
   </div>
 );
 
-const ContactInputPill = ({ value, onChange, onBlur, disabled }: any) => (
-  <div
-    className={`flex items-center h-10 px-4 rounded-full border border-slate-200 bg-white shadow-sm w-full transition-all ${disabled ? 'opacity-80 bg-slate-50 cursor-not-allowed' : 'hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 cursor-text'}`}
-    onClick={(e) =>
-      !disabled && (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()
-    }
-  >
-    <div className="flex items-center w-full">
-      <User className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
-      <span className="text-[13px] font-medium mr-2 text-slate-500 shrink-0">Contact:</span>
-      <input
-        type="text"
-        className="flex-1 w-full min-w-0 text-[13px] font-semibold text-slate-900 bg-transparent outline-none placeholder:text-slate-400 font-sans truncate disabled:opacity-80"
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        placeholder="Enter name..."
-        disabled={disabled}
-      />
-    </div>
-  </div>
-);
 
 export default function ServiceProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
@@ -141,7 +124,11 @@ export default function ServiceProfileModal() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   const [contactNameDraft, setContactNameDraft] = useState('');
+  const [editingContactName, setEditingContactName] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState<string | null>(null);
+  const [clientSearch, setClientSearch] = useState('');
+  const [projectSearch, setProjectSearch] = useState('');
   const { hasPermission } = usePermissions();
 
   useEffect(() => {
@@ -247,6 +234,71 @@ export default function ServiceProfileModal() {
       },
       { successMsg: 'Project successfully updated.', errorMsg: 'Failed to update project.' },
       `Service Project changed from ${oldProjectName} to ${projectNames || 'None'}`,
+      user?.name
+    );
+  };
+
+  const toggleClientArrayItem = async (clientId: string, clientName: string) => {
+    if (!service) return;
+    const isSelected = service.clientIds?.[0] === clientId || service.clientIds?.includes(clientId);
+    
+    if (isSelected) {
+      await updateServiceRecord(
+        {
+          ...service,
+          clientIds: [],
+          clients: [],
+          clientName: 'N/A',
+          projectIds: [],
+          projectId: 'N/A',
+          projectName: 'N/A',
+        },
+        { successMsg: 'Client removed.', errorMsg: 'Failed to remove client.' },
+        `Service Client removed`,
+        user?.name
+      );
+    } else {
+      await updateServiceRecord(
+        {
+          ...service,
+          clientIds: [clientId],
+          clients: [clientName],
+          clientName: clientName,
+          projectIds: [],
+          projectId: 'N/A',
+          projectName: 'N/A',
+        },
+        { successMsg: 'Client successfully updated.', errorMsg: 'Failed to update client.' },
+        `Service Client changed to ${clientName}`,
+        user?.name
+      );
+    }
+  };
+
+  const toggleProjectArrayItem = async (projectId: string, projectName: string) => {
+    if (!service) return;
+    const currentIds = service.projectIds || (service.projectId && service.projectId !== 'N/A' ? [service.projectId] : []);
+    const isSelected = currentIds.includes(projectId);
+    
+    let newIds;
+    if (isSelected) {
+      newIds = currentIds.filter(id => id !== projectId);
+    } else {
+      newIds = [...currentIds, projectId];
+    }
+    
+    const projectObjs = projects.filter((p) => newIds.includes(p.id));
+    const projectNames = projectObjs.length > 0 ? projectObjs.map((p) => p.name).join(', ') : 'N/A';
+    
+    await updateServiceRecord(
+      {
+        ...service,
+        projectIds: newIds,
+        projectId: projectObjs.length > 0 ? projectObjs[0].id : 'N/A',
+        projectName: projectNames,
+      },
+      { successMsg: 'Project successfully updated.', errorMsg: 'Failed to update project.' },
+      `Service Project updated`,
       user?.name
     );
   };
@@ -471,6 +523,18 @@ export default function ServiceProfileModal() {
     )?.[1] as any;
     return IconMatch || Activity;
   };
+
+  const filteredClients = useMemo(() => {
+    if (!clientSearch.trim()) return clients;
+    const s = clientSearch.toLowerCase();
+    return clients.filter((c) => (c.companyName || c.name)?.toLowerCase().includes(s));
+  }, [clients, clientSearch]);
+
+  const filteredProjects = useMemo(() => {
+    if (!projectSearch.trim()) return availableProjects;
+    const s = projectSearch.toLowerCase();
+    return availableProjects.filter((p) => p.name.toLowerCase().includes(s));
+  }, [availableProjects, projectSearch]);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && closeDrawer()} modal={true}>
@@ -719,65 +783,255 @@ export default function ServiceProfileModal() {
                             }
                           />
                         </div>
+
                       </div>
 
-                      <div className="h-px bg-slate-200/60 w-full" />
+                      {/* Entities Links */}
+                      <div className="flex flex-col gap-6 pt-6 border-t border-slate-200/60">
+                        
+                        {/* Associated Client */}
+                        <div className="flex flex-col gap-2 group/assoc-client">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-bold text-slate-500 tracking-wider">
+                              Client
+                            </span>
+                            <Popover.Root
+                              open={popoverOpen === 'assocClient'}
+                              onOpenChange={(o) => setPopoverOpen(o ? 'assocClient' : null)}
+                            >
+                              {hasPermission('service_edit_details') && (
+                                <Popover.Trigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/assoc-client:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    Edit
+                                  </Button>
+                                </Popover.Trigger>
+                              )}
+                              <Popover.Content
+                                side="right"
+                                sideOffset={12}
+                                className="z-[var(--z-popover)] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                              >
+                                <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+                                  <Search className="w-4 h-4 text-slate-400 ml-2" />
+                                  <input
+                                    type="text"
+                                    placeholder="Search clients..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
+                                    value={clientSearch}
+                                    onChange={(e) => setClientSearch(e.target.value)}
+                                    autoFocus
+                                  />
+                                </div>
+                                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                                  {filteredClients.map((c) => {
+                                    const isSelected = service?.clientIds?.[0] === c.clientId || service?.clientIds?.includes(c.clientId || c.id);
+                                    return (
+                                      <Button
+                                        variant="ghost"
+                                        key={c.clientId || c.id}
+                                        onClick={() => toggleClientArrayItem(c.clientId || c.id, c.companyName || c.name)}
+                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                      >
+                                        <TruncatedText
+                                          text={String('' + (c.companyName || c.name) + '')}
+                                          containerClassName="text-left"
+                                        >
+                                          {c.companyName || c.name}
+                                        </TruncatedText>
+                                        {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                                      </Button>
+                                    );
+                                  })}
+                                </div>
+                              </Popover.Content>
+                            </Popover.Root>
+                          </div>
+                          {service?.clientName && service.clientName !== 'N/A' && service.clientName !== 'None' ? (
+                            <div className="flex flex-col gap-1.5">
+                              <div className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm">
+                                <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <TruncatedText text={service.clientName}>{service.clientName}</TruncatedText>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-[12px] italic text-slate-400 px-1">
+                              None attached
+                            </span>
+                          )}
+                        </div>
 
-                      <div className="flex flex-col gap-3">
-                        <MultiSelect
-                          values={service?.clientIds?.[0] ? [service.clientIds[0]] : []}
-                          options={clientOptions}
-                          onChange={handleUpdateClient}
-                          searchable
-                          searchPlaceholder="Search Clients..."
-                          disabled={!hasPermission('service_edit_details')}
-                          trigger={
-                            <TokenTrigger
-                              label="Client"
-                              value={clientNames}
-                              icon={Building}
-                              disabled={!hasPermission('service_edit_details')}
+                        {/* Associated Projects */}
+                        <div className="flex flex-col gap-2 group/assoc-projects">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-bold text-slate-500 tracking-wider">
+                              Projects
+                            </span>
+                            <Popover.Root
+                              open={popoverOpen === 'assocProjects'}
+                              onOpenChange={(o) => setPopoverOpen(o ? 'assocProjects' : null)}
+                            >
+                              {hasPermission('service_edit_details') && (
+                                <Popover.Trigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 hover:bg-transparent opacity-0 group-hover/assoc-projects:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 transition-all"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    Edit
+                                  </Button>
+                                </Popover.Trigger>
+                              )}
+                              <Popover.Content
+                                side="right"
+                                sideOffset={12}
+                                className="z-[var(--z-popover)] w-[300px] bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[300px]"
+                              >
+                                <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+                                  <Search className="w-4 h-4 text-slate-400 ml-2" />
+                                  <input
+                                    type="text"
+                                    placeholder="Search projects..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm font-medium"
+                                    value={projectSearch}
+                                    onChange={(e) => setProjectSearch(e.target.value)}
+                                    autoFocus
+                                  />
+                                </div>
+                                <div className="overflow-y-auto p-1 custom-thin-scroll">
+                                  {filteredProjects.map((p) => {
+                                    const isSelected = (service?.projectIds || (service?.projectId && service.projectId !== 'N/A' ? [service.projectId] : [])).includes(p.id);
+                                    return (
+                                      <Button
+                                        variant="ghost"
+                                        key={p.id}
+                                        onClick={() => {
+                                          if (p.id === 'none') {
+                                            // Optional: handle clearing all projects
+                                          } else {
+                                            toggleProjectArrayItem(p.id, p.name);
+                                          }
+                                        }}
+                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm h-auto font-normal transition-colors ${isSelected ? 'bg-primary/5 text-primary font-semibold' : 'hover:bg-slate-50 text-slate-700'}`}
+                                      >
+                                        <TruncatedText
+                                          text={String('' + p.name + '')}
+                                          containerClassName="text-left"
+                                        >
+                                          {p.name}
+                                        </TruncatedText>
+                                        {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                                      </Button>
+                                    );
+                                  })}
+                                </div>
+                              </Popover.Content>
+                            </Popover.Root>
+                          </div>
+                          {service?.projectIds && service.projectIds.length > 0 ? (
+                            <div className="flex flex-col gap-1.5">
+                              {service.projectIds.map((pId: string, i: number) => {
+                                const pObj = projects.find(pr => pr.id === pId);
+                                const pName = pObj ? pObj.name : 'Unknown Project';
+                                return (
+                                  <div
+                                    key={i}
+                                    className="flex items-center gap-2 text-[13px] font-medium text-slate-700 bg-white border border-slate-200/60 px-3 py-2 rounded-xl shadow-sm"
+                                  >
+                                    <Folder className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    <TruncatedText text={pName}>{pName}</TruncatedText>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <span className="text-[12px] italic text-slate-400 px-1">
+                              None attached
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Contact Person */}
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[11px] font-bold text-slate-500 tracking-wider mb-1 flex items-center gap-1.5">
+                            <User className="w-3 h-3" /> Contact Person
+                          </span>
+                          {editingContactName ? (
+                            <input
+                              type="text"
+                              autoFocus
+                              className="w-full min-w-0 rounded-xl border border-slate-200/60 bg-white px-3 py-2 shadow-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-[13px] text-slate-900 transition-all"
+                              value={contactNameDraft}
+                              onChange={(e) => setContactNameDraft(e.target.value)}
+                              onBlur={async () => {
+                                if (service && contactNameDraft !== service.contactName) {
+                                  await updateServiceRecord(
+                                    { ...service, contactName: contactNameDraft },
+                                    {
+                                      successMsg: 'Client Contact Name updated.',
+                                      errorMsg: 'Failed to update contact.',
+                                    },
+                                    `Contact Name updated to ${contactNameDraft}`,
+                                    user?.name
+                                  );
+                                }
+                                setEditingContactName(false);
+                              }}
+                              onKeyDown={async (e) => {
+                                if (e.key === 'Enter') {
+                                  if (service && contactNameDraft !== service.contactName) {
+                                    await updateServiceRecord(
+                                      { ...service, contactName: contactNameDraft },
+                                      {
+                                        successMsg: 'Client Contact Name updated.',
+                                        errorMsg: 'Failed to update contact.',
+                                      },
+                                      `Contact Name updated to ${contactNameDraft}`,
+                                      user?.name
+                                    );
+                                  }
+                                  setEditingContactName(false);
+                                }
+                                if (e.key === 'Escape') {
+                                  setContactNameDraft(service?.contactName || '');
+                                  setEditingContactName(false);
+                                }
+                              }}
+                              placeholder="Enter name..."
                             />
-                          }
-                        />
-                        <MultiSelect
-                          values={
-                            service?.projectIds ||
-                            (service?.projectId && service.projectId !== 'N/A'
-                              ? [service.projectId]
-                              : [])
-                          }
-                          options={projectOptions}
-                          onChange={handleUpdateProject}
-                          searchable
-                          searchPlaceholder="Search Projects..."
-                          disabled={!hasPermission('service_edit_details')}
-                          trigger={
-                            <TokenTrigger
-                              label="Project"
-                              value={projectName}
-                              icon={FileText}
-                              disabled={!hasPermission('service_edit_details')}
-                            />
-                          }
-                        />
-                        <ContactInputPill
-                          value={contactNameDraft}
-                          disabled={!hasPermission('service_edit_details')}
-                          onChange={(e: any) => setContactNameDraft(e.target.value)}
-                          onBlur={async () => {
-                            if (!service || contactNameDraft === service.contactName) return;
-                            await updateServiceRecord(
-                              { ...service, contactName: contactNameDraft },
-                              {
-                                successMsg: 'Client Contact Name updated.',
-                                errorMsg: 'Failed to update contact.',
-                              },
-                              `Contact Name updated to ${contactNameDraft}`,
-                              user?.name
-                            );
-                          }}
-                        />
+                          ) : (
+                            <div className="flex items-center gap-2 w-full rounded-xl border border-slate-200/60 bg-white px-3 py-2 shadow-sm transition-all group">
+                              {service?.contactName && service.contactName !== 'N/A' && service.contactName !== 'None' ? (
+                                <span className="flex-1 text-[13px] font-medium text-slate-700 truncate">
+                                  {service.contactName}
+                                </span>
+                              ) : (
+                                <span className="flex-1 text-[13px] text-slate-400 italic">
+                                  None
+                                </span>
+                              )}
+                              {hasPermission('service_edit_details') && (
+                                <Tooltip content="Edit Contact">
+                                  <button
+                                    onClick={() => {
+                                      setContactNameDraft(service?.contactName || '');
+                                      setEditingContactName(true);
+                                    }}
+                                    className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors"
+                                  >
+                                    <LucideIcons.Edit2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </Tooltip>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
                       </div>
 
                       {/* Danger Zone */}

@@ -699,7 +699,7 @@ export default function ClientProfileModal() {
                     </div>
 
                     {/* Scrollable Content Area */}
-                    <div className="flex-1 overflow-y-auto custom-thin-scroll p-10 relative">
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll relative">
                       <AnimatePresence mode="popLayout">
                         <motion.div
                           key={activeTab}
@@ -708,7 +708,7 @@ export default function ClientProfileModal() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.2 }}
-                          className="w-full"
+                          className="w-full p-10"
                         >
                           {activeTab === 'health' && <ClientHealthTab client={client} />}
                           {activeTab === 'projects' && <ClientProjectsTab client={client} />}

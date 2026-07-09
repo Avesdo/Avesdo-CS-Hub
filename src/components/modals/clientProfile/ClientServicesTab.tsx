@@ -22,6 +22,7 @@ interface ClientServicesTabProps {
 export default function ClientServicesTab({ client }: ClientServicesTabProps) {
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
+  const users = useAppStore((state) => state.users);
   const { openDrawer, openModal } = useUIStore();
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -186,7 +187,7 @@ export default function ClientServicesTab({ client }: ClientServicesTabProps) {
       </div>
 
       {/* Glassmorphic Filter Tabs & Search */}
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-2 pb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md pt-8 pb-4 !mt-0 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="inline-flex bg-slate-100/80 p-1 rounded-xl shadow-inner overflow-x-auto custom-thin-scroll max-w-full">
           {filterTabs.map((t) => {
             const isActive = filter === t;
@@ -337,7 +338,12 @@ export default function ClientServicesTab({ client }: ClientServicesTabProps) {
                         <div className="w-1 h-1 rounded-full bg-slate-300"></div>
                         <span className="text-[13px] font-medium text-slate-500 flex items-center gap-1.5">
                           <User className="w-3.5 h-3.5 text-slate-400" />
-                          {s.manager || s.owner || s.assignedTo || 'Unassigned'}
+                          {(() => {
+                            const managerId = s.manager || s.owner || s.assignedTo;
+                            if (!managerId) return 'Unassigned';
+                            const user = Array.isArray(users) ? users.find((u: any) => u.uid === managerId || u.id === managerId) : null;
+                            return user ? (user.name || user.displayName) : managerId;
+                          })()}
                         </span>
                       </div>
                     </div>

@@ -374,79 +374,174 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
   return (
     <div className="pb-10" ref={popRef}>
-      {/* 1. Top Section: Global Setup & Links */}
-      <div className="flex flex-col gap-3 sticky -top-10 z-30 bg-white pt-10 pb-6 px-10 -mx-10 -mt-10 shadow-[0_10px_20px_-15px_rgba(0,0,0,0.1)] border-b border-slate-100">
-        {/* Client Portal Link */}
-        <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-200 shrink-0 shadow-sm">
-              <ExternalLink className="w-4 h-4 text-[#00bdd9]" />
+      {/* Sticky Header Group */}
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md pt-8 pb-4 px-10 -mx-10 -mt-10 shadow-[0_10px_20px_-15px_rgba(0,0,0,0.1)] flex flex-col gap-4 mb-8">
+        
+        {/* 1. Top Section: Global Setup & Links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Client Portal Link */}
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-200 shrink-0 shadow-sm">
+                <ExternalLink className="w-4 h-4 text-[#00bdd9]" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[13px] font-bold text-slate-800">Client Portal Link</span>
+                <TruncatedText
+                  text={String(
+                    '' + window.location.origin + '/portal/' + (project?.slug || project?.id) + ''
+                  )}
+                  containerClassName="text-[12px] font-medium text-slate-500"
+                >
+                  {window.location.origin}/portal/{project?.slug || project?.id}
+                </TruncatedText>
+              </div>
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-[13px] font-bold text-slate-800">Client Portal Link</span>
-              <TruncatedText
-                text={String(
-                  '' + window.location.origin + '/portal/' + project?.slug || project?.id + ''
-                )}
-                containerClassName="text-[12px] font-medium text-slate-500"
+            <div className="flex items-center gap-2 shrink-0 ml-4">
+              <Tooltip content="Copy Link">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/portal/${project?.slug || project?.id}`
+                    );
+                    toast.success('Portal Link copied to clipboard');
+                  }}
+                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+              </Tooltip>
+              <a
+                href={`${window.location.origin}/portal/${project?.slug || project?.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg font-semibold text-[12px] transition-colors shadow-sm"
               >
-                {window.location.origin}/portal/{project?.slug || project?.id}
-              </TruncatedText>
+                Preview Portal
+              </a>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0 ml-4">
-            <Tooltip content="Copy Link">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/portal/${project?.slug || project?.id}`
-                  );
-                  toast.success('Portal Link copied to clipboard');
-                }}
-                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
-              >
-                <Copy className="w-4 h-4" />
-              </button>
-            </Tooltip>
-            <a
-              href={`${window.location.origin}/portal/${project?.slug || project?.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg font-semibold text-[12px] transition-colors shadow-sm"
+
+          {/* KYC Details Access */}
+          <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-200 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100 shrink-0">
+                <FileText className="w-4 h-4 text-blue-600" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[13px] font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                  KYC Details
+                </span>
+                <span className="text-[12px] font-medium text-slate-500 line-clamp-1">
+                  Foundational project knowledge and requirements
+                </span>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsKycModalOpen(true)}
+              className="px-3 bg-slate-50 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 shadow-sm flex items-center gap-1.5 shrink-0 ml-2"
             >
-              Preview Portal
-            </a>
+              <FileText className="w-3.5 h-3.5" /> View KYC
+            </Button>
           </div>
         </div>
 
-        {/* KYC Details Access */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm group hover:border-blue-200 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100 shrink-0">
-              <FileText className="w-4 h-4 text-blue-600" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                KYC Details
-              </span>
-              <span className="text-[12px] font-medium text-slate-500">
-                Foundational project knowledge and requirements
-              </span>
+        {/* 2. Middle Section Header */}
+        <div className="flex flex-col gap-4 mt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h3 className="text-lg font-bold text-slate-900">Implementation Timeline</h3>
+            
+            {/* Phase Overrides & Schedule Status */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <div className="relative popover-container flex items-center gap-2">
+                <span className="text-[12px] font-semibold text-slate-500">Schedule:</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
+                  className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+                >
+                  {getSettingBadge(
+                    'timelines',
+                    project?.timelineStatus || 'Not Set',
+                    settings,
+                    true,
+                    false
+                  )}
+                </Button>
+                <AnimatePresence>
+                  {openPop === 'timeline' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
+                    >
+                      {settings?.timelines?.map((t: any) => (
+                        <Button
+                          variant="ghost"
+                          key={t.name}
+                          onClick={() => {
+                            handleUpdate('timelineStatus', t.name, project?.timelineStatus);
+                            setOpenPop(null);
+                          }}
+                          className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
+                        >
+                          {getSettingBadge('timelines', t.name, settings, true, false)}
+                        </Button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div className="relative popover-container flex items-center gap-2">
+                <span className="text-[12px] font-semibold text-slate-500">Phase:</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
+                  className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
+                >
+                  {getSettingBadge(
+                    'phases',
+                    project?.onboardingPhase || 'Not Set',
+                    settings,
+                    true,
+                    false
+                  )}
+                </Button>
+                <AnimatePresence>
+                  {openPop === 'phase' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
+                    >
+                      {settings?.phases?.map((p: any) => (
+                        <Button
+                          variant="ghost"
+                          key={p.name}
+                          onClick={() => {
+                            handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
+                            setOpenPop(null);
+                          }}
+                          className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
+                        >
+                          {getSettingBadge('phases', p.name, settings, true, false)}
+                        </Button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsKycModalOpen(true)}
-            className="px-3 bg-slate-50 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 shadow-sm flex items-center gap-1.5"
-          >
-            <FileText className="w-3.5 h-3.5" /> View KYC
-          </Button>
-        </div>
-
-        {/* 2. Middle Section Header (Now Sticky) */}
-        <div className="flex flex-col gap-4 mt-6">
-          <h3 className="text-lg font-bold text-slate-900">Implementation Timeline</h3>
 
           {/* Funnel Progress Bar */}
           <div className="flex flex-col gap-2 mb-2 px-1">
@@ -464,95 +559,6 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                 animate={{ width: `${progressPercentage}%` }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               />
-            </div>
-          </div>
-
-          {/* Phase Overrides & Schedule Status */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-            <div className="relative popover-container flex items-center gap-2">
-              <span className="text-[12px] font-semibold text-slate-500">Schedule:</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setOpenPop(openPop === 'timeline' ? null : 'timeline')}
-                className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
-              >
-                {getSettingBadge(
-                  'timelines',
-                  project?.timelineStatus || 'Not Set',
-                  settings,
-                  true,
-                  false
-                )}
-              </Button>
-              <AnimatePresence>
-                {openPop === 'timeline' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: 'easeOut' }}
-                    className="absolute top-full right-0 mt-2 min-w-[220px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
-                  >
-                    {settings?.timelines?.map((t: any) => (
-                      <Button
-                        variant="ghost"
-                        key={t.name}
-                        onClick={() => {
-                          handleUpdate('timelineStatus', t.name, project?.timelineStatus);
-                          setOpenPop(null);
-                        }}
-                        className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
-                      >
-                        {getSettingBadge('timelines', t.name, settings, true, false)}
-                      </Button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <div className="relative popover-container flex items-center gap-2">
-              <span className="text-[12px] font-semibold text-slate-500">Phase:</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setOpenPop(openPop === 'phase' ? null : 'phase')}
-                className="text-left h-auto p-0 hover:bg-transparent hover:-translate-y-0.5 hover:shadow-md transition-all rounded-xl inline-flex [&>span]:whitespace-normal [&>span]:text-left [&>span]:h-auto [&>span]:rounded-xl"
-              >
-                {getSettingBadge(
-                  'phases',
-                  project?.onboardingPhase || 'Not Set',
-                  settings,
-                  true,
-                  false
-                )}
-              </Button>
-              <AnimatePresence>
-                {openPop === 'phase' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: 'easeOut' }}
-                    className="absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl z-[var(--z-popover)] p-1"
-                  >
-                    {settings?.phases?.map((p: any) => (
-                      <Button
-                        variant="ghost"
-                        key={p.name}
-                        onClick={() => {
-                          handleUpdate('onboardingPhase', p.name, project?.onboardingPhase);
-                          setOpenPop(null);
-                        }}
-                        className="w-full justify-start h-auto font-normal px-2 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap group"
-                      >
-                        {getSettingBadge('phases', p.name, settings, true, false)}
-                      </Button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         </div>
