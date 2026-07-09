@@ -33,7 +33,7 @@ export default function DeliverablesMasterRow({
   const itemData = useWatch({ name: item.id }) || {};
 
   const status = itemData.status || item.status || 'Pending';
-  const priority = itemData.priority || item.priority || 'Normal';
+  const priority = itemData.priority || item.defaultPriority || item.priority || 'Normal';
   const taskName = itemData.taskName || item.taskName || 'Unnamed Item';
 
   if (searchQuery) {

@@ -183,7 +183,6 @@ export default function DeliverablesGrid({
 
   return (
     <div className="flex flex-col h-full w-full bg-white overflow-hidden rounded-b-2xl relative">
-
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden relative">
         {/* Left Pane: Master List */}
         <div className="w-full md:w-[35%] flex flex-col border-r border-slate-200 bg-slate-50/50 shrink-0">

@@ -22,7 +22,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
 
   const getUserName = (id: string) => {
     const u = users.find((user) => user.uid === id);
-    return u ? u.displayName || u.name || u.email || id : id;
+    return (u ? u.displayName || u.name || u.email || id : id).trim();
   };
 
   useEffect(() => {

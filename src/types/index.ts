@@ -7,6 +7,8 @@ export interface Client {
   healthScore: number | 'N/A';
   isArchived?: boolean;
   statusOverride?: string;
+  lostDateVal?: number;
+  lostDateStr?: string;
   supportCsat?: {
     score: number;
     totalUsers: number;

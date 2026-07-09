@@ -44,7 +44,7 @@ export function PortalFormView({
       transition={{ duration: 0.3 }}
       className="h-screen bg-slate-50 flex flex-col font-sans overflow-hidden"
     >
-      <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-[var(--z-header)] shadow-sm">
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-2.5 flex items-center justify-between shrink-0 sticky top-0 z-[var(--z-header)] shadow-sm">
         <div className="flex items-center gap-6">
           <img
             alt="Avesdo"
@@ -60,11 +60,11 @@ export function PortalFormView({
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-slate-800">
+              <h1 className="text-lg font-bold text-slate-800 leading-tight">
                 {template?.name || activeFormType}
               </h1>
-              <div className="flex items-center gap-4 mt-1 flex-wrap">
-                <p className="text-sm text-slate-500 font-medium">
+              <div className="flex items-center gap-4 mt-0.5 flex-wrap">
+                <p className="text-[13px] text-slate-500 font-medium">
                   Project: <span className="text-slate-800">{project.name}</span>
                 </p>
                 {isSubmitting && activeFormType === 'deliverables' && (
@@ -91,7 +91,9 @@ export function PortalFormView({
             <Button
               variant="secondary"
               className="gap-2 px-5 py-2 h-9 border-slate-200 hover:bg-slate-100 hidden sm:inline-flex"
-              onClick={() => exportFormToCSV('Deliverables Checklist', project, existingData, template)}
+              onClick={() =>
+                exportFormToCSV('Deliverables Checklist', project, existingData, template)
+              }
             >
               <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
               <span>Export CSV</span>

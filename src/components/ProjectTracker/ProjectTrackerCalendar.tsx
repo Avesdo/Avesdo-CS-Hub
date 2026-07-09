@@ -26,7 +26,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
 
     const getUserName = (id: string) => {
       const u = users.find((user) => user.uid === id);
-      return u ? u.displayName || u.name || u.email || id : id;
+      return (u ? u.displayName || u.name || u.email || id : id).trim();
     };
 
     const currentDateState = useState(new Date());

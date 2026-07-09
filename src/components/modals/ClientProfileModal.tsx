@@ -36,6 +36,7 @@ import ClientServicesTab from './clientProfile/ClientServicesTab';
 import { TimelineTab } from '../ui/TimelineTab';
 
 import { Select } from '../ui/Select';
+import { DatePicker } from '../ui/DatePicker';
 import toast from 'react-hot-toast';
 import { renderIcon } from '../../utils/uiUtils';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -262,6 +263,20 @@ export default function ClientProfileModal() {
         errorMsg: `Failed to update Client Status`,
       },
       `Client Status override changed from ${oldVal} to ${val}`,
+      user?.name
+    );
+  };
+
+  const handleUpdateLostDate = async (val: number | null, str: string) => {
+    if (!client || client.lostDateVal === val) return;
+    const oldVal = client.lostDateStr || 'Not set';
+    await updateClientRecord(
+      { ...client, lostDateVal: val || undefined, lostDateStr: str || undefined },
+      {
+        successMsg: `Date Lost successfully updated`,
+        errorMsg: `Failed to update Date Lost`,
+      },
+      `Client Date Lost changed from ${oldVal} to ${str || 'Not set'}`,
       user?.name
     );
   };
@@ -546,6 +561,18 @@ export default function ClientProfileModal() {
                                   />
                                 }
                               />
+                              
+                              {activeStatus === 'Lost' && (
+                                <div className="mt-2 pl-2 border-l-2 border-red-200 ml-1">
+                                  <DatePicker
+                                    value={client?.lostDateVal}
+                                    onChange={handleUpdateLostDate}
+                                    label="Date Client Was Lost"
+                                    placeholder="Select date..."
+                                    disabled={!hasPermission('client_edit_profile')}
+                                  />
+                                </div>
+                              )}
                             </div>
                           );
                         })()}

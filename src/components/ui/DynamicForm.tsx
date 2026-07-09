@@ -207,7 +207,7 @@ export function DynamicForm({
         return (
           <input
             {...register(field.id, { required: field.required })}
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 outline-none transition-all text-[15px] text-slate-900 placeholder:text-slate-400 shadow-sm"
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-primary/50 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-[14px] text-slate-900 placeholder:text-slate-400 shadow-sm"
             placeholder="Type your answer..."
           />
         );
@@ -215,7 +215,7 @@ export function DynamicForm({
         return (
           <textarea
             {...register(field.id, { required: field.required })}
-            className="w-full h-28 p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 outline-none transition-all text-[15px] text-slate-900 placeholder:text-slate-400 shadow-sm resize-y custom-thin-scroll"
+            className="w-full h-24 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-primary/50 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-[14px] text-slate-900 placeholder:text-slate-400 shadow-sm resize-y custom-thin-scroll"
             placeholder="Type your answer here..."
           />
         );
@@ -309,7 +309,7 @@ export function DynamicForm({
                       )}
                     </div>
                     <span
-                      className={`text-[15px] leading-tight ${isSelected ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
+                      className={`text-[14px] leading-tight ${isSelected ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
                     >
                       {opt}
                     </span>
@@ -334,7 +334,7 @@ export function DynamicForm({
                   )}
                 </div>
                 <span
-                  className={`text-[15px] whitespace-nowrap ${formValues[field.id] === '__other__' ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
+                  className={`text-[14px] whitespace-nowrap ${formValues[field.id] === '__other__' ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
                 >
                   Other:
                 </span>
@@ -343,7 +343,7 @@ export function DynamicForm({
                   {...register(`${field.id}_other`, {
                     required: field.required && formValues[field.id] === '__other__',
                   })}
-                  className={`flex-1 ml-3 bg-transparent outline-none text-[15px] font-medium placeholder:font-normal placeholder:text-slate-400 transition-colors border-b ${
+                  className={`flex-1 ml-3 bg-transparent outline-none text-[14px] font-medium placeholder:font-normal placeholder:text-slate-400 transition-colors border-b ${
                     formValues[field.id] === '__other__'
                       ? 'border-primary text-slate-900'
                       : 'border-slate-200 text-slate-500'
@@ -381,7 +381,7 @@ export function DynamicForm({
                       )}
                     </div>
                     <span
-                      className={`text-[15px] leading-tight ${isSelected ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
+                      className={`text-[14px] leading-tight ${isSelected ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
                     >
                       {opt}
                     </span>
@@ -406,7 +406,7 @@ export function DynamicForm({
                   )}
                 </div>
                 <span
-                  className={`text-[15px] whitespace-nowrap pt-0.5 ${(formValues[field.id] || []).includes('__other__') ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
+                  className={`text-[14px] whitespace-nowrap pt-0.5 ${(formValues[field.id] || []).includes('__other__') ? 'font-semibold text-primary' : 'font-medium text-slate-700'}`}
                 >
                   Other:
                 </span>
@@ -415,7 +415,7 @@ export function DynamicForm({
                   {...register(`${field.id}_other`, {
                     required: field.required && (formValues[field.id] || []).includes('__other__'),
                   })}
-                  className={`flex-1 ml-3 bg-transparent outline-none text-[15px] font-medium placeholder:font-normal placeholder:text-slate-400 transition-colors border-b ${
+                  className={`flex-1 ml-3 bg-transparent outline-none text-[14px] font-medium placeholder:font-normal placeholder:text-slate-400 transition-colors border-b ${
                     (formValues[field.id] || []).includes('__other__')
                       ? 'border-primary text-slate-900'
                       : 'border-slate-200 text-slate-500'
@@ -444,7 +444,7 @@ export function DynamicForm({
                         key={num}
                         type="button"
                         onClick={() => onChange(num)}
-                        className={`w-10 h-10 rounded-lg text-[15px] font-bold transition-all relative z-10 ${
+                        className={`w-9 h-9 rounded-lg text-[14px] font-bold transition-all relative z-10 ${
                           isSelected
                             ? 'bg-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] text-primary border border-slate-200/50 scale-110 z-20'
                             : isPast
@@ -595,7 +595,7 @@ export function DynamicForm({
       )}
       <div
         ref={scrollRef}
-        className={`flex-1 overflow-y-auto px-6 sm:px-8 ${visiblePages.length > 1 ? 'pt-4 pb-8' : 'py-8'} custom-thin-scroll space-y-6`}
+        className={`flex-1 overflow-y-auto px-6 sm:px-8 ${visiblePages.length > 1 ? 'pt-4 pb-8' : 'py-6'} custom-thin-scroll space-y-5`}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -604,20 +604,20 @@ export function DynamicForm({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="space-y-8"
+            className="space-y-6"
           >
             {currentFields.map((field) => {
               if (!isFieldVisible(field)) return null;
 
               if (field.type === 'header') {
                 return (
-                  <div key={field.id} className="pt-2 pb-4">
-                    <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
+                  <div key={field.id} className="pt-1 pb-3">
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                       {field.label}
                     </h3>
                     {field.description && (
                       <div
-                        className="mt-3 text-[15px] leading-relaxed text-slate-500 prose prose-slate max-w-none"
+                        className="mt-2 text-[14px] leading-relaxed text-slate-500 prose prose-slate max-w-none"
                         dangerouslySetInnerHTML={{ __html: field.description }}
                       />
                     )}
@@ -630,13 +630,13 @@ export function DynamicForm({
               }
 
               return (
-                <div key={field.id} className="space-y-2.5">
-                  <label className="block text-[15px] font-bold text-slate-800 tracking-tight">
+                <div key={field.id} className="space-y-1.5">
+                  <label className="block text-[14px] font-bold text-slate-800 tracking-tight">
                     {field.label} {field.required && <span className="text-red-500">*</span>}
                   </label>
                   {field.description && (
                     <div
-                      className="mb-4 text-sm text-slate-500 prose prose-sm prose-slate max-w-none"
+                      className="mb-2 text-[13px] text-slate-500 prose prose-sm prose-slate max-w-none leading-snug"
                       dangerouslySetInnerHTML={{ __html: field.description }}
                     />
                   )}

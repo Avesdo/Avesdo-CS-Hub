@@ -238,7 +238,7 @@ export const ClientHealthTab = React.memo(
                   {isSuspended
                     ? 'This client is suspended. Health tracking is paused.'
                     : isLost || isChurned
-                      ? 'Client was lost. No health tracking or historical data is actively recorded.'
+                      ? `Client was lost${client.lostDateStr ? ` on ${client.lostDateStr}` : ''}. No health tracking or historical data is actively recorded.`
                       : isInactive
                         ? 'Historical data is preserved, but active tracking has concluded.'
                         : 'Active tracking has concluded.'}
@@ -271,7 +271,7 @@ export const ClientHealthTab = React.memo(
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
                 {isLost || isChurned
-                  ? 'This client has been marked as lost. Active health tracking and scoring have been disabled, but you can still view historical activity.'
+                  ? `This client has been marked as lost${client.lostDateStr ? ` on ${client.lostDateStr}` : ''}. Active health tracking and scoring have been disabled, but you can still view historical activity.`
                   : 'This client is inactive. Active health tracking and scoring have been disabled, but you can still view historical activity.'}
               </p>
             </div>

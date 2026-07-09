@@ -11,6 +11,7 @@ import {
   ClipboardList,
   ShieldCheck,
   Award,
+  Rocket,
 } from 'lucide-react';
 import { Project, Settings } from '../../types';
 
@@ -162,26 +163,20 @@ export function PortalDashboard({
 
       <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-20 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 flex flex-col space-y-8">
+          <div className="lg:col-span-2 flex flex-col space-y-4">
             {forms.length > 0 && (
               <div className="bg-white/80 backdrop-blur-md border border-slate-200/60 p-6 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                      <CheckCircle2 className="w-5 h-5" />
+                      <Rocket className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="block text-sm font-semibold text-slate-600">
-                        Onboarding Progress
-                      </span>
                       <span className="block text-lg font-bold text-slate-900">
-                        {completedCount} of {forms.length} Tasks Completed
+                        Onboarding Progress
                       </span>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-                    {progressPercentage}%
-                  </span>
                 </div>
                 <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
                   <motion.div
