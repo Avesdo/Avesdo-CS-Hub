@@ -65,6 +65,7 @@ import {
   getSuspendedProjects,
   getUpcomingActivity,
 } from '../utils/dashboardUtils';
+import { getEnhancedClients } from '../utils/clientUtils';
 
 import { TrendIndicator } from '../components/TrendIndicator';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
@@ -145,9 +146,14 @@ export default function Dashboard() {
     () => getFilteredProjects(projects, managerFilter),
     [projects, managerFilter]
   );
+  const enhancedClients = useMemo(
+    () => getEnhancedClients(clients, projects, healthHistory, settings),
+    [clients, projects, healthHistory, settings]
+  );
+
   const filteredClients = useMemo(
-    () => getFilteredClients(clients, managerFilter),
-    [clients, managerFilter]
+    () => getFilteredClients(enhancedClients, managerFilter),
+    [enhancedClients, managerFilter]
   );
   const filteredServices = useMemo(
     () => getFilteredServices(services, managerFilter),
