@@ -153,6 +153,7 @@ export const exportFormToCSV = (
   const dataToExport = formData || {};
   let keys: string[] = [];
   const idToTitle: Record<string, string> = {};
+  const idToPriority: Record<string, string> = {};
 
   if (template?.type === 'checklist' && template.sections) {
     template.sections.forEach((sec: any) => {
@@ -160,6 +161,7 @@ export const exportFormToCSV = (
         sec.items.forEach((item: any) => {
           keys.push(item.id);
           idToTitle[item.id] = item.taskName || item.id;
+          idToPriority[item.id] = item.priority || 'Normal';
         });
       }
     });
@@ -224,7 +226,7 @@ export const exportFormToCSV = (
         [
           escapeCSV(taskName),
           escapeCSV(val.status || 'Pending'),
-          escapeCSV(val.priority || 'Normal'),
+          escapeCSV(val.priority || idToPriority[k] || 'Normal'),
           escapeCSV(val.resource || ''),
           escapeCSV(val.date ? new Date(val.date).toLocaleDateString() : ''),
           escapeCSV(val.clientNote || ''),

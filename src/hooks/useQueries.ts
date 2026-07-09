@@ -14,7 +14,8 @@ export function useProjectQuery(projectIdOrSlug: string | undefined) {
 
       // 2. If not found, try by slug
       if (!snap.exists()) {
-        const q = query(collection(db, 'projects'), where('slug', '==', projectIdOrSlug));
+        const { limit } = await import('firebase/firestore');
+        const q = query(collection(db, 'projects'), where('slug', '==', projectIdOrSlug), limit(1));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
           throw new Error('Project not found');

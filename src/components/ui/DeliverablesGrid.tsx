@@ -183,29 +183,6 @@ export default function DeliverablesGrid({
 
   return (
     <div className="flex flex-col h-full w-full bg-white overflow-hidden rounded-b-2xl relative">
-      {/* Global Client Portal Header */}
-      {isClientPortal && (
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-5 border-b border-slate-100 bg-white/95 backdrop-blur-md shrink-0 z-20 shadow-sm relative">
-          <div className="flex items-center gap-3 w-full md:w-auto ml-auto">
-            <a
-              href={project?.teamworkLink || '#'}
-              target={project?.teamworkLink ? '_blank' : '_self'}
-              rel="noopener noreferrer"
-              className={`group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-300 px-5 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none ${project?.teamworkLink ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm' : 'bg-slate-100 text-slate-400 pointer-events-none'}`}
-            >
-              <ExternalLink className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              <span>Open Teamwork</span>
-            </a>
-            <Button
-              variant="secondary"
-              className="gap-2 px-5 py-2 h-9 border-transparent hover:bg-slate-200"
-            >
-              <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
-              <span>Export CSV</span>
-            </Button>
-          </div>
-        </div>
-      )}
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden relative">
         {/* Left Pane: Master List */}
@@ -234,8 +211,8 @@ export default function DeliverablesGrid({
               const isCollapsed = collapsedSections.includes(section.id);
 
               return (
-                <div key={section.id} className="mb-4">
-                  <div className="flex items-center justify-between px-4 py-1.5 mb-1 group/secheader">
+                <div key={section.id} className="mb-1.5">
+                  <div className="flex items-center justify-between px-3 py-1 mb-0.5 group/secheader">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
@@ -305,8 +282,8 @@ export default function DeliverablesGrid({
 
             {/* Custom Items Section */}
             {customItems.length > 0 && (
-              <div className="mb-4">
-                <div className="flex items-center px-4 py-1.5 mb-1">
+              <div className="mb-1.5">
+                <div className="flex items-center px-3 py-1 mb-0.5">
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"

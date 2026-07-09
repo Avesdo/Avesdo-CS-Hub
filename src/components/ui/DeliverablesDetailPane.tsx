@@ -130,7 +130,7 @@ export default function DeliverablesDetailPane({
   const internalNoteVal = itemData.internalNote || '';
   const status = itemData.status || 'Pending';
   const taskName = itemData.taskName || item.taskName || '';
-  const priority = itemData.priority || 'Normal';
+  const priority = itemData.priority || item.priority || 'Normal';
 
   return (
     <AnimatePresence mode="wait">

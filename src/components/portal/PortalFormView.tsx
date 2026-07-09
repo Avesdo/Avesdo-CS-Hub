@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, FileText } from 'lucide-react';
+import { ChevronLeft, FileText, ExternalLink, Download } from 'lucide-react';
+import { Button } from '../ui/button';
+import { exportFormToCSV } from '../../utils/exportUtils';
 import { Project, Settings } from '../../types';
 import { DynamicForm } from '../ui/DynamicForm';
 import DeliverablesGrid from '../ui/DeliverablesGrid';
@@ -74,6 +76,28 @@ export function PortalFormView({
             </div>
           </div>
         </div>
+
+        {activeFormType === 'deliverables' && (
+          <div className="flex items-center gap-3">
+            <a
+              href={project?.teamworkLink || '#'}
+              target={project?.teamworkLink ? '_blank' : '_self'}
+              rel="noopener noreferrer"
+              className={`group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-300 px-5 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none ${project?.teamworkLink ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm' : 'bg-slate-100 text-slate-400 pointer-events-none'}`}
+            >
+              <ExternalLink className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              <span className="hidden sm:inline">Open Teamwork</span>
+            </a>
+            <Button
+              variant="secondary"
+              className="gap-2 px-5 py-2 h-9 border-slate-200 hover:bg-slate-100 hidden sm:inline-flex"
+              onClick={() => exportFormToCSV('Deliverables Checklist', project, existingData, template)}
+            >
+              <Download className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              <span>Export CSV</span>
+            </Button>
+          </div>
+        )}
       </header>
 
       <div className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col min-h-0">

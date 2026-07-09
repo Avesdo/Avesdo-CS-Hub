@@ -44,6 +44,7 @@ service cloud.firestore {
 
     match /settings/{document=**} {
       allow read: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
       allow write: if hasPermission('edit_org_settings') || hasPermission('edit_schedule') || hasPermission('edit_project_workflows') || hasPermission('edit_service_catalog') || hasPermission('edit_health_scoring') || hasPermission('edit_form_templates') || hasPermission('manage_roles') || hasPermission('manage_user_access') || isSuperAdmin();
     }
     
@@ -56,8 +57,10 @@ service cloud.firestore {
 
     match /projects/{projectId} {
       allow read: if isAvesdoEmployee();
+      allow get: if !isAvesdoEmployee();
+      allow list: if !isAvesdoEmployee() && request.query.limit <= 1;
       allow create: if hasPermission('project_create');
-      allow update: if hasPermission('project_edit_details') || hasPermission('project_add_notes') || hasPermission('project_archive');
+      allow update: if hasPermission('project_edit_details') || hasPermission('project_add_notes') || hasPermission('project_archive') || (!isAvesdoEmployee() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase']));
       allow delete: if hasPermission('hard_delete_archives');
     }
 

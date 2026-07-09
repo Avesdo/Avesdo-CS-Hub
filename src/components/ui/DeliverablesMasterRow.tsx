@@ -67,7 +67,7 @@ export default function DeliverablesMasterRow({
   return (
     <div
       onClick={() => onActivate(item.id)}
-      className={`group flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl cursor-pointer transition-all border outline-none ${
+      className={`group flex items-center gap-2.5 px-3 py-1.5 mx-1.5 rounded-lg cursor-pointer transition-all border outline-none ${
         isActive
           ? 'bg-primary/5 border-primary/20 shadow-sm ring-1 ring-primary/10'
           : 'border-transparent hover:bg-white hover:border-slate-200 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20'
