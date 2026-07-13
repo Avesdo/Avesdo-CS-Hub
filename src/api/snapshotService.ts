@@ -11,10 +11,10 @@ export async function generateDailyHealthSnapshots() {
     const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
 
     const clients: Client[] = clientsSnap.docs
-      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() } as Client))
+      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() } as unknown as Client))
       .filter((c) => !c.isArchived);
     const projects: Project[] = projectsSnap.docs
-      .map((d) => ({ id: d.id, projectId: d.id, ...d.data() } as Project))
+      .map((d) => ({ id: d.id, projectId: d.id, ...d.data() } as unknown as Project))
       .filter((p) => !p.isArchived);
     const settings: Settings = settingsSnap.exists()
       ? (settingsSnap.data() as Settings)
