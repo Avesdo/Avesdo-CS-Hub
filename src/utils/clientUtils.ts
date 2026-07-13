@@ -12,7 +12,10 @@ export interface EnhancedClient extends Client {
 export function getClientComputedStatus(c: Client, projects: Project[]): string {
   if (c.statusOverride) return c.statusOverride;
 
-  const cProjects = projects.filter((p) => (p.clients || []).includes(c.companyName || ''));
+  const cProjects = projects.filter((p) => {
+    const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
+    return resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '');
+  });
   const activeProjectsCount = cProjects.filter(
     (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
   ).length;
@@ -49,7 +52,10 @@ export function getEnhancedClients(
 ): EnhancedClient[] {
   const thirtyDaysAgo = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
   return clients.map((c) => {
-    const cProjects = projects.filter((p) => (p.clients || []).includes(c.companyName || ''));
+    const cProjects = projects.filter((p) => {
+      const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
+      return resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '');
+    });
     const activeProjectsCount = cProjects.filter(
       (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
     ).length;

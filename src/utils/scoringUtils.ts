@@ -239,9 +239,11 @@ export function calculateClientHealth(
   if (!client || !settings) return defaultResult;
 
   const clientProjects = projects.filter(
-    (p) =>
-      p.clientIds?.includes(client.clientId || client.id) ||
-      p.clients?.includes(client.companyName || client.name)
+    (p) => {
+      const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
+      return resolvedIds.includes(client.clientId || client.id) ||
+             p.clients?.includes(client.companyName || client.name);
+    }
   );
   const activeProjects = clientProjects.filter(
     (p) =>

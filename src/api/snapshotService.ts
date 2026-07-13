@@ -11,10 +11,10 @@ export async function generateDailyHealthSnapshots() {
     const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
 
     const clients: Client[] = clientsSnap.docs
-      .map((d) => d.data() as Client)
+      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() } as Client))
       .filter((c) => !c.isArchived);
     const projects: Project[] = projectsSnap.docs
-      .map((d) => d.data() as Project)
+      .map((d) => ({ id: d.id, projectId: d.id, ...d.data() } as Project))
       .filter((p) => !p.isArchived);
     const settings: Settings = settingsSnap.exists()
       ? (settingsSnap.data() as Settings)
@@ -35,6 +35,11 @@ export async function generateDailyHealthSnapshots() {
       } else if (data.historyMap) {
         historyMap = data.historyMap;
       }
+      
+      // Clean up corrupted 0 scores from history
+      Object.keys(historyMap).forEach(key => {
+        historyMap[key] = historyMap[key].filter((s: any) => s.score !== 0 && s.score !== 'N/A');
+      });
     }
 
     const now = new Date();
@@ -50,6 +55,16 @@ export async function generateDailyHealthSnapshots() {
 
       const healthResult = calculateClientHealth(client, projects, settings);
       const score = typeof healthResult.totalScore === 'number' ? healthResult.totalScore : 0;
+
+      console.log(`Snapshot for client ${client.companyName} (${clientId}):`, {
+        healthResult,
+        score,
+        clientProjects: projects.filter(
+          (p) =>
+            p.clientIds?.includes(clientId) ||
+            p.clients?.includes(client.companyName || client.name)
+        ).map(p => p.name)
+      });
 
       if (!historyMap[clientId]) {
         historyMap[clientId] = [];
