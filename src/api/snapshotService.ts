@@ -13,12 +13,18 @@ export async function generateDailyHealthSnapshots() {
     const clients: Client[] = clientsSnap.docs
       .map((d) => ({ id: d.id, clientId: d.id, ...d.data() } as unknown as Client))
       .filter((c) => !c.isArchived);
-    const projects: Project[] = projectsSnap.docs
-      .map((d) => ({ id: d.id, projectId: d.id, ...d.data() } as unknown as Project))
-      .filter((p) => !p.isArchived);
+
     const settings: Settings = settingsSnap.exists()
       ? (settingsSnap.data() as Settings)
       : ({} as Settings);
+
+    const projects: Project[] = projectsSnap.docs
+      .map((d) => {
+        const p = { id: d.id, projectId: d.id, ...d.data() } as unknown as Project;
+        const pHealth = calculateProjectHealth(p, settings);
+        return { ...p, healthScore: pHealth.totalScore };
+      })
+      .filter((p) => !p.isArchived);
 
     // 2. Fetch the existing health_history document
     const historyRef = doc(db, 'settings', 'health_history');
