@@ -62,16 +62,6 @@ export async function generateDailyHealthSnapshots() {
       const healthResult = calculateClientHealth(client, projects, settings);
       const score = typeof healthResult.totalScore === 'number' ? healthResult.totalScore : 0;
 
-      console.log(`Snapshot for client ${client.companyName} (${clientId}):`, {
-        healthResult,
-        score,
-        clientProjects: projects.filter(
-          (p) =>
-            p.clientIds?.includes(clientId) ||
-            p.clients?.includes(client.companyName || client.name)
-        ).map(p => p.name)
-      });
-
       if (!historyMap[clientId]) {
         historyMap[clientId] = [];
       }

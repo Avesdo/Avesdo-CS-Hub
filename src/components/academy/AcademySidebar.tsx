@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, Tags } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -30,15 +30,8 @@ export function AcademySidebar({ activeTab, setActiveTab }: AcademySidebarProps)
     return false;
   });
 
-  const MENU_ITEMS = [
+  const MENU_ITEMS: { id: string; label: string; icon: React.ElementType; disabled?: boolean; badge?: string }[] = [
     { id: 'knowledge-checks', label: 'Knowledge Checks', icon: GraduationCap },
-    {
-      id: 'tag-database',
-      label: 'Tag Database',
-      icon: Tags,
-      disabled: true,
-      badge: 'Coming Soon',
-    },
   ];
 
   return (

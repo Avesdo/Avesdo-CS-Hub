@@ -3,7 +3,7 @@
 ## Project Overview
 This project is a custom, interactive Single Page Application (SPA) built to serve as the central operational hub for the Client Success team at Avesdo Technologies. 
 
-It tracks and manages the overall health and lifecycle of **Clients**, **Projects**, and **Services**.
+It tracks and manages the overall health and lifecycle of **Clients**, **Projects**, and **Services**, and provides continuous team training via the **Academy** module.
 
 ## Tech Stack & Infrastructure
 The technology stack is exceptionally modern, follows top-tier industry standards, and completely replaces our legacy Google Sheets/Apps Script architecture.
@@ -16,6 +16,8 @@ The technology stack is exceptionally modern, follows top-tier industry standard
 * **Testing & Code Quality:** Playwright for E2E, Vitest for unit/component testing, ESLint, and Prettier are properly configured.
 * **Data Pipeline:** A local Node.js script (`scripts/run_compiler.mjs`) parses Userpilot/Happyfox CSVs and utilizes high-speed bulk writes for structured metrics. It writes any unknown entity names into a "Data Intake" approval queue (`aliases` collection) for manual resolution.
 * **Health Scoring Engine:** A centralized `scoringUtils.ts` engine dynamically recalculates Client and Project health scores live based on weights configured in the Firestore `settings` collection.
+* **Health Snapshots:** A daily snapshot service (`snapshotService.ts`) automatically records historical health scores upon app load to power the trend analysis graphs.
+* **Academy:** A built-in learning management system (`useAcademyStore.ts`) that tests team members on product knowledge using quizzes.
 * **Cost Constraint:** The entire application runs on a strict $0 zero-cost Google ecosystem.
 
 ## Global State Management & Deep Linking
@@ -36,4 +38,5 @@ Firestore data is intentionally denormalized for speed. When a root record updat
   - `clientIds: string[]`
   - `projectIds: string[]` (Supports multiple assigned projects)
   - `managers: string[]` (Supports multiple assigned managers)
+- **`quizzes` and `quiz_attempts` collections:** Manage the Academy knowledge checks and employee scores.
 **Architecture Note (Data Integrity):** The UI requires the string `companyName` to power the Global Search bar. However, we strictly **DO NOT** store duplicated `companyName` strings inside `projects` or `services` in the database to prevent siloing. Instead, the Zustand store (`useAppStore.ts`) and global hooks dynamically resolve the UUID connections via React `useMemo` hooks in real-time. This guarantees perfect data integrity without expensive batch updates.

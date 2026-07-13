@@ -23,8 +23,12 @@ export default function Academy() {
 
         {/* MAIN CONTENT AREA */}
         <div className="flex-1 bg-white relative flex flex-col overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-hidden px-10 pt-8 pb-0 min-h-0">
-            {activeTab === 'knowledge-checks' && <KnowledgeCheckRouter />}
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+            {activeTab === 'knowledge-checks' && (
+              <div className="px-10 pt-8 pb-0 h-full overflow-y-auto">
+                <KnowledgeCheckRouter />
+              </div>
+            )}
           </div>
         </div>
       </div>

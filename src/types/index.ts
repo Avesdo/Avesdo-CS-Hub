@@ -225,3 +225,25 @@ export interface QuizAttempt {
   answers: Record<string, string>;
   completedAt: number;
 }
+
+export type TagType = 'simple' | 'composite' | 'math' | 'special';
+
+export interface DocumentTag {
+  id: string; // UUID
+  collection: string; // The high-level category (e.g., 'Deal Participants', 'Dates')
+  subGroup?: string; // The specific group (e.g., 'Purchaser 1', 'Realtor 2')
+  
+  type: TagType; // Defines how the UI should treat this tag
+  
+  tag: string; 
+  description: string; 
+  example?: string; 
+  
+  // Type-specific fields:
+  mathFormula?: string; 
+  requiresPrefix?: boolean; 
+  basePrefix?: string; 
+  allowedIdentifiers?: string[];
+  
+  createdAt: number;
+}
