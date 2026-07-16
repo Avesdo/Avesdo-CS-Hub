@@ -5,13 +5,15 @@ import { academyService } from '../../api/academyService';
 import { v4 as uuidv4 } from 'uuid';
 import { CheckCircle2, ChevronRight, ChevronLeft, XCircle, Loader2, Edit3 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { QuizAttempt } from '../../types';
 
 interface KnowledgeCheckTakerProps {
   onCancel?: () => void;
+  existingAttempt?: QuizAttempt;
 }
 
-export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerProps) {
-  const { activeQuizzes, selectedQuizId } = useAcademyStore();
+export default function KnowledgeCheckTaker({ onCancel, existingAttempt }: KnowledgeCheckTakerProps) {
+  const { activeQuizzes, selectedQuizId, fetchQuizAttempts } = useAcademyStore();
   const draftQuiz = activeQuizzes.find((q) => q.id === selectedQuizId) || activeQuizzes[0];
   const user = useAppStore((s) => s.user);
 
@@ -34,7 +36,7 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
       }
       try {
         const savedAnswers = await academyService.getQuizProgress(draftQuiz.id, user.uid);
-        if (savedAnswers && isMounted) {
+        if (savedAnswers && Object.keys(savedAnswers).length > 0 && isMounted) {
           setSelectedAnswers(savedAnswers);
           // Auto-advance to the first unanswered question
           const firstUnansweredIndex = draftQuiz.questions?.findIndex((q) => !savedAnswers[q.id]);
@@ -45,6 +47,10 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
             setHasSeenReview(true);
             setShowReview(true);
           }
+        } else if (existingAttempt && isMounted) {
+          setSelectedAnswers(existingAttempt.answers);
+          setHasSeenReview(true);
+          setShowReview(true);
         }
       } catch (err) {
         console.error('Failed to load progress', err);
@@ -122,21 +128,26 @@ export default function KnowledgeCheckTaker({ onCancel }: KnowledgeCheckTakerPro
       const score = (scoreCount / questions.length) * 100;
 
       await academyService.saveQuizAttempt({
-        id: uuidv4(),
+        id: existingAttempt ? existingAttempt.id : uuidv4(),
         quizId: draftQuiz.id,
         userId: user?.uid || 'unknown-user',
         score,
         answers: selectedAnswers,
-        completedAt: Date.now(),
+        completedAt: existingAttempt ? existingAttempt.completedAt : Date.now(),
+        updatedAt: existingAttempt ? Date.now() : undefined,
+        originalScore: existingAttempt ? (existingAttempt.originalScore ?? existingAttempt.score) : undefined,
+        originalAnswers: existingAttempt ? (existingAttempt.originalAnswers ?? existingAttempt.answers) : undefined,
       });
 
       await academyService.deleteQuizProgress(draftQuiz.id, user?.uid || 'unknown-user');
+      await fetchQuizAttempts(draftQuiz.id);
     } catch (err) {
       console.error('Failed to save quiz attempt', err);
     } finally {
       setIsSubmitting(false);
       setShowReview(false);
       setShowResults(true);
+      if (onCancel) onCancel();
     }
   };
 

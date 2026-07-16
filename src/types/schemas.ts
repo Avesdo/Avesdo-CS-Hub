@@ -200,6 +200,9 @@ export const QuizAttemptSchema = z.object({
   score: z.number(),
   answers: z.record(z.string(), z.string()),
   completedAt: z.number(),
+  originalScore: z.number().optional(),
+  originalAnswers: z.record(z.string(), z.string()).optional(),
+  updatedAt: z.number().optional(),
 });
 
 export type QuizAttempt = z.infer<typeof QuizAttemptSchema>;

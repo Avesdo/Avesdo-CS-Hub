@@ -46,7 +46,8 @@ export default function KnowledgeCheckResults() {
     users.filter((u) => !u.isDeactivated && u.isAccountManager).map((u) => u.uid);
 
   const isEnrolled = authUser?.uid ? enrolledIds.includes(authUser.uid) : false;
-  const hasTaken = authUser?.uid ? quizAttempts.some((a) => a.userId === authUser.uid) : false;
+  const userAttempt = authUser?.uid ? quizAttempts.find((a) => a.userId === authUser.uid) : undefined;
+  const hasTaken = !!userAttempt;
 
   const userResults = enrolledIds.map((userId) => {
     const user = users.find((u) => u.uid === userId);
@@ -93,7 +94,7 @@ export default function KnowledgeCheckResults() {
   if (isTakingQuiz) {
     return (
       <div className="h-full">
-        <KnowledgeCheckTaker onCancel={() => setIsTakingQuiz(false)} />
+        <KnowledgeCheckTaker onCancel={() => setIsTakingQuiz(false)} existingAttempt={userAttempt} />
       </div>
     );
   }
@@ -112,6 +113,14 @@ export default function KnowledgeCheckResults() {
               className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
             >
               Take Knowledge Check
+            </button>
+          )}
+          {isEnrolled && hasTaken && (
+            <button
+              onClick={() => setIsTakingQuiz(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              Edit Answers
             </button>
           )}
           <div className="relative w-64">
@@ -207,11 +216,18 @@ export default function KnowledgeCheckResults() {
                               >
                                 {Math.round(attempt!.score)}%
                               </span>
-                              <span
-                                className={`text-sm font-medium mb-0.5 ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
-                              >
-                                ({correctCount} of {quiz?.questions.length} correct)
-                              </span>
+                              <div className="flex flex-col">
+                                <span
+                                  className={`text-sm font-medium mb-0.5 ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                                >
+                                  ({correctCount} of {quiz?.questions.length} correct)
+                                </span>
+                                {attempt!.originalScore !== undefined && (
+                                  <span className="text-[11px] font-medium text-slate-500">
+                                    Original: {Math.round(attempt!.originalScore)}%
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -283,11 +299,18 @@ export default function KnowledgeCheckResults() {
             <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 mb-6">
               <div>
                 <p className="text-sm text-slate-500 font-medium">Final Score</p>
-                <p
-                  className={`text-2xl font-bold ${(selectedAttempt?.score || 0) >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}
-                >
-                  {Math.round(selectedAttempt?.score || 0)}%
-                </p>
+                <div className="flex items-baseline gap-2">
+                  <p
+                    className={`text-2xl font-bold ${(selectedAttempt?.score || 0) >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}
+                  >
+                    {Math.round(selectedAttempt?.score || 0)}%
+                  </p>
+                  {selectedAttempt?.originalScore !== undefined && (
+                    <span className="text-sm font-medium text-slate-400">
+                      (Original: {Math.round(selectedAttempt.originalScore)}%)
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="text-right">
                 <p className="text-sm text-slate-500 font-medium">Completed</p>

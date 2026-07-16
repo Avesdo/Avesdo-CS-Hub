@@ -256,11 +256,18 @@ export default function QuizListDashboard() {
               >
                 {scorePercentage}%
               </span>
-              <span
-                className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
-              >
-                Score
-              </span>
+              <div className="flex flex-col">
+                <span
+                  className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                >
+                  Score
+                </span>
+                {attempt.originalScore !== undefined && (
+                  <span className="text-[11px] font-medium text-slate-500">
+                    Original: {Math.round(attempt.originalScore)}%
+                  </span>
+                )}
+              </div>
             </div>
           ) : (
             <div className="flex items-end gap-2 h-8">

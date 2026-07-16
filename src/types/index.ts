@@ -224,6 +224,9 @@ export interface QuizAttempt {
   score: number;
   answers: Record<string, string>;
   completedAt: number;
+  originalScore?: number;
+  originalAnswers?: Record<string, string>;
+  updatedAt?: number;
 }
 
 export type TagType = 'simple' | 'composite' | 'math' | 'special';
