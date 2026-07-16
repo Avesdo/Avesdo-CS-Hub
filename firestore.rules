@@ -78,7 +78,8 @@ service cloud.firestore {
     }
 
     match /notifications/{notifId} {
-      allow read, write: if isAvesdoEmployee();
+      allow read, update, delete: if isAvesdoEmployee();
+      allow create: if true;
     }
 
     match /support_tickets/{ticketId} {

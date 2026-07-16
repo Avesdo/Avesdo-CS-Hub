@@ -26,6 +26,7 @@ import {
   addProjectAutoLog,
 } from '../../api/dbService';
 import { calculateProjectHealth, calculateClientHealth } from '../../utils/scoringUtils';
+import { generateUniqueSlug } from '../../utils/urlUtils';
 import { Project } from '../../types';
 
 import { Select } from '../ui/Select';
@@ -199,9 +200,13 @@ export default function AddProjectModal() {
         });
       }
 
+      const existingSlugs = new Set(projects.map((p) => p.slug || '').filter(Boolean));
+      const newSlug = generateUniqueSlug(data.name.trim(), existingSlugs);
+
       const newProject: Project = {
         // eslint-disable-next-line react-hooks/purity
         id: `P-${Date.now()}-${crypto.randomUUID().substring(0, 4)}`,
+        slug: newSlug,
         name: data.name.trim(),
         developerIds: matchedDevs.map((c) => c.clientId || c.id),
         developers: matchedDevs.map((c) => c.companyName || c.name),

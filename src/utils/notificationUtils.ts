@@ -93,6 +93,7 @@ export async function sendEmailAlert(
         formName: formName,
         action: action,
         projectUrl: projectUrl,
+        body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.\n\nView Project: ${projectUrl}`,
       }),
     });
   } catch (err) {

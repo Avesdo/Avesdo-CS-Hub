@@ -95,11 +95,10 @@ function doPost(e) {
       '</div>';
     }
     
-    // Send the email with HTML body and plaintext fallback
+    // Send the email with HTML body
     MailApp.sendEmail({
       to: emailTo,
       subject: subject,
-      body: data.body || "Please view this email in an HTML-compatible email client.",
       htmlBody: htmlContent
     });
     
