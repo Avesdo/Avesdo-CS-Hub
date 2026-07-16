@@ -128,7 +128,6 @@ export interface Settings {
   }[];
   roles?: CustomRole[];
   rolePermissions?: Record<string, Record<string, boolean>>;
-  geminiApiKey?: string;
   academyEnrollments?: string[];
   [key: string]: any;
 }

@@ -147,7 +147,6 @@ export const SettingsSchema = z
         weights: { opActivity: 20, featAdoption: 20, userVol: 20, csat: 20, financial: 20 },
         thresholds: { healthy: 70, warning: 40 },
       }),
-    geminiApiKey: z.string().optional(),
     academyEnrollments: z.array(z.string()).optional(),
   })
   .passthrough();
