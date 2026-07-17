@@ -46,7 +46,9 @@ export default function KnowledgeCheckResults() {
     users.filter((u) => !u.isDeactivated && u.isAccountManager).map((u) => u.uid);
 
   const isEnrolled = authUser?.uid ? enrolledIds.includes(authUser.uid) : false;
-  const userAttempt = authUser?.uid ? quizAttempts.find((a) => a.userId === authUser.uid) : undefined;
+  const userAttempt = authUser?.uid
+    ? quizAttempts.find((a) => a.userId === authUser.uid)
+    : undefined;
   const hasTaken = !!userAttempt;
 
   const userResults = enrolledIds.map((userId) => {
@@ -94,7 +96,10 @@ export default function KnowledgeCheckResults() {
   if (isTakingQuiz) {
     return (
       <div className="h-full">
-        <KnowledgeCheckTaker onCancel={() => setIsTakingQuiz(false)} existingAttempt={userAttempt} />
+        <KnowledgeCheckTaker
+          onCancel={() => setIsTakingQuiz(false)}
+          existingAttempt={userAttempt}
+        />
       </div>
     );
   }

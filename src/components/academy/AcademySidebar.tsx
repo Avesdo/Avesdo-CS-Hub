@@ -30,9 +30,13 @@ export function AcademySidebar({ activeTab, setActiveTab }: AcademySidebarProps)
     return false;
   });
 
-  const MENU_ITEMS: { id: string; label: string; icon: React.ElementType; disabled?: boolean; badge?: string }[] = [
-    { id: 'knowledge-checks', label: 'Knowledge Checks', icon: GraduationCap },
-  ];
+  const MENU_ITEMS: {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+    disabled?: boolean;
+    badge?: string;
+  }[] = [{ id: 'knowledge-checks', label: 'Knowledge Checks', icon: GraduationCap }];
 
   return (
     <div className="w-full md:w-56 bg-white shrink-0 p-4 flex flex-col gap-6 overflow-y-auto custom-thin-scroll border-r border-slate-100">

@@ -14,7 +14,9 @@ export function getClientComputedStatus(c: Client, projects: Project[]): string 
 
   const cProjects = projects.filter((p) => {
     const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
-    return resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '');
+    return (
+      resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '')
+    );
   });
   const activeProjectsCount = cProjects.filter(
     (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'
@@ -54,7 +56,9 @@ export function getEnhancedClients(
   return clients.map((c) => {
     const cProjects = projects.filter((p) => {
       const resolvedIds = p.clientIds || (p.clientId ? [p.clientId] : []);
-      return resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '');
+      return (
+        resolvedIds.includes(c.clientId || c.id) || (p.clients || []).includes(c.companyName || '')
+      );
     });
     const activeProjectsCount = cProjects.filter(
       (p) => p.projectStatus === 'Active' || p.projectStatus === 'Suspended'

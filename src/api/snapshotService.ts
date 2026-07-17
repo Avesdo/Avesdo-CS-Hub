@@ -11,7 +11,7 @@ export async function generateDailyHealthSnapshots() {
     const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
 
     const clients: Client[] = clientsSnap.docs
-      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() } as unknown as Client))
+      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() }) as unknown as Client)
       .filter((c) => !c.isArchived);
 
     const settings: Settings = settingsSnap.exists()
@@ -41,9 +41,9 @@ export async function generateDailyHealthSnapshots() {
       } else if (data.historyMap) {
         historyMap = data.historyMap;
       }
-      
+
       // Clean up corrupted 0 scores from history
-      Object.keys(historyMap).forEach(key => {
+      Object.keys(historyMap).forEach((key) => {
         historyMap[key] = historyMap[key].filter((s: any) => s.score !== 0 && s.score !== 'N/A');
       });
     }

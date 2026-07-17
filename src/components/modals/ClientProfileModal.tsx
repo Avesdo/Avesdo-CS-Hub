@@ -561,7 +561,7 @@ export default function ClientProfileModal() {
                                   />
                                 }
                               />
-                              
+
                               {activeStatus === 'Lost' && (
                                 <div className="mt-2 pl-2 border-l-2 border-red-200 ml-1">
                                   <DatePicker

@@ -159,9 +159,30 @@ export const ICONS = [
 ];
 
 export const CODES = [
-  'CA', 'US', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IE', 'MX', 'JP',
-  'CN', 'IN', 'BR', 'ZA', 'IT', 'ES', 'NL', 'SE', 'CH', 'AE',
-  'SG', 'HK', 'PH', 'KR'
+  'CA',
+  'US',
+  'GB',
+  'AU',
+  'NZ',
+  'FR',
+  'DE',
+  'IE',
+  'MX',
+  'JP',
+  'CN',
+  'IN',
+  'BR',
+  'ZA',
+  'IT',
+  'ES',
+  'NL',
+  'SE',
+  'CH',
+  'AE',
+  'SG',
+  'HK',
+  'PH',
+  'KR',
 ];
 
 export const COLORS = [
@@ -299,13 +320,18 @@ export const COLOR_MAP: Record<string, string> = {
   slateDark: '#334155',
 };
 
-
 export const renderIcon = (iconName: string, className: string = 'w-4 h-4') => {
   if (!iconName) return <CircleDashed className={className} />;
 
   if (iconName.startsWith('code-')) {
     const code = iconName.replace('code-', '');
-    return <span className={`inline-flex items-center justify-center font-bold text-[10px] tracking-tight ${className}`}>{code}</span>;
+    return (
+      <span
+        className={`inline-flex items-center justify-center font-bold text-[10px] tracking-tight ${className}`}
+      >
+        {code}
+      </span>
+    );
   }
 
   const IconMatch = Object.entries(LucideIcons).find(
@@ -529,26 +555,27 @@ export function CustomPicker({
               ) : (
                 <>
                   {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).map((i) => (
-                <Tooltip key={i} content={i} position="top">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onChange(i);
-                      setIsOpen(false);
-                    }}
-                    className={`w-9 h-9 rounded-md flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-primary transition-all active:scale-95 ${value === i ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm' : 'border border-transparent'}`}
-                  >
-                    {renderIcon(i, 'w-4 h-4')}
-                  </button>
-                </Tooltip>
-              ))}
-              {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).length === 0 && (
-                <div className="col-span-10 text-center py-8 text-xs font-medium text-muted-foreground">
-                  No icons found for "{search}"
-                </div>
+                    <Tooltip key={i} content={i} position="top">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onChange(i);
+                          setIsOpen(false);
+                        }}
+                        className={`w-9 h-9 rounded-md flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-primary transition-all active:scale-95 ${value === i ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm' : 'border border-transparent'}`}
+                      >
+                        {renderIcon(i, 'w-4 h-4')}
+                      </button>
+                    </Tooltip>
+                  ))}
+                  {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).length ===
+                    0 && (
+                    <div className="col-span-10 text-center py-8 text-xs font-medium text-muted-foreground">
+                      No icons found for "{search}"
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
             </div>
           </div>
         )}

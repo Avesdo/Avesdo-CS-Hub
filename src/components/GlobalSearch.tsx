@@ -255,7 +255,8 @@ export default function GlobalSearch() {
                               {c.companyName}
                             </span>
                             <span className="text-xs font-medium text-slate-500 mt-1">
-                              Manager: {c.accountManager ? getUserName(c.accountManager) : 'Unassigned'}
+                              Manager:{' '}
+                              {c.accountManager ? getUserName(c.accountManager) : 'Unassigned'}
                             </span>
                           </div>
                           <div className="shrink-0 ml-4">

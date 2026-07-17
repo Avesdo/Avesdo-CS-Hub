@@ -24,11 +24,11 @@ export function FeatureAdoptionWidget({
           </TruncatedText>
           <TruncatedText
             text={String(
-              'Combined adoption across' + featureAdoptionCombined.totalProjects + 'total projects'
+              'Combined adoption across ' + featureAdoptionCombined.totalProjects + ' total projects'
             )}
             containerClassName="text-xs text-muted-foreground mt-1 font-medium"
           >
-            Combined adoption across {featureAdoptionCombined.totalProjects}total projects
+            Combined adoption across {featureAdoptionCombined.totalProjects} total projects
           </TruncatedText>
         </div>
       </div>

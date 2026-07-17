@@ -12,7 +12,10 @@ interface KnowledgeCheckTakerProps {
   existingAttempt?: QuizAttempt;
 }
 
-export default function KnowledgeCheckTaker({ onCancel, existingAttempt }: KnowledgeCheckTakerProps) {
+export default function KnowledgeCheckTaker({
+  onCancel,
+  existingAttempt,
+}: KnowledgeCheckTakerProps) {
   const { activeQuizzes, selectedQuizId, fetchQuizAttempts } = useAcademyStore();
   const draftQuiz = activeQuizzes.find((q) => q.id === selectedQuizId) || activeQuizzes[0];
   const user = useAppStore((s) => s.user);
@@ -135,8 +138,12 @@ export default function KnowledgeCheckTaker({ onCancel, existingAttempt }: Knowl
         answers: selectedAnswers,
         completedAt: existingAttempt ? existingAttempt.completedAt : Date.now(),
         updatedAt: existingAttempt ? Date.now() : undefined,
-        originalScore: existingAttempt ? (existingAttempt.originalScore ?? existingAttempt.score) : undefined,
-        originalAnswers: existingAttempt ? (existingAttempt.originalAnswers ?? existingAttempt.answers) : undefined,
+        originalScore: existingAttempt
+          ? (existingAttempt.originalScore ?? existingAttempt.score)
+          : undefined,
+        originalAnswers: existingAttempt
+          ? (existingAttempt.originalAnswers ?? existingAttempt.answers)
+          : undefined,
       });
 
       await academyService.deleteQuizProgress(draftQuiz.id, user?.uid || 'unknown-user');
