@@ -10,15 +10,21 @@ export function GlobalSettingsTab() {
     <div className="max-w-4xl space-y-12 animate-in fade-in duration-300">
       <div className="space-y-12">
         <SettingsList
+          title="Platform Features"
+          desc="System features and modules."
+          fieldName="features"
+          canEdit={canEdit}
+        />
+        <SettingsList
           title="Client Types"
           desc="Classify your clients."
           fieldName="clientTypes"
           canEdit={canEdit}
         />
         <SettingsList
-          title="Platform Features"
-          desc="System features and modules."
-          fieldName="features"
+          title="Regions"
+          desc="Geographic regions for projects."
+          fieldName="regions"
           canEdit={canEdit}
         />
       </div>

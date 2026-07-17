@@ -102,6 +102,7 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
           'Deposit Reminders',
           'Closing',
         ],
+        regions: [],
         services: [
           { name: 'Sales Training', price: 750 },
           { name: 'Admin Training', price: 1000 },

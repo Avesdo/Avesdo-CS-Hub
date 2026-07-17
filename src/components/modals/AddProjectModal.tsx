@@ -15,6 +15,7 @@ import {
   FileText,
   AlignLeft,
   AlertTriangle,
+  Globe,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUIStore } from '../../store/useUIStore';
@@ -45,6 +46,7 @@ const projectSchema = z
     selectedDevelopers: z.array(z.string()),
     selectedSalesMarketing: z.array(z.string()),
     activeFeatures: z.array(z.string()),
+    region: z.string().optional(),
     releaseDateVal: z.number().nullable(),
     units: z.string().min(1, 'Units are required.'),
     assignee: z.string().optional(),
@@ -118,6 +120,7 @@ export default function AddProjectModal() {
       selectedDevelopers: [],
       selectedSalesMarketing: [],
       activeFeatures: [],
+      region: '',
       releaseDateVal: null,
       units: '',
       assignee: '',
@@ -215,6 +218,7 @@ export default function AddProjectModal() {
         clientIds: matchedClients.map((c) => c.clientId || c.id),
         clients: matchedClients.map((c) => c.companyName || c.name),
         features: data.activeFeatures,
+        region: data.region || '',
         projectStatus: 'Onboarding',
         timelineStatus: 'Not Started',
         onboardingPhase: 'Not Started',
@@ -549,6 +553,22 @@ export default function AddProjectModal() {
                   )}
                 </AnimatePresence>
               </div>
+              <Controller
+                name="region"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value || ''}
+                    options={(settings?.regions || []).map((r: any) => {
+                      const name = typeof r === 'string' ? r : r.name;
+                      return { label: name, value: name };
+                    })}
+                    onChange={field.onChange}
+                    trigger={<TokenTrigger label="Region" value={field.value} icon={Globe} />}
+                  />
+                )}
+              />
+              <div className="w-full" /> {/* Force Break for Features */}
               <Controller
                 name="activeFeatures"
                 control={control}

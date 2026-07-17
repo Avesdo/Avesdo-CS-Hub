@@ -28,6 +28,7 @@ const fieldDisplayNames: Record<string, string> = {
   timelines: 'Schedule Status',
   clientTypes: 'Client Type',
   features: 'Feature',
+  regions: 'Region',
   services: 'Service',
   serviceTypes: 'Service Type',
   serviceOutcomes: 'Service Outcome',
@@ -189,7 +190,7 @@ export function SettingsList({
       oldName = typeof oldItem === 'string' ? oldItem : oldItem.name;
 
       let newItemData: any;
-      if (typeof oldItem === 'string') {
+      if (fieldName === 'features') {
         newItemData = newName.trim();
       } else if (fieldName === 'services') {
         newItemData = { name: newName.trim(), price: Number(editForm.price) || 0 };
@@ -461,12 +462,14 @@ export function SettingsList({
                             type="color"
                             value={editForm.color}
                             onChange={(color) => setEditForm({ ...editForm, color })}
+                            fieldName={fieldName}
                           />
                           {fieldName !== 'managers' && (
                             <CustomPicker
                               type="icon"
                               value={editForm.icon}
                               onChange={(icon) => setEditForm({ ...editForm, icon })}
+                              fieldName={fieldName}
                             />
                           )}
                         </div>
@@ -685,12 +688,14 @@ export function SettingsList({
                       type="color"
                       value={newForm.color || 'slate'}
                       onChange={(color) => setNewForm({ ...newForm, color })}
+                      fieldName={fieldName}
                     />
                     {fieldName !== 'managers' && (
                       <CustomPicker
                         type="icon"
                         value={newForm.icon || 'CircleDashed'}
                         onChange={(icon) => setNewForm({ ...newForm, icon })}
+                        fieldName={fieldName}
                       />
                     )}
                   </div>

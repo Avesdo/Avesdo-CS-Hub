@@ -24,6 +24,7 @@ import {
   Settings,
   Link as LinkIcon,
   Edit2,
+  Globe,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { useUIStore } from '../../store/useUIStore';
@@ -331,6 +332,8 @@ export default function ProjectProfileModal() {
         }
       } else if (field === 'units') {
         actionLog = `Live Units updated to ${value}`;
+      } else if (field === 'region') {
+        actionLog = `Region changed to ${value}`;
       }
 
       await updateProjectRecord(
@@ -713,6 +716,26 @@ export default function ProjectProfileModal() {
                               onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
                             />
                           </div>
+                        </div>
+
+                        <div>
+                          <Select
+                            options={(settings?.regions || []).map((r: any) => {
+                              const name = typeof r === 'string' ? r : r.name;
+                              return { label: name, value: name };
+                            })}
+                            value={project?.region || ''}
+                            onChange={(val) => handleUpdateGeneric('region', val)}
+                            disabled={!hasPermission('project_edit_details')}
+                            trigger={
+                              <TokenTrigger
+                                label="Region"
+                                value={project?.region || ''}
+                                icon={Globe}
+                                disabled={!hasPermission('project_edit_details')}
+                              />
+                            }
+                          />
                         </div>
                       </div>
 

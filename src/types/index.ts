@@ -58,6 +58,7 @@ export interface Project {
   onboardingPhase?: string;
   teamworkLink?: string;
   features?: string[];
+  region?: string;
   units?: number | string;
   history?: any[];
   invoiceStatus?: string;
@@ -101,6 +102,7 @@ export interface Service {
 export interface Settings {
   managers: { name: string; color: string; icon?: string }[];
   clientTypes: { name: string; color: string; icon?: string }[];
+  regions?: string[];
   features: string[];
   services: { name: string; price: number }[];
   statuses: { name: string; color: string; icon?: string }[];
@@ -234,18 +236,18 @@ export interface DocumentTag {
   id: string; // UUID
   collection: string; // The high-level category (e.g., 'Deal Participants', 'Dates')
   subGroup?: string; // The specific group (e.g., 'Purchaser 1', 'Realtor 2')
-  
+
   type: TagType; // Defines how the UI should treat this tag
-  
-  tag: string; 
-  description: string; 
-  example?: string; 
-  
+
+  tag: string;
+  description: string;
+  example?: string;
+
   // Type-specific fields:
-  mathFormula?: string; 
-  requiresPrefix?: boolean; 
-  basePrefix?: string; 
+  mathFormula?: string;
+  requiresPrefix?: boolean;
+  basePrefix?: string;
   allowedIdentifiers?: string[];
-  
+
   createdAt: number;
 }

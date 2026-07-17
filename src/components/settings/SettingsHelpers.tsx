@@ -158,6 +158,12 @@ export const ICONS = [
   'Zap',
 ];
 
+export const CODES = [
+  'CA', 'US', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IE', 'MX', 'JP',
+  'CN', 'IN', 'BR', 'ZA', 'IT', 'ES', 'NL', 'SE', 'CH', 'AE',
+  'SG', 'HK', 'PH', 'KR'
+];
+
 export const COLORS = [
   'rose',
   'peach',
@@ -293,7 +299,15 @@ export const COLOR_MAP: Record<string, string> = {
   slateDark: '#334155',
 };
 
+
 export const renderIcon = (iconName: string, className: string = 'w-4 h-4') => {
+  if (!iconName) return <CircleDashed className={className} />;
+
+  if (iconName.startsWith('code-')) {
+    const code = iconName.replace('code-', '');
+    return <span className={`inline-flex items-center justify-center font-bold text-[10px] tracking-tight ${className}`}>{code}</span>;
+  }
+
   const IconMatch = Object.entries(LucideIcons).find(
     ([key]) => key.toLowerCase() === iconName?.toLowerCase().replace(/-/g, '')
   )?.[1] as any;
@@ -305,10 +319,12 @@ export function CustomPicker({
   type,
   value,
   onChange,
+  fieldName,
 }: {
   type: 'color' | 'icon';
   value: string;
   onChange: (val: string) => void;
+  fieldName?: string;
 }) {
   const [search, setSearch] = useState('');
   const [showCustom, setShowCustom] = useState(false);
@@ -495,7 +511,24 @@ export function CustomPicker({
               </div>
             </div>
             <div className="grid grid-cols-10 gap-1 p-2 max-h-[220px] overflow-y-auto custom-thin-scroll">
-              {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).map((i) => (
+              {fieldName === 'regions' ? (
+                CODES.filter((c) => c.toLowerCase().includes(search.toLowerCase())).map((code) => (
+                  <Tooltip key={code} content={code} position="top">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChange(`code-${code}`);
+                        setIsOpen(false);
+                      }}
+                      className={`w-9 h-9 rounded-md flex items-center justify-center text-xs font-bold hover:bg-slate-100 transition-all active:scale-95 ${value === `code-${code}` ? 'bg-primary/10 border border-primary/20 shadow-sm text-primary' : 'border border-transparent text-slate-600'}`}
+                    >
+                      {code}
+                    </button>
+                  </Tooltip>
+                ))
+              ) : (
+                <>
+                  {ICONS.filter((i) => i.toLowerCase().includes(search.toLowerCase())).map((i) => (
                 <Tooltip key={i} content={i} position="top">
                   <button
                     type="button"
@@ -514,6 +547,8 @@ export function CustomPicker({
                   No icons found for "{search}"
                 </div>
               )}
+            </>
+          )}
             </div>
           </div>
         )}
