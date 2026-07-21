@@ -196,7 +196,7 @@ export default function KnowledgeCheckGenerator() {
                     await fetch(import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL, {
                       method: 'POST',
                       mode: 'no-cors',
-                      headers: { 'Content-Type': 'application/json' },
+                      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                       body: JSON.stringify({
                         action: 'assign_quiz',
                         emailTo: enrolledEmails || 'support@avesdo.com', // Added here for old script compatibility
