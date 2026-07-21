@@ -166,7 +166,17 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
   };
 
   const getAvg = (row: any) => {
-    const monthsToAvg = ['Apr 1, 2026', 'May 1, 2026', 'Jun 1, 2026'];
+    // Find all columns that are valid dates (e.g. "Apr 1, 2026")
+    const dateColumns = Object.keys(row)
+      .filter((key) => {
+        const parsed = Date.parse(key);
+        return !isNaN(parsed) && /,\s*\d{4}/.test(key);
+      })
+      .sort((a, b) => Date.parse(a) - Date.parse(b));
+
+    // Take the 3 most recent months available in the export
+    const monthsToAvg = dateColumns.slice(-3);
+
     let sum = 0;
     let count = 0;
     for (const m of monthsToAvg) {
