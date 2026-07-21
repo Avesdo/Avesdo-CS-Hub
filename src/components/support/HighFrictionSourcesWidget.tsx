@@ -129,16 +129,20 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                         (acc: number, entry: any) => acc + (entry.value || 0),
                         0
                       );
-                      const barPercentage = chartData.totalTickets > 0 
-                        ? ((total / chartData.totalTickets) * 100).toFixed(1) 
-                        : '0.0';
+                      const barPercentage =
+                        chartData.totalTickets > 0
+                          ? ((total / chartData.totalTickets) * 100).toFixed(1)
+                          : '0.0';
 
                       return (
                         <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[220px] transform transition-all duration-200">
                           <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm flex justify-between">
                             <span>{label}</span>
                             <span className="ml-4 font-bold text-primary">
-                              {total} <span className="text-muted-foreground text-[11px] font-normal ml-1">({barPercentage}% of total)</span>
+                              {total}{' '}
+                              <span className="text-muted-foreground text-[11px] font-normal ml-1">
+                                ({barPercentage}% of total)
+                              </span>
                             </span>
                           </p>
                           <div className="flex flex-col gap-2">

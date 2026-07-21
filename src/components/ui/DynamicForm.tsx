@@ -35,6 +35,8 @@ export function DynamicForm({
     getValues,
     formState: { errors },
     trigger,
+    setError,
+    clearErrors,
   } = useForm({
     defaultValues: initialValues,
   });
@@ -42,6 +44,7 @@ export function DynamicForm({
   const [currentPage, setCurrentPage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>({});
 
   const pagesData = useMemo(() => {
     const result: { fields: FormField[]; pageBreak?: FormField; originalIndex: number }[] = [];
@@ -211,6 +214,31 @@ export function DynamicForm({
             placeholder="Type your answer..."
           />
         );
+      case 'email': {
+        const fieldReg = register(field.id, { required: field.required, pattern: /^\S+@\S+$/i });
+        const isFocused = focusedFields[field.id];
+        const val = formValues[field.id];
+        const hasValue = val !== undefined && val !== null && val !== '';
+
+        return (
+          <input
+            type={isFocused || !hasValue ? 'email' : 'password'}
+            autoComplete="new-password"
+            name={fieldReg.name}
+            ref={fieldReg.ref}
+            onChange={fieldReg.onChange}
+            onFocus={() => {
+              setFocusedFields((prev) => ({ ...prev, [field.id]: true }));
+            }}
+            onBlur={(e) => {
+              fieldReg.onBlur(e);
+              setFocusedFields((prev) => ({ ...prev, [field.id]: false }));
+            }}
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-primary/50 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-[14px] text-slate-900 placeholder:text-slate-400 shadow-sm"
+            placeholder="Type email address..."
+          />
+        );
+      }
       case 'long_text':
         return (
           <textarea
@@ -524,6 +552,37 @@ export function DynamicForm({
 
   const handleSaveProgressClick = async () => {
     if (!onSaveProgress) return;
+
+    let hasFormatError = false;
+    let firstErrorFieldId: string | null = null;
+
+    template.fields.forEach((field) => {
+      if (field.type === 'email') {
+        const val = getValues(field.id);
+        if (val && !/^\S+@\S+$/i.test(val)) {
+          hasFormatError = true;
+          if (!firstErrorFieldId) firstErrorFieldId = field.id;
+          setError(field.id, { type: 'pattern', message: 'Please enter a valid email address' });
+        } else if (val) {
+          clearErrors(field.id);
+        }
+      }
+    });
+
+    if (hasFormatError && firstErrorFieldId) {
+      let pageIndex = 0;
+      for (let i = 0; i < visiblePages.length; i++) {
+        if (visiblePages[i].fields.some((f) => f.id === firstErrorFieldId)) {
+          pageIndex = i;
+          break;
+        }
+      }
+      if (pageIndex !== currentPage) {
+        setCurrentPage(pageIndex);
+      }
+      return;
+    }
+
     setSaveStatus('saving');
     try {
       await onSaveProgress(getValues());
@@ -571,9 +630,28 @@ export function DynamicForm({
     onSubmit(data);
   };
 
+  const handleFormErrors = (formErrors: any) => {
+    const firstErrorFieldId = Object.keys(formErrors)[0];
+    if (firstErrorFieldId) {
+      let pageIndex = 0;
+      for (let i = 0; i < visiblePages.length; i++) {
+        if (visiblePages[i].fields.some((f) => f.id === firstErrorFieldId)) {
+          pageIndex = i;
+          break;
+        }
+      }
+      if (pageIndex !== currentPage) {
+        setCurrentPage(pageIndex);
+        setTimeout(() => trigger(), 100);
+      } else {
+        trigger();
+      }
+    }
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(handleFinalSubmit)}
+      onSubmit={handleSubmit(handleFinalSubmit, handleFormErrors)}
       className="flex flex-col h-full bg-white relative"
     >
       {visiblePages.length > 1 && (
@@ -645,7 +723,9 @@ export function DynamicForm({
 
                   {errors[field.id] && (
                     <p className="text-[13px] font-medium text-red-500 mt-2 flex items-center gap-1.5 animate-in slide-in-from-top-1">
-                      This field is required
+                      {errors[field.id]?.type === 'pattern' && field.type === 'email'
+                        ? 'Please enter a valid email address'
+                        : 'This field is required'}
                     </p>
                   )}
                 </div>

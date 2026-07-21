@@ -44,6 +44,7 @@ import {
   ChevronDown,
   Eye,
   X,
+  Mail,
   LayoutTemplate,
   Edit2,
   ArrowLeft,
@@ -69,6 +70,7 @@ import { Button } from '../ui/button';
 export type FieldType =
   | 'text'
   | 'long_text'
+  | 'email'
   | 'select'
   | 'radio'
   | 'checkbox'
@@ -142,6 +144,7 @@ export const FIELD_PALETTE_CATEGORIES = [
     items: [
       { type: 'text', label: 'Single-line text', icon: Type },
       { type: 'long_text', label: 'Multi-line text', icon: AlignLeft },
+      { type: 'email', label: 'Email', icon: Mail },
       { type: 'select', label: 'Dropdown', icon: ChevronDownSquare },
       { type: 'checkbox', label: 'Checkboxes', icon: CheckboxIcon },
       { type: 'radio', label: 'Multiple choice', icon: List },

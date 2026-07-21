@@ -5510,5 +5510,697 @@
       "type": "suffix",
       "exampleCombo": "d1i"
     }
+  },
+  {
+    "id": "mzegqge",
+    "category": "Deal Participants - Fallback Representative",
+    "description": "Sales Person or Realtor's Name",
+    "tag": "actualRepName",
+    "example": "Jim Halpert",
+    "isBuilder": false
+  },
+  {
+    "id": "4q0ub18",
+    "category": "Deal Participants - Fallback Representative",
+    "description": "Sales Person or Realtor's Brokerage",
+    "tag": "actualBrokerage",
+    "example": "Remax",
+    "isBuilder": false
+  },
+  {
+    "id": "ug6ckzc",
+    "category": "Deal Participants - Fallback Representative",
+    "description": "Sales Person or Realtor's Signature",
+    "tag": "actualRepSign",
+    "example": "Jim's Signature",
+    "isBuilder": false
+  },
+  {
+    "id": "e0yx5ms",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "Sales Person or Realtor's Name (Fallback logic)",
+    "tag": "actualRepName",
+    "example": "Jim Halpert",
+    "isBuilder": false
+  },
+  {
+    "id": "sbajl9s",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "Sales Person or Realtor's Brokerage (Fallback logic)",
+    "tag": "actualBrokerage",
+    "example": "Remax",
+    "isBuilder": false
+  },
+  {
+    "id": "0emnbcb",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "Sales Person or Realtor's Signature (Fallback logic)",
+    "tag": "actualRepSign",
+    "example": "Jim's Signature",
+    "isBuilder": false
+  },
+  {
+    "id": "3ayzxm2",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "No realtor Not Available populate 'N.A'",
+    "tag": "noRealtorNa",
+    "example": "N.A",
+    "isBuilder": false
+  },
+  {
+    "id": "qwvdnwe",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "No Realtor populate 'X'",
+    "tag": "thereIsNoRealtor",
+    "example": "X",
+    "isBuilder": false
+  },
+  {
+    "id": "2r74jot",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "There is a Realtor populate 'X'",
+    "tag": "thereIsRealtor",
+    "example": "X",
+    "isBuilder": false
+  },
+  {
+    "id": "e7leebn",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "No realtor Not Available populate 'N.A'",
+    "tag": "noRealtorNa",
+    "example": "N.A",
+    "isBuilder": false
+  },
+  {
+    "id": "ngzyyao",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "No Realtor populate 'X'",
+    "tag": "thereIsNoRealtor",
+    "example": "X",
+    "isBuilder": false
+  },
+  {
+    "id": "613bb7x",
+    "category": "Deal Participants - Realtors / Sales Reps",
+    "description": "There is a Realtor populate 'X'",
+    "tag": "thereIsRealtor",
+    "example": "X",
+    "isBuilder": false
+  },
+  {
+    "id": "wxmouft",
+    "category": "Logic Prefixes",
+    "description": "Designated Realtor (Condition Prefix)",
+    "tag": "da",
+    "example": "dac1i",
+    "isBuilder": false
+  },
+  {
+    "id": "xtunuyf",
+    "category": "Logic Prefixes",
+    "description": "No Realtor (Condition Prefix)",
+    "tag": "cr",
+    "example": "crc1i",
+    "isBuilder": false
+  },
+  {
+    "id": "97ounrg",
+    "category": "Dates",
+    "description": "Full Time",
+    "tag": "DateTimeFull",
+    "example": "10:20 AM",
+    "isBuilder": false
+  },
+  {
+    "id": "ltn8gi6",
+    "category": "Dates",
+    "description": "Basic time",
+    "tag": "DateTimeBasic",
+    "example": "10:20",
+    "isBuilder": false
+  },
+  {
+    "id": "t6p4g96",
+    "category": "Dates",
+    "description": "Time Format",
+    "tag": "TimeFormat",
+    "example": "AM",
+    "isBuilder": false
+  },
+  {
+    "id": "m3a8uij",
+    "category": "Dates",
+    "description": "Time Short Format",
+    "tag": "TimeShortFormat",
+    "example": "A",
+    "isBuilder": false
+  },
+  {
+    "id": "keusb7s",
+    "category": "Dates",
+    "description": "Time Lowercase Format",
+    "tag": "TimeLowerFormat",
+    "example": "am",
+    "isBuilder": false
+  },
+  {
+    "id": "q87uxls",
+    "category": "Dates",
+    "description": "Time Lowercase Short Format",
+    "tag": "TimeLowerShortFormat",
+    "example": "a",
+    "isBuilder": false
+  },
+  {
+    "id": "qay93k4",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "DateFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "r6xao85",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "DateFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "u95yedt",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "DateDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "lbwxdtr",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "DateMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "7918g8m",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "DateMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "8s4b020",
+    "category": "Dates",
+    "description": "Month Number",
+    "tag": "DateMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "s0futoi",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "DateYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "k8nakrj",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "DateYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "58koxij",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "DateYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "7jv1ww9",
+    "category": "Dates",
+    "description": "Basic Date (Contract)",
+    "tag": "CreatedFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "mg8n50k",
+    "category": "Dates",
+    "description": "Full Date (Contract)",
+    "tag": "CreatedFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "yaqiipi",
+    "category": "Dates",
+    "description": "Day (Contract)",
+    "tag": "CreatedDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "ibpbw5z",
+    "category": "Dates",
+    "description": "Month (Contract)",
+    "tag": "CreatedMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "3uwiisr",
+    "category": "Dates",
+    "description": "Month Abbreviated (Contract)",
+    "tag": "CreatedMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "h9qwlqm",
+    "category": "Dates",
+    "description": "Month Number (Contract)",
+    "tag": "CreatedMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "r4xfxid",
+    "category": "Dates",
+    "description": "Year 4 Digits (Contract)",
+    "tag": "CreatedYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "r77imt7",
+    "category": "Dates",
+    "description": "Year Last 2 Digits (Contract)",
+    "tag": "CreatedYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "3nqhl06",
+    "category": "Dates",
+    "description": "Year Last Digit (Contract)",
+    "tag": "CreatedYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "n2bl7d9",
+    "category": "Dates",
+    "description": "First Deposit Date",
+    "tag": "DepositDate1",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "dvu8lp5",
+    "category": "Dates",
+    "description": "Second Deposit Date",
+    "tag": "DepositDate2",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "yq590er",
+    "category": "Dates",
+    "description": "Third Deposit Date",
+    "tag": "DepositDate3",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "ae2irfi",
+    "category": "Dates",
+    "description": "Fourth Deposit Date",
+    "tag": "DepositDate4",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "fs84cpw",
+    "category": "Dates",
+    "description": "Fifth Deposit Date",
+    "tag": "DepositDate5",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "ule7ijm",
+    "category": "Dates",
+    "description": "Occupancy Deposit Date",
+    "tag": "DepositDateOccupancy",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "tokk214",
+    "category": "Dates",
+    "description": "Accepted Date",
+    "tag": "AcceptedDate",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "5zosawq",
+    "category": "Dates",
+    "description": "Accepted Date & Time",
+    "tag": "AcceptedDateTime",
+    "example": "Nov 08, 2016 02:30",
+    "isBuilder": false
+  },
+  {
+    "id": "5m1lb2i",
+    "category": "Dates",
+    "description": "Rescission Expire Date",
+    "tag": "RescissionExpireDate",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "y96k6cw",
+    "category": "Dates",
+    "description": "Rescission Expire Date & Time",
+    "tag": "RescissionExpireDateTime",
+    "example": "Nov 08, 2016 02:30",
+    "isBuilder": false
+  },
+  {
+    "id": "y8mas9r",
+    "category": "Dates",
+    "description": "Completion Date",
+    "tag": "CompletionDate",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "8ief4dl",
+    "category": "Dates",
+    "description": "Possession Date",
+    "tag": "PossessionDate",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "lxdsq9l",
+    "category": "Dates",
+    "description": "Adjustment Date",
+    "tag": "AdjustmentDate",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "a6osl3i",
+    "category": "Dates",
+    "description": "OfferOpenDate full expression",
+    "tag": "OfferOpenDateFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "3iaeyjo",
+    "category": "Dates",
+    "description": "OfferOpenDate day expression",
+    "tag": "OfferOpenDateDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "fkv9opc",
+    "category": "Dates",
+    "description": "OfferOpenDate month abbreviation expression",
+    "tag": "OfferOpenDateMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "07cxnf2",
+    "category": "Dates",
+    "description": "OfferOpenDate full month expression",
+    "tag": "OfferOpenDateMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "63ddwz0",
+    "category": "Dates",
+    "description": "OfferOpenDate full year expression",
+    "tag": "OfferOpenDateYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "44swr3n",
+    "category": "Dates",
+    "description": "OfferOpenDate Time expression",
+    "tag": "OfferOpenTimeFull",
+    "example": "05:30 PM",
+    "isBuilder": false
+  },
+  {
+    "id": "948t1l5",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Basic Date",
+    "tag": "fdateshort_",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "5bfb2gz",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Full Date",
+    "tag": "fdatefull_",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "gor4jxs",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Day",
+    "tag": "fdateday_",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "x2w0i0w",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Month",
+    "tag": "fdatemonth_",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "r1eyxxz",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Month Abbreviated",
+    "tag": "fdatemonthshort_",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "xdvrs3n",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Year 4 Digits",
+    "tag": "fdateyear_",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "86noxex",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Year Last 2 Digits",
+    "tag": "fdateyear2_",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "c9cc81s",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Year Last Digit",
+    "tag": "fdateyear1_",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "dtml0ab",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Month and Day",
+    "tag": "fdatemonthday_",
+    "example": "September 28",
+    "isBuilder": false
+  },
+  {
+    "id": "ifbqcet",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Month and Day Abbreviated",
+    "tag": "fdatemonthdayshort_",
+    "example": "Sep 28",
+    "isBuilder": false
+  },
+  {
+    "id": "u4z56ly",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Time with Format (12-hour format)",
+    "tag": "fdatetime_",
+    "example": "11:30 AM",
+    "isBuilder": false
+  },
+  {
+    "id": "76kgfpm",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Only Time (without format)",
+    "tag": "ftime_",
+    "example": "11:30",
+    "isBuilder": false
+  },
+  {
+    "id": "h1e5qin",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Only AM/PM (without time) - Uppercase",
+    "tag": "ftimeformat_",
+    "example": "AM",
+    "isBuilder": false
+  },
+  {
+    "id": "w85uz9n",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Only AM/PM (short without time) - Uppercase",
+    "tag": "ftimeshortformat_",
+    "example": "A",
+    "isBuilder": false
+  },
+  {
+    "id": "ygqhwfx",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Only AM/PM (without time) - Lowercase",
+    "tag": "ftimelowerformat_",
+    "example": "am",
+    "isBuilder": false
+  },
+  {
+    "id": "5n147x8",
+    "category": "Logic Prefixes - Date & Time",
+    "description": "Only AM/PM (short without time) - Lowercase",
+    "tag": "ftimelowershortformat_",
+    "example": "a",
+    "isBuilder": false
+  },
+  {
+    "id": "fvx2qtq",
+    "category": "Form Dates",
+    "description": "Basic Date",
+    "tag": "form[Example]Full",
+    "example": "Nov 08, 2016",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleFull"
+    }
+  },
+  {
+    "id": "o6lbi6k",
+    "category": "Form Dates",
+    "description": "Full Date",
+    "tag": "form[Example]FullLong",
+    "example": "November 08, 2016",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleFullLong"
+    }
+  },
+  {
+    "id": "ib1smdj",
+    "category": "Form Dates",
+    "description": "Day",
+    "tag": "form[Example]Day",
+    "example": "08",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleDay"
+    }
+  },
+  {
+    "id": "1y6j0if",
+    "category": "Form Dates",
+    "description": "Month",
+    "tag": "form[Example]MonthLong",
+    "example": "November",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleMonthLong"
+    }
+  },
+  {
+    "id": "lfl09i5",
+    "category": "Form Dates",
+    "description": "Month Abbreviated",
+    "tag": "form[Example]MonthShort",
+    "example": "Nov",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleMonthShort"
+    }
+  },
+  {
+    "id": "94z1fpg",
+    "category": "Form Dates",
+    "description": "Month Number",
+    "tag": "form[Example]MonthNumber",
+    "example": "11",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleMonthNumber"
+    }
+  },
+  {
+    "id": "ghgt81a",
+    "category": "Form Dates",
+    "description": "Year 4 Digits",
+    "tag": "form[Example]Year",
+    "example": "2016",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleYear"
+    }
+  },
+  {
+    "id": "hls1vbm",
+    "category": "Form Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "form[Example]Year2",
+    "example": "16",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleYear2"
+    }
+  },
+  {
+    "id": "ts1bsqs",
+    "category": "Form Dates",
+    "description": "Year Last Digit",
+    "tag": "form[Example]Year1",
+    "example": "6",
+    "isBuilder": true,
+    "builderData": {
+      "type": "infix",
+      "exampleCombo": "formExampleYear1"
+    }
   }
 ]
