@@ -22,7 +22,6 @@ import { TimeAndEffortQuadrantWidget } from '../components/support/TimeAndEffort
 import { HighFrictionSourcesWidget } from '../components/support/HighFrictionSourcesWidget';
 import { WorkloadMatrixWidget } from '../components/support/WorkloadMatrixWidget';
 import { QualityMetricsWidget } from '../components/support/QualityMetricsWidget';
-import { InflowChannelWidget } from '../components/support/InflowChannelWidget';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -308,9 +307,6 @@ export default function SupportDashboard() {
         >
           <motion.div variants={itemVariants}>
             <OperationsTrendWidget chartData={chartData} />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <InflowChannelWidget chartData={chartData} />
           </motion.div>
           <motion.div variants={itemVariants}>
             <OriginsAndClassificationsWidget

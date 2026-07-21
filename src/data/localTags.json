@@ -1,0 +1,5514 @@
+[
+  {
+    "id": "list_1",
+    "category": "Listing Information",
+    "description": "Strata Lot (BC)",
+    "tag": "StrataLot",
+    "example": "32"
+  },
+  {
+    "id": "list_2",
+    "category": "Listing Information",
+    "description": "Unit Number (ON)/Suite Number (BC)",
+    "tag": "UnitNumber",
+    "example": "352"
+  },
+  {
+    "id": "list_3",
+    "category": "Listing Information",
+    "description": "Suite Number (ON)",
+    "tag": "Suite",
+    "example": "4520"
+  },
+  {
+    "id": "list_4",
+    "category": "Listing Information",
+    "description": "Level (ON)",
+    "tag": "Level",
+    "example": "3"
+  },
+  {
+    "id": "list_5",
+    "category": "Listing Information",
+    "description": "Unit (ON)",
+    "tag": "LotUnit",
+    "example": "52"
+  },
+  {
+    "id": "list_6",
+    "category": "Listing Information",
+    "description": "Floor Number",
+    "tag": "FloorSection",
+    "example": "4"
+  },
+  {
+    "id": "list_7",
+    "category": "Listing Information",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway"
+  },
+  {
+    "id": "list_8",
+    "category": "Listing Information",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver"
+  },
+  {
+    "id": "list_9",
+    "category": "Listing Information",
+    "description": "Province (Short)",
+    "tag": "Province",
+    "example": "BC"
+  },
+  {
+    "id": "list_10",
+    "category": "Listing Information",
+    "description": "Province (Full)",
+    "tag": "FullProvince",
+    "example": "British Columbia"
+  },
+  {
+    "id": "list_11",
+    "category": "Listing Information",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada"
+  },
+  {
+    "id": "list_12",
+    "category": "Listing Information",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6"
+  },
+  {
+    "id": "list_13",
+    "category": "Listing Information",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L"
+  },
+  {
+    "id": "list_14",
+    "category": "Listing Information",
+    "description": "Only Street and Unit Number",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway"
+  },
+  {
+    "id": "list_15",
+    "category": "Listing Information",
+    "description": "Floor Plan",
+    "tag": "FloorPlan",
+    "example": "Plan A"
+  },
+  {
+    "id": "list_16",
+    "category": "Listing Information",
+    "description": "Square Footage",
+    "tag": "FloorArea",
+    "example": "556"
+  },
+  {
+    "id": "list_17",
+    "category": "Listing Information",
+    "description": "# of Bedrooms",
+    "tag": "Bedrooms",
+    "example": "2"
+  },
+  {
+    "id": "list_18",
+    "category": "Listing Information",
+    "description": "# of Bathrooms",
+    "tag": "Bathrooms",
+    "example": "3"
+  },
+  {
+    "id": "list_19",
+    "category": "Listing Information",
+    "description": "# of Dens",
+    "tag": "Den",
+    "example": "1"
+  },
+  {
+    "id": "list_20",
+    "category": "Listing Information",
+    "description": "# of Flex",
+    "tag": "Flex",
+    "example": "1"
+  },
+  {
+    "id": "list_21",
+    "category": "Listing Information",
+    "description": "Strata Fees",
+    "tag": "StrataFees",
+    "example": "251"
+  },
+  {
+    "id": "list_22",
+    "category": "Listing Information",
+    "description": "Legal Description of Building",
+    "tag": "LegalDescription",
+    "example": "Pulls information from Legal Description column in listing details"
+  },
+  {
+    "id": "list_23",
+    "category": "Listing Information",
+    "description": "Parcel Identification",
+    "tag": "Pid",
+    "example": "Pulls information from PID column in listing details"
+  },
+  {
+    "id": "list_24",
+    "category": "Listing Information",
+    "description": "Custom Column 1",
+    "tag": "PropExtraTag1",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_25",
+    "category": "Listing Information",
+    "description": "Custom Column 2",
+    "tag": "PropExtraTag2",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_26",
+    "category": "Listing Information",
+    "description": "Custom Column 3",
+    "tag": "PropExtraTag3",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_27",
+    "category": "Listing Information",
+    "description": "Custom Column 4",
+    "tag": "PropExtraTag4",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_28",
+    "category": "Listing Information",
+    "description": "Custom Column 5",
+    "tag": "PropExtraTag5",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_29",
+    "category": "Listing Information",
+    "description": "Custom Column 6",
+    "tag": "PropExtraTag6",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_30",
+    "category": "Listing Information",
+    "description": "Custom Column 7",
+    "tag": "PropExtraTag7",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_31",
+    "category": "Listing Information",
+    "description": "Custom Column 8",
+    "tag": "PropExtraTag8",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_32",
+    "category": "Listing Information",
+    "description": "Custom Column 9",
+    "tag": "PropExtraTag9",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "list_33",
+    "category": "Listing Information",
+    "description": "Custom Column 10",
+    "tag": "PropExtraTag10",
+    "example": "Pulls information from custom columns in listing details"
+  },
+  {
+    "id": "z4etugt",
+    "category": "Deal Specific Information",
+    "description": "Parking Included",
+    "tag": "ParkingIncluded",
+    "example": "2"
+  },
+  {
+    "id": "z7bnj1n",
+    "category": "Deal Specific Information",
+    "description": "No. of Additional Parking",
+    "tag": "ParkingExtra",
+    "example": "1"
+  },
+  {
+    "id": "5qh01g5",
+    "category": "Deal Specific Information",
+    "description": "Price of the Additional Parking",
+    "tag": "ParkingExtraPrice",
+    "example": "20000.00"
+  },
+  {
+    "id": "2xtz1xf",
+    "category": "Deal Specific Information",
+    "description": "X for type of Parking",
+    "tag": "ParkingType[name]",
+    "example": "ParkingTypeSmall populates X",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "suffix",
+      "base": "ParkingType",
+      "placeholder": "name"
+    }
+  },
+  {
+    "id": "zv0995j",
+    "category": "Deal Specific Information",
+    "description": "Bike Included",
+    "tag": "BikeIncluded",
+    "example": "2"
+  },
+  {
+    "id": "x6p4iv2",
+    "category": "Deal Specific Information",
+    "description": "No. of Additional Bike Locker",
+    "tag": "BikeExtra",
+    "example": "1"
+  },
+  {
+    "id": "oja9o2t",
+    "category": "Deal Specific Information",
+    "description": "Price of Additional Bike Locker",
+    "tag": "BikeExtraPrice",
+    "example": "3000.00"
+  },
+  {
+    "id": "q5hm75v",
+    "category": "Deal Specific Information",
+    "description": "X for type of Bike Locker",
+    "tag": "BikeType[name]",
+    "example": "BikeTypeMedium populates X",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "suffix",
+      "base": "BikeType",
+      "placeholder": "name"
+    }
+  },
+  {
+    "id": "jw5ycz1",
+    "category": "Deal Specific Information",
+    "description": "Storage Included",
+    "tag": "StorageIncluded",
+    "example": "2"
+  },
+  {
+    "id": "zx607ul",
+    "category": "Deal Specific Information",
+    "description": "No. of Additional Storage Locker",
+    "tag": "StorageExtra",
+    "example": "1"
+  },
+  {
+    "id": "fiveqpk",
+    "category": "Deal Specific Information",
+    "description": "Price of Additional Storage Locker",
+    "tag": "StorageExtraPrice",
+    "example": "3000.00"
+  },
+  {
+    "id": "o0edkaj",
+    "category": "Deal Specific Information",
+    "description": "X for type of Storage Locker",
+    "tag": "StorageType[name]",
+    "example": "StorageTypeSmall populates X",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "suffix",
+      "base": "StorageType",
+      "placeholder": "name"
+    }
+  },
+  {
+    "id": "f8nhigc",
+    "category": "Deal Specific Information",
+    "description": "Name of Colour Scheme",
+    "tag": "ColourScheme",
+    "example": "Dark"
+  },
+  {
+    "id": "m4izz8g",
+    "category": "Deal Specific Information",
+    "description": "X to Select Colour Scheme",
+    "tag": "ColourScheme[Label]",
+    "example": "ColourSchemeDark populates X",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "suffix",
+      "base": "ColourScheme",
+      "placeholder": "Label"
+    }
+  },
+  {
+    "id": "00ydl11",
+    "category": "Deal Specific Information",
+    "description": "Option text (User defined label)",
+    "tag": "FormOption[Example]",
+    "example": "Where 'Example' is the tag defined, the tag text will populate",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "suffix",
+      "base": "FormOption",
+      "placeholder": "Example"
+    }
+  },
+  {
+    "id": "3aj867j",
+    "category": "Deal Specific Information",
+    "description": "Price of Option",
+    "tag": "formOption[Example]Price",
+    "example": "2000.00",
+    "isBuilder": true,
+    "builderOptions": {
+      "type": "middle",
+      "prefix": "formOption",
+      "suffix": "Price",
+      "placeholder": "Example"
+    }
+  },
+  {
+    "id": "deal_1",
+    "category": "Deal Information - Parking",
+    "description": "Parking Included",
+    "tag": "ParkingIncluded",
+    "example": "2"
+  },
+  {
+    "id": "deal_2",
+    "category": "Deal Information - Parking",
+    "description": "No. of Additional Parking",
+    "tag": "ParkingExtra",
+    "example": "1"
+  },
+  {
+    "id": "deal_3",
+    "category": "Deal Information - Parking",
+    "description": "Price of the Additional Parking",
+    "tag": "ParkingExtraPrice",
+    "example": "20000.00"
+  },
+  {
+    "id": "deal_4",
+    "category": "Deal Information - Parking",
+    "description": "X for type of Parking",
+    "tag": "ParkingType[Name]",
+    "example": "ParkingTypeSmall",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix"
+    }
+  },
+  {
+    "id": "deal_5",
+    "category": "Deal Information - Bike Locker",
+    "description": "Bike Included",
+    "tag": "BikeIncluded",
+    "example": "2"
+  },
+  {
+    "id": "deal_6",
+    "category": "Deal Information - Bike Locker",
+    "description": "No. of Additional Bike Locker",
+    "tag": "BikeExtra",
+    "example": "1"
+  },
+  {
+    "id": "deal_7",
+    "category": "Deal Information - Bike Locker",
+    "description": "Price of Additional Bike Locker",
+    "tag": "BikeExtraPrice",
+    "example": "3000.00"
+  },
+  {
+    "id": "deal_8",
+    "category": "Deal Information - Bike Locker",
+    "description": "X for type of Bike Locker",
+    "tag": "BikeType[Name]",
+    "example": "BikeTypeMedium",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix"
+    }
+  },
+  {
+    "id": "deal_9",
+    "category": "Deal Information - Storage",
+    "description": "Storage Included",
+    "tag": "StorageIncluded",
+    "example": "2"
+  },
+  {
+    "id": "deal_10",
+    "category": "Deal Information - Storage",
+    "description": "No. of Additional Storage Locker",
+    "tag": "StorageExtra",
+    "example": "1"
+  },
+  {
+    "id": "deal_11",
+    "category": "Deal Information - Storage",
+    "description": "Price of Additional Storage Locker",
+    "tag": "StorageExtraPrice",
+    "example": "3000.00"
+  },
+  {
+    "id": "deal_12",
+    "category": "Deal Information - Storage",
+    "description": "X for type of Storage Locker",
+    "tag": "StorageType[Name]",
+    "example": "StorageTypeSmall",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix"
+    }
+  },
+  {
+    "id": "deal_13",
+    "category": "Deal Information - Colour Scheme",
+    "description": "Name of Colour Scheme",
+    "tag": "ColourScheme",
+    "example": "Dark"
+  },
+  {
+    "id": "deal_14",
+    "category": "Deal Information - Colour Scheme",
+    "description": "X to Select Colour Scheme",
+    "tag": "ColourScheme[Label]",
+    "example": "ColourSchemeDark",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix"
+    }
+  },
+  {
+    "id": "deal_15",
+    "category": "Deal Information - Options",
+    "description": "Option",
+    "tag": "FormOption[Example]",
+    "example": "FormOptionExample",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix"
+    }
+  },
+  {
+    "id": "deal_16",
+    "category": "Deal Information - Options",
+    "description": "Price of Option",
+    "tag": "formOption[Example]Price",
+    "example": "formOptionExamplePrice",
+    "isBuilder": true,
+    "builderData": {
+      "type": "suffix-infix"
+    }
+  },
+  {
+    "id": "deal_17",
+    "category": "Deal Information - Pricing",
+    "description": "Purchase Price in text form",
+    "tag": "SoldPriceText",
+    "example": "sixty thousand"
+  },
+  {
+    "id": "deal_18",
+    "category": "Deal Information - Pricing",
+    "description": "Purchase Price in numbers (listed price)",
+    "tag": "SoldPrice",
+    "example": "60000.00"
+  },
+  {
+    "id": "deal_19",
+    "category": "Deal Information - Pricing",
+    "description": "Purchase Price Plus any Upgrades - Credit",
+    "tag": "TotalSoldPrice",
+    "example": "600000.00"
+  },
+  {
+    "id": "deal_20",
+    "category": "Deal Information - Pricing",
+    "description": "SoldPrice + ParkingExtraPrice + StorageExtraPrice + BikeExtraPrice - Credit",
+    "tag": "NetOfHst",
+    "example": "5000.00"
+  },
+  {
+    "id": "deal_21",
+    "category": "Deal Information - Pricing",
+    "description": "SoldPrice - Credit",
+    "tag": "NetOfHstBase",
+    "example": "5000.00"
+  },
+  {
+    "id": "deal_22",
+    "category": "Deal Information - Amounts",
+    "description": "Credit or Decorating Allowance",
+    "tag": "Credit",
+    "example": "5000.00"
+  },
+  {
+    "id": "deal_23",
+    "category": "Deal Information - Amounts",
+    "description": "Total Price of all Options",
+    "tag": "UpgradeCost",
+    "example": "5000.00"
+  },
+  {
+    "id": "deal_24",
+    "category": "Deal Information - Amounts",
+    "description": "Additional Cost",
+    "tag": "AdditionalCost",
+    "example": "2000.00"
+  },
+  {
+    "id": "deal_25",
+    "category": "Deal Information - Amounts",
+    "description": "Assignment Fee",
+    "tag": "AssignmentFee",
+    "example": "7000.00"
+  },
+  {
+    "id": "deal_26",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit 1 Amount",
+    "tag": "Deposit1",
+    "example": "10000.00"
+  },
+  {
+    "id": "deal_27",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit 2 Amount",
+    "tag": "Deposit2",
+    "example": "20000.00"
+  },
+  {
+    "id": "deal_28",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit 3 Amount",
+    "tag": "Deposit3",
+    "example": "3000.00"
+  },
+  {
+    "id": "deal_29",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit 4 Amount",
+    "tag": "Deposit4",
+    "example": "4000.00"
+  },
+  {
+    "id": "deal_30",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit 5 Amount",
+    "tag": "Deposit5",
+    "example": "5000.00"
+  },
+  {
+    "id": "deal_31",
+    "category": "Deal Information - Deposits",
+    "description": "Deposit due on Occupancy Amount",
+    "tag": "DepositOccupancy",
+    "example": "6000.00"
+  },
+  {
+    "id": "deal_32",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor Commission First 100k percentage",
+    "tag": "RealtorCom1",
+    "example": "3.00000"
+  },
+  {
+    "id": "deal_33",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor Commission Balance percentage",
+    "tag": "RealtorCom2",
+    "example": "2.00000"
+  },
+  {
+    "id": "deal_34",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor Commission First 100k Amount",
+    "tag": "RealtorCom1Amount",
+    "example": "3,000.00"
+  },
+  {
+    "id": "deal_35",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor Commission Balance Amount",
+    "tag": "RealtorCom2Amount",
+    "example": "8,900.00"
+  },
+  {
+    "id": "deal_36",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor Bonus",
+    "tag": "RealtorComLump",
+    "example": "1,000.00"
+  },
+  {
+    "id": "deal_37",
+    "category": "Deal Information - Commissions",
+    "description": "Total Realtor Commission including bonus",
+    "tag": "TotalBuyerCom",
+    "example": "12,900.00"
+  },
+  {
+    "id": "deal_38",
+    "category": "Deal Information - Commissions",
+    "description": "Realtor is giving some commission to purchaser as credit",
+    "tag": "CreditFromRealtor",
+    "example": "5,000.00"
+  },
+  {
+    "id": "2ktpy8z",
+    "category": "Deal Participants - Purchasers",
+    "description": "Purchaser's Full Name Or Corporation Name",
+    "tag": "ContractName",
+    "example": "Jim Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1ContractName"
+    }
+  },
+  {
+    "id": "d3sfach",
+    "category": "Deal Participants - Purchasers",
+    "description": "X mark",
+    "tag": "TitleMr",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1TitleMr"
+    }
+  },
+  {
+    "id": "27xpw9h",
+    "category": "Deal Participants - Purchasers",
+    "description": "X mark",
+    "tag": "TitleMiss",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1TitleMiss"
+    }
+  },
+  {
+    "id": "muz6r9h",
+    "category": "Deal Participants - Purchasers",
+    "description": "X mark",
+    "tag": "TitleMs",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1TitleMs"
+    }
+  },
+  {
+    "id": "t6mo0g1",
+    "category": "Deal Participants - Purchasers",
+    "description": "X mark",
+    "tag": "TitleMrs",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1TitleMrs"
+    }
+  },
+  {
+    "id": "16f1vsf",
+    "category": "Deal Participants - Purchasers",
+    "description": "Text form of title",
+    "tag": "Title",
+    "example": "Mr",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Title"
+    }
+  },
+  {
+    "id": "sw4izml",
+    "category": "Deal Participants - Purchasers",
+    "description": "First Name",
+    "tag": "FirstName",
+    "example": "Jim",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1FirstName"
+    }
+  },
+  {
+    "id": "v77yv3m",
+    "category": "Deal Participants - Purchasers",
+    "description": "Middle Name",
+    "tag": "MiddleName",
+    "example": "Mario",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1MiddleName"
+    }
+  },
+  {
+    "id": "33t2fqu",
+    "category": "Deal Participants - Purchasers",
+    "description": "Last Name",
+    "tag": "LastName",
+    "example": "Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1LastName"
+    }
+  },
+  {
+    "id": "bkrt4m3",
+    "category": "Deal Participants - Purchasers",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1s"
+    }
+  },
+  {
+    "id": "bi03kr0",
+    "category": "Deal Participants - Purchasers",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Jim's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1i"
+    }
+  },
+  {
+    "id": "ap2ucci",
+    "category": "Deal Participants - Purchasers",
+    "description": "Unit Number",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1UnitNumber"
+    }
+  },
+  {
+    "id": "6ue8lk4",
+    "category": "Deal Participants - Purchasers",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Street"
+    }
+  },
+  {
+    "id": "v5a3qfh",
+    "category": "Deal Participants - Purchasers",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1City"
+    }
+  },
+  {
+    "id": "oh4ttxz",
+    "category": "Deal Participants - Purchasers",
+    "description": "Province",
+    "tag": "Province",
+    "example": "BC",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Province"
+    }
+  },
+  {
+    "id": "br29tuh",
+    "category": "Deal Participants - Purchasers",
+    "description": "Province in Full",
+    "tag": "FullProvince",
+    "example": "British Columbia",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1FullProvince"
+    }
+  },
+  {
+    "id": "fnibetc",
+    "category": "Deal Participants - Purchasers",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Country"
+    }
+  },
+  {
+    "id": "ekdcrby",
+    "category": "Deal Participants - Purchasers",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1PostalCode"
+    }
+  },
+  {
+    "id": "7qqxwjy",
+    "category": "Deal Participants - Purchasers",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Address"
+    }
+  },
+  {
+    "id": "omur518",
+    "category": "Deal Participants - Purchasers",
+    "description": "Basic Address",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1AddressShort"
+    }
+  },
+  {
+    "id": "yp3d4du",
+    "category": "Deal Participants - Purchasers",
+    "description": "Home Phone",
+    "tag": "Phone",
+    "example": "(123) 4567980",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Phone"
+    }
+  },
+  {
+    "id": "xodt49g",
+    "category": "Deal Participants - Purchasers",
+    "description": "Extension",
+    "tag": "PhoneExt",
+    "example": "ext.123",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1PhoneExt"
+    }
+  },
+  {
+    "id": "a4mrggl",
+    "category": "Deal Participants - Purchasers",
+    "description": "Company Phone Number",
+    "tag": "BusinessPhone",
+    "example": "(456) 7891230",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1BusinessPhone"
+    }
+  },
+  {
+    "id": "hbg1ohx",
+    "category": "Deal Participants - Purchasers",
+    "description": "Company Extension",
+    "tag": "BusinessPhoneExt",
+    "example": "ext.456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1BusinessPhoneExt"
+    }
+  },
+  {
+    "id": "q8tp6no",
+    "category": "Deal Participants - Purchasers",
+    "description": "Email Address",
+    "tag": "Email",
+    "example": "jimhalpert@gmail.com",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Email"
+    }
+  },
+  {
+    "id": "01f6tvh",
+    "category": "Deal Participants - Purchasers",
+    "description": "Date of Birth",
+    "tag": "Birthday",
+    "example": "Aug 20, 1993",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Birthday"
+    }
+  },
+  {
+    "id": "edbocyu",
+    "category": "Deal Participants - Purchasers",
+    "description": "the person's occupation",
+    "tag": "Business",
+    "example": "Manager",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Business"
+    }
+  },
+  {
+    "id": "7rf5atr",
+    "category": "Deal Participants - Purchasers",
+    "description": "SIN Number",
+    "tag": "Sin",
+    "example": "123 456 789",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Sin"
+    }
+  },
+  {
+    "id": "567koin",
+    "category": "Deal Participants - Purchasers",
+    "description": "Checkbox mark for the person is Canadian",
+    "tag": "IsCanadian",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IsCanadian"
+    }
+  },
+  {
+    "id": "h7lt6en",
+    "category": "Deal Participants - Purchasers",
+    "description": "Checkbox mark for the person is not Canadian",
+    "tag": "IsCanadianNot",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IsCanadianNot"
+    }
+  },
+  {
+    "id": "92tbjcm",
+    "category": "Deal Participants - Purchasers",
+    "description": "\"Canadian Citizen\" & \"Permanent Resident\" is  \"Canada\", Others shown the value of citizenship/residency.",
+    "tag": "Citizenship",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1Citizenship"
+    }
+  },
+  {
+    "id": "i0kakis",
+    "category": "Deal Participants - Purchasers",
+    "description": "First Id type",
+    "tag": "IdType",
+    "example": "Drivers License",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdType"
+    }
+  },
+  {
+    "id": "i3mjcm4",
+    "category": "Deal Participants - Purchasers",
+    "description": "the First Id Number",
+    "tag": "IdNumber",
+    "example": "6456436",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdNumber"
+    }
+  },
+  {
+    "id": "o4w5tie",
+    "category": "Deal Participants - Purchasers",
+    "description": "First Id Expiry",
+    "tag": "IdExpire",
+    "example": "January 08, 2021",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdExpire"
+    }
+  },
+  {
+    "id": "qm33dn0",
+    "category": "Deal Participants - Purchasers",
+    "description": "Second Id type",
+    "tag": "IdType2",
+    "example": "Passport",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdType2"
+    }
+  },
+  {
+    "id": "jfjsvhl",
+    "category": "Deal Participants - Purchasers",
+    "description": "the second Id Number",
+    "tag": "IdNumber2",
+    "example": "564 156 7",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdNumber2"
+    }
+  },
+  {
+    "id": "8fk8xon",
+    "category": "Deal Participants - Purchasers",
+    "description": "Second Id Expiry",
+    "tag": "IdExpire2",
+    "example": "May 19, 2039",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1IdExpire2"
+    }
+  },
+  {
+    "id": "ldkgbyp",
+    "category": "Deal Participants - Purchasers",
+    "description": "If it is a corporation, it is empty otherwise, FirstName + MiddleName + LastName",
+    "tag": "NonCorpName",
+    "example": "Jim Matthew Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1NonCorpName"
+    }
+  },
+  {
+    "id": "igqfopu",
+    "category": "Deal Participants - Purchasers",
+    "description": "If it is a corporation, it is empty otherwise signature",
+    "tag": "NonCorps",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "wrap",
+      "prefix": "NonCorp",
+      "suffix": "s",
+      "exampleCombo": "NonCorpc1s"
+    }
+  },
+  {
+    "id": "vjlwchs",
+    "category": "Deal Participants - Purchasers",
+    "description": "If it is corporation, the name of corporation, otherwise, it is empty.",
+    "tag": "CorpName",
+    "example": "Sold By Services Ltd.",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1CorpName"
+    }
+  },
+  {
+    "id": "le0ocrc",
+    "category": "Deal Participants - Purchasers",
+    "description": "If it is a corporation, signature otherwise it is empty",
+    "tag": "Corps",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "wrap",
+      "prefix": "Corp",
+      "suffix": "s",
+      "exampleCombo": "Corpc1s"
+    }
+  },
+  {
+    "id": "hvb7co8",
+    "category": "Deal Participants - Purchasers",
+    "description": "If it is corporation, \"Per: \" + FirstName + middleName + lastname, otherwise, it is empty.",
+    "tag": "CorpSigner",
+    "example": "Per: Jim Matthew Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Purchaser 1",
+          "value": "c1"
+        },
+        {
+          "label": "Purchaser 2",
+          "value": "c2"
+        },
+        {
+          "label": "Purchaser 3",
+          "value": "c3"
+        },
+        {
+          "label": "Purchaser 4",
+          "value": "c4"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "c1CorpSigner"
+    }
+  },
+  {
+    "id": "6l7xb4l",
+    "category": "Deal Participants - Witnesses",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Purchaser 1's Witness' Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Witness 1",
+          "value": "w1"
+        },
+        {
+          "label": "Witness 2",
+          "value": "w2"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "w1s"
+    }
+  },
+  {
+    "id": "spmhegl",
+    "category": "Deal Participants - Witnesses",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Purchaser 1's Witness' Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Witness 1",
+          "value": "w1"
+        },
+        {
+          "label": "Witness 2",
+          "value": "w2"
+        }
+      ],
+      "type": "suffix",
+      "prefix": "",
+      "suffix": "",
+      "exampleCombo": "w1i"
+    }
+  },
+  {
+    "id": "b06jufm",
+    "category": "Deal Participants - Witnesses",
+    "description": "If it is a corporation, it is empty otherwise witness signature",
+    "tag": "Noncorps",
+    "example": "Purchaser 1's Witness' Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Witness 1",
+          "value": "w1"
+        },
+        {
+          "label": "Witness 2",
+          "value": "w2"
+        }
+      ],
+      "type": "wrap",
+      "prefix": "Noncorp",
+      "suffix": "s",
+      "exampleCombo": "Noncorpw1s"
+    }
+  },
+  {
+    "id": "x7i3zj3",
+    "category": "Deal Participants - Witnesses",
+    "description": "If it is a corporation, witness signature otherwise it is empty",
+    "tag": "Corps",
+    "example": "Purchaser 1's Witness' Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Witness 1",
+          "value": "w1"
+        },
+        {
+          "label": "Witness 2",
+          "value": "w2"
+        }
+      ],
+      "type": "wrap",
+      "prefix": "Corp",
+      "suffix": "s",
+      "exampleCombo": "Corpw1s"
+    }
+  },
+  {
+    "id": "94xgwfo",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Purchaser's Full Name Or Corporation Name",
+    "tag": "ContractName",
+    "example": "Jim Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1ContractName"
+    }
+  },
+  {
+    "id": "ixpdueg",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "X mark",
+    "tag": "TitleMr",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1TitleMr"
+    }
+  },
+  {
+    "id": "f79wi0q",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "X mark",
+    "tag": "TitleMiss",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1TitleMiss"
+    }
+  },
+  {
+    "id": "71ciht4",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "X mark",
+    "tag": "TitleMs",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1TitleMs"
+    }
+  },
+  {
+    "id": "0hso346",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "X mark",
+    "tag": "TitleMrs",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1TitleMrs"
+    }
+  },
+  {
+    "id": "czbvzud",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Text form of title",
+    "tag": "Title",
+    "example": "Mr",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Title"
+    }
+  },
+  {
+    "id": "18s1ite",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "First Name",
+    "tag": "FirstName",
+    "example": "Jim",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1FirstName"
+    }
+  },
+  {
+    "id": "v2vpt2p",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Middle Name",
+    "tag": "MiddleName",
+    "example": "Mario",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1MiddleName"
+    }
+  },
+  {
+    "id": "vkqh8nd",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Last Name",
+    "tag": "LastName",
+    "example": "Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1LastName"
+    }
+  },
+  {
+    "id": "20m36jn",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1s"
+    }
+  },
+  {
+    "id": "idj0243",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Jim's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1i"
+    }
+  },
+  {
+    "id": "pwf4l3x",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Unit Number",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1UnitNumber"
+    }
+  },
+  {
+    "id": "1i1c842",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Street"
+    }
+  },
+  {
+    "id": "0q8t3th",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1City"
+    }
+  },
+  {
+    "id": "disongx",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Province",
+    "tag": "Province",
+    "example": "BC",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Province"
+    }
+  },
+  {
+    "id": "73py9gn",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Province in Full",
+    "tag": "FullProvince",
+    "example": "British Columbia",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1FullProvince"
+    }
+  },
+  {
+    "id": "f370g58",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Country"
+    }
+  },
+  {
+    "id": "l677own",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1PostalCode"
+    }
+  },
+  {
+    "id": "u5p7u02",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Address"
+    }
+  },
+  {
+    "id": "d7aaymw",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Basic Address",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1AddressShort"
+    }
+  },
+  {
+    "id": "nq829r3",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Home Phone",
+    "tag": "Phone",
+    "example": "(123) 4567980",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Phone"
+    }
+  },
+  {
+    "id": "ik1dzet",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Extension",
+    "tag": "PhoneExt",
+    "example": "ext.123",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1PhoneExt"
+    }
+  },
+  {
+    "id": "aspk9p6",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Company Phone Number",
+    "tag": "BusinessPhone",
+    "example": "(456) 7891230",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1BusinessPhone"
+    }
+  },
+  {
+    "id": "2ussmxh",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Company Extension",
+    "tag": "BusinessPhoneExt",
+    "example": "ext.456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1BusinessPhoneExt"
+    }
+  },
+  {
+    "id": "8mufg8e",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Email Address",
+    "tag": "Email",
+    "example": "jimhalpert@gmail.com",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Email"
+    }
+  },
+  {
+    "id": "a3tqwgw",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Date of Birth",
+    "tag": "Birthday",
+    "example": "Aug 20, 1993",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Birthday"
+    }
+  },
+  {
+    "id": "3bwfqxd",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "the person's occupation",
+    "tag": "Business",
+    "example": "Manager",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Business"
+    }
+  },
+  {
+    "id": "7ombtnw",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "SIN Number",
+    "tag": "Sin",
+    "example": "123 456 789",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Sin"
+    }
+  },
+  {
+    "id": "jzvo7eh",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Checkbox mark for the person is Canadian",
+    "tag": "IsCanadian",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IsCanadian"
+    }
+  },
+  {
+    "id": "acyocxt",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Checkbox mark for the person is not Canadian",
+    "tag": "IsCanadianNot",
+    "example": "X",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IsCanadianNot"
+    }
+  },
+  {
+    "id": "qm7046i",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "\"Canadian Citizen\" & \"Permanent Resident\" is  \"Canada\", Others shown the value of citizenship/residency.",
+    "tag": "Citizenship",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1Citizenship"
+    }
+  },
+  {
+    "id": "b7qtb7q",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "First Id type",
+    "tag": "IdType",
+    "example": "Drivers License",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdType"
+    }
+  },
+  {
+    "id": "eq4e7ql",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "the First Id Number",
+    "tag": "IdNumber",
+    "example": "6456436",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdNumber"
+    }
+  },
+  {
+    "id": "toc9exi",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "First Id Expiry",
+    "tag": "IdExpire",
+    "example": "January 08, 2021",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdExpire"
+    }
+  },
+  {
+    "id": "28ir8o0",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Second Id type",
+    "tag": "IdType2",
+    "example": "Passport",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdType2"
+    }
+  },
+  {
+    "id": "jy0fsvp",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "the second Id Number",
+    "tag": "IdNumber2",
+    "example": "564 156 7",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdNumber2"
+    }
+  },
+  {
+    "id": "4f2810a",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "Second Id Expiry",
+    "tag": "IdExpire2",
+    "example": "May 19, 2039",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1IdExpire2"
+    }
+  },
+  {
+    "id": "lv6inho",
+    "category": "Deal Participants - Assignees/Assignors",
+    "description": "If it is corporation, \"Per: \" + FirstName + middleName + lastname, otherwise, it is empty.",
+    "tag": "CorpSigner",
+    "example": "Per: Jim Matthew Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor 1 (Form)",
+          "value": "FromAssignor1"
+        },
+        {
+          "label": "Assignor 2 (Form)",
+          "value": "FromAssignor2"
+        },
+        {
+          "label": "Assignor 3 (Form)",
+          "value": "FromAssignor3"
+        },
+        {
+          "label": "Assignee 1 (Form)",
+          "value": "FromAssignee1"
+        },
+        {
+          "label": "Assignee 2 (Form)",
+          "value": "FromAssignee2"
+        },
+        {
+          "label": "Assignee 3 (Form)",
+          "value": "FromAssignee3"
+        },
+        {
+          "label": "Assignee 1 (Participants)",
+          "value": "o1"
+        },
+        {
+          "label": "Assignee 2 (Participants)",
+          "value": "o2"
+        },
+        {
+          "label": "Assignee 3 (Participants)",
+          "value": "o3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignee1CorpSigner"
+    }
+  },
+  {
+    "id": "nbyalxh",
+    "category": "Deal Participants - Assignee/Assignor Witnesses",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Assignor 1's Witness' Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor Witness 1 (Form)",
+          "value": "FromAssignor1W"
+        },
+        {
+          "label": "Assignor Witness 2 (Form)",
+          "value": "FromAssignor2W"
+        },
+        {
+          "label": "Assignor Witness 3 (Form)",
+          "value": "FromAssignor3W"
+        },
+        {
+          "label": "Assignee Witness 1 (Form)",
+          "value": "FromAssignee1W"
+        },
+        {
+          "label": "Assignee Witness 2 (Form)",
+          "value": "FromAssignee2W"
+        },
+        {
+          "label": "Assignee Witness 3 (Form)",
+          "value": "FromAssignee3W"
+        },
+        {
+          "label": "Assignee Witness 1 (Participants)",
+          "value": "v1"
+        },
+        {
+          "label": "Assignee Witness 2 (Participants)",
+          "value": "v2"
+        },
+        {
+          "label": "Assignee Witness 3 (Participants)",
+          "value": "v3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignor1Ws"
+    }
+  },
+  {
+    "id": "9f6yi8i",
+    "category": "Deal Participants - Assignee/Assignor Witnesses",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Assignor 1's Witness' Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Assignor Witness 1 (Form)",
+          "value": "FromAssignor1W"
+        },
+        {
+          "label": "Assignor Witness 2 (Form)",
+          "value": "FromAssignor2W"
+        },
+        {
+          "label": "Assignor Witness 3 (Form)",
+          "value": "FromAssignor3W"
+        },
+        {
+          "label": "Assignee Witness 1 (Form)",
+          "value": "FromAssignee1W"
+        },
+        {
+          "label": "Assignee Witness 2 (Form)",
+          "value": "FromAssignee2W"
+        },
+        {
+          "label": "Assignee Witness 3 (Form)",
+          "value": "FromAssignee3W"
+        },
+        {
+          "label": "Assignee Witness 1 (Participants)",
+          "value": "v1"
+        },
+        {
+          "label": "Assignee Witness 2 (Participants)",
+          "value": "v2"
+        },
+        {
+          "label": "Assignee Witness 3 (Participants)",
+          "value": "v3"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "FromAssignor1Wi"
+    }
+  },
+  {
+    "id": "bslbacf",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Full Name Name",
+    "tag": "ContractName",
+    "example": "Jim Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1ContractName"
+    }
+  },
+  {
+    "id": "anis9lj",
+    "category": "Deal Participants - Realtors",
+    "description": "First Name",
+    "tag": "FirstName",
+    "example": "Jim",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1FirstName"
+    }
+  },
+  {
+    "id": "7lu3b5b",
+    "category": "Deal Participants - Realtors",
+    "description": "Middle Name",
+    "tag": "MiddleName",
+    "example": "Mario",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1MiddleName"
+    }
+  },
+  {
+    "id": "b2ptnmm",
+    "category": "Deal Participants - Realtors",
+    "description": "Last Name",
+    "tag": "LastName",
+    "example": "Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1LastName"
+    }
+  },
+  {
+    "id": "jxpf2zc",
+    "category": "Deal Participants - Realtors",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1s"
+    }
+  },
+  {
+    "id": "m7mi3x3",
+    "category": "Deal Participants - Realtors",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Jim's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1i"
+    }
+  },
+  {
+    "id": "mgqgnvw",
+    "category": "Deal Participants - Realtors",
+    "description": "Unit Number",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1UnitNumber"
+    }
+  },
+  {
+    "id": "55byqhk",
+    "category": "Deal Participants - Realtors",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Street"
+    }
+  },
+  {
+    "id": "qp5bcb2",
+    "category": "Deal Participants - Realtors",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1City"
+    }
+  },
+  {
+    "id": "irr6sjb",
+    "category": "Deal Participants - Realtors",
+    "description": "Province",
+    "tag": "Province",
+    "example": "BC",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Province"
+    }
+  },
+  {
+    "id": "xrt3c5y",
+    "category": "Deal Participants - Realtors",
+    "description": "Province in Full",
+    "tag": "FullProvince",
+    "example": "British Columbia",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1FullProvince"
+    }
+  },
+  {
+    "id": "7ykmr3n",
+    "category": "Deal Participants - Realtors",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Country"
+    }
+  },
+  {
+    "id": "mfq151d",
+    "category": "Deal Participants - Realtors",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1PostalCode"
+    }
+  },
+  {
+    "id": "pbjwgh0",
+    "category": "Deal Participants - Realtors",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Address"
+    }
+  },
+  {
+    "id": "6g6t02z",
+    "category": "Deal Participants - Realtors",
+    "description": "Basic Address",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1AddressShort"
+    }
+  },
+  {
+    "id": "jux1fjs",
+    "category": "Deal Participants - Realtors",
+    "description": "Home Phone",
+    "tag": "Phone",
+    "example": "(123) 4567980",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Phone"
+    }
+  },
+  {
+    "id": "gnexjrs",
+    "category": "Deal Participants - Realtors",
+    "description": "Extension",
+    "tag": "PhoneExt",
+    "example": "ext.123",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1PhoneExt"
+    }
+  },
+  {
+    "id": "0loypj5",
+    "category": "Deal Participants - Realtors",
+    "description": "Brokerage Phone Number",
+    "tag": "BusinessPhone",
+    "example": "(456) 7891230",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BusinessPhone"
+    }
+  },
+  {
+    "id": "qt290oq",
+    "category": "Deal Participants - Realtors",
+    "description": "Brokerage Extension",
+    "tag": "BusinessPhoneExt",
+    "example": "ext.456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BusinessPhoneExt"
+    }
+  },
+  {
+    "id": "v2oqp2w",
+    "category": "Deal Participants - Realtors",
+    "description": "Email Address",
+    "tag": "Email",
+    "example": "jimhalpert@gmail.com",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Email"
+    }
+  },
+  {
+    "id": "pfndsqw",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's or Sales Person's Brokerage",
+    "tag": "Brokerage",
+    "example": "Remax",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Brokerage"
+    }
+  },
+  {
+    "id": "nutfb4c",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage GST Number (BC Sites)",
+    "tag": "GSTNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1GSTNumber"
+    }
+  },
+  {
+    "id": "im46uir",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage HST Number (ON Sites)",
+    "tag": "HSTNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1HSTNumber"
+    }
+  },
+  {
+    "id": "0xez2ub",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage Tax Number (US Sites)",
+    "tag": "TaxNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1TaxNumber"
+    }
+  },
+  {
+    "id": "wls68ai",
+    "category": "Deal Participants - Realtors",
+    "description": "License information associated with the Realtor",
+    "tag": "AgentLicenseNumber",
+    "example": "DRE1111111",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1AgentLicenseNumber"
+    }
+  },
+  {
+    "id": "l0x1p6u",
+    "category": "Deal Participants - Realtors",
+    "description": "License information associated with the Brokerages",
+    "tag": "BrokerageLicenseNumber",
+    "example": "DRE2222222",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BrokerageLicenseNumber"
+    }
+  },
+  {
+    "id": "xgrci8s",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Full Name Name",
+    "tag": "ContractName",
+    "example": "Jim Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1ContractName"
+    }
+  },
+  {
+    "id": "qh5dgow",
+    "category": "Deal Participants - Realtors",
+    "description": "First Name",
+    "tag": "FirstName",
+    "example": "Jim",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1FirstName"
+    }
+  },
+  {
+    "id": "pe7kpfg",
+    "category": "Deal Participants - Realtors",
+    "description": "Middle Name",
+    "tag": "MiddleName",
+    "example": "Mario",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1MiddleName"
+    }
+  },
+  {
+    "id": "7fukyxi",
+    "category": "Deal Participants - Realtors",
+    "description": "Last Name",
+    "tag": "LastName",
+    "example": "Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1LastName"
+    }
+  },
+  {
+    "id": "2xjv058",
+    "category": "Deal Participants - Realtors",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1s"
+    }
+  },
+  {
+    "id": "v6j6u44",
+    "category": "Deal Participants - Realtors",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Jim's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1i"
+    }
+  },
+  {
+    "id": "5rz8zfr",
+    "category": "Deal Participants - Realtors",
+    "description": "Unit Number",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1UnitNumber"
+    }
+  },
+  {
+    "id": "wsi8sx5",
+    "category": "Deal Participants - Realtors",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Street"
+    }
+  },
+  {
+    "id": "c6bv1b6",
+    "category": "Deal Participants - Realtors",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1City"
+    }
+  },
+  {
+    "id": "54sh19w",
+    "category": "Deal Participants - Realtors",
+    "description": "Province",
+    "tag": "Province",
+    "example": "BC",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Province"
+    }
+  },
+  {
+    "id": "p5zsguo",
+    "category": "Deal Participants - Realtors",
+    "description": "Province in Full",
+    "tag": "FullProvince",
+    "example": "British Columbia",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1FullProvince"
+    }
+  },
+  {
+    "id": "ekckufn",
+    "category": "Deal Participants - Realtors",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Country"
+    }
+  },
+  {
+    "id": "1bl3j2l",
+    "category": "Deal Participants - Realtors",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1PostalCode"
+    }
+  },
+  {
+    "id": "88xt3yv",
+    "category": "Deal Participants - Realtors",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Address"
+    }
+  },
+  {
+    "id": "j3nb3eg",
+    "category": "Deal Participants - Realtors",
+    "description": "Basic Address",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1AddressShort"
+    }
+  },
+  {
+    "id": "7f2zidd",
+    "category": "Deal Participants - Realtors",
+    "description": "Home Phone",
+    "tag": "Phone",
+    "example": "(123) 4567980",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Phone"
+    }
+  },
+  {
+    "id": "1mb0rsg",
+    "category": "Deal Participants - Realtors",
+    "description": "Extension",
+    "tag": "PhoneExt",
+    "example": "ext.123",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1PhoneExt"
+    }
+  },
+  {
+    "id": "9p97ew3",
+    "category": "Deal Participants - Realtors",
+    "description": "Brokerage Phone Number",
+    "tag": "BusinessPhone",
+    "example": "(456) 7891230",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BusinessPhone"
+    }
+  },
+  {
+    "id": "y5j9ztn",
+    "category": "Deal Participants - Realtors",
+    "description": "Brokerage Extension",
+    "tag": "BusinessPhoneExt",
+    "example": "ext.456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BusinessPhoneExt"
+    }
+  },
+  {
+    "id": "kyke75m",
+    "category": "Deal Participants - Realtors",
+    "description": "Email Address",
+    "tag": "Email",
+    "example": "jimhalpert@gmail.com",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Email"
+    }
+  },
+  {
+    "id": "gcjn3xf",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage",
+    "tag": "Brokerage",
+    "example": "Remax",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1Brokerage"
+    }
+  },
+  {
+    "id": "j9ozh1z",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage GST Number (BC Sites)",
+    "tag": "GSTNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1GSTNumber"
+    }
+  },
+  {
+    "id": "220hs0v",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage HST Number (ON Sites)",
+    "tag": "HSTNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1HSTNumber"
+    }
+  },
+  {
+    "id": "d3wu6f1",
+    "category": "Deal Participants - Realtors",
+    "description": "Realtor's Brokerage Tax Number (US Sites)",
+    "tag": "TaxNumber",
+    "example": "132 456",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1TaxNumber"
+    }
+  },
+  {
+    "id": "ewvw0y2",
+    "category": "Deal Participants - Realtors",
+    "description": "License information associated with the Realtor",
+    "tag": "AgentLicenseNumber",
+    "example": "DRE1111111",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1AgentLicenseNumber"
+    }
+  },
+  {
+    "id": "htgvido",
+    "category": "Deal Participants - Realtors",
+    "description": "License information associated with the Brokerages",
+    "tag": "BrokerageLicenseNumber",
+    "example": "DRE2222222",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Realtor 1",
+          "value": "r1"
+        },
+        {
+          "label": "Realtor 2",
+          "value": "r2"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "r1BrokerageLicenseNumber"
+    }
+  },
+  {
+    "id": "k72r3kh",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Sales Rep's Full Name",
+    "tag": "ContractName",
+    "example": "Jim Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1ContractName"
+    }
+  },
+  {
+    "id": "172jux7",
+    "category": "Deal Participants - Sales Rep",
+    "description": "First Name",
+    "tag": "FirstName",
+    "example": "Jim",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1FirstName"
+    }
+  },
+  {
+    "id": "6hh7m38",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Middle Name",
+    "tag": "MiddleName",
+    "example": "Mario",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1MiddleName"
+    }
+  },
+  {
+    "id": "ov7ko6q",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Last Name",
+    "tag": "LastName",
+    "example": "Halpert",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1LastName"
+    }
+  },
+  {
+    "id": "2f5fpbu",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Jim's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1s"
+    }
+  },
+  {
+    "id": "n4n3wfa",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Jim's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1i"
+    }
+  },
+  {
+    "id": "1fqkkrb",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Home Phone",
+    "tag": "Phone",
+    "example": "(123) 4567980",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1Phone"
+    }
+  },
+  {
+    "id": "vwlal6x",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Email Address",
+    "tag": "Email",
+    "example": "jimhalpert@gmail.com",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1Email"
+    }
+  },
+  {
+    "id": "kfv5qap",
+    "category": "Deal Participants - Sales Rep",
+    "description": "Sales Person's Brokerage",
+    "tag": "Brokerage",
+    "example": "Remax",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1Brokerage"
+    }
+  },
+  {
+    "id": "v1u5ifk",
+    "category": "Deal Participants - Sales Rep",
+    "description": "License information associated with the Sales Rep",
+    "tag": "AgentLicenseNumber",
+    "example": "DRE1111111",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1AgentLicenseNumber"
+    }
+  },
+  {
+    "id": "363f8we",
+    "category": "Deal Participants - Sales Rep",
+    "description": "License information associated with the Brokerages for Sales Rep",
+    "tag": "BrokerageLicenseNumber",
+    "example": "DRE2222222",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Sales Rep",
+          "value": "s1"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "s1BrokerageLicenseNumber"
+    }
+  },
+  {
+    "id": "hhunbjy",
+    "category": "Deal Participants - Developers",
+    "description": "Signature",
+    "tag": "s",
+    "example": "Developer 1's Signature",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Developer 1",
+          "value": "d1"
+        },
+        {
+          "label": "Developer 2",
+          "value": "d2"
+        },
+        {
+          "label": "Developer 3",
+          "value": "d3"
+        },
+        {
+          "label": "Developer 4",
+          "value": "d4"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "d1s"
+    }
+  },
+  {
+    "id": "rk0i55m",
+    "category": "Deal Participants - Developers",
+    "description": "Initial",
+    "tag": "i",
+    "example": "Developer 1's Inital",
+    "isBuilder": true,
+    "builderData": {
+      "bases": [
+        {
+          "label": "Developer 1",
+          "value": "d1"
+        },
+        {
+          "label": "Developer 2",
+          "value": "d2"
+        },
+        {
+          "label": "Developer 3",
+          "value": "d3"
+        },
+        {
+          "label": "Developer 4",
+          "value": "d4"
+        }
+      ],
+      "type": "suffix",
+      "exampleCombo": "d1i"
+    }
+  }
+]

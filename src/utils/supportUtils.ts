@@ -590,7 +590,7 @@ export function getChartData(
   const peakDay = DAYS[maxDayIdx];
   const peakTime = HOURS[maxHourIdx];
 
-  const channelMap = new Map<string, number>();
+  const channelMap = new Map<string, { name: string; total: number; [key: string]: any }>();
   filteredTickets.forEach((t) => {
     let channel = t['Channel'] || 'Unknown';
     const cLower = channel.toLowerCase();
@@ -602,11 +602,15 @@ export function getChartData(
     else if (cLower === 'email') channel = 'Email';
     else channel = channel.charAt(0).toUpperCase() + channel.slice(1);
     
-    channelMap.set(channel, (channelMap.get(channel) || 0) + 1);
+    if (!channelMap.has(channel)) channelMap.set(channel, { name: channel, total: 0 });
+    const c = channelMap.get(channel)!;
+    c.total++;
+    const cat = t['Ticket Category'] || 'Uncategorized';
+    c[`cat_${cat}`] = (c[`cat_${cat}`] || 0) + 1;
   });
-  const channelData = Array.from(channelMap.entries())
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  const channelData = Array.from(channelMap.values())
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
 
   const workloadMap = new Map<
     string,

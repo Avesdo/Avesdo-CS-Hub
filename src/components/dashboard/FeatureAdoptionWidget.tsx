@@ -23,9 +23,7 @@ export function FeatureAdoptionWidget({
             Feature Adoption
           </TruncatedText>
           <TruncatedText
-            text={String(
-              'Combined adoption across all projects'
-            )}
+            text={String('Combined adoption across all projects')}
             containerClassName="text-xs text-muted-foreground mt-1 font-medium"
           >
             Combined adoption across all projects

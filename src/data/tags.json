@@ -1,0 +1,1650 @@
+[
+  {
+    "id": "mp1mqb7",
+    "category": "DealListing Details",
+    "description": "Strata Lot in BC",
+    "tag": "StrataLot",
+    "example": "32",
+    "isBuilder": false
+  },
+  {
+    "id": "wep3w4h",
+    "category": "DealListing Details",
+    "description": "Unit Number/Suite Number in BC",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": false
+  },
+  {
+    "id": "pavcfqb",
+    "category": "DealListing Details",
+    "description": "Suite number in Ontario",
+    "tag": "Suite",
+    "example": "4520",
+    "isBuilder": false
+  },
+  {
+    "id": "14tpqye",
+    "category": "DealListing Details",
+    "description": "Level in Ontario",
+    "tag": "Level",
+    "example": "3",
+    "isBuilder": false
+  },
+  {
+    "id": "nvb9anp",
+    "category": "DealListing Details",
+    "description": "Unit in Ontario",
+    "tag": "LotUnit",
+    "example": "52",
+    "isBuilder": false
+  },
+  {
+    "id": "bzfp175",
+    "category": "DealListing Details",
+    "description": "Floor Number",
+    "tag": "FloorSection",
+    "example": "4",
+    "isBuilder": false
+  },
+  {
+    "id": "0dswdhc",
+    "category": "DealListing Details",
+    "description": "Street Address",
+    "tag": "Street",
+    "example": "1367 West Broadway",
+    "isBuilder": false
+  },
+  {
+    "id": "h89v3v1",
+    "category": "DealListing Details",
+    "description": "City",
+    "tag": "City",
+    "example": "Vancouver",
+    "isBuilder": false
+  },
+  {
+    "id": "rhmlb9n",
+    "category": "DealListing Details",
+    "description": "Province",
+    "tag": "Province",
+    "example": "BC",
+    "isBuilder": false
+  },
+  {
+    "id": "pr0o9ej",
+    "category": "DealListing Details",
+    "description": "Province in Full",
+    "tag": "FullProvince",
+    "example": "British Columbia",
+    "isBuilder": false
+  },
+  {
+    "id": "nxk9y0u",
+    "category": "DealListing Details",
+    "description": "Country",
+    "tag": "Country",
+    "example": "Canada",
+    "isBuilder": false
+  },
+  {
+    "id": "azfnvt9",
+    "category": "DealListing Details",
+    "description": "Postal Code",
+    "tag": "PostalCode",
+    "example": "V8H 5J6",
+    "isBuilder": false
+  },
+  {
+    "id": "w6er2x6",
+    "category": "DealListing Details",
+    "description": "Full Address",
+    "tag": "Address",
+    "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+    "isBuilder": false
+  },
+  {
+    "id": "kv29ar0",
+    "category": "DealListing Details",
+    "description": "Only Street and Number",
+    "tag": "AddressShort",
+    "example": "35 - 1367 West Broadway",
+    "isBuilder": false
+  },
+  {
+    "id": "6t9vz4j",
+    "category": "DealListing Details",
+    "description": "Floor Plan",
+    "tag": "FloorPlan",
+    "example": "Plan A",
+    "isBuilder": false
+  },
+  {
+    "id": "nc39dvu",
+    "category": "DealListing Details",
+    "description": "Square Footage",
+    "tag": "FloorArea",
+    "example": "556",
+    "isBuilder": false
+  },
+  {
+    "id": "7r3u3s5",
+    "category": "DealListing Details",
+    "description": "# of Bedrooms",
+    "tag": "Bedrooms",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "bwgknbg",
+    "category": "DealListing Details",
+    "description": "# of Bathrooms",
+    "tag": "Bathrooms",
+    "example": "3",
+    "isBuilder": false
+  },
+  {
+    "id": "hzsgwzr",
+    "category": "DealListing Details",
+    "description": "# of Dens",
+    "tag": "Den",
+    "example": "1",
+    "isBuilder": false
+  },
+  {
+    "id": "mqkzurv",
+    "category": "DealListing Details",
+    "description": "# of Flex",
+    "tag": "Flex",
+    "example": "1",
+    "isBuilder": false
+  },
+  {
+    "id": "m6ijgqv",
+    "category": "DealListing Details",
+    "description": "Strata Fees",
+    "tag": "StrataFees",
+    "example": "251",
+    "isBuilder": false
+  },
+  {
+    "id": "op08eg3",
+    "category": "DealListing Details",
+    "description": "Description of Building",
+    "tag": "LegalDescription",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "2au0woi",
+    "category": "DealListing Details",
+    "description": "Parcel Identification in listing details",
+    "tag": "Pid",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "q21ck77",
+    "category": "DealListing Details",
+    "description": "Custom Column 1",
+    "tag": "PropExtraTag1",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "0ptkvmr",
+    "category": "DealListing Details",
+    "description": "Custom Column 2",
+    "tag": "PropExtraTag2",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "u7u4065",
+    "category": "DealListing Details",
+    "description": "Custom Column 3",
+    "tag": "PropExtraTag3",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "t0ne7tw",
+    "category": "DealListing Details",
+    "description": "Custom Column 4",
+    "tag": "PropExtraTag4",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "ifvmbxh",
+    "category": "DealListing Details",
+    "description": "Custom Column 5",
+    "tag": "PropExtraTag5",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "phxzz96",
+    "category": "DealListing Details",
+    "description": "Custom Column 6",
+    "tag": "PropExtraTag6",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "60w6nun",
+    "category": "DealListing Details",
+    "description": "Custom Column 7",
+    "tag": "PropExtraTag7",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "hpws10f",
+    "category": "DealListing Details",
+    "description": "Custom Column 8",
+    "tag": "PropExtraTag8",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "w22pore",
+    "category": "DealListing Details",
+    "description": "Custom Column 9",
+    "tag": "PropExtraTag9",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "bej8g6t",
+    "category": "DealListing Details",
+    "description": "Custom Column 10",
+    "tag": "PropExtraTag10",
+    "example": "Pulls information from custom columns",
+    "isBuilder": false
+  },
+  {
+    "id": "8cf5n3e",
+    "category": "DealListing Details",
+    "description": "Description",
+    "tag": "Tag",
+    "example": "Example",
+    "isBuilder": false
+  },
+  {
+    "id": "3navth2",
+    "category": "DealListing Details",
+    "description": "Parking Included (Listing Details)",
+    "tag": "ParkingIncluded",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "p2cjwgh",
+    "category": "DealListing Details",
+    "description": "No. of Additional Parking",
+    "tag": "ParkingExtra",
+    "example": "1",
+    "isBuilder": false
+  },
+  {
+    "id": "n66nd2r",
+    "category": "DealListing Details",
+    "description": "Price of the Additional Parking",
+    "tag": "ParkingExtraPrice",
+    "example": "20000",
+    "isBuilder": false
+  },
+  {
+    "id": "3htdpx7",
+    "category": "DealListing Details",
+    "description": "X for type of Parking",
+    "tag": "\"ParkingType\" + name",
+    "example": "ex. ParkingTypeSmall ==> X",
+    "isBuilder": false
+  },
+  {
+    "id": "wn6th1p",
+    "category": "DealListing Details",
+    "description": "Bike Included (Listing Details)",
+    "tag": "BikeIncluded",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "do8q1dt",
+    "category": "DealListing Details",
+    "description": "No. of Additional Bike Locker",
+    "tag": "BikeExtra",
+    "example": "1",
+    "isBuilder": false
+  },
+  {
+    "id": "s97rceb",
+    "category": "DealListing Details",
+    "description": "Price of Additional Bike Locker",
+    "tag": "BikeExtraPrice",
+    "example": "3000",
+    "isBuilder": false
+  },
+  {
+    "id": "evhmag1",
+    "category": "DealListing Details",
+    "description": "X for type of Bike Locker",
+    "tag": "\"BikeType\" + name",
+    "example": "ex. BikeTypeMedium ==> X",
+    "isBuilder": false
+  },
+  {
+    "id": "bhqdr3u",
+    "category": "DealListing Details",
+    "description": "Storage Included",
+    "tag": "StorageIncluded",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "kyb9c3c",
+    "category": "DealListing Details",
+    "description": "No. of Additional Storage Locker",
+    "tag": "StorageExtra",
+    "example": "1",
+    "isBuilder": false
+  },
+  {
+    "id": "dtm1ay8",
+    "category": "DealListing Details",
+    "description": "Price of Additional Storage Locker",
+    "tag": "StorageExtraPrice",
+    "example": "3000",
+    "isBuilder": false
+  },
+  {
+    "id": "422mi3u",
+    "category": "DealListing Details",
+    "description": "X for type of Storage Locker",
+    "tag": "\"StorageType\" + name",
+    "example": "ex. StorageTypeSmall ==> X",
+    "isBuilder": false
+  },
+  {
+    "id": "caqg6v2",
+    "category": "DealListing Details",
+    "description": "Name of Colour Scheme",
+    "tag": "ColourScheme",
+    "example": "Dark",
+    "isBuilder": false
+  },
+  {
+    "id": "zxpjsjo",
+    "category": "DealListing Details",
+    "description": "X to Select Colour Scheme",
+    "tag": "\"ColourScheme\" + Label",
+    "example": "ex. ColourSchemeDark ==> X",
+    "isBuilder": false
+  },
+  {
+    "id": "qsnqhjr",
+    "category": "DealListing Details",
+    "description": "Creating Additional Option",
+    "tag": "FormOptionExample",
+    "example": "tag text will reflect",
+    "isBuilder": false
+  },
+  {
+    "id": "5gvanf8",
+    "category": "DealListing Details",
+    "description": "Price of Option",
+    "tag": "formOptionExamplePrice",
+    "example": "2000.00",
+    "isBuilder": false
+  },
+  {
+    "id": "6aff48x",
+    "category": "DealListing Details",
+    "description": "Realtor Commission 1 percentage",
+    "tag": "RealtorCom1",
+    "example": "3",
+    "isBuilder": false
+  },
+  {
+    "id": "5nsdb4z",
+    "category": "DealListing Details",
+    "description": "Realtor Commission 2 percentage",
+    "tag": "RealtorCom2",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "gmrnq59",
+    "category": "DealListing Details",
+    "description": "Realtor Commission 1 Amount",
+    "tag": "RealtorCom1Amount",
+    "example": "3,000.00",
+    "isBuilder": false
+  },
+  {
+    "id": "m9r9i28",
+    "category": "DealListing Details",
+    "description": "Realtor Commission 2 Amount",
+    "tag": "RealtorCom2Amount",
+    "example": "8,900.00",
+    "isBuilder": false
+  },
+  {
+    "id": "oismntw",
+    "category": "DealListing Details",
+    "description": "Realtor bonus",
+    "tag": "RealtorComLump",
+    "example": "1,000.00",
+    "isBuilder": false
+  },
+  {
+    "id": "w0f2hkt",
+    "category": "DealListing Details",
+    "description": "Realtor Commission Total (including bonus)",
+    "tag": "TotalBuyerCom",
+    "example": "12,900.00",
+    "isBuilder": false
+  },
+  {
+    "id": "drpc7vq",
+    "category": "DealListing Details",
+    "description": "Realtor is giving some commission to purchaser",
+    "tag": "CreditFromRealtor",
+    "example": "5,000.00",
+    "isBuilder": false
+  },
+  {
+    "id": "a2pgc0m",
+    "category": "DealListing Details",
+    "description": "Purchase Price in text form",
+    "tag": "SoldPriceText",
+    "example": "sixty thousand",
+    "isBuilder": false
+  },
+  {
+    "id": "szhlh8e",
+    "category": "DealListing Details",
+    "description": "Purchase Price in numbers (listed price)",
+    "tag": "SoldPrice",
+    "example": "60000",
+    "isBuilder": false
+  },
+  {
+    "id": "t28ak5z",
+    "category": "DealListing Details",
+    "description": "Purchase Price Plus any Upgrades - Credit",
+    "tag": "TotalSoldPrice",
+    "example": "600000",
+    "isBuilder": false
+  },
+  {
+    "id": "3wt8g7q",
+    "category": "DealListing Details",
+    "description": "Deposit 1 Amount with 2 decimal values",
+    "tag": "Deposit1",
+    "example": "10000",
+    "isBuilder": false
+  },
+  {
+    "id": "8hhnxcs",
+    "category": "DealListing Details",
+    "description": "Deposit 2 Amount with 2 decimal values",
+    "tag": "Deposit2",
+    "example": "20000",
+    "isBuilder": false
+  },
+  {
+    "id": "zqznsts",
+    "category": "DealListing Details",
+    "description": "Deposit 3 Amount with 2 decimal values",
+    "tag": "Deposit3",
+    "example": "3000",
+    "isBuilder": false
+  },
+  {
+    "id": "44ozq3l",
+    "category": "DealListing Details",
+    "description": "Deposit 4 Amount with 2 decimal values",
+    "tag": "Deposit4",
+    "example": "4000",
+    "isBuilder": false
+  },
+  {
+    "id": "95dj24f",
+    "category": "DealListing Details",
+    "description": "Deposit 5 Amount with 2 decimal values",
+    "tag": "Deposit5",
+    "example": "5000",
+    "isBuilder": false
+  },
+  {
+    "id": "yfr1zsb",
+    "category": "DealListing Details",
+    "description": "Occupancy Deposit Amount with 2 decimal values",
+    "tag": "DepositOccupancy",
+    "example": "6000",
+    "isBuilder": false
+  },
+  {
+    "id": "26jgy8k",
+    "category": "DealListing Details",
+    "description": "Credit/Decorating Allowance",
+    "tag": "Credit",
+    "example": "5000",
+    "isBuilder": false
+  },
+  {
+    "id": "rehm0vm",
+    "category": "DealListing Details",
+    "description": "Upgrade Cost",
+    "tag": "UpgradeCost",
+    "example": "5000",
+    "isBuilder": false
+  },
+  {
+    "id": "lbxm6jf",
+    "category": "DealListing Details",
+    "description": "Additional Cost",
+    "tag": "AdditionalCost",
+    "example": "2000",
+    "isBuilder": false
+  },
+  {
+    "id": "rt54wtk",
+    "category": "DealListing Details",
+    "description": "Assignment Fee",
+    "tag": "AssignmentFee",
+    "example": "7000",
+    "isBuilder": false
+  },
+  {
+    "id": "eoe2lxu",
+    "category": "DealListing Details",
+    "description": "Online Calculator",
+    "tag": "Net HST Purchase Calculator | Connect Asset Management",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "90lfgej",
+    "category": "DealListing Details",
+    "description": "SoldPrice + ParkingExtraPrice + StorageExtraPrice + BikeExtraPrice - Credit",
+    "tag": "NetOfHst",
+    "example": "5000",
+    "isBuilder": false
+  },
+  {
+    "id": "tfkz0le",
+    "category": "DealListing Details",
+    "description": "SoldPrice - Credit",
+    "tag": "NetOfHstBase",
+    "example": "5000",
+    "isBuilder": false
+  },
+  {
+    "id": "k2okl8z",
+    "category": "Dates",
+    "description": "Full Time",
+    "tag": "DateTimeFull",
+    "example": "10:20 AM",
+    "isBuilder": false
+  },
+  {
+    "id": "jui3z2b",
+    "category": "Dates",
+    "description": "Basic time",
+    "tag": "DateTimeBasic",
+    "example": "10:20",
+    "isBuilder": false
+  },
+  {
+    "id": "4cdmele",
+    "category": "Dates",
+    "description": "Time Format",
+    "tag": "TimeFormat",
+    "example": "AM",
+    "isBuilder": false
+  },
+  {
+    "id": "zuis2sd",
+    "category": "Dates",
+    "description": "Time Short Format",
+    "tag": "TimeShortFormat",
+    "example": "A",
+    "isBuilder": false
+  },
+  {
+    "id": "0zdcol9",
+    "category": "Dates",
+    "description": "Time Lowercase Format",
+    "tag": "TimeLowerFormat",
+    "example": "am",
+    "isBuilder": false
+  },
+  {
+    "id": "2k8qm7e",
+    "category": "Dates",
+    "description": "Time Lowercase Short Format",
+    "tag": "TimeLowerShortFormat",
+    "example": "a",
+    "isBuilder": false
+  },
+  {
+    "id": "hg35kpr",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "DateFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "p9jbo2r",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "DateFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "m96l6c3",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "DateDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "4barufn",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "DateMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "7xrdncg",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "DateMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "41phfi9",
+    "category": "Dates",
+    "description": "Month Number",
+    "tag": "DateMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "sp0eyph",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "DateYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "fkj7ao5",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "DateYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "8qvlzl4",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "DateYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "0icdvn2",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "CreatedFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "eh65ojr",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "CreatedFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "1uvrn8k",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "CreatedDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "6n2viur",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "CreatedMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "v08vnc2",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "CreatedMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "l960576",
+    "category": "Dates",
+    "description": "Month Number",
+    "tag": "CreatedMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "sojlllo",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "CreatedYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "l6vih37",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "CreatedYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "v4kcv1r",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "CreatedYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "u9gfetp",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "future_c1s_DateFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "95ib3zv",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "future_c1s_DateFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "hgrjo05",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "future_c1s_DateDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "1mbvwll",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "future_c1s_DateMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "2h7hvlx",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "future_c1s_DateMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "dmjry1z",
+    "category": "Dates",
+    "description": "Month Number",
+    "tag": "future_c1s_DateMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "nmuevgj",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "future_c1s_DateYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "buoutt3",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "future_c1s_DateYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "43ng02r",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "future_c1s_DateYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "xqcul90",
+    "category": "Dates",
+    "description": "TimeFull",
+    "tag": "future_d1s_DateTimeFull",
+    "example": "10:20 AM",
+    "isBuilder": false
+  },
+  {
+    "id": "9drh206",
+    "category": "Dates",
+    "description": "Time Basic",
+    "tag": "future_d1s_DateTimeBasic",
+    "example": "0.4305555555555556",
+    "isBuilder": false
+  },
+  {
+    "id": "k6mqd55",
+    "category": "Dates",
+    "description": "Time Format",
+    "tag": "future_d1s_TimeFormat",
+    "example": "AM",
+    "isBuilder": false
+  },
+  {
+    "id": "q5xijgb",
+    "category": "Dates",
+    "description": "Time Short Format",
+    "tag": "future_d1s_TimeShortFormat",
+    "example": "A",
+    "isBuilder": false
+  },
+  {
+    "id": "kty5jpq",
+    "category": "Dates",
+    "description": "Time Lowercase Format",
+    "tag": "future_d1s_TimeLowerFormat",
+    "example": "am",
+    "isBuilder": false
+  },
+  {
+    "id": "soak412",
+    "category": "Dates",
+    "description": "Time Lowercase Short Format",
+    "tag": "future_d1s_TimeLowerShortFormat",
+    "example": "a",
+    "isBuilder": false
+  },
+  {
+    "id": "co2cujk",
+    "category": "Dates",
+    "description": "Populates the date x number of days after a document is signed",
+    "tag": "SignDate",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "d3xf6vo",
+    "category": "Dates",
+    "description": "Description",
+    "tag": "Tag",
+    "example": "Example",
+    "isBuilder": false
+  },
+  {
+    "id": "emxawp3",
+    "category": "Dates",
+    "description": "First Deposit Date",
+    "tag": "DepositDate1",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "f7cqcoa",
+    "category": "Dates",
+    "description": "Second Deposit Date",
+    "tag": "DepositDate2",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "thu6hi4",
+    "category": "Dates",
+    "description": "Third Deposit Date",
+    "tag": "DepositDate3",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "9ydcmxx",
+    "category": "Dates",
+    "description": "Fourth Deposit Date",
+    "tag": "DepositDate4",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "ow7e8lp",
+    "category": "Dates",
+    "description": "Fifth Deposit Date",
+    "tag": "DepositDate5",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "nt8nxdc",
+    "category": "Dates",
+    "description": "Occupancy Deposit Date",
+    "tag": "DepositDateOccupancy",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "dg3c9np",
+    "category": "Dates",
+    "description": "c1-contractsigneddate & Time",
+    "tag": "c1-contractsigneddatetime",
+    "example": "42682.104166666664",
+    "isBuilder": false
+  },
+  {
+    "id": "zmcy9qt",
+    "category": "Dates",
+    "description": "Accepted Date",
+    "tag": "AcceptedDate",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "u8werny",
+    "category": "Dates",
+    "description": "Accepted Date & Time",
+    "tag": "AcceptedDateTime",
+    "example": "42682.104166666664",
+    "isBuilder": false
+  },
+  {
+    "id": "76xnb8e",
+    "category": "Dates",
+    "description": "Rescission Expire Date",
+    "tag": "RescissionExpireDate",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "vw1ij4c",
+    "category": "Dates",
+    "description": "Rescission Expire Date & Time",
+    "tag": "RescissionExpireDateTime",
+    "example": "42682.104166666664",
+    "isBuilder": false
+  },
+  {
+    "id": "ojegsk2",
+    "category": "Dates",
+    "description": "Completion Date",
+    "tag": "CompletionDate",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "p780igh",
+    "category": "Dates",
+    "description": "Possession Date",
+    "tag": "PossessionDate",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "8fho921",
+    "category": "Dates",
+    "description": "Adjustment Date",
+    "tag": "AdjustmentDate",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "yxlucu5",
+    "category": "Dates",
+    "description": "OfferOpenDate full expression",
+    "tag": "OfferOpenDateFull",
+    "example": "42682",
+    "isBuilder": false
+  },
+  {
+    "id": "cnii8kb",
+    "category": "Dates",
+    "description": "OfferOpenDate day expression",
+    "tag": "OfferOpenDateDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "i4zfwu2",
+    "category": "Dates",
+    "description": "OfferOpenDate month abbreviation expression",
+    "tag": "OfferOpenDateMonth",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "xp97ajk",
+    "category": "Dates",
+    "description": "OfferOpenDate full month expression",
+    "tag": "OfferOpenDateMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "b1qstjp",
+    "category": "Dates",
+    "description": "OfferOpenDate full year expression",
+    "tag": "OfferOpenDateYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "61zdqml",
+    "category": "Dates",
+    "description": "OfferOpenDate Time expression",
+    "tag": "OfferOpenTimeFull",
+    "example": "05:30 PM",
+    "isBuilder": false
+  },
+  {
+    "id": "4o8l67t",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "fdateshort_",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "ee8n0dz",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "fdatefull_",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "mqib0ml",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "fdateday_",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "5wqbjh6",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "fdatemonth_",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "1qpxsb8",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "fdatemonthshort_",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "wyilxat",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "fdateyear_",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "p18b0qd",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "fdateyear2_",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "rllo3j5",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "fdateyear1_",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "bvk97gj",
+    "category": "Dates",
+    "description": "Month and Day",
+    "tag": "fdatemonthday_",
+    "example": "September 28",
+    "isBuilder": false
+  },
+  {
+    "id": "ay1d5e4",
+    "category": "Dates",
+    "description": "Month and Day Abbreviated",
+    "tag": "fdatemonthdayshort_",
+    "example": "Sep 28",
+    "isBuilder": false
+  },
+  {
+    "id": "pcu31xn",
+    "category": "Dates",
+    "description": "Time with Format (12-hour format)",
+    "tag": "fdatetime_",
+    "example": "11:30 AM",
+    "isBuilder": false
+  },
+  {
+    "id": "n97z29n",
+    "category": "Dates",
+    "description": "Only Time (without format)",
+    "tag": "ftime_",
+    "example": "0.4791666666666667",
+    "isBuilder": false
+  },
+  {
+    "id": "8v301rx",
+    "category": "Dates",
+    "description": "Only AM/PM (without time) - Uppercase",
+    "tag": "ftimeformat_",
+    "example": "AM",
+    "isBuilder": false
+  },
+  {
+    "id": "lix8qae",
+    "category": "Dates",
+    "description": "Only AM/PM (short without time) - Uppercase",
+    "tag": "ftimeshortformat_",
+    "example": "A",
+    "isBuilder": false
+  },
+  {
+    "id": "q7kh9hp",
+    "category": "Dates",
+    "description": "Only AM/PM (without time) - Lowercase",
+    "tag": "ftimelowerformat_",
+    "example": "am",
+    "isBuilder": false
+  },
+  {
+    "id": "fhqxc41",
+    "category": "Dates",
+    "description": "Only AM/PM (short without time) - Lowercase",
+    "tag": "ftimelowershortformat_",
+    "example": "a",
+    "isBuilder": false
+  },
+  {
+    "id": "7s9pnlt",
+    "category": "Dates",
+    "description": "The form must be tagged as \"Example\"",
+    "tag": "The tags must be filled out with:",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "s0wc245",
+    "category": "Dates",
+    "description": "Basic Date",
+    "tag": "formExampleFull",
+    "example": "Nov 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "n7k20v5",
+    "category": "Dates",
+    "description": "Full Date",
+    "tag": "formExampleFullLong",
+    "example": "November 08, 2016",
+    "isBuilder": false
+  },
+  {
+    "id": "4u6bg3s",
+    "category": "Dates",
+    "description": "Day",
+    "tag": "formExampleDay",
+    "example": "08",
+    "isBuilder": false
+  },
+  {
+    "id": "lgfmppc",
+    "category": "Dates",
+    "description": "Month",
+    "tag": "formExampleMonthLong",
+    "example": "November",
+    "isBuilder": false
+  },
+  {
+    "id": "lg3206v",
+    "category": "Dates",
+    "description": "Month Abbreviated",
+    "tag": "formExampleMonthShort",
+    "example": "Nov",
+    "isBuilder": false
+  },
+  {
+    "id": "ihqbtka",
+    "category": "Dates",
+    "description": "Month Number",
+    "tag": "formExampleMonthNumber",
+    "example": "11",
+    "isBuilder": false
+  },
+  {
+    "id": "e6jtsb7",
+    "category": "Dates",
+    "description": "Year 4 Digits",
+    "tag": "formExampleYear",
+    "example": "2016",
+    "isBuilder": false
+  },
+  {
+    "id": "eirzgic",
+    "category": "Dates",
+    "description": "Year Last 2 Digits",
+    "tag": "formExampleYear2",
+    "example": "16",
+    "isBuilder": false
+  },
+  {
+    "id": "t6pf7fm",
+    "category": "Dates",
+    "description": "Year Last Digit",
+    "tag": "formExampleYear1",
+    "example": "6",
+    "isBuilder": false
+  },
+  {
+    "id": "6jaon88",
+    "category": "Special Tags",
+    "description": "Name of All Purchasers, Separated With \"and\"",
+    "tag": "CXContractName",
+    "example": "Bob Dylan and John Louis and Jane Arthur",
+    "isBuilder": false
+  },
+  {
+    "id": "4py7rs4",
+    "category": "Special Tags (Math)",
+    "description": "50% of total commission",
+    "tag": "math_ ( RealtorCom1Amount + RealtorCom2Amount ) * .5",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "0bez3in",
+    "category": "Special Tags (Math)",
+    "description": "5% GST of 50% of total commission",
+    "tag": "math_ ( ( RealtorCom1Amount + RealtorCom2Amount )  * .5 ) * .05",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "j7u7m50",
+    "category": "Special Tags",
+    "description": "Space",
+    "tag": "_",
+    "example": "C1ContractName_C1Address Displays as  John Smith 1367 Broadway",
+    "isBuilder": false
+  },
+  {
+    "id": "h4f7mrh",
+    "category": "Special Tags (Math)",
+    "description": "5% GST of Total commission",
+    "tag": "math_ ( RealtorCom1Amount + RealtorCom2Amount )  * .05",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "xdfplg4",
+    "category": "Special Tags",
+    "description": "Slash",
+    "tag": ",",
+    "example": "C1ContractName,C2ContractName Displays as John Smith/Jane Doe",
+    "isBuilder": false
+  },
+  {
+    "id": "ypdex4o",
+    "category": "Special Tags (Math)",
+    "description": "50% of Total commission including GST",
+    "tag": "math_ ( ( RealtorCom1Amount + RealtorCom2Amount ) * .5 ) * 1.05",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "z4ujub5",
+    "category": "Special Tags",
+    "description": "Blank Spaces",
+    "tag": "B1 - B9",
+    "example": "B= Blank Space : 1-9 = The Amount of Blank Spaces",
+    "isBuilder": false
+  },
+  {
+    "id": "q2pfvkc",
+    "category": "Special Tags (Math)",
+    "description": "Total commission including GST",
+    "tag": "math_ ( RealtorCom1Amount + RealtorCom2Amount ) * 1.05",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "z90k3nf",
+    "category": "Special Tags",
+    "description": "Whole Number",
+    "tag": "fn0_",
+    "example": "fn0_SoldPrice would display as 1,000,000",
+    "isBuilder": false
+  },
+  {
+    "id": "2fl4aiw",
+    "category": "Special Tags",
+    "description": "2 Decimal Places",
+    "tag": "fn2_",
+    "example": "fn2_SoldPrice would display as 1,000,000.35",
+    "isBuilder": false
+  },
+  {
+    "id": "gybhu3r",
+    "category": "Special Tags (Math)",
+    "description": "logic_BikeExtra > 0 ? text_X : B1",
+    "tag": "if additional bike is more than 0, show \"X\". If not, show blank",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "g294o6c",
+    "category": "Special Tags",
+    "description": "Round up",
+    "tag": "fnr_",
+    "example": "fnr_deposit1",
+    "isBuilder": false
+  },
+  {
+    "id": "wyrfp6m",
+    "category": "Special Tags",
+    "description": "Round up and add 2 Decimal Places",
+    "tag": "fnr2_",
+    "example": "if 12345.7, will show as 1,23,456.00",
+    "isBuilder": false
+  },
+  {
+    "id": "u6p4bh1",
+    "category": "Special Tags (Math)",
+    "description": "logic_c1BoolIsCorp ? XXX : YYY",
+    "tag": "used to distinguish between corp and non corp purchaser information",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "uqsgt2g",
+    "category": "Special Tags",
+    "description": "Whole Number with $",
+    "tag": "fc0_",
+    "example": "fc0_SoldPrice would display as $1,000,000",
+    "isBuilder": false
+  },
+  {
+    "id": "avki7we",
+    "category": "Special Tags",
+    "description": "2 Decimal Places with $",
+    "tag": "fc2_",
+    "example": "fc2_SoldPrice would display as $1,000,000.35",
+    "isBuilder": false
+  },
+  {
+    "id": "tshc4oh",
+    "category": "Special Tags (Math)",
+    "description": "logic_parkingextra == 1 || parkingextra == 3 ? text_y : B1",
+    "tag": "if extra parking is 1 OR 3, show \"y\". If not, show blank",
+    "example": "",
+    "isBuilder": false
+  },
+  {
+    "id": "bxpa9l2",
+    "category": "Special Tags",
+    "description": "Round up while also adding $",
+    "tag": "fcr_",
+    "example": "fcr_deposit1",
+    "isBuilder": false
+  },
+  {
+    "id": "9vwne1z",
+    "category": "Special Tags",
+    "description": "Round up to add 2 Decimal Places and $",
+    "tag": "fcr2_",
+    "example": "if 12345.7, will show as $12,346.00",
+    "isBuilder": false
+  },
+  {
+    "id": "205lhsm",
+    "category": "Special Tags",
+    "description": "Spell a Number in Upper Case",
+    "tag": "fupper_",
+    "example": "fupper_SoldPrice would display as ONE MILLION",
+    "isBuilder": false
+  },
+  {
+    "id": "eejnt5k",
+    "category": "Special Tags",
+    "description": "Spell a Number in Lower Case",
+    "tag": "fspell_",
+    "example": "fspell_SoldPrice would display as one million",
+    "isBuilder": false
+  },
+  {
+    "id": "zqlqze0",
+    "category": "Special Tags",
+    "description": "Number in Text with Numeric Beside",
+    "tag": "fspellnumber_",
+    "example": "TWO (2)",
+    "isBuilder": false
+  },
+  {
+    "id": "yb8k2dr",
+    "category": "Special Tags",
+    "description": "Numeric with Number in Text Beside",
+    "tag": "fnumberspell_",
+    "example": "2 (TWO)",
+    "isBuilder": false
+  },
+  {
+    "id": "mywj1m3",
+    "category": "Special Tags",
+    "description": "Round up and Spell in Upper case",
+    "tag": "fnr2upper_",
+    "example": "if 999999.7, will show as ONE MILLION",
+    "isBuilder": false
+  },
+  {
+    "id": "yrmy31z",
+    "category": "Special Tags",
+    "description": "Hard Coding Text",
+    "tag": "text_",
+    "example": "\"text_Test\" would display the word Test",
+    "isBuilder": false
+  },
+  {
+    "id": "ow2ne8i",
+    "category": "Special Tags",
+    "description": "Blank Addendum",
+    "tag": "Addendum",
+    "example": "Use the tag Addendum on Blank Addendums in the space where the client will fill out",
+    "isBuilder": false
+  },
+  {
+    "id": "4sarxlb",
+    "category": "Special Tags",
+    "description": "Math Function\r\nNote: there must be a space between all tags",
+    "tag": "math_",
+    "example": "math_( ParkingExtraPrice + SoldPrice ) - Credit",
+    "isBuilder": false
+  },
+  {
+    "id": "adqyhnd",
+    "category": "Special Tags",
+    "description": "Number of Purchasers",
+    "tag": "CountPurchaser",
+    "example": "Will Display the Number of Purchasers on the deal",
+    "isBuilder": false
+  },
+  {
+    "id": "breejfx",
+    "category": "Special Tags",
+    "description": "Number of Realtors",
+    "tag": "CountRealtor",
+    "example": "Will Display the Number of Realtors on the deal",
+    "isBuilder": false
+  },
+  {
+    "id": "w44mce4",
+    "category": "Special Tags",
+    "description": "Number of Assignees",
+    "tag": "CountAssignee",
+    "example": "Will Display the Number of Assignees on the deal",
+    "isBuilder": false
+  },
+  {
+    "id": "n2nmeqf",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Issued Date",
+    "tag": "EftPaymentDepositIssuedDate",
+    "example": "45453",
+    "isBuilder": false
+  },
+  {
+    "id": "g6s3q8u",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Amount",
+    "tag": "EftPaymentDepositAmount",
+    "example": "19245",
+    "isBuilder": false
+  },
+  {
+    "id": "s8zhs4w",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Due Date",
+    "tag": "EftPaymentDepositDueDate",
+    "example": "45443",
+    "isBuilder": false
+  },
+  {
+    "id": "kagcrcv",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Number",
+    "tag": "EftPaymentDepositNumber",
+    "example": "2",
+    "isBuilder": false
+  },
+  {
+    "id": "5yjyicw",
+    "category": "EFT Tags",
+    "description": "Eft Payment Statement Description",
+    "tag": "EftPaymentStatementDescription",
+    "example": "AzureGSL3D2",
+    "isBuilder": false
+  },
+  {
+    "id": "1cms10l",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Account Holder Name",
+    "tag": "EftPaymentDepositAccountHolderName",
+    "example": "Jane Doe",
+    "isBuilder": false
+  },
+  {
+    "id": "okw3s57",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Building Name",
+    "tag": "EftPaymentDepositBuildingName",
+    "example": "Azure Grove",
+    "isBuilder": false
+  },
+  {
+    "id": "nvh8c34",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Developer Name",
+    "tag": "EftPaymentDepositDeveloperName",
+    "example": "ML Emporio Properties",
+    "isBuilder": false
+  },
+  {
+    "id": "wk7itr6",
+    "category": "EFT Tags",
+    "description": "Eft Payment Deposit Purchaser Name",
+    "tag": "EftPaymentDepositPurchaserName",
+    "example": "Jane Doe",
+    "isBuilder": false
+  },
+  {
+    "id": "6pc1ubn",
+    "category": "EFT Tags",
+    "description": "Description",
+    "tag": "Tag",
+    "example": "Example",
+    "isBuilder": false
+  },
+  {
+    "id": "01xfdil",
+    "category": "EFT Tags",
+    "description": "Strata Lot in BC",
+    "tag": "StrataLot",
+    "example": "32",
+    "isBuilder": false
+  },
+  {
+    "id": "ndmdqa8",
+    "category": "EFT Tags",
+    "description": "Unit Number/Suite Number in BC",
+    "tag": "UnitNumber",
+    "example": "352",
+    "isBuilder": false
+  },
+  {
+    "id": "y4jnv7x",
+    "category": "EFT Tags",
+    "description": "Suite number in Ontario",
+    "tag": "Suite",
+    "example": "4520",
+    "isBuilder": false
+  },
+  {
+    "id": "1om09sa",
+    "category": "EFT Tags",
+    "description": "Level in Ontario",
+    "tag": "Level",
+    "example": "3",
+    "isBuilder": false
+  },
+  {
+    "id": "mt54cwf",
+    "category": "EFT Tags",
+    "description": "Unit in Ontario",
+    "tag": "LotUnit",
+    "example": "52",
+    "isBuilder": false
+  }
+]

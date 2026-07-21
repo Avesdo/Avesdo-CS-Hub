@@ -18,7 +18,7 @@ interface HighFrictionSourcesWidgetProps {
 }
 
 export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidgetProps) {
-  const [frictionSourceView, setFrictionSourceView] = useState<'project' | 'contact'>('project');
+  const [frictionSourceView, setFrictionSourceView] = useState<'project' | 'contact' | 'channel'>('project');
 
   return (
     <div className="grid grid-cols-1 gap-6 mt-6">
@@ -51,11 +51,25 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
             >
               Contacts
             </button>
+            <button
+              onClick={() => setFrictionSourceView('channel')}
+              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                frictionSourceView === 'channel'
+                  ? 'bg-white text-slate-800 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              Channels
+            </button>
           </div>
         </div>
         <div className="p-6 pt-0 h-[500px] w-full">
-          {(frictionSourceView === 'project' ? chartData.projectData : chartData.contactData)
-            .length === 0 ? (
+          {(frictionSourceView === 'project'
+            ? chartData.projectData
+            : frictionSourceView === 'contact'
+            ? chartData.contactData
+            : chartData.channelData
+          ).length === 0 ? (
             <EmptyState
               icon={SearchX}
               title="No High-Friction Sources"
@@ -66,7 +80,11 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
               <BarChart
                 layout="vertical"
                 data={
-                  frictionSourceView === 'project' ? chartData.projectData : chartData.contactData
+                  frictionSourceView === 'project'
+                    ? chartData.projectData
+                    : frictionSourceView === 'contact'
+                    ? chartData.contactData
+                    : chartData.channelData
                 }
                 margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
               >
