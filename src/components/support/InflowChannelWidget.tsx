@@ -11,18 +11,24 @@ import {
 } from 'recharts';
 import { MessagesSquare } from 'lucide-react';
 import EmptyState from '../EmptyState';
-import { CHART_THEME } from '../../utils/chartUtils';
+
+const CHART_THEME = {
+  blue: '#0ea5e9',
+  purple: '#8b5cf6',
+  orange: '#f59e0b',
+  grey: '#64748b',
+  green: '#10b981',
+  teal: '#14b8a6',
+};
 
 interface InflowChannelWidgetProps {
   chartData: {
-    channelData: [string, number][];
+    channelData: { name: string; value: number }[];
   };
 }
 
 export function InflowChannelWidget({ chartData }: InflowChannelWidgetProps) {
-  const data = chartData.channelData
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  const data = chartData.channelData;
 
   const colors = [
     CHART_THEME.blue,
