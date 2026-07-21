@@ -601,7 +601,7 @@ export function getChartData(
     else if (cLower === 'customer_panel') channel = 'Knowledge Base';
     else if (cLower === 'email') channel = 'Email';
     else channel = channel.charAt(0).toUpperCase() + channel.slice(1);
-    
+
     if (!channelMap.has(channel)) channelMap.set(channel, { name: channel, total: 0 });
     const c = channelMap.get(channel)!;
     c.total++;
@@ -756,6 +756,7 @@ export function getChartData(
     .filter((d) => d.volume > 0 && (d.timeSpentHours > 0 || d.avgResolutionHours > 0));
 
   return {
+    totalTickets: filteredTickets.length,
     trendData,
     channelData,
     assigneeData,

@@ -18,7 +18,9 @@ interface HighFrictionSourcesWidgetProps {
 }
 
 export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidgetProps) {
-  const [frictionSourceView, setFrictionSourceView] = useState<'project' | 'contact' | 'channel'>('project');
+  const [frictionSourceView, setFrictionSourceView] = useState<'project' | 'contact' | 'channel'>(
+    'project'
+  );
 
   return (
     <div className="grid grid-cols-1 gap-6 mt-6">
@@ -67,8 +69,8 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
           {(frictionSourceView === 'project'
             ? chartData.projectData
             : frictionSourceView === 'contact'
-            ? chartData.contactData
-            : chartData.channelData
+              ? chartData.contactData
+              : chartData.channelData
           ).length === 0 ? (
             <EmptyState
               icon={SearchX}
@@ -83,8 +85,8 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                   frictionSourceView === 'project'
                     ? chartData.projectData
                     : frictionSourceView === 'contact'
-                    ? chartData.contactData
-                    : chartData.channelData
+                      ? chartData.contactData
+                      : chartData.channelData
                 }
                 margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
               >
@@ -127,15 +129,22 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                         (acc: number, entry: any) => acc + (entry.value || 0),
                         0
                       );
+                      const barPercentage = chartData.totalTickets > 0 
+                        ? ((total / chartData.totalTickets) * 100).toFixed(1) 
+                        : '0.0';
+
                       return (
-                        <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
+                        <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[220px] transform transition-all duration-200">
                           <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm flex justify-between">
                             <span>{label}</span>
-                            <span className="ml-4 font-bold text-primary">{total}</span>
+                            <span className="ml-4 font-bold text-primary">
+                              {total} <span className="text-muted-foreground text-[11px] font-normal ml-1">({barPercentage}% of total)</span>
+                            </span>
                           </p>
                           <div className="flex flex-col gap-2">
                             {payload.map((entry: any, index: number) => {
                               if (!entry.value) return null;
+                              const rowPercentage = ((entry.value / total) * 100).toFixed(1);
                               return (
                                 <div
                                   key={index}
@@ -154,7 +163,7 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                                     </div>
                                   </div>
                                   <span className="text-[14px] font-bold text-foreground">
-                                    {entry.value}
+                                    {entry.value} <span className="text-muted-foreground text-xs font-normal ml-1">({rowPercentage}%)</span>
                                   </span>
                                 </div>
                               );
