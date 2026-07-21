@@ -14,20 +14,62 @@ import { KBArticle, Quiz, QuizAttempt } from '../types';
 
 export const academyService = {
   uploadKBArticles: async (articles: Omit<KBArticle, 'id' | 'uploadDate'>[]) => {
-    const batch = writeBatch(db);
     const kbRef = collection(db, 'kb_articles');
 
-    articles.forEach((article) => {
-      const docRef = doc(kbRef);
-      const newArticle: KBArticle = {
-        ...article,
-        id: docRef.id,
-        uploadDate: Date.now(),
-      };
-      batch.set(docRef, newArticle);
-    });
+    // Fetch existing articles to compare
+    const snapshot = await getDocs(kbRef);
+    const existingArticles = snapshot.docs.map((doc) => doc.data() as KBArticle);
 
-    await batch.commit();
+    const existingByTitle = new Map(existingArticles.map((a) => [a.title.trim().toLowerCase(), a]));
+    const incomingByTitle = new Map(articles.map((a) => [a.title.trim().toLowerCase(), a]));
+
+    const toAdd = articles.filter((a) => !existingByTitle.has(a.title.trim().toLowerCase()));
+    const toUpdate = articles
+      .filter((a) => existingByTitle.has(a.title.trim().toLowerCase()))
+      .map((a) => ({ id: existingByTitle.get(a.title.trim().toLowerCase())!.id, article: a }));
+    const toDelete = existingArticles.filter(
+      (a) => !incomingByTitle.has(a.title.trim().toLowerCase())
+    );
+
+    const CHUNK_SIZE = 450;
+    const allOps = [
+      ...toAdd.map((a) => ({ type: 'add' as const, data: a })),
+      ...toUpdate.map((u) => ({ type: 'update' as const, data: u })),
+      ...toDelete.map((d) => ({ type: 'delete' as const, data: d })),
+    ];
+
+    for (let i = 0; i < allOps.length; i += CHUNK_SIZE) {
+      const chunk = allOps.slice(i, i + CHUNK_SIZE);
+      const batch = writeBatch(db);
+
+      chunk.forEach((op) => {
+        if (op.type === 'add') {
+          const docRef = doc(kbRef);
+          const newArticle: KBArticle = {
+            ...op.data,
+            id: docRef.id,
+            uploadDate: Date.now(),
+          };
+          batch.set(docRef, newArticle);
+        } else if (op.type === 'update') {
+          const docRef = doc(db, 'kb_articles', op.data.id);
+          batch.set(
+            docRef,
+            {
+              ...op.data.article,
+              id: op.data.id,
+              uploadDate: Date.now(), // update date when modified
+            },
+            { merge: true }
+          );
+        } else if (op.type === 'delete') {
+          const docRef = doc(db, 'kb_articles', op.data.id);
+          batch.delete(docRef);
+        }
+      });
+
+      await batch.commit();
+    }
   },
 
   getKBArticles: async (): Promise<KBArticle[]> => {
