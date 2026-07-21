@@ -331,9 +331,19 @@ export function getChartData(
         });
       const entry = trendMap.get(dateKey)!;
       entry.tickets += 1;
-      if (t['Time Spent (seconds)']) {
-        entry.totalResolutionTime += Number(t['Time Spent (seconds)']) / 3600;
-        entry.resolvedTickets += 1;
+      const isResolved =
+        t['Ticket Status']?.toLowerCase() === 'closed' ||
+        t['Ticket Status']?.toLowerCase() === 'solved';
+
+      if (isResolved && t['Last Closed At']) {
+        const closed = parseDate(t['Last Closed At']);
+        if (closed && created) {
+          const resolutionTimeSec = (closed.getTime() - created.getTime()) / 1000;
+          if (resolutionTimeSec > 0) {
+            entry.totalResolutionTime += resolutionTimeSec / 3600;
+            entry.resolvedTickets += 1;
+          }
+        }
       }
     }
   });
