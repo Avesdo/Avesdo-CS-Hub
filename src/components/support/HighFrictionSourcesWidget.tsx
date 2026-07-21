@@ -144,7 +144,6 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                           <div className="flex flex-col gap-2">
                             {payload.map((entry: any, index: number) => {
                               if (!entry.value) return null;
-                              const rowPercentage = ((entry.value / total) * 100).toFixed(1);
                               return (
                                 <div
                                   key={index}
@@ -163,7 +162,7 @@ export function HighFrictionSourcesWidget({ chartData }: HighFrictionSourcesWidg
                                     </div>
                                   </div>
                                   <span className="text-[14px] font-bold text-foreground">
-                                    {entry.value} <span className="text-muted-foreground text-xs font-normal ml-1">({rowPercentage}%)</span>
+                                    {entry.value}
                                   </span>
                                 </div>
                               );
