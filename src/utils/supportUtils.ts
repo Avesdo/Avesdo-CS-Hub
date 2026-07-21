@@ -592,7 +592,16 @@ export function getChartData(
 
   const channelMap = new Map<string, number>();
   filteredTickets.forEach((t) => {
-    const channel = t['Channel'] || 'Unknown';
+    let channel = t['Channel'] || 'Unknown';
+    const cLower = channel.toLowerCase();
+    if (cLower === 'voice' || cLower === 'phone_aircall') channel = 'Phone';
+    else if (cLower === 'api') channel = 'Chat';
+    else if (cLower === 'admin_panel') channel = 'Created by Agent';
+    else if (cLower === 'support center') channel = 'Purchaser/Realtor Portal';
+    else if (cLower === 'customer_panel') channel = 'Knowledge Base';
+    else if (cLower === 'email') channel = 'Email';
+    else channel = channel.charAt(0).toUpperCase() + channel.slice(1);
+    
     channelMap.set(channel, (channelMap.get(channel) || 0) + 1);
   });
   const channelData = Array.from(channelMap.entries())
