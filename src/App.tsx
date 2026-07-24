@@ -36,6 +36,7 @@ const ServiceHub = React.lazy(() => import('./pages/ServiceHub'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
 const Academy = React.lazy(() => import('./pages/Academy'));
+const TagDatabase = React.lazy(() => import('./pages/TagDatabase'));
 
 const Login = React.lazy(() => import('./pages/Login'));
 const ClientPortal = React.lazy(() => import('./pages/ClientPortal'));
@@ -219,6 +220,16 @@ function AnimatedRoutes() {
             <PermissionRoute hasPermission={hasPermission('view_academy')}>
               <PageWrapper>
                 <Academy />
+              </PageWrapper>
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="/tag-database"
+          element={
+            <PermissionRoute hasPermission={hasPermission('view_academy')}>
+              <PageWrapper>
+                <TagDatabase />
               </PageWrapper>
             </PermissionRoute>
           }

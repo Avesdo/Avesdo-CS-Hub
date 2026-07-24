@@ -109,7 +109,7 @@ export default function Sidebar() {
                 label: 'Academy',
                 requiredPermission: 'view_academy',
                 subItems: [
-                  { to: '/academy?tab=tag-database', label: 'Tag Database' },
+                  { to: '/tag-database', label: 'Tag Database' },
                   {
                     to: '/academy?tab=knowledge-checks',
                     label: 'Knowledge Checks',
