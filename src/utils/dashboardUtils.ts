@@ -50,7 +50,7 @@ export const calculateHealthStats = (
     scoredCount = 0;
   let prevTotalScore = 0,
     prevScoredCount = 0;
-  const thirtyDaysAgo = new Date().getTime() - 30 * 86400000;
+  const ninetyDaysAgo = new Date().getTime() - 90 * 86400000;
 
   activeClients.forEach((c) => {
     if (c.healthScore !== 'N/A' && typeof c.healthScore === 'number') {
@@ -62,12 +62,12 @@ export const calculateHealthStats = (
 
       // Prev Health
       const hist = healthHistory[c.clientId] || [];
-      const olderThan30 = hist
-        .filter((x: any) => x.timeVal <= thirtyDaysAgo)
+      const olderThan90 = hist
+        .filter((x: any) => x.timeVal <= ninetyDaysAgo)
         .sort((a: any, b: any) => b.timeVal - a.timeVal);
 
-      if (olderThan30.length > 0) {
-        prevTotalScore += olderThan30[0].score;
+      if (olderThan90.length > 0) {
+        prevTotalScore += olderThan90[0].score;
         prevScoredCount++;
       } else if (hist.length > 0) {
         const sortedAsc = [...hist].sort((a: any, b: any) => a.timeVal - b.timeVal);
@@ -102,9 +102,10 @@ export const calculateUnitAndPipelineStats = (
     prevU = 0,
     p = 0,
     prevP = 0;
-  const thirtyDaysAgo = new Date().getTime() - 30 * 86400000;
-  const fortyFiveDays = new Date().getTime() + 45 * 86400000;
-  const fifteenDays = new Date().getTime() + 15 * 86400000;
+  const ninetyDaysAgo = new Date().getTime() - 90 * 86400000;
+  const fortyFiveDaysAgo = new Date().getTime() - 45 * 86400000;
+  const fortyFiveDaysFuture = new Date().getTime() + 45 * 86400000;
+  const today = new Date().getTime();
 
   filteredProjects.forEach((proj) => {
     const currentUnits = parseInt(proj.units as any) || 0;
@@ -112,31 +113,46 @@ export const calculateUnitAndPipelineStats = (
       u += currentUnits;
     }
     if (proj.projectStatus === 'Onboarding') {
-      if (proj.releaseDateVal && proj.releaseDateVal <= fortyFiveDays) p++;
+      if (proj.releaseDateVal && proj.releaseDateVal <= fortyFiveDaysFuture) p++;
     }
 
     const hist = proj.history || [];
-    const olderThan30 = hist
-      .filter((x: any) => x.timeVal <= thirtyDaysAgo)
+
+    // Units history (90 days ago)
+    const olderThan90 = hist
+      .filter((x: any) => x.timeVal <= ninetyDaysAgo)
       .sort((a: any, b: any) => b.timeVal - a.timeVal);
 
-    if (olderThan30.length > 0) {
-      const snapshot = olderThan30[0];
+    if (olderThan90.length > 0) {
+      const snapshot = olderThan90[0];
       if (snapshot.status === 'Active' || snapshot.status === 'Suspended') {
         prevU += snapshot.units || 0;
       }
+    } else {
+      if (proj.projectStatus === 'Active' || proj.projectStatus === 'Suspended') {
+        if (proj.releaseDateVal && proj.releaseDateVal <= ninetyDaysAgo) {
+          prevU += currentUnits;
+        }
+      }
+    }
+
+    // Pipeline history (45 days ago)
+    const olderThan45 = hist
+      .filter((x: any) => x.timeVal <= fortyFiveDaysAgo)
+      .sort((a: any, b: any) => b.timeVal - a.timeVal);
+
+    if (olderThan45.length > 0) {
+      const snapshot = olderThan45[0];
       if (snapshot.status === 'Onboarding') {
-        if (proj.releaseDateVal && proj.releaseDateVal <= fifteenDays) prevP++;
+        if (proj.releaseDateVal && proj.releaseDateVal <= today) prevP++;
       }
     } else {
       if (proj.projectStatus === 'Active' || proj.projectStatus === 'Suspended') {
-        if (proj.releaseDateVal && proj.releaseDateVal <= thirtyDaysAgo) {
-          prevU += currentUnits;
-        } else if (proj.releaseDateVal && proj.releaseDateVal > thirtyDaysAgo) {
-          if (proj.releaseDateVal <= fifteenDays) prevP++;
+        if (proj.releaseDateVal && proj.releaseDateVal > fortyFiveDaysAgo) {
+          if (proj.releaseDateVal <= today) prevP++;
         }
       } else if (proj.projectStatus === 'Onboarding') {
-        if (proj.releaseDateVal && proj.releaseDateVal <= fifteenDays) prevP++;
+        if (proj.releaseDateVal && proj.releaseDateVal <= today) prevP++;
       }
     }
   });

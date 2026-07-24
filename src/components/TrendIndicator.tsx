@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Tooltip as UITooltip } from './ui/Tooltip';
 
 export const TrendIndicator = ({
   current,
@@ -53,12 +54,14 @@ export const TrendIndicator = ({
         {showValue && (
           <p className={`text-3xl font-bold tracking-tight ${colorClass}`}>{displayVal}</p>
         )}
-        <span
-          className={`inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full border px-2 py-0.5 text-[11px] font-bold ${tColor} border-border bg-transparent gap-1 shadow-sm`}
-        >
-          {Icon && <Icon className="w-3 h-3" strokeWidth={3} />}{' '}
-          {isZero ? '0%' : (isUp ? '+' : '-') + pct + '%'}
-        </span>
+        <UITooltip content={`${trendWord} ${periodText}`} position="right">
+          <span
+            className={`inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full border px-2 py-0.5 text-[11px] font-bold ${tColor} border-border bg-transparent gap-1 shadow-sm cursor-help`}
+          >
+            {Icon && <Icon className="w-3 h-3" strokeWidth={3} />}{' '}
+            {isZero ? '0%' : (isUp ? '+' : '-') + pct + '%'}
+          </span>
+        </UITooltip>
       </div>
     </div>
   );

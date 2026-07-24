@@ -15,6 +15,29 @@ import {
   getHours,
 } from 'date-fns';
 
+export const getTrendPeriodText = (dateRange: string) => {
+  switch (dateRange) {
+    case '7d':
+      return 'vs previous 7 days';
+    case 'thisMonth':
+      return 'vs last month';
+    case 'lastMonth':
+      return 'vs previous month';
+    case 'thisQuarter':
+      return 'vs last quarter';
+    case 'lastQuarter':
+      return 'vs previous quarter';
+    case 'ytd':
+      return 'vs previous year';
+    case 'all':
+      return 'all time';
+    case 'custom':
+      return 'vs previous period';
+    default:
+      return 'vs last 30 days';
+  }
+};
+
 const parseDate = (dateStr?: string) => {
   if (!dateStr) return null;
   try {

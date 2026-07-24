@@ -122,7 +122,7 @@ export function getClientKpis(
     prevWarning = 0,
     prevHealthy = 0,
     prevActive = 0;
-  const thirtyDaysAgo = new Date().getTime() - 30 * 86400000;
+  const ninetyDaysAgo = new Date().getTime() - 90 * 86400000;
 
   enhancedClients.forEach((c) => {
     if (c.activeProjectsCount > 0) {
@@ -132,18 +132,18 @@ export function getClientKpis(
     let clientWasActive = false;
     for (const p of c.cProjects) {
       const hist = p.history || [];
-      const olderThan30 = hist
-        .filter((x: any) => x.timeVal <= thirtyDaysAgo)
+      const olderThan90 = hist
+        .filter((x: any) => x.timeVal <= ninetyDaysAgo)
         .sort((a: any, b: any) => b.timeVal - a.timeVal);
-      if (olderThan30.length > 0) {
-        const snap = olderThan30[0];
+      if (olderThan90.length > 0) {
+        const snap = olderThan90[0];
         if (snap.status === 'Active' || snap.status === 'Suspended') {
           clientWasActive = true;
           break;
         }
       } else {
         if (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') {
-          if (p.releaseDateVal && p.releaseDateVal <= thirtyDaysAgo) {
+          if (p.releaseDateVal && p.releaseDateVal <= ninetyDaysAgo) {
             clientWasActive = true;
             break;
           }
@@ -158,13 +158,13 @@ export function getClientKpis(
       else atRisk++;
 
       const hist = healthHistory[c.clientId] || [];
-      const olderThan30 = hist
-        .filter((x: any) => x.timeVal <= thirtyDaysAgo)
+      const olderThan90 = hist
+        .filter((x: any) => x.timeVal <= ninetyDaysAgo)
         .sort((a: any, b: any) => b.timeVal - a.timeVal);
       let pastScore = c.healthScore;
 
-      if (olderThan30.length > 0) {
-        pastScore = olderThan30[0].score;
+      if (olderThan90.length > 0) {
+        pastScore = olderThan90[0].score;
       } else if (hist.length > 0) {
         const earliest = [...hist].sort((a: any, b: any) => a.timeVal - b.timeVal);
         pastScore = earliest[0].score;

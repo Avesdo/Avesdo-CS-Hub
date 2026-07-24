@@ -82,6 +82,7 @@ export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({
               current={avgHealth}
               previous={prevHealth}
               colorClass={getHealthColorClass(avgHealth)}
+              periodText="vs last quarter"
             />
           ) : (
             <div className="mt-auto pt-2 relative z-10">
@@ -119,7 +120,7 @@ export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({
             </div>
             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
-          <TrendIndicator current={totalUnits} previous={prevUnits} />
+          <TrendIndicator current={totalUnits} previous={prevUnits} periodText="vs last quarter" />
         </motion.div>
 
         <motion.div
@@ -146,7 +147,12 @@ export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({
             </div>
             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
-          <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
+          <TrendIndicator
+            current={pipelineCount}
+            previous={prevPipelineCount}
+            neutral={true}
+            periodText="vs last 45 days"
+          />
         </motion.div>
 
         <motion.div
@@ -173,7 +179,7 @@ export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({
               </div>
               <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
                 Service Revenue
-                <UITooltip content="Revenue won in last 90 days">
+                <UITooltip content="Revenue won in last quarter">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground cursor-help">
                     <AlertCircle className="w-3.5 h-3.5" />
                   </div>
@@ -182,7 +188,12 @@ export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({
             </div>
             <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
           </div>
-          <TrendIndicator current={qRev} previous={prevQRev} prefix="$" periodText="last quarter" />
+          <TrendIndicator
+            current={qRev}
+            previous={prevQRev}
+            prefix="$"
+            periodText="vs last quarter"
+          />
         </motion.div>
       </motion.div>
     </div>

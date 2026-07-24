@@ -651,7 +651,12 @@ export default function ClientHealth() {
                 </div>
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <TrendIndicator current={kpis.atRisk} previous={kpis.prevAtRisk} inverted={true} />
+              <TrendIndicator
+                current={kpis.atRisk}
+                previous={kpis.prevAtRisk}
+                inverted={true}
+                periodText="vs last quarter"
+              />
             </motion.div>
 
             <motion.div
@@ -679,7 +684,12 @@ export default function ClientHealth() {
                 </div>
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <TrendIndicator current={kpis.warning} previous={kpis.prevWarning} inverted={true} />
+              <TrendIndicator
+                current={kpis.warning}
+                previous={kpis.prevWarning}
+                inverted={true}
+                periodText="vs last quarter"
+              />
             </motion.div>
 
             <motion.div
@@ -707,7 +717,11 @@ export default function ClientHealth() {
                 </div>
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <TrendIndicator current={kpis.healthy} previous={kpis.prevHealthy} />
+              <TrendIndicator
+                current={kpis.healthy}
+                previous={kpis.prevHealthy}
+                periodText="vs last quarter"
+              />
             </motion.div>
 
             <motion.div
@@ -733,7 +747,11 @@ export default function ClientHealth() {
                 </div>
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
               </div>
-              <TrendIndicator current={kpis.active} previous={kpis.prevActive} />
+              <TrendIndicator
+                current={kpis.active}
+                previous={kpis.prevActive}
+                periodText="vs last quarter"
+              />
             </motion.div>
           </div>
         </div>

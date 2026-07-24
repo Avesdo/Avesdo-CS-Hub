@@ -219,8 +219,8 @@ export default function Sidebar() {
                 )}
               </NavLink>
             )}
-            <TeamScheduleWidget />
-            <NotificationBell />
+            <TeamScheduleWidget side="right" />
+            <NotificationBell side="right" />
           </div>
 
           <div className="flex items-center gap-3 p-2 w-full text-left rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group">

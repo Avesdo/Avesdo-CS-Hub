@@ -34,9 +34,10 @@ export function calculateProjectKPIs(mappedProjects: Project[]) {
   let units = 0,
     prevU = 0;
 
-  const thirtyDaysAgo = new Date().getTime() - 30 * 86400000;
-  const fortyFiveDays = new Date().getTime() + 45 * 86400000;
-  const fifteenDays = new Date().getTime() + 15 * 86400000;
+  const ninetyDaysAgo = new Date().getTime() - 90 * 86400000;
+  const fortyFiveDaysAgo = new Date().getTime() - 45 * 86400000;
+  const fortyFiveDaysFuture = new Date().getTime() + 45 * 86400000;
+  const today = new Date().getTime();
 
   mappedProjects.forEach((p) => {
     const currentUnits = parseInt(p.units as any) || 0;
@@ -45,7 +46,7 @@ export function calculateProjectKPIs(mappedProjects: Project[]) {
     // Current State
     if (p.projectStatus === 'Onboarding') {
       ob++;
-      if (p.releaseDateVal && p.releaseDateVal <= fortyFiveDays) pipe++;
+      if (p.releaseDateVal && p.releaseDateVal <= fortyFiveDaysFuture) pipe++;
     }
     if (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') {
       units += currentUnits;
@@ -54,32 +55,50 @@ export function calculateProjectKPIs(mappedProjects: Project[]) {
 
     // Previous State
     const hist = p.history || [];
-    const olderThan30 = hist
-      .filter((x: any) => x.timeVal <= thirtyDaysAgo)
+
+    // Live units, risk, onboarding history (90 days ago)
+    const olderThan90 = hist
+      .filter((x: any) => x.timeVal <= ninetyDaysAgo)
       .sort((a: any, b: any) => b.timeVal - a.timeVal);
 
-    if (olderThan30.length > 0) {
-      const snapshot = olderThan30[0];
+    if (olderThan90.length > 0) {
+      const snapshot = olderThan90[0];
       if (snapshot.status === 'Onboarding') {
         prevOb++;
-        if (p.releaseDateVal && p.releaseDateVal <= fifteenDays) prevPipe++;
       }
       if (snapshot.status === 'Active' || snapshot.status === 'Suspended') {
         prevU += snapshot.units || 0;
         if (snapshot.healthScore < 50) prevR++;
       }
     } else {
-      // Fallback: If no history > 30 days, deduce past state based on releaseDateVal
       if (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') {
-        if (p.releaseDateVal && p.releaseDateVal <= thirtyDaysAgo) {
+        if (p.releaseDateVal && p.releaseDateVal <= ninetyDaysAgo) {
           prevU += currentUnits;
-        } else if (p.releaseDateVal && p.releaseDateVal > thirtyDaysAgo) {
+        } else if (p.releaseDateVal && p.releaseDateVal > ninetyDaysAgo) {
           prevOb++;
-          if (p.releaseDateVal <= fifteenDays) prevPipe++;
         }
       } else if (p.projectStatus === 'Onboarding') {
         prevOb++;
-        if (p.releaseDateVal && p.releaseDateVal <= fifteenDays) prevPipe++;
+      }
+    }
+
+    // Pipeline history (45 days ago)
+    const olderThan45 = hist
+      .filter((x: any) => x.timeVal <= fortyFiveDaysAgo)
+      .sort((a: any, b: any) => b.timeVal - a.timeVal);
+
+    if (olderThan45.length > 0) {
+      const snapshot = olderThan45[0];
+      if (snapshot.status === 'Onboarding') {
+        if (p.releaseDateVal && p.releaseDateVal <= today) prevPipe++;
+      }
+    } else {
+      if (p.projectStatus === 'Active' || p.projectStatus === 'Suspended') {
+        if (p.releaseDateVal && p.releaseDateVal > fortyFiveDaysAgo) {
+          if (p.releaseDateVal <= today) prevPipe++;
+        }
+      } else if (p.projectStatus === 'Onboarding') {
+        if (p.releaseDateVal && p.releaseDateVal <= today) prevPipe++;
       }
     }
   });

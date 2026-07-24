@@ -298,7 +298,7 @@ export default function SupportDashboard() {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-20 custom-thin-scroll">
-        <SupportKPIs kpis={kpis} />
+        <SupportKPIs kpis={kpis} dateRange={dateRange} />
         <motion.div
           className="px-4 md:px-6 flex flex-col gap-5 pb-6"
           variants={containerVariants}

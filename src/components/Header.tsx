@@ -32,7 +32,13 @@ import {
   CheckCheck,
 } from 'lucide-react';
 
-export function NotificationBell() {
+export function NotificationBell({
+  side = 'bottom',
+  sideOffset = 16,
+}: {
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  sideOffset?: number;
+} = {}) {
   const { openDrawer } = useUIStore();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -71,9 +77,9 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent
         className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
-        side="right"
+        side={side}
         align="end"
-        sideOffset={16}
+        sideOffset={sideOffset}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
           <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
@@ -101,7 +107,7 @@ export function NotificationBell() {
           </div>
         </div>
 
-        <div className="max-h-[350px] overflow-y-auto custom-thin-scroll">
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto custom-thin-scroll">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
               <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
@@ -179,7 +185,13 @@ export function NotificationBell() {
   );
 }
 
-export function TeamScheduleWidget() {
+export function TeamScheduleWidget({
+  side = 'bottom',
+  sideOffset = 16,
+}: {
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  sideOffset?: number;
+} = {}) {
   const { openModal } = useUIStore();
   const [isOpen, setIsOpen] = useState(false);
   const { scheduleData, loading, getTodaySchedule } = useScheduleData();
@@ -481,9 +493,9 @@ export function TeamScheduleWidget() {
       </PopoverTrigger>
       <PopoverContent
         className="w-[280px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
-        side="right"
+        side={side}
         align="end"
-        sideOffset={16}
+        sideOffset={sideOffset}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-white">
           <div className="flex items-center gap-2 text-slate-800">
@@ -492,7 +504,9 @@ export function TeamScheduleWidget() {
           </div>
         </div>
 
-        <div className="max-h-[350px] overflow-y-auto custom-thin-scroll">{renderContent()}</div>
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto custom-thin-scroll">
+          {renderContent()}
+        </div>
 
         <div className="p-1 border-t border-slate-200/60 bg-slate-50/50">
           <Button

@@ -2,12 +2,15 @@ import React from 'react';
 import { Clock, CheckCircle2, Zap, Inbox, AlertCircle, ArrowRight } from 'lucide-react';
 import { Tooltip as UITooltip } from '../ui/Tooltip';
 import { TrendIndicator } from '../TrendIndicator';
+import { getTrendPeriodText } from '../../utils/supportUtils';
 
 interface SupportKPIsProps {
   kpis: any;
+  dateRange: string;
 }
 
-export function SupportKPIs({ kpis }: SupportKPIsProps) {
+export function SupportKPIs({ kpis, dateRange }: SupportKPIsProps) {
+  const periodText = getTrendPeriodText(dateRange);
   return (
     <div className="shrink-0 mb-4 px-4 md:px-6 pt-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -39,6 +42,7 @@ export function SupportKPIs({ kpis }: SupportKPIsProps) {
               kpis.totalVolume.value - kpis.totalVolume.value * (kpis.totalVolume.trend / 100)
             }
             neutral={true}
+            periodText={periodText}
           />
         </div>
 
@@ -78,6 +82,7 @@ export function SupportKPIs({ kpis }: SupportKPIsProps) {
               previous={Number(kpis.firstResponse.value) / (1 - kpis.firstResponse.trend / 100)}
               isPositiveBetter={false}
               showValue={false}
+              periodText={periodText}
             />
           </div>
         </div>
@@ -114,6 +119,7 @@ export function SupportKPIs({ kpis }: SupportKPIsProps) {
               previous={Number(kpis.resolution.value) / (1 - kpis.resolution.trend / 100)}
               isPositiveBetter={false}
               showValue={false}
+              periodText={periodText}
             />
           </div>
         </div>

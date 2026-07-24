@@ -600,6 +600,7 @@ export default function ProjectTracker() {
               current={onboardingCount}
               previous={prevOnboardingCount}
               neutral={true}
+              periodText="vs last quarter"
             />
           </motion.div>
 
@@ -629,7 +630,12 @@ export default function ProjectTracker() {
               </div>
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
-            <TrendIndicator current={pipelineCount} previous={prevPipelineCount} neutral={true} />
+            <TrendIndicator
+              current={pipelineCount}
+              previous={prevPipelineCount}
+              neutral={true}
+              periodText="vs last 45 days"
+            />
           </motion.div>
 
           <motion.div
@@ -659,7 +665,12 @@ export default function ProjectTracker() {
               </div>
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
-            <TrendIndicator current={riskCount} previous={prevRiskCount} inverted={true} />
+            <TrendIndicator
+              current={riskCount}
+              previous={prevRiskCount}
+              inverted={true}
+              periodText="vs last quarter"
+            />
           </motion.div>
 
           <motion.div
@@ -689,7 +700,11 @@ export default function ProjectTracker() {
               </div>
               <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
             </div>
-            <TrendIndicator current={liveUnits} previous={prevLiveUnits} />
+            <TrendIndicator
+              current={liveUnits}
+              previous={prevLiveUnits}
+              periodText="vs last quarter"
+            />
           </motion.div>
         </div>
       </div>
