@@ -132,6 +132,103 @@ function SortableTagRow({
   );
 }
 
+function SortableHelpfulImportRow({
+  item,
+  canEditImports,
+  canDeleteImports,
+  setEditingImport,
+  setIsImportModalOpen,
+  handleDeleteImport,
+}: any) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    position: isDragging ? ('relative' as const) : ('static' as const),
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className={`hover:bg-slate-50 transition-colors group ${isDragging ? 'bg-slate-50 shadow-md' : ''}`}
+    >
+      <td className="py-2 pr-4 pl-2 align-top">
+        <div className="flex items-start gap-1">
+          {canEditImports && (
+            <button
+              {...attributes}
+              {...listeners}
+              className="p-0.5 cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 rounded flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <GripVertical className="w-4 h-4" />
+            </button>
+          )}
+          <div className="flex-1 text-slate-800 font-medium leading-relaxed px-1">
+            {item.action}
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-2 align-top">
+        {item.project ? (
+          <span className="text-slate-700 font-medium">{item.project}</span>
+        ) : (
+          <span className="text-slate-400 italic text-sm">General</span>
+        )}
+      </td>
+      <td className="px-4 py-2 align-top flex justify-between items-start gap-4">
+        <div className="text-slate-700 w-full overflow-hidden">
+          {item.solution ? (
+            item.solution.startsWith('http') ? (
+              <a
+                href={item.solution}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-primary hover:underline group break-all"
+              >
+                <span className="group-hover:underline">{item.solution}</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
+              </a>
+            ) : (
+              <span className="whitespace-pre-wrap leading-relaxed">{item.solution}</span>
+            )
+          ) : (
+            <span className="text-slate-400 italic">No solution recorded</span>
+          )}
+        </div>
+
+        {(canEditImports || canDeleteImports) && (
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+            {canEditImports && (
+              <button
+                onClick={() => {
+                  setEditingImport(item);
+                  setIsImportModalOpen(true);
+                }}
+                className="p-1 text-slate-400 hover:text-primary rounded hover:bg-slate-100"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+            )}
+            {canDeleteImports && (
+              <button
+                onClick={() => handleDeleteImport(item.id)}
+                className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
+      </td>
+    </tr>
+  );
+}
+
 const participantPrefixes: Record<string, { label: string; value: string }[]> = {
   Purchasers: [
     {
@@ -264,6 +361,7 @@ export function TagDictionaryTab() {
 
   const tags = useAppStore((state) => state.tags || []);
   const helpfulImports = useAppStore((state) => state.helpfulImports || []);
+  const sortedHelpfulImports = [...helpfulImports].sort((a, b) => (a.order || 0) - (b.order || 0));
   const settings = useAppStore((state) => state.settings);
   const { hasPermission } = usePermissions();
 
@@ -441,34 +539,71 @@ export function TagDictionaryTab() {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const sortedTags = [...tags].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const isTag = tags.some((t) => t.id === active.id);
+    if (isTag) {
+      const sortedTags = [...tags].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    const activeSortedIndex = sortedTags.findIndex((t) => t.id === active.id);
-    const overSortedIndex = sortedTags.findIndex((t) => t.id === over.id);
+      const activeSortedIndex = sortedTags.findIndex((t) => t.id === active.id);
+      const overSortedIndex = sortedTags.findIndex((t) => t.id === over.id);
 
-    if (activeSortedIndex !== -1 && overSortedIndex !== -1) {
-      const newSortedTags = arrayMove(sortedTags, activeSortedIndex, overSortedIndex).map(
-        (t, index) => ({
-          ...t,
-          order: index,
-        })
-      );
+      if (activeSortedIndex !== -1 && overSortedIndex !== -1) {
+        const newSortedTags = arrayMove(sortedTags, activeSortedIndex, overSortedIndex).map(
+          (t, index) => ({
+            ...t,
+            order: index,
+          })
+        );
 
-      // Eagerly update Zustand store to prevent visual snap-back
-      useAppStore.setState({ tags: newSortedTags });
+        // Eagerly update Zustand store to prevent visual snap-back
+        useAppStore.setState({ tags: newSortedTags });
 
-      const batch = writeBatch(db);
-      newSortedTags.forEach((t) => {
-        if (sortedTags.find((oldT) => oldT.id === t.id)?.order !== t.order) {
-          const docRef = doc(db, 'academy_tags', t.id);
-          batch.update(docRef, { order: t.order });
+        const batch = writeBatch(db);
+        newSortedTags.forEach((t) => {
+          if (sortedTags.find((oldT) => oldT.id === t.id)?.order !== t.order) {
+            const docRef = doc(db, 'academy_tags', t.id);
+            batch.update(docRef, { order: t.order });
+          }
+        });
+
+        try {
+          await batch.commit();
+        } catch (e: any) {
+          toast.error('Failed to reorder tags: ' + e.message);
         }
-      });
+      }
+      return;
+    }
 
-      try {
-        await batch.commit();
-      } catch (e: any) {
-        toast.error('Failed to reorder tags: ' + e.message);
+    const isImport = helpfulImports.some((i) => i.id === active.id);
+    if (isImport) {
+      const sortedImports = [...helpfulImports].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+      const activeSortedIndex = sortedImports.findIndex((t) => t.id === active.id);
+      const overSortedIndex = sortedImports.findIndex((t) => t.id === over.id);
+
+      if (activeSortedIndex !== -1 && overSortedIndex !== -1) {
+        const newSortedImports = arrayMove(sortedImports, activeSortedIndex, overSortedIndex).map(
+          (t, index) => ({
+            ...t,
+            order: index,
+          })
+        );
+
+        useAppStore.setState({ helpfulImports: newSortedImports });
+
+        const batch = writeBatch(db);
+        newSortedImports.forEach((t) => {
+          if (sortedImports.find((oldT) => oldT.id === t.id)?.order !== t.order) {
+            const docRef = doc(db, 'academy_helpful_imports', t.id);
+            batch.update(docRef, { order: t.order });
+          }
+        });
+
+        try {
+          await batch.commit();
+        } catch (e: any) {
+          toast.error('Failed to reorder helpful imports: ' + e.message);
+        }
       }
     }
   };
@@ -680,7 +815,9 @@ export function TagDictionaryTab() {
                               : isFutureDates
                                 ? allParticipants
                                 : null;
-                          const currentPrefix = prefixOptions ? activePrefixes[sub] : '';
+                          const currentPrefix = prefixOptions
+                            ? (activePrefixes[sub] ?? (isFutureDates ? 'c1' : ''))
+                            : '';
                           const showToggles = prefixOptions && prefixOptions.length > 1;
 
                           const getReplacementConfig = (subCategory: string) => {
@@ -765,11 +902,11 @@ export function TagDictionaryTab() {
                                       </span>
                                       <div className="w-[300px]">
                                         <Select
-                                          value={currentPrefix || ''}
+                                          value={currentPrefix || 'c1'}
                                           onChange={(val) =>
                                             setActivePrefixes((prev) => ({ ...prev, [sub]: val }))
                                           }
-                                          options={[{ label: 'None', value: '' }, ...prefixOptions]}
+                                          options={prefixOptions}
                                           dropdownWidth="w-[300px]"
                                           menuClassName="z-[100]"
                                         />
@@ -904,7 +1041,9 @@ export function TagDictionaryTab() {
                         <table className="w-full text-left text-sm text-slate-600 table-fixed">
                           <thead className="bg-slate-50 border-b border-slate-100">
                             <tr>
-                              <th className="px-4 py-2 font-semibold text-slate-700 w-[40%]">
+                              <th
+                                className={`py-2 pr-4 font-semibold text-slate-700 w-[40%] ${canEditImports ? 'pl-8' : 'pl-4'}`}
+                              >
                                 Action
                               </th>
                               <th className="px-4 py-2 font-semibold text-slate-700 w-[20%]">
@@ -916,76 +1055,22 @@ export function TagDictionaryTab() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-50">
-                            {helpfulImports.map((item) => (
-                              <tr
-                                key={item.id}
-                                className="hover:bg-slate-50 transition-colors group"
-                              >
-                                <td className="px-4 py-3 align-top text-slate-800 font-medium pr-4 leading-relaxed">
-                                  {item.action}
-                                </td>
-                                <td className="px-4 py-3 align-top">
-                                  {item.project ? (
-                                    <span className="text-slate-700 font-medium">
-                                      {item.project}
-                                    </span>
-                                  ) : (
-                                    <span className="text-slate-400 italic text-sm">General</span>
-                                  )}
-                                </td>
-                                <td className="px-4 py-3 align-top flex justify-between items-start gap-4">
-                                  <div className="text-slate-700 w-full overflow-hidden">
-                                    {item.solution ? (
-                                      item.solution.startsWith('http') ? (
-                                        <a
-                                          href={item.solution}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-1 text-primary hover:underline group break-all"
-                                        >
-                                          <span className="group-hover:underline">
-                                            {item.solution}
-                                          </span>
-                                          <ExternalLink className="w-3 h-3 shrink-0" />
-                                        </a>
-                                      ) : (
-                                        <span className="whitespace-pre-wrap leading-relaxed">
-                                          {item.solution}
-                                        </span>
-                                      )
-                                    ) : (
-                                      <span className="text-slate-400 italic">
-                                        No solution recorded
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  {(canEditImports || canDeleteImports) && (
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1">
-                                      {canEditImports && (
-                                        <button
-                                          onClick={() => {
-                                            setEditingImport(item);
-                                            setIsImportModalOpen(true);
-                                          }}
-                                          className="p-1 text-slate-400 hover:text-primary rounded hover:bg-slate-100"
-                                        >
-                                          <Edit2 className="w-4 h-4" />
-                                        </button>
-                                      )}
-                                      {canDeleteImports && (
-                                        <button
-                                          onClick={() => handleDeleteImport(item.id)}
-                                          className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100"
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </button>
-                                      )}
-                                    </div>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
+                            <SortableContext
+                              items={sortedHelpfulImports.map((i) => i.id)}
+                              strategy={verticalListSortingStrategy}
+                            >
+                              {sortedHelpfulImports.map((item) => (
+                                <SortableHelpfulImportRow
+                                  key={item.id}
+                                  item={item}
+                                  canEditImports={canEditImports}
+                                  canDeleteImports={canDeleteImports}
+                                  setEditingImport={setEditingImport}
+                                  setIsImportModalOpen={setIsImportModalOpen}
+                                  handleDeleteImport={handleDeleteImport}
+                                />
+                              ))}
+                            </SortableContext>
                           </tbody>
                         </table>
                       </div>

@@ -274,4 +274,5 @@ export interface HelpfulImportItem {
   action: string;
   project: string;
   solution: string;
+  order?: number;
 }
