@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -12,6 +12,8 @@ import {
   LifeBuoy,
   X,
   GraduationCap,
+  Tags,
+  ChevronDown,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -28,6 +30,15 @@ export default function Sidebar() {
   const activeQuizzes = useAcademyStore((state) => state.activeQuizzes);
   const isAcademyAdmin = hasPermission('manage_academy');
   const quizAttempts = useAcademyStore((state) => state.quizAttempts);
+
+  const location = useLocation();
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
+    academy: location.pathname.includes('/academy')
+  });
+
+  const toggleMenu = (id: string) => {
+    setExpandedMenus(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const hasActiveQuizBadge = activeQuizzes.some((q) => {
     if (isAcademyAdmin && q.status === 'draft') return true;
@@ -93,27 +104,68 @@ export default function Sidebar() {
               { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Services' },
               { to: '/support', icon: <LifeBuoy className="w-4 h-4" />, label: 'Support' },
               {
-                to: '/academy',
+                id: 'academy',
                 icon: <GraduationCap className="w-4 h-4" />,
                 label: 'Academy',
                 requiredPermission: 'view_academy',
+                subItems: [
+                  { to: '/academy?tab=tag-database', label: 'Tag Database' },
+                  { to: '/academy?tab=knowledge-checks', label: 'Knowledge Checks', badge: hasActiveQuizBadge }
+                ]
               },
             ].map((link) => {
               if (link.requiredPermission && !hasPermission(link.requiredPermission)) return null;
 
+              if (link.subItems) {
+                const isExpanded = expandedMenus[link.id];
+                const isChildActive = link.subItems.some(sub => `${location.pathname}${location.search}` === sub.to || (location.pathname === '/academy' && location.search === '' && sub.to.includes('tag-database')));
+
+                return (
+                  <li key={link.id} className="flex flex-col gap-1">
+                    <button
+                      onClick={() => toggleMenu(link.id)}
+                      className={`flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 ${isChildActive || isExpanded ? 'text-slate-900 bg-slate-50' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {link.icon}
+                        <span>{link.label}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {/* Collapsible content */}
+                    {isExpanded && (
+                      <ul className="pl-9 pr-2 space-y-1 pb-2 pt-1 animate-in slide-in-from-top-1 duration-200">
+                        {link.subItems.map(sub => {
+                          const isStrictActive = `${location.pathname}${location.search}` === sub.to || (location.pathname === '/academy' && location.search === '' && sub.to.includes('tag-database'));
+                          return (
+                            <li key={sub.to}>
+                              <NavLink
+                                to={sub.to}
+                                className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all w-full ${isStrictActive ? 'text-primary bg-primary/5 shadow-sm ring-1 ring-primary/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+                              >
+                                <span className="truncate">{sub.label}</span>
+                                {sub.badge && <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse ml-auto shrink-0" />}
+                              </NavLink>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              }
+
               return (
                 <li key={link.to}>
                   <NavLink
-                    to={link.to}
+                    to={link.to!}
                     className={({ isActive }) =>
                       `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
                     }
                   >
                     {link.icon}
                     <span>{link.label}</span>
-                    {link.to === '/academy' && hasActiveQuizBadge && (
-                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-sm ml-auto" />
-                    )}
                   </NavLink>
                 </li>
               );

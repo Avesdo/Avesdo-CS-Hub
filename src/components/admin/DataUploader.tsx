@@ -750,6 +750,9 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
             const d = monthData.dateObj;
             const historyEntry = {
               score: monthData.score,
+              promoters: monthData.promoters,
+              passives: monthData.passives,
+              detractors: monthData.detractors,
               submittedAt: d.toISOString(),
             };
 
@@ -1138,7 +1141,21 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
 
               <div className="relative z-20 pointer-events-auto">
                 <Tooltip
-                  content="Filenames must contain 'satisfaction' (or 'customer'), 'sessions', 'views', 'nps', 'happyfox' (or 'tabular_export'), or 'knowledge_base' (or 'kb') to be auto-mapped."
+                  content={
+                    <div className="flex flex-col gap-2 p-1 text-left min-w-[280px]">
+                      <p className="font-semibold text-slate-800 border-b border-slate-200 pb-1.5">
+                        Filename Mapping & Recommended Schedule
+                      </p>
+                      <ul className="list-disc pl-4 space-y-1.5 text-[12px] text-slate-600">
+                        <li><strong>Support Tickets</strong> ('happyfox') - <span className="text-slate-900 font-medium">Weekly</span></li>
+                        <li><strong>Support CSAT</strong> ('satisfaction') - <span className="text-slate-900 font-medium">Monthly</span></li>
+                        <li><strong>Sessions</strong> ('sessions') - <span className="text-slate-900 font-medium">Monthly</span></li>
+                        <li><strong>Page Views</strong> ('views') - <span className="text-slate-900 font-medium">Monthly</span></li>
+                        <li><strong>Platform NPS</strong> ('nps') - <span className="text-slate-900 font-medium">Monthly</span></li>
+                        <li><strong>Knowledge Base</strong> ('kb') - <span className="text-slate-900 font-medium">Ad-hoc</span></li>
+                      </ul>
+                    </div>
+                  }
                   position="bottom"
                 >
                   <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 bg-white hover:bg-slate-50 transition-colors px-3 py-1.5 rounded-full border border-slate-200 shadow-sm cursor-help">

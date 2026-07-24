@@ -1,0 +1,1470 @@
+{
+  "prefixes": {
+    "Purchasers": [
+      {
+        "label": "Purchaser 1",
+        "value": "c1"
+      },
+      {
+        "label": "Purchaser 2",
+        "value": "c2"
+      },
+      {
+        "label": "Purchaser 3",
+        "value": "c3"
+      },
+      {
+        "label": "Purchaser 4",
+        "value": "c4"
+      },
+      {
+        "label": "Purchaser 5",
+        "value": "c5"
+      },
+      {
+        "label": "Purchaser 6",
+        "value": "c6"
+      }
+    ],
+    "Purchaser's Witnesses": [
+      {
+        "label": "Witness 1",
+        "value": "w1"
+      },
+      {
+        "label": "Witness 2",
+        "value": "w2"
+      },
+      {
+        "label": "Witness 3",
+        "value": "w3"
+      },
+      {
+        "label": "Witness 4",
+        "value": "w4"
+      },
+      {
+        "label": "Witness 5",
+        "value": "w5"
+      },
+      {
+        "label": "Witness 6",
+        "value": "w6"
+      }
+    ],
+    "Realtors": [
+      {
+        "label": "Realtor 1",
+        "value": "r1"
+      },
+      {
+        "label": "Realtor 2",
+        "value": "r2"
+      },
+      {
+        "label": "Realtor 3",
+        "value": "r3"
+      }
+    ],
+    "Sales Rep": [
+      {
+        "label": "Sales Rep 1",
+        "value": "s1"
+      }
+    ],
+    "Developers": [
+      {
+        "label": "Developer 1",
+        "value": "d1"
+      },
+      {
+        "label": "Developer 1",
+        "value": "d2"
+      },
+      {
+        "label": "Developer 1",
+        "value": "d3"
+      }
+    ],
+    "Assignors": [
+      {
+        "label": "Assignor 1 (from Form Selection)",
+        "value": "FromAssignor1"
+      },
+      {
+        "label": "Assignor 1 (from Form Selection)",
+        "value": "FromAssignor2"
+      },
+      {
+        "label": "Assignor 1 (from Form Selection)",
+        "value": "FromAssignor3"
+      }
+    ],
+    "Assignees": [
+      {
+        "label": "Assignee 1 (from Form Selection)",
+        "value": "FromAssignee1"
+      },
+      {
+        "label": "Assignee 2 (from Form Selection)",
+        "value": "FromAssignee2"
+      },
+      {
+        "label": "Assignee 3 (from Form Selection)",
+        "value": "FromAssignee3"
+      },
+      {
+        "label": "Assignee 1 (from Deal Participants)",
+        "value": "v1"
+      },
+      {
+        "label": "Assignee 2 (from Deal Participants)",
+        "value": "v2"
+      },
+      {
+        "label": "Assignee 3 (from Deal Participants)",
+        "value": "v3"
+      }
+    ],
+    "Managing Broker": [
+      {
+        "label": "Managing Broker",
+        "value": "ps-managing broker"
+      }
+    ],
+    "Guarantors": [
+      {
+        "label": "Guarantor 1",
+        "value": "ps-guarantor"
+      },
+      {
+        "label": "Guarantor 2",
+        "value": "ps-guarantor 2"
+      }
+    ],
+    "Transferor": [
+      {
+        "label": "Transferor",
+        "value": "ps-transferor"
+      }
+    ]
+  },
+  "tags": [
+    {
+      "id": "tag-1784904226450-5000",
+      "tag": "ContractName",
+      "description": "Purchaser's Full Name Or Corporation Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5001",
+      "tag": "TitleMr",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5002",
+      "tag": "TitleMiss",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5003",
+      "tag": "TitleMs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5004",
+      "tag": "TitleMrs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5005",
+      "tag": "Title",
+      "description": "Text form of title",
+      "example": "Mr",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5006",
+      "tag": "FirstName",
+      "description": "First Name",
+      "example": "Jim",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5007",
+      "tag": "MiddleName",
+      "description": "Middle Name",
+      "example": "Mario",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5008",
+      "tag": "LastName",
+      "description": "Last Name",
+      "example": "Halpert",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5009",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Jim's Signature",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5010",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Jim's Inital",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5011",
+      "tag": "UnitNumber",
+      "description": "Unit Number",
+      "example": "352",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5012",
+      "tag": "Street",
+      "description": "Street Address",
+      "example": "1367 West Broadway",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5013",
+      "tag": "City",
+      "description": "City",
+      "example": "Vancouver",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5014",
+      "tag": "Province",
+      "description": "Province",
+      "example": "BC",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5015",
+      "tag": "FullProvince",
+      "description": "Province in Full",
+      "example": "British Columbia",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5016",
+      "tag": "Country",
+      "description": "Country",
+      "example": "Canada",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5017",
+      "tag": "PostalCode",
+      "description": "Postal Code",
+      "example": "V8H 5J6",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5018",
+      "tag": "Address",
+      "description": "Full Address",
+      "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5019",
+      "tag": "AddressShort",
+      "description": "Basic Address",
+      "example": "35 - 1367 West Broadway",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5020",
+      "tag": "Phone",
+      "description": "Home Phone",
+      "example": "(123) 4567980",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5021",
+      "tag": "PhoneExt",
+      "description": "Extension",
+      "example": "ext.123",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5022",
+      "tag": "BusinessPhone",
+      "description": "Company Phone Number",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5023",
+      "tag": "BusinessPhoneExt",
+      "description": "Company Extension",
+      "example": "ext.456",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5024",
+      "tag": "Email",
+      "description": "Email Address",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5025",
+      "tag": "Birthday",
+      "description": "Date of Birth",
+      "example": "Aug 20, 1993",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5026",
+      "tag": "Business",
+      "description": "the person's occupation",
+      "example": "Manager",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5027",
+      "tag": "Sin",
+      "description": "SIN Number",
+      "example": "123 456 789",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5028",
+      "tag": "IsCanadian",
+      "description": "Checkbox mark for the person is Canadian",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5029",
+      "tag": "IsCanadianNot",
+      "description": "Checkbox mark for the person is not Canadian",
+      "example": "X",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5030",
+      "tag": "Citizenship",
+      "description": "\"Canadian Citizen\" &amp; \"Permanent Resident\" is \"Canada\", Others shown the value of citizenship/residency.",
+      "example": "Canada",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5031",
+      "tag": "IdType",
+      "description": "First Id type",
+      "example": "Drivers License",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5032",
+      "tag": "IdNumber",
+      "description": "the First Id Number",
+      "example": "6456436",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5033",
+      "tag": "IdExpire",
+      "description": "First Id Expiry",
+      "example": "January 08, 2021",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5034",
+      "tag": "IdType2",
+      "description": "Second Id type",
+      "example": "Passport",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5035",
+      "tag": "IdNumber2",
+      "description": "the second Id Number",
+      "example": "564 156 7",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5036",
+      "tag": "IdExpire2",
+      "description": "Second Id Expiry",
+      "example": "May 19, 2039",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5037",
+      "tag": "CorpSigner",
+      "description": "If it is corporation, \"Per: \" + FirstName + middleName + lastname, otherwise, it is empty.",
+      "example": "Per: Jim Matthew Halpert",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5038",
+      "tag": "NonCorpName",
+      "description": "If it is a corporation, it is empty otherwise, FirstName + MiddleName + LastName",
+      "example": "Jim Matthew Halpert",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5039",
+      "tag": "NonCorp[identifier]s",
+      "description": "If it is a corporation, it is empty otherwise signature",
+      "example": "Jim's Signature",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5040",
+      "tag": "NonCorp[identifier]i",
+      "description": "If it is a corporation, it is empty otherwise initial",
+      "example": "Jim's Inital",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5041",
+      "tag": "CorpName",
+      "description": "If it is corporation, the name of corporation, otherwise, it is empty.",
+      "example": "Sold By Services Ltd.",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5042",
+      "tag": "Corp[identifier]s",
+      "description": "If it is a corporation, signature otherwise it is empty",
+      "example": "Jim's Signature",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5043",
+      "tag": "Corp[identifier]i",
+      "description": "If it is a corporation, initial otherwise it is empty",
+      "example": "Jim's Inital",
+      "category": "Deal Participants - Purchasers"
+    },
+    {
+      "id": "tag-1784904226450-5044",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5045",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5046",
+      "tag": "NonCorp[identifier]s",
+      "description": "If it is a corporation, it is empty otherwise witness signature",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5047",
+      "tag": "Corp[identifier]s",
+      "description": "If it is a corporation, witness signature otherwise it is empty",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5048",
+      "tag": "NonCorp[identifier]i",
+      "description": "If it is a corporation, it is empty otherwise witness initial",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5049",
+      "tag": "Corp[identifier]i",
+      "description": "If it is a corporation, witness initial otherwise it is empty",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Purchaser's Witnesses"
+    },
+    {
+      "id": "tag-1784904226450-5050",
+      "tag": "ContractName",
+      "description": "Realtor's Full Name Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5051",
+      "tag": "FirstName",
+      "description": "First Name",
+      "example": "Jim",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5052",
+      "tag": "MiddleName",
+      "description": "Middle Name",
+      "example": "Mario",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5053",
+      "tag": "LastName",
+      "description": "Last Name",
+      "example": "Halpert",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5054",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Realtor Signature",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5055",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Realtor Initial",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5056",
+      "tag": "UnitNumber",
+      "description": "Unit Number",
+      "example": "352",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5057",
+      "tag": "Street",
+      "description": "Street Address",
+      "example": "1367 West Broadway",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5058",
+      "tag": "City",
+      "description": "City",
+      "example": "Vancouver",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5059",
+      "tag": "Province",
+      "description": "Province",
+      "example": "BC",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5060",
+      "tag": "FullProvince",
+      "description": "Province in Full",
+      "example": "British Columbia",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5061",
+      "tag": "Country",
+      "description": "Country",
+      "example": "Canada",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5062",
+      "tag": "PostalCode",
+      "description": "Postal Code",
+      "example": "V8H 5J6",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5063",
+      "tag": "Address",
+      "description": "Full Address",
+      "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5064",
+      "tag": "AddressShort",
+      "description": "Basic Address",
+      "example": "35 - 1367 West Broadway",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5065",
+      "tag": "Phone",
+      "description": "Home Phone",
+      "example": "(123) 4567980",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5066",
+      "tag": "PhoneExt",
+      "description": "Extension",
+      "example": "ext.123",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5067",
+      "tag": "BusinessPhone",
+      "description": "Brokerage Phone Number",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5068",
+      "tag": "BusinessPhoneExt",
+      "description": "Brokerage Extension",
+      "example": "ext.456",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5069",
+      "tag": "Email",
+      "description": "Email Address",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5070",
+      "tag": "Brokerage",
+      "description": "Realtor's or Sales Person's Brokerage",
+      "example": "Remax",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5071",
+      "tag": "GSTNumber",
+      "description": "Realtor's Brokerage GST Number (BC Sites)",
+      "example": "132 456",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5072",
+      "tag": "HSTNumber",
+      "description": "Realtor's Brokerage HST Number (ON Sites)",
+      "example": "132 456",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5073",
+      "tag": "TaxNumber",
+      "description": "Realtor's Brokerage Tax Number (US Sites)",
+      "example": "132 456",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5074",
+      "tag": "AgentLicenseNumber",
+      "description": "License information associated with the Realtor",
+      "example": "DRE1111111",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5075",
+      "tag": "BrokerageLicenseNumber",
+      "description": "License information associated with the Brokerages",
+      "example": "DRE2222222",
+      "category": "Deal Participants - Realtors"
+    },
+    {
+      "id": "tag-1784904226450-5076",
+      "tag": "ContractName",
+      "description": "Sales Rep's Full Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5077",
+      "tag": "FirstName",
+      "description": "First Name",
+      "example": "Jim",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5078",
+      "tag": "LastName",
+      "description": "Last Name",
+      "example": "Halpert",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5079",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Sales Rep Signature",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5080",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Sales Rep Initial",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5081",
+      "tag": "Phone",
+      "description": "Home Phone",
+      "example": "(123) 4567980",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5082",
+      "tag": "Email",
+      "description": "Email Address",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5083",
+      "tag": "Brokerage",
+      "description": "Sales Person's Brokerage",
+      "example": "Remax",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5084",
+      "tag": "AgentLicenseNumber",
+      "description": "License information associated with the Sales Rep",
+      "example": "DRE1111111",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5085",
+      "tag": "BrokerageLicenseNumber",
+      "description": "License information associated with the Brokerages for Sales Rep",
+      "example": "DRE2222222",
+      "category": "Deal Participants - Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5086",
+      "tag": "actualRepName",
+      "description": "If there is a realtore populates Realtor's Name or if no realtor populates Sales Rep's Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Realtor or Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5087",
+      "tag": "actualBrokerage",
+      "description": "If there is a realtore populates Realtor's Brokerage or if no realtor populates Sales Rep's Brokerage",
+      "example": "Remax",
+      "category": "Deal Participants - Realtor or Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5088",
+      "tag": "actualRepSign",
+      "description": "If there is a realtore populates Realtor's Signature or if no realtor populates Sales Rep's Signature",
+      "example": "Sales Person or Realtor's Signature",
+      "category": "Deal Participants - Realtor or Sales Rep"
+    },
+    {
+      "id": "tag-1784904226450-5089",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Developer's Signature",
+      "category": "Deal Participants - Developers"
+    },
+    {
+      "id": "tag-1784904226450-5090",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Developer's Initial",
+      "category": "Deal Participants - Developers"
+    },
+    {
+      "id": "tag-1784904226450-5091",
+      "tag": "ContractName",
+      "description": "Assignee's Full Name Or Corporation Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5092",
+      "tag": "TitleMr",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5093",
+      "tag": "TitleMiss",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5094",
+      "tag": "TitleMs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5095",
+      "tag": "TitleMrs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5096",
+      "tag": "Title",
+      "description": "Text form of title",
+      "example": "Mr",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5097",
+      "tag": "FirstName",
+      "description": "First Name",
+      "example": "Jim",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5098",
+      "tag": "MiddleName",
+      "description": "Middle Name",
+      "example": "Mario",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5099",
+      "tag": "LastName",
+      "description": "Last Name",
+      "example": "Halpert",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5100",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Jim's Signature",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5101",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Jim's Inital",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5102",
+      "tag": "UnitNumber",
+      "description": "Unit Number",
+      "example": "352",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5103",
+      "tag": "Street",
+      "description": "Street Address",
+      "example": "1367 West Broadway",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5104",
+      "tag": "City",
+      "description": "City",
+      "example": "Vancouver",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5105",
+      "tag": "Province",
+      "description": "Province",
+      "example": "BC",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5106",
+      "tag": "FullProvince",
+      "description": "Province in Full",
+      "example": "British Columbia",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5107",
+      "tag": "Country",
+      "description": "Country",
+      "example": "Canada",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5108",
+      "tag": "PostalCode",
+      "description": "Postal Code",
+      "example": "V8H 5J6",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5109",
+      "tag": "Address",
+      "description": "Full Address",
+      "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5110",
+      "tag": "AddressShort",
+      "description": "Basic Address",
+      "example": "35 - 1367 West Broadway",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5111",
+      "tag": "Phone",
+      "description": "Home Phone",
+      "example": "(123) 4567980",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5112",
+      "tag": "PhoneExt",
+      "description": "Extension",
+      "example": "ext.123",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226450-5113",
+      "tag": "BusinessPhone",
+      "description": "Company Phone Number",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5114",
+      "tag": "BusinessPhoneExt",
+      "description": "Company Extension",
+      "example": "ext.456",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5115",
+      "tag": "Email",
+      "description": "Email Address",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5116",
+      "tag": "Birthday",
+      "description": "Date of Birth",
+      "example": "Aug 20, 1993",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5117",
+      "tag": "Business",
+      "description": "the person's occupation",
+      "example": "Manager",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5118",
+      "tag": "Sin",
+      "description": "SIN Number",
+      "example": "123 456 789",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5119",
+      "tag": "IsCanadian",
+      "description": "Checkbox mark for the person is Canadian",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5120",
+      "tag": "IsCanadianNot",
+      "description": "Checkbox mark for the person is not Canadian",
+      "example": "X",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5121",
+      "tag": "Citizenship",
+      "description": "\"Canadian Citizen\" &amp; \"Permanent Resident\" is \"Canada\", Others shown the value of citizenship/residency.",
+      "example": "Canada",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5122",
+      "tag": "IdType",
+      "description": "First Id type",
+      "example": "Drivers License",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5123",
+      "tag": "IdNumber",
+      "description": "the First Id Number",
+      "example": "6456436",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5124",
+      "tag": "IdExpire",
+      "description": "First Id Expiry",
+      "example": "January 08, 2021",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5125",
+      "tag": "IdType2",
+      "description": "Second Id type",
+      "example": "Passport",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5126",
+      "tag": "IdNumber2",
+      "description": "the second Id Number",
+      "example": "564 156 7",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5127",
+      "tag": "IdExpire2",
+      "description": "Second Id Expiry",
+      "example": "May 19, 2039",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5128",
+      "tag": "CorpSigner",
+      "description": "If it is corporation, \"Per: \" + FirstName + middleName + lastname, otherwise, it is empty.",
+      "example": "Per: Jim Matthew Halpert",
+      "category": "Deal Participants - Assignors"
+    },
+    {
+      "id": "tag-1784904226451-5129",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Assignor Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5130",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Assignor Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5131",
+      "tag": "ContractName",
+      "description": "Assignee's Full Name Or Corporation Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5132",
+      "tag": "TitleMr",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5133",
+      "tag": "TitleMiss",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5134",
+      "tag": "TitleMs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5135",
+      "tag": "TitleMrs",
+      "description": "X mark",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5136",
+      "tag": "Title",
+      "description": "Text form of title",
+      "example": "Mr",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5137",
+      "tag": "FirstName",
+      "description": "First Name",
+      "example": "Jim",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5138",
+      "tag": "MiddleName",
+      "description": "Middle Name",
+      "example": "Mario",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5139",
+      "tag": "LastName",
+      "description": "Last Name",
+      "example": "Halpert",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5140",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Jim's Signature",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5141",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Jim's Inital",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5142",
+      "tag": "UnitNumber",
+      "description": "Unit Number",
+      "example": "352",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5143",
+      "tag": "Street",
+      "description": "Street Address",
+      "example": "1367 West Broadway",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5144",
+      "tag": "City",
+      "description": "City",
+      "example": "Vancouver",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5145",
+      "tag": "Province",
+      "description": "Province",
+      "example": "BC",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5146",
+      "tag": "FullProvince",
+      "description": "Province in Full",
+      "example": "British Columbia",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5147",
+      "tag": "Country",
+      "description": "Country",
+      "example": "Canada",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5148",
+      "tag": "PostalCode",
+      "description": "Postal Code",
+      "example": "V8H 5J6",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5149",
+      "tag": "Address",
+      "description": "Full Address",
+      "example": "35 - 1367 West Broadway, Vancouver BC, V6H B3L",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5150",
+      "tag": "AddressShort",
+      "description": "Basic Address",
+      "example": "35 - 1367 West Broadway",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5151",
+      "tag": "Phone",
+      "description": "Home Phone",
+      "example": "(123) 4567980",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5152",
+      "tag": "PhoneExt",
+      "description": "Extension",
+      "example": "ext.123",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5153",
+      "tag": "BusinessPhone",
+      "description": "Company Phone Number",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5154",
+      "tag": "BusinessPhoneExt",
+      "description": "Company Extension",
+      "example": "ext.456",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5155",
+      "tag": "Email",
+      "description": "Email Address",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5156",
+      "tag": "Birthday",
+      "description": "Date of Birth",
+      "example": "Aug 20, 1993",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5157",
+      "tag": "Business",
+      "description": "the person's occupation",
+      "example": "Manager",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5158",
+      "tag": "Sin",
+      "description": "SIN Number",
+      "example": "123 456 789",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5159",
+      "tag": "IsCanadian",
+      "description": "Checkbox mark for the person is Canadian",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5160",
+      "tag": "IsCanadianNot",
+      "description": "Checkbox mark for the person is not Canadian",
+      "example": "X",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5161",
+      "tag": "Citizenship",
+      "description": "\"Canadian Citizen\" &amp; \"Permanent Resident\" is \"Canada\", Others shown the value of citizenship/residency.",
+      "example": "Canada",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5162",
+      "tag": "IdType",
+      "description": "First Id type",
+      "example": "Drivers License",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5163",
+      "tag": "IdNumber",
+      "description": "the First Id Number",
+      "example": "6456436",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5164",
+      "tag": "IdExpire",
+      "description": "First Id Expiry",
+      "example": "January 08, 2021",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5165",
+      "tag": "IdType2",
+      "description": "Second Id type",
+      "example": "Passport",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5166",
+      "tag": "IdNumber2",
+      "description": "the second Id Number",
+      "example": "564 156 7",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5167",
+      "tag": "IdExpire2",
+      "description": "Second Id Expiry",
+      "example": "May 19, 2039",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5168",
+      "tag": "CorpSigner",
+      "description": "If it is corporation, \"Per: \" + FirstName + middleName + lastname, otherwise, it is empty.",
+      "example": "Per: Jim Matthew Halpert",
+      "category": "Deal Participants - Assignees"
+    },
+    {
+      "id": "tag-1784904226451-5169",
+      "tag": "s",
+      "description": "Assignee (from Form Selection) Witness Signature",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Assignee Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5170",
+      "tag": "i",
+      "description": "Assignee (from Form Selection) Witness Initial",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Assignee Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5171",
+      "tag": "s",
+      "description": "Assignee (from Deal Participants) Witness Signature",
+      "example": "Wirness's Signature",
+      "category": "Deal Participants - Assignee Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5172",
+      "tag": "i",
+      "description": "Assignee (from Deal Participants) Witness Initial",
+      "example": "Witness's Inital",
+      "category": "Deal Participants - Assignee Witnesses"
+    },
+    {
+      "id": "tag-1784904226451-5173",
+      "tag": "ContractName",
+      "description": "Full Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Managing Broker"
+    },
+    {
+      "id": "tag-1784904226451-5174",
+      "tag": "Phone",
+      "description": "Phone",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Managing Broker"
+    },
+    {
+      "id": "tag-1784904226451-5175",
+      "tag": "Email",
+      "description": "Email",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Managing Broker"
+    },
+    {
+      "id": "tag-1784904226451-5176",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Signature",
+      "category": "Deal Participants - Managing Broker"
+    },
+    {
+      "id": "tag-1784904226451-5177",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Inital",
+      "category": "Deal Participants - Managing Broker"
+    },
+    {
+      "id": "tag-1784904226451-5178",
+      "tag": "ContractName",
+      "description": "Full Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Guarantors"
+    },
+    {
+      "id": "tag-1784904226451-5179",
+      "tag": "Phone",
+      "description": "Phone",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Guarantors"
+    },
+    {
+      "id": "tag-1784904226451-5180",
+      "tag": "Email",
+      "description": "Email",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Guarantors"
+    },
+    {
+      "id": "tag-1784904226451-5181",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Signature",
+      "category": "Deal Participants - Guarantors"
+    },
+    {
+      "id": "tag-1784904226451-5182",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Inital",
+      "category": "Deal Participants - Guarantors"
+    },
+    {
+      "id": "tag-1784904226451-5183",
+      "tag": "ContractName",
+      "description": "Full Name",
+      "example": "Jim Halpert",
+      "category": "Deal Participants - Transferor"
+    },
+    {
+      "id": "tag-1784904226451-5184",
+      "tag": "Phone",
+      "description": "Phone",
+      "example": "(456) 7891230",
+      "category": "Deal Participants - Transferor"
+    },
+    {
+      "id": "tag-1784904226451-5185",
+      "tag": "Email",
+      "description": "Email",
+      "example": "jimhalpert@gmail.com",
+      "category": "Deal Participants - Transferor"
+    },
+    {
+      "id": "tag-1784904226451-5186",
+      "tag": "s",
+      "description": "Signature",
+      "example": "Signature",
+      "category": "Deal Participants - Transferor"
+    },
+    {
+      "id": "tag-1784904226451-5187",
+      "tag": "i",
+      "description": "Initial",
+      "example": "Inital",
+      "category": "Deal Participants - Transferor"
+    }
+  ]
+}

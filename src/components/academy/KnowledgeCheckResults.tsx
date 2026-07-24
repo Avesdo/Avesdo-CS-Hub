@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, CheckCircle2, XCircle, Eye } from 'lucide-react';
+import { Search, CheckCircle2, XCircle, Eye, RotateCcw } from 'lucide-react';
 import { QuizAttempt } from '../../types';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -223,16 +223,17 @@ export default function KnowledgeCheckResults() {
                               </span>
                               <div className="flex flex-col">
                                 <span
-                                  className={`text-sm font-medium mb-0.5 ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                                  className={`text-sm font-medium ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
                                 >
                                   ({correctCount} of {quiz?.questions.length} correct)
                                 </span>
-                                {attempt!.originalScore !== undefined && (
-                                  <span className="text-[11px] font-medium text-slate-500">
-                                    Original: {Math.round(attempt!.originalScore)}%
-                                  </span>
-                                )}
                               </div>
+                              {attempt!.originalScore !== undefined && (
+                                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 w-fit ml-auto mb-1">
+                                  <RotateCcw className="w-3 h-3 text-slate-400" />
+                                  <span>1st Attempt: {Math.round(attempt!.originalScore)}%</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -311,9 +312,10 @@ export default function KnowledgeCheckResults() {
                     {Math.round(selectedAttempt?.score || 0)}%
                   </p>
                   {selectedAttempt?.originalScore !== undefined && (
-                    <span className="text-sm font-medium text-slate-400">
-                      (Original: {Math.round(selectedAttempt.originalScore)}%)
-                    </span>
+                    <div className="flex items-center gap-1.5 ml-3 px-2 py-1 rounded-md bg-slate-50 text-slate-600 text-xs font-semibold border border-slate-200/60 self-center">
+                      <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                      <span>1st Attempt: {Math.round(selectedAttempt.originalScore)}%</span>
+                    </div>
                   )}
                 </div>
               </div>

@@ -42,11 +42,20 @@ export const useAcademyStore = create<AcademyState>((set) => ({
 
       if (canManage) {
         const attempts = await academyService.getAllQuizAttempts();
+        const activeQuizIds = quizzes.map(q => q.id);
+        const filteredAttempts = attempts.filter(a => activeQuizIds.includes(a.quizId));
+        
         const deduped = Object.values(
-          attempts.reduce(
+          filteredAttempts.reduce(
             (acc, curr) => {
               const key = `${curr.quizId}_${curr.userId}`;
-              if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+              const currDate = curr.updatedAt || curr.completedAt;
+              if (!acc[key]) {
+                acc[key] = curr;
+              } else {
+                const accDate = acc[key].updatedAt || acc[key].completedAt;
+                if (accDate < currDate) acc[key] = curr;
+              }
               return acc;
             },
             {} as Record<string, any>
@@ -55,11 +64,20 @@ export const useAcademyStore = create<AcademyState>((set) => ({
         set({ quizAttempts: deduped });
       } else if (userId) {
         const attempts = await academyService.getAllUserQuizAttempts(userId);
+        const activeQuizIds = quizzes.map(q => q.id);
+        const filteredAttempts = attempts.filter(a => activeQuizIds.includes(a.quizId));
+
         const deduped = Object.values(
-          attempts.reduce(
+          filteredAttempts.reduce(
             (acc, curr) => {
               const key = `${curr.quizId}_${curr.userId}`;
-              if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+              const currDate = curr.updatedAt || curr.completedAt;
+              if (!acc[key]) {
+                acc[key] = curr;
+              } else {
+                const accDate = acc[key].updatedAt || acc[key].completedAt;
+                if (accDate < currDate) acc[key] = curr;
+              }
               return acc;
             },
             {} as Record<string, any>
@@ -79,7 +97,13 @@ export const useAcademyStore = create<AcademyState>((set) => ({
         attempts.reduce(
           (acc, curr) => {
             const key = `${curr.quizId}_${curr.userId}`;
-            if (!acc[key] || acc[key].completedAt < curr.completedAt) acc[key] = curr;
+            const currDate = curr.updatedAt || curr.completedAt;
+            if (!acc[key]) {
+              acc[key] = curr;
+            } else {
+              const accDate = acc[key].updatedAt || acc[key].completedAt;
+              if (accDate < currDate) acc[key] = curr;
+            }
             return acc;
           },
           {} as Record<string, any>

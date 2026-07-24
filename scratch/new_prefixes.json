@@ -1,0 +1,150 @@
+{
+  "Purchasers": [
+    {
+      "label": "Purchaser 1",
+      "value": "c1"
+    },
+    {
+      "label": "Purchaser 2",
+      "value": "c2"
+    },
+    {
+      "label": "Purchaser 3",
+      "value": "c3"
+    },
+    {
+      "label": "Purchaser 4",
+      "value": "c4"
+    },
+    {
+      "label": "Purchaser 5",
+      "value": "c5"
+    },
+    {
+      "label": "Purchaser 6",
+      "value": "c6"
+    }
+  ],
+  "Purchaser's Witnesses": [
+    {
+      "label": "Witness 1",
+      "value": "w1"
+    },
+    {
+      "label": "Witness 2",
+      "value": "w2"
+    },
+    {
+      "label": "Witness 3",
+      "value": "w3"
+    },
+    {
+      "label": "Witness 4",
+      "value": "w4"
+    },
+    {
+      "label": "Witness 5",
+      "value": "w5"
+    },
+    {
+      "label": "Witness 6",
+      "value": "w6"
+    }
+  ],
+  "Realtors": [
+    {
+      "label": "Realtor 1",
+      "value": "r1"
+    },
+    {
+      "label": "Realtor 2",
+      "value": "r2"
+    },
+    {
+      "label": "Realtor 3",
+      "value": "r3"
+    }
+  ],
+  "Sales Rep": [
+    {
+      "label": "Sales Rep 1",
+      "value": "s1"
+    }
+  ],
+  "Developers": [
+    {
+      "label": "Developer 1",
+      "value": "d1"
+    },
+    {
+      "label": "Developer 1",
+      "value": "d2"
+    },
+    {
+      "label": "Developer 1",
+      "value": "d3"
+    }
+  ],
+  "Assignors": [
+    {
+      "label": "Assignor 1 (from Form Selection)",
+      "value": "FromAssignor1"
+    },
+    {
+      "label": "Assignor 1 (from Form Selection)",
+      "value": "FromAssignor2"
+    },
+    {
+      "label": "Assignor 1 (from Form Selection)",
+      "value": "FromAssignor3"
+    }
+  ],
+  "Assignees": [
+    {
+      "label": "Assignee 1 (from Form Selection)",
+      "value": "FromAssignee1"
+    },
+    {
+      "label": "Assignee 2 (from Form Selection)",
+      "value": "FromAssignee2"
+    },
+    {
+      "label": "Assignee 3 (from Form Selection)",
+      "value": "FromAssignee3"
+    },
+    {
+      "label": "Assignee 1 (from Deal Participants)",
+      "value": "v1"
+    },
+    {
+      "label": "Assignee 2 (from Deal Participants)",
+      "value": "v2"
+    },
+    {
+      "label": "Assignee 3 (from Deal Participants)",
+      "value": "v3"
+    }
+  ],
+  "Managing Broker": [
+    {
+      "label": "Managing Broker",
+      "value": "ps-managing broker"
+    }
+  ],
+  "Guarantors": [
+    {
+      "label": "Guarantor 1",
+      "value": "ps-guarantor"
+    },
+    {
+      "label": "Guarantor 2",
+      "value": "ps-guarantor 2"
+    }
+  ],
+  "Transferor": [
+    {
+      "label": "Transferor",
+      "value": "ps-transferor"
+    }
+  ]
+}

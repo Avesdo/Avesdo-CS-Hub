@@ -7,6 +7,7 @@ import {
   Clock,
   AlertCircle,
   Trash2,
+  RotateCcw,
 } from 'lucide-react';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -258,16 +259,17 @@ export default function QuizListDashboard() {
               </span>
               <div className="flex flex-col">
                 <span
-                  className={`text-sm font-medium mb-0.5 ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                  className={`text-sm font-medium ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
                 >
                   Score
                 </span>
-                {attempt.originalScore !== undefined && (
-                  <span className="text-[11px] font-medium text-slate-500">
-                    Original: {Math.round(attempt.originalScore)}%
-                  </span>
-                )}
               </div>
+              {attempt.originalScore !== undefined && (
+                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 w-fit ml-auto mb-1">
+                  <RotateCcw className="w-3 h-3 text-slate-400" />
+                  <span>1st Attempt: {Math.round(attempt.originalScore)}%</span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-end gap-2 h-8">

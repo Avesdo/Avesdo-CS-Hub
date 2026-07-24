@@ -4,6 +4,11 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    watch: {
+      ignored: ['**/reference_materials/**'],
+    },
+  },
   resolve: {
     alias: {
       // eslint-disable-next-line no-undef

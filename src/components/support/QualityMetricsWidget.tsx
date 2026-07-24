@@ -66,13 +66,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const CustomPieTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[200px] transform transition-all duration-200">
+      <div className="bg-white/95 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl flex flex-col min-w-[220px] transform transition-all duration-200">
         <p className="font-semibold text-foreground border-b border-border pb-2 mb-3 text-sm">
           Sentiment
         </p>
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 whitespace-nowrap">
               <div
                 className="w-2.5 h-2.5 rounded-[3px] shadow-sm"
                 style={{ backgroundColor: payload[0].payload.color }}
@@ -81,7 +81,7 @@ const CustomPieTooltip = ({ active, payload }: any) => {
                 {payload[0].name}
               </span>
             </div>
-            <span className="text-[14px] font-bold text-foreground">
+            <span className="text-[14px] font-bold text-foreground whitespace-nowrap">
               {payload[0].value}{' '}
               <span className="text-[12px] font-normal text-muted-foreground ml-0.5">
                 responses
@@ -140,6 +140,10 @@ export function QualityMetricsWidget() {
     let promoters = 0,
       passives = 0,
       detractors = 0;
+      
+    let npsPromoters = 0,
+      npsPassives = 0,
+      npsDetractors = 0;
 
     // Dynamic Trend Generation based on Global Date Filter
     const getTrendConfig = () => {
@@ -355,6 +359,9 @@ export function QualityMetricsWidget() {
           if (isInTimeframe(nps.submittedAt)) {
             npsTotal += nps.score;
             npsCount++;
+            npsPromoters += nps.promoters || 0;
+            npsPassives += nps.passives || 0;
+            npsDetractors += nps.detractors || 0;
           }
           addToTrend('n', nps.submittedAt, nps.score);
         });
@@ -362,6 +369,9 @@ export function QualityMetricsWidget() {
         if (client.clientNps && typeof client.clientNps.score === 'number') {
           npsTotal += client.clientNps.score;
           npsCount++;
+          npsPromoters += client.clientNps.promoters || 0;
+          npsPassives += client.clientNps.passives || 0;
+          npsDetractors += client.clientNps.detractors || 0;
         }
       }
     });
@@ -403,15 +413,17 @@ export function QualityMetricsWidget() {
     });
 
     // Process Quizzes (Knowledge Checks)
+    console.log("QualityMetricsWidget quizAttempts:", quizAttempts);
     quizAttempts.forEach((attempt) => {
       const score = typeof attempt.score === 'number' ? attempt.score : parseFloat(attempt.score);
-      if (isInTimeframe(attempt.completedAt)) {
+      const attemptDate = attempt.updatedAt || attempt.completedAt;
+      if (isInTimeframe(attemptDate)) {
         if (!isNaN(score)) {
           kbTotal += score;
           kbCount++;
         }
       }
-      addToTrend('k', attempt.completedAt, score);
+      addToTrend('k', attemptDate, score);
     });
 
     // Finalize Trend Data
@@ -429,6 +441,12 @@ export function QualityMetricsWidget() {
       { name: 'Detractors', value: detractors, color: '#ef4444' },
     ].filter((d) => d.value > 0);
 
+    const npsSentimentData = [
+      { name: 'Promoters', value: npsPromoters, color: '#10b981' },
+      { name: 'Passives', value: npsPassives, color: '#f59e0b' },
+      { name: 'Detractors', value: npsDetractors, color: '#ef4444' },
+    ].filter((d) => d.value > 0);
+
     return {
       kpis: {
         support: supportCount > 0 ? `${Math.round(supportTotal / supportCount)}%` : 'N/A',
@@ -439,6 +457,7 @@ export function QualityMetricsWidget() {
       },
       trendData,
       sentimentData,
+      npsSentimentData,
     };
   }, [clients, projects, quizAttempts, dateRange, customStartDate, customEndDate]);
   return (
@@ -526,7 +545,7 @@ export function QualityMetricsWidget() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sentiment Donut */}
         <div className="bg-white border border-border shadow-sm rounded-xl p-6">
           <h4 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
@@ -585,6 +604,68 @@ export function QualityMetricsWidget() {
           ) : (
             <div className="h-[200px] w-full flex items-center justify-center">
               <span className="text-sm font-medium text-muted-foreground">No sentiment data</span>
+            </div>
+          )}
+        </div>
+
+        {/* NPS Sentiment Donut */}
+        <div className="bg-white border border-border shadow-sm rounded-xl p-6">
+          <h4 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+            Platform NPS Sentiment
+            <UITooltip content="Breakdown of Promoters, Passives, and Detractors based on selected timeframe.">
+              <AlertCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+            </UITooltip>
+          </h4>
+          {data.npsSentimentData.length > 0 ? (
+            <div className="h-[200px] w-full flex items-center">
+              <div className="flex-1 h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data.npsSentimentData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={80}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="none"
+                      cornerRadius={5}
+                    >
+                      {data.npsSentimentData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                      <Label
+                        value={data.npsSentimentData
+                          .reduce((acc, curr) => acc + curr.value, 0)
+                          .toString()}
+                        position="center"
+                        fill="#0f172a"
+                        style={{ fontSize: '24px', fontWeight: 900 }}
+                      />
+                    </Pie>
+                    <Tooltip content={<CustomPieTooltip />} cursor={{ fill: 'transparent' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col justify-center gap-3 ml-4 shrink-0 pr-4">
+                {data.npsSentimentData.map((entry, idx) => (
+                  <div
+                    className="flex items-center gap-2.5 text-sm font-semibold text-muted-foreground"
+                    key={idx}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: entry.color }}
+                    />
+                    {entry.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="h-[200px] w-full flex items-center justify-center">
+              <span className="text-sm font-medium text-muted-foreground">No NPS data</span>
             </div>
           )}
         </div>

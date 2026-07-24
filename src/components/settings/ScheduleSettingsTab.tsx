@@ -222,7 +222,9 @@ export function ScheduleSettingsTab() {
                       variant="outline"
                       className="flex-1 md:max-w-[220px] font-normal justify-between"
                     >
-                      {newTimeOffManager || (
+                      {newTimeOffManager ? (
+                        getUserName(newTimeOffManager)
+                      ) : (
                         <span className="text-muted-foreground">Select Manager...</span>
                       )}
                       <ChevronDown className="w-4 h-4 text-slate-400" />
@@ -309,7 +311,9 @@ export function ScheduleSettingsTab() {
                                 variant="outline"
                                 className="flex-1 max-w-[200px] font-normal justify-between"
                               >
-                                {editTimeOffManager || (
+                                {editTimeOffManager ? (
+                                  getUserName(editTimeOffManager)
+                                ) : (
                                   <span className="text-muted-foreground">Select Manager...</span>
                                 )}
                                 <ChevronDown className="w-4 h-4 text-slate-400" />
