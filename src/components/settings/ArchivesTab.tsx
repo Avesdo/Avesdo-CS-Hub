@@ -526,15 +526,6 @@ export function ArchivesTab({ loadLogs }: { loadLogs: () => void }) {
 
   return (
     <div className="animate-in fade-in duration-300 w-full max-w-5xl h-full flex flex-col relative z-10">
-      <div className="space-y-4 mb-8 shrink-0">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900 tracking-tight">Archives</h3>
-          <p className="text-sm text-slate-500 mt-0.5 max-w-2xl">
-            Manage deleted records and settings. Restoring an item will return it to active use.
-          </p>
-        </div>
-      </div>
-
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 shrink-0">
         <div className="relative flex items-center bg-slate-100/80 p-1 rounded-xl shadow-inner shrink-0">
           {[

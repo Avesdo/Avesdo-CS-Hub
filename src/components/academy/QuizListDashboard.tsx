@@ -295,11 +295,13 @@ export default function QuizListDashboard() {
     <div className="flex flex-col h-full animate-in fade-in duration-300 overflow-y-auto pr-2 pb-10">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Knowledge Checks</h2>
-          <p className="text-slate-500 mt-1 max-w-2xl">
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+            Knowledge Checks
+          </h1>
+          <p className="text-base text-muted-foreground mt-1 max-w-2xl">
             {canManage
-              ? 'Manage drafts, active assignments, and review past performance.'
-              : 'Complete your assigned knowledge checks and review past results.'}
+              ? 'Manage and review knowledge checks across your portfolio.'
+              : 'Complete your monthly knowledge checks to maintain a high team readiness score.'}
           </p>
         </div>
         {canManage && (

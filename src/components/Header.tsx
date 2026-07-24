@@ -32,7 +32,7 @@ import {
   CheckCheck,
 } from 'lucide-react';
 
-function NotificationBell() {
+export function NotificationBell() {
   const { openDrawer } = useUIStore();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -70,9 +70,10 @@ function NotificationBell() {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+        className="w-[324px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
+        side="right"
         align="end"
-        sideOffset={8}
+        sideOffset={16}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-slate-50/50">
           <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
@@ -178,7 +179,7 @@ function NotificationBell() {
   );
 }
 
-function TeamScheduleWidget() {
+export function TeamScheduleWidget() {
   const { openModal } = useUIStore();
   const [isOpen, setIsOpen] = useState(false);
   const { scheduleData, loading, getTodaySchedule } = useScheduleData();
@@ -479,9 +480,10 @@ function TeamScheduleWidget() {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[280px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+        className="w-[280px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
+        side="right"
         align="end"
-        sideOffset={8}
+        sideOffset={16}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 bg-white">
           <div className="flex items-center gap-2 text-slate-800">

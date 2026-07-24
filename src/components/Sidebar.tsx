@@ -22,6 +22,8 @@ import { TruncatedText } from '../components/ui/TruncatedText';
 import * as Popover from '@radix-ui/react-popover';
 import { Button } from './ui/button';
 import { useAcademyStore } from '../store/useAcademyStore';
+import GlobalSearch from './GlobalSearch';
+import { NotificationBell, TeamScheduleWidget } from './Header';
 
 export default function Sidebar() {
   const pendingAliasesCount = useAppStore((state) => state.pendingAliasesCount);
@@ -91,6 +93,9 @@ export default function Sidebar() {
                 src="https://lh3.googleusercontent.com/d/1HgOfOymPbhh2hjSxeqiZmbe20o6uDlVk"
               />
             </NavLink>
+          </div>
+          <div className="px-3 pb-2 pt-1">
+            <GlobalSearch />
           </div>
         </div>
 
@@ -191,28 +196,33 @@ export default function Sidebar() {
           </ul>
         </nav>
 
-        {hasAnySettingsPermission() && (
-          <div className="px-3 flex flex-col gap-1">
-            <NavLink
-              to="/settings"
-              className={({ isActive }) =>
-                `flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-all w-full h-9 active:scale-95 ${isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-slate-700 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'} focus:outline-none focus:ring-2 focus:ring-primary/20`
-              }
-            >
-              <div className="flex items-center gap-3">
-                <Settings className="w-4 h-4" />
-                <span>Settings</span>
-              </div>
-              {pendingAliasesCount > 0 && (
-                <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full animate-in zoom-in">
-                  {pendingAliasesCount}
-                </span>
-              )}
-            </NavLink>
+        <div className="px-3 py-4 mt-auto shrink-0 flex flex-col gap-3">
+          <div className="flex items-center gap-2 justify-center border-b border-slate-200/50 pb-4">
+            {hasAnySettingsPermission() && (
+              <NavLink to="/settings">
+                {({ isActive }) => (
+                  <Button
+                    variant="outline"
+                    className={`relative group bg-white hover:bg-slate-50 border-slate-200/60 transition-all duration-300 rounded-full h-10 w-10 p-0 flex items-center justify-center ${
+                      isActive
+                        ? 'text-primary border-primary/20 shadow-sm ring-1 ring-primary/20'
+                        : 'text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm'
+                    }`}
+                  >
+                    <Settings className="w-[1.25rem] h-[1.25rem] transition-all duration-300 group-hover:rotate-90" />
+                    {pendingAliasesCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm animate-in zoom-in">
+                        {pendingAliasesCount}
+                      </span>
+                    )}
+                  </Button>
+                )}
+              </NavLink>
+            )}
+            <TeamScheduleWidget />
+            <NotificationBell />
           </div>
-        )}
 
-        <div className="px-3 py-4 mt-auto shrink-0">
           <div className="flex items-center gap-3 p-2 w-full text-left rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group">
             <Avatar className="h-8 w-8 shrink-0">
               <AvatarImage src={authUser?.photoURL || ''} alt={authUser?.displayName || 'User'} />
@@ -236,10 +246,10 @@ export default function Sidebar() {
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Content
-                  sideOffset={10}
-                  side="top"
+                  sideOffset={16}
+                  side="right"
                   align="end"
-                  className="z-[200] bg-white rounded-lg shadow-xl border border-slate-200/60 p-2 animate-in fade-in zoom-in-95 duration-200 relative flex items-center gap-3"
+                  className="z-[200] bg-white rounded-lg shadow-xl border border-slate-200/60 p-2 animate-in fade-in zoom-in-95 data-[side=right]:slide-in-from-left-2 duration-200 relative flex items-center gap-3"
                 >
                   <span className="text-sm font-medium text-slate-700 pl-1">Confirm Logout?</span>
                   <div className="flex items-center gap-1">

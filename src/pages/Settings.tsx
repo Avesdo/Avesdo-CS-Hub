@@ -174,6 +174,9 @@ export default function Settings() {
       'A guided workflow to upload new CSV data, compile it into the system, and map any unmatched records.',
     exports:
       'Export combined project form submissions. Each export aggregates data from all projects that have completed the specific form.',
+    audit: 'Review a complete timeline of all administrative changes and system events.',
+    archives:
+      'Manage deleted records and settings. Restoring an item will return it to active use.',
     user_access: 'Manage user roles and invite new members to the platform.',
     roles: 'Create and configure custom roles with granular permission access.',
   };
