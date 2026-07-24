@@ -14,7 +14,16 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { AppState, Client, Project, Service, Settings, AppUser } from '../types';
+import {
+  AppState,
+  Client,
+  Project,
+  Service,
+  Settings,
+  AppUser,
+  TagItem,
+  HelpfulImportItem,
+} from '../types';
 import { ClientSchema, ProjectSchema, ServiceSchema, SettingsSchema } from '../types/schemas';
 import { toast } from '../utils/toast';
 
@@ -195,6 +204,20 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     checkReady();
   });
 
+  const tagsQuery = query(collection(db, 'academy_tags'), limit(5000));
+  const unsubTags = onSnapshot(tagsQuery, (snap) => {
+    state.tags = snap.docs.map((d) => d.data() as TagItem);
+    state.ready.tags = true;
+    checkReady();
+  });
+
+  const helpfulImportsQuery = query(collection(db, 'academy_helpful_imports'), limit(5000));
+  const unsubHelpfulImports = onSnapshot(helpfulImportsQuery, (snap) => {
+    state.helpfulImports = snap.docs.map((d) => d.data() as HelpfulImportItem);
+    state.ready.helpfulImports = true;
+    checkReady();
+  });
+
   return () => {
     unsubSettings();
     unsubClients();
@@ -202,6 +225,8 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
     unsubServices();
     unsubAliases();
     unsubUsers();
+    unsubTags();
+    unsubHelpfulImports();
   };
 }
 

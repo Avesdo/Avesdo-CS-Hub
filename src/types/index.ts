@@ -131,6 +131,10 @@ export interface Settings {
   roles?: CustomRole[];
   rolePermissions?: Record<string, Record<string, boolean>>;
   academyEnrollments?: string[];
+  academyCategoryOrder?: {
+    primary: string;
+    subCategories: string[];
+  }[];
   [key: string]: any;
 }
 
@@ -182,8 +186,12 @@ export interface AppState {
     services: boolean;
     aliases: boolean;
     users: boolean;
+    tags?: boolean;
+    helpfulImports?: boolean;
   };
   simulatedRoleId: string | null;
+  tags?: TagItem[];
+  helpfulImports?: HelpfulImportItem[];
 }
 
 export interface KBArticle {
@@ -250,4 +258,20 @@ export interface DocumentTag {
   allowedIdentifiers?: string[];
 
   createdAt: number;
+}
+
+export interface TagItem {
+  id: string;
+  tag: string;
+  description: string;
+  example?: string;
+  category: string | string[];
+  order?: number;
+}
+
+export interface HelpfulImportItem {
+  id: string;
+  action: string;
+  project: string;
+  solution: string;
 }

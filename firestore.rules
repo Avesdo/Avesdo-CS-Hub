@@ -106,5 +106,17 @@ service cloud.firestore {
       allow read: if isAvesdoEmployee();
       allow write: if isAvesdoEmployee();
     }
+
+    match /academy_tags/{tagId} {
+      allow read: if isAvesdoEmployee();
+      allow create, update: if hasPermission('edit_tags') || hasPermission('manage_academy') || isSuperAdmin();
+      allow delete: if hasPermission('delete_tags') || hasPermission('manage_academy') || isSuperAdmin();
+    }
+
+    match /academy_helpful_imports/{importId} {
+      allow read: if isAvesdoEmployee();
+      allow create, update: if hasPermission('edit_helpful_imports') || hasPermission('manage_academy') || isSuperAdmin();
+      allow delete: if hasPermission('delete_helpful_imports') || hasPermission('manage_academy') || isSuperAdmin();
+    }
   }
 }

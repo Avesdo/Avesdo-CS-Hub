@@ -34,6 +34,10 @@ export const PERMISSION_NODES = [
   // Academy
   'view_academy',
   'manage_academy',
+  'edit_tags',
+  'delete_tags',
+  'edit_helpful_imports',
+  'delete_helpful_imports',
 
   // Client Management
   'client_create',

@@ -11,11 +11,11 @@ export default function InteractiveBuilderModal({ isOpen, onClose }: Interactive
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
+      <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
-      
+
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -27,7 +27,7 @@ export default function InteractiveBuilderModal({ isOpen, onClose }: Interactive
               <p className="text-sm text-slate-500">Coming soon</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
           >
@@ -41,7 +41,8 @@ export default function InteractiveBuilderModal({ isOpen, onClose }: Interactive
           </div>
           <h3 className="text-lg font-semibold text-slate-800 mb-2">Under Construction</h3>
           <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-            We are completely redesigning the Interactive Builder to provide a seamless, step-by-step wizard for constructing complex logic and arithmetic tags. Stay tuned!
+            We are completely redesigning the Interactive Builder to provide a seamless,
+            step-by-step wizard for constructing complex logic and arithmetic tags. Stay tuned!
           </p>
           <button
             onClick={onClose}

@@ -28,6 +28,8 @@ const defaultState: AppState = {
     users: false,
   },
   simulatedRoleId: null,
+  tags: [],
+  helpfulImports: [],
 };
 
 export const useAppStore = create<AppStore>((set) => ({

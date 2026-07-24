@@ -140,7 +140,7 @@ export function QualityMetricsWidget() {
     let promoters = 0,
       passives = 0,
       detractors = 0;
-      
+
     let npsPromoters = 0,
       npsPassives = 0,
       npsDetractors = 0;
@@ -359,9 +359,21 @@ export function QualityMetricsWidget() {
           if (isInTimeframe(nps.submittedAt)) {
             npsTotal += nps.score;
             npsCount++;
-            npsPromoters += nps.promoters || 0;
-            npsPassives += nps.passives || 0;
-            npsDetractors += nps.detractors || 0;
+
+            // Calculate categorization if missing
+            const isPromoter = false;
+            const isPassive = false;
+            const isDetractor = false;
+
+            if ('promoters' in nps) {
+              npsPromoters += (nps as any).promoters || 0;
+              npsPassives += (nps as any).passives || 0;
+              npsDetractors += (nps as any).detractors || 0;
+            } else {
+              if (nps.score >= 9) npsPromoters++;
+              else if (nps.score >= 7) npsPassives++;
+              else npsDetractors++;
+            }
           }
           addToTrend('n', nps.submittedAt, nps.score);
         });
@@ -413,7 +425,7 @@ export function QualityMetricsWidget() {
     });
 
     // Process Quizzes (Knowledge Checks)
-    console.log("QualityMetricsWidget quizAttempts:", quizAttempts);
+    console.log('QualityMetricsWidget quizAttempts:', quizAttempts);
     quizAttempts.forEach((attempt) => {
       const score = typeof attempt.score === 'number' ? attempt.score : parseFloat(attempt.score);
       const attemptDate = attempt.updatedAt || attempt.completedAt;

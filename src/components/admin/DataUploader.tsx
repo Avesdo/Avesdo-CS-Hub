@@ -1147,12 +1147,30 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                         Filename Mapping & Recommended Schedule
                       </p>
                       <ul className="list-disc pl-4 space-y-1.5 text-[12px] text-slate-600">
-                        <li><strong>Support Tickets</strong> ('happyfox') - <span className="text-slate-900 font-medium">Weekly</span></li>
-                        <li><strong>Support CSAT</strong> ('satisfaction') - <span className="text-slate-900 font-medium">Monthly</span></li>
-                        <li><strong>Sessions</strong> ('sessions') - <span className="text-slate-900 font-medium">Monthly</span></li>
-                        <li><strong>Page Views</strong> ('views') - <span className="text-slate-900 font-medium">Monthly</span></li>
-                        <li><strong>Platform NPS</strong> ('nps') - <span className="text-slate-900 font-medium">Monthly</span></li>
-                        <li><strong>Knowledge Base</strong> ('kb') - <span className="text-slate-900 font-medium">Ad-hoc</span></li>
+                        <li>
+                          <strong>Support Tickets</strong> ('happyfox') -{' '}
+                          <span className="text-slate-900 font-medium">Weekly</span>
+                        </li>
+                        <li>
+                          <strong>Support CSAT</strong> ('satisfaction') -{' '}
+                          <span className="text-slate-900 font-medium">Monthly</span>
+                        </li>
+                        <li>
+                          <strong>Sessions</strong> ('sessions') -{' '}
+                          <span className="text-slate-900 font-medium">Monthly</span>
+                        </li>
+                        <li>
+                          <strong>Page Views</strong> ('views') -{' '}
+                          <span className="text-slate-900 font-medium">Monthly</span>
+                        </li>
+                        <li>
+                          <strong>Platform NPS</strong> ('nps') -{' '}
+                          <span className="text-slate-900 font-medium">Monthly</span>
+                        </li>
+                        <li>
+                          <strong>Knowledge Base</strong> ('kb') -{' '}
+                          <span className="text-slate-900 font-medium">Ad-hoc</span>
+                        </li>
                       </ul>
                     </div>
                   }

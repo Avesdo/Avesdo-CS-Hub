@@ -793,7 +793,9 @@
   },
   {
     "id": "hgrjo05",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Day",
     "tag": "future_c1s_DateDay",
     "example": "08",
@@ -801,7 +803,9 @@
   },
   {
     "id": "1mbvwll",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Month",
     "tag": "future_c1s_DateMonthLong",
     "example": "November",
@@ -809,7 +813,9 @@
   },
   {
     "id": "2h7hvlx",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Month Abbreviated",
     "tag": "future_c1s_DateMonth",
     "example": "Nov",
@@ -817,7 +823,9 @@
   },
   {
     "id": "dmjry1z",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Month Number",
     "tag": "future_c1s_DateMonthNumber",
     "example": "11",
@@ -825,7 +833,9 @@
   },
   {
     "id": "nmuevgj",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Year 4 Digits",
     "tag": "future_c1s_DateYear",
     "example": "2016",
@@ -833,7 +843,9 @@
   },
   {
     "id": "buoutt3",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Year Last 2 Digits",
     "tag": "future_c1s_DateYear2",
     "example": "16",
@@ -841,7 +853,9 @@
   },
   {
     "id": "43ng02r",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Year Last Digit",
     "tag": "future_c1s_DateYear1",
     "example": "6",
@@ -849,7 +863,9 @@
   },
   {
     "id": "xqcul90",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "TimeFull",
     "tag": "future_d1s_DateTimeFull",
     "example": "10:20 AM",
@@ -857,7 +873,9 @@
   },
   {
     "id": "9drh206",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Time Basic",
     "tag": "future_d1s_DateTimeBasic",
     "example": "0.4305555555555556",
@@ -865,7 +883,9 @@
   },
   {
     "id": "k6mqd55",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Time Format",
     "tag": "future_d1s_TimeFormat",
     "example": "AM",
@@ -873,7 +893,9 @@
   },
   {
     "id": "q5xijgb",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Time Short Format",
     "tag": "future_d1s_TimeShortFormat",
     "example": "A",
@@ -881,7 +903,9 @@
   },
   {
     "id": "kty5jpq",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Time Lowercase Format",
     "tag": "future_d1s_TimeLowerFormat",
     "example": "am",
@@ -889,7 +913,9 @@
   },
   {
     "id": "soak412",
-    "category": "Dates",
+    "category": [
+      "Dates - Future Dates"
+    ],
     "description": "Time Lowercase Short Format",
     "tag": "future_d1s_TimeLowerShortFormat",
     "example": "a",

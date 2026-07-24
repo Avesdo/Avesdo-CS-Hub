@@ -42,9 +42,9 @@ export const useAcademyStore = create<AcademyState>((set) => ({
 
       if (canManage) {
         const attempts = await academyService.getAllQuizAttempts();
-        const activeQuizIds = quizzes.map(q => q.id);
-        const filteredAttempts = attempts.filter(a => activeQuizIds.includes(a.quizId));
-        
+        const activeQuizIds = quizzes.map((q) => q.id);
+        const filteredAttempts = attempts.filter((a) => activeQuizIds.includes(a.quizId));
+
         const deduped = Object.values(
           filteredAttempts.reduce(
             (acc, curr) => {
@@ -64,8 +64,8 @@ export const useAcademyStore = create<AcademyState>((set) => ({
         set({ quizAttempts: deduped });
       } else if (userId) {
         const attempts = await academyService.getAllUserQuizAttempts(userId);
-        const activeQuizIds = quizzes.map(q => q.id);
-        const filteredAttempts = attempts.filter(a => activeQuizIds.includes(a.quizId));
+        const activeQuizIds = quizzes.map((q) => q.id);
+        const filteredAttempts = attempts.filter((a) => activeQuizIds.includes(a.quizId));
 
         const deduped = Object.values(
           filteredAttempts.reduce(

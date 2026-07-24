@@ -69,8 +69,12 @@ const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   service_add_notes: 'Add notes to services',
   service_archive: 'Archive services',
   service_export: 'Export service data',
-  view_academy: 'View the Academy and take Knowledge Checks',
+  view_academy: 'View academy content, tags, and helpful imports',
   manage_academy: 'Manage Academy settings, KB ingestion, and review Quizzes',
+  edit_tags: 'Add and edit dictionary tags',
+  delete_tags: 'Delete dictionary tags',
+  edit_helpful_imports: 'Add and edit helpful imports',
+  delete_helpful_imports: 'Delete helpful imports',
 };
 
 const NODE_GROUPS = [
@@ -141,7 +145,14 @@ const NODE_GROUPS = [
   },
   {
     title: 'Academy',
-    nodes: ['view_academy', 'manage_academy'],
+    nodes: [
+      'view_academy',
+      'manage_academy',
+      'edit_tags',
+      'delete_tags',
+      'edit_helpful_imports',
+      'delete_helpful_imports',
+    ],
   },
 ];
 

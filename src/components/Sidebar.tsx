@@ -33,11 +33,11 @@ export default function Sidebar() {
 
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
-    academy: location.pathname.includes('/academy')
+    academy: location.pathname.includes('/academy'),
   });
 
   const toggleMenu = (id: string) => {
-    setExpandedMenus(prev => ({ ...prev, [id]: !prev[id] }));
+    setExpandedMenus((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const hasActiveQuizBadge = activeQuizzes.some((q) => {
@@ -110,15 +110,25 @@ export default function Sidebar() {
                 requiredPermission: 'view_academy',
                 subItems: [
                   { to: '/academy?tab=tag-database', label: 'Tag Database' },
-                  { to: '/academy?tab=knowledge-checks', label: 'Knowledge Checks', badge: hasActiveQuizBadge }
-                ]
+                  {
+                    to: '/academy?tab=knowledge-checks',
+                    label: 'Knowledge Checks',
+                    badge: hasActiveQuizBadge,
+                  },
+                ],
               },
             ].map((link) => {
               if (link.requiredPermission && !hasPermission(link.requiredPermission)) return null;
 
               if (link.subItems) {
                 const isExpanded = expandedMenus[link.id];
-                const isChildActive = link.subItems.some(sub => `${location.pathname}${location.search}` === sub.to || (location.pathname === '/academy' && location.search === '' && sub.to.includes('tag-database')));
+                const isChildActive = link.subItems.some(
+                  (sub) =>
+                    `${location.pathname}${location.search}` === sub.to ||
+                    (location.pathname === '/academy' &&
+                      location.search === '' &&
+                      sub.to.includes('tag-database'))
+                );
 
                 return (
                   <li key={link.id} className="flex flex-col gap-1">
@@ -130,14 +140,20 @@ export default function Sidebar() {
                         {link.icon}
                         <span>{link.label}</span>
                       </div>
-                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                      />
                     </button>
-                    
+
                     {/* Collapsible content */}
                     {isExpanded && (
                       <ul className="pl-9 pr-2 space-y-1 pb-2 pt-1 animate-in slide-in-from-top-1 duration-200">
-                        {link.subItems.map(sub => {
-                          const isStrictActive = `${location.pathname}${location.search}` === sub.to || (location.pathname === '/academy' && location.search === '' && sub.to.includes('tag-database'));
+                        {link.subItems.map((sub) => {
+                          const isStrictActive =
+                            `${location.pathname}${location.search}` === sub.to ||
+                            (location.pathname === '/academy' &&
+                              location.search === '' &&
+                              sub.to.includes('tag-database'));
                           return (
                             <li key={sub.to}>
                               <NavLink
@@ -145,7 +161,9 @@ export default function Sidebar() {
                                 className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all w-full ${isStrictActive ? 'text-primary bg-primary/5 shadow-sm ring-1 ring-primary/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
                               >
                                 <span className="truncate">{sub.label}</span>
-                                {sub.badge && <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse ml-auto shrink-0" />}
+                                {sub.badge && (
+                                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse ml-auto shrink-0" />
+                                )}
                               </NavLink>
                             </li>
                           );

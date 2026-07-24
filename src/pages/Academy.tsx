@@ -11,7 +11,7 @@ export default function Academy() {
   const { hasPermission } = usePermissions();
   const canManage = hasPermission('manage_academy');
   const [searchParams] = useSearchParams();
-  
+
   // Derive active tab directly from URL to support external navigation
   const activeTab = searchParams.get('tab') || 'tag-database';
 
