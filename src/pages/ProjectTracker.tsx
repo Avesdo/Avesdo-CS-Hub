@@ -720,25 +720,6 @@ export default function ProjectTracker() {
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll">
                   <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
                     <button
-                      onClick={() => setHideKPIs(!hideKPIs)}
-                      className={`relative flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${hideKPIs ? 'bg-white shadow-sm border border-slate-200/60 text-primary' : 'text-slate-500 hover:text-slate-700'}`}
-                      title={hideKPIs ? 'Show KPIs' : 'Hide KPIs for Full View'}
-                    >
-                      {hideKPIs ? (
-                        <div className="flex items-center gap-2">
-                           <Eye className="w-4 h-4" />
-                           <span className="hidden sm:inline">Show KPIs</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                           <EyeOff className="w-4 h-4" />
-                           <span className="hidden sm:inline">Hide KPIs</span>
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                  <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
-                    <button
                       onClick={() => setViewMode('list')}
                       className={`relative flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${viewMode === 'list' ? 'text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                     >
@@ -769,6 +750,27 @@ export default function ProjectTracker() {
                       <span>Calendar</span>
                     </button>
                   </div>
+                  {viewMode === 'calendar' && (
+                    <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
+                      <button
+                        onClick={() => setHideKPIs(!hideKPIs)}
+                        className={`relative flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${hideKPIs ? 'bg-white shadow-sm border border-slate-200/60 text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                        title={hideKPIs ? 'Show KPIs' : 'Hide KPIs for Full View'}
+                      >
+                        {hideKPIs ? (
+                          <div className="flex items-center gap-2">
+                             <Eye className="w-4 h-4" />
+                             <span className="hidden sm:inline">Show KPIs</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                             <EyeOff className="w-4 h-4" />
+                             <span className="hidden sm:inline">Hide KPIs</span>
+                          </div>
+                        )}
+                      </button>
+                    </div>
+                  )}
                   {viewMode === 'list' &&
                     (() => {
                       const hasSuspendedProjects = projects.some(
