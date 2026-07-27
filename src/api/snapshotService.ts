@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc, getDocs, collection, deleteField } from 'firebase/
 import { db } from './firebase';
 import { calculateClientHealth, calculateProjectHealth } from '../utils/scoringUtils';
 import { Client, Project, Settings } from '../types';
+import LZString from 'lz-string';
 
 export async function generateDailyHealthSnapshots() {
   try {
@@ -34,7 +35,11 @@ export async function generateDailyHealthSnapshots() {
       const data = historyDoc.data();
       if (data.historyMapJSON) {
         try {
-          historyMap = JSON.parse(data.historyMapJSON);
+          let decompressed = data.historyMapJSON;
+          if (!decompressed.startsWith('{') && !decompressed.startsWith('[')) {
+            decompressed = LZString.decompressFromUTF16(data.historyMapJSON) || data.historyMapJSON;
+          }
+          historyMap = JSON.parse(decompressed);
         } catch (e) {
           console.error('Failed to parse historyMapJSON', e);
         }
@@ -45,6 +50,10 @@ export async function generateDailyHealthSnapshots() {
       // Clean up corrupted 0 scores from history
       Object.keys(historyMap).forEach((key) => {
         historyMap[key] = historyMap[key].filter((s: any) => s.score !== 0 && s.score !== 'N/A');
+        // Remove empty arrays to save space
+        if (historyMap[key].length === 0) {
+          delete historyMap[key];
+        }
       });
     }
 
@@ -125,7 +134,7 @@ export async function generateDailyHealthSnapshots() {
       await setDoc(
         historyRef,
         {
-          historyMapJSON: JSON.stringify(historyMap),
+          historyMapJSON: LZString.compressToUTF16(JSON.stringify(historyMap)),
           historyMap: deleteField(),
         },
         { merge: true }

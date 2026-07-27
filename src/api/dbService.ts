@@ -14,6 +14,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase';
+import LZString from 'lz-string';
 import {
   AppState,
   Client,
@@ -242,7 +243,11 @@ export async function getHealthHistory(entityId?: string) {
       let historyMap: Record<string, any> = {};
       if (data.historyMapJSON) {
         try {
-          historyMap = JSON.parse(data.historyMapJSON);
+          let decompressed = data.historyMapJSON;
+          if (!decompressed.startsWith('{') && !decompressed.startsWith('[')) {
+            decompressed = LZString.decompressFromUTF16(data.historyMapJSON) || data.historyMapJSON;
+          }
+          historyMap = JSON.parse(decompressed);
         } catch (e) {
           console.error('Failed to parse historyMapJSON', e);
         }

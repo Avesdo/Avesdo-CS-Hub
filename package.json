@@ -71,6 +71,7 @@
     "framer-motion": "^12.42.2",
     "fuse.js": "^7.5.0",
     "lucide-react": "^1.17.0",
+    "lz-string": "^1.5.0",
     "papaparse": "^5.5.3",
     "react": "^19.2.6",
     "react-colorful": "^5.7.0",
