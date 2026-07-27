@@ -654,26 +654,6 @@ export function TagDictionaryTab() {
               />
             </div>
 
-            {helpfulImports.length === 0 && (
-              <button
-                onClick={async () => {
-                  try {
-                    const importPromises = localImportsData.map(async (item) => {
-                      const docRef = doc(db, 'academy_helpful_imports', item.id);
-                      await setDoc(docRef, item);
-                    });
-                    await Promise.all(importPromises);
-                    toast.success(`Seeded ${localImportsData.length} helpful references.`);
-                  } catch (err: any) {
-                    toast.error('Failed to seed: ' + err.message);
-                  }
-                }}
-                className="px-3 h-8 bg-red-500 text-white rounded-md text-xs font-medium hover:bg-red-600 transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-sm"
-              >
-                Seed Data
-              </button>
-            )}
-
             {canEditTags && activePrimaryCategory !== 'Helpful References' && (
               <>
                 <button
