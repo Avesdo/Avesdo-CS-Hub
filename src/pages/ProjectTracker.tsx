@@ -246,6 +246,14 @@ export default function ProjectTracker() {
     return calculateProjectKPIs(mappedProjects);
   }, [mappedProjects]);
 
+  const unscheduledProjects = useMemo(
+    () =>
+      projects.filter(
+        (p) => p.projectStatus === 'Onboarding' && (!p.releaseDateVal || p.releaseDateVal === 0)
+      ),
+    [projects]
+  );
+
   // 3. Tab filtering logic
   const baseProjects = useMemo(() => {
     return getBaseProjects(mappedProjects, activeTab);
@@ -747,6 +755,28 @@ export default function ProjectTracker() {
                       <span>Calendar</span>
                     </button>
                   </div>
+                  <button
+                    onClick={() => openDrawer('unscheduledProjects', '')}
+                    className={`relative flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-xl border shadow-inner transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 shrink-0 ${
+                      unscheduledProjects.length > 0
+                        ? 'bg-orange-50/50 border-orange-200/60 hover:bg-orange-50 hover:border-orange-300'
+                        : 'bg-slate-100/50 border-slate-200/60 text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <AlertCircle
+                      className={`w-4 h-4 transition-colors ${unscheduledProjects.length > 0 ? 'text-orange-500 hover:scale-110 duration-300' : 'text-slate-400 hover:text-slate-600'}`}
+                    />
+                    <span
+                      className={`hidden sm:inline ${unscheduledProjects.length > 0 ? 'text-orange-900' : ''}`}
+                    >
+                      Unscheduled
+                    </span>
+                    {unscheduledProjects.length > 0 && (
+                      <span className="ml-1 bg-orange-100 text-orange-700 ring-1 ring-inset ring-orange-600/20 px-2 py-0.5 rounded-full text-xs font-bold group-hover:bg-orange-200 transition-colors">
+                        {unscheduledProjects.length}
+                      </span>
+                    )}
+                  </button>
                   {viewMode === 'list' &&
                     (() => {
                       const hasSuspendedProjects = projects.some(

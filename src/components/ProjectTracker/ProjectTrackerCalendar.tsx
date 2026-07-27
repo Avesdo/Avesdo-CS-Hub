@@ -243,7 +243,7 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
 
     return (
       <div className="flex-1 bg-white sm:rounded-b-xl border-x border-b border-border flex flex-col">
-        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/95 backdrop-blur-md sm:rounded-b-none sticky top-0 z-20 shadow-sm">
+        <div className="px-6 py-2 border-b border-slate-100 flex justify-between items-center bg-white/95 backdrop-blur-md sm:rounded-b-none sticky top-0 z-20 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 bg-white rounded-lg border border-border shadow-sm p-1">
               <Button
@@ -296,30 +296,6 @@ export const ProjectTrackerCalendar: React.FC<ProjectTrackerCalendarProps> = Rea
               />
             </div>
           </div>
-
-          <Button
-            variant="outline"
-            onClick={() => openDrawer('unscheduledProjects', '')}
-            className={`flex items-center gap-2 transition-all group ${
-              unscheduledProjects.length > 0
-                ? 'bg-orange-50/50 border-orange-200 hover:bg-orange-50 hover:border-orange-300 shadow-sm'
-                : 'bg-transparent border-transparent hover:bg-slate-100 text-slate-600'
-            }`}
-          >
-            <AlertCircle
-              className={`w-4 h-4 transition-colors ${unscheduledProjects.length > 0 ? 'text-orange-500 group-hover:scale-110 duration-300' : 'text-slate-400 group-hover:text-slate-600'}`}
-            />
-            <span
-              className={`font-semibold text-sm ${unscheduledProjects.length > 0 ? 'text-orange-900' : ''}`}
-            >
-              Unscheduled
-            </span>
-            {unscheduledProjects.length > 0 && (
-              <span className="ml-1 bg-orange-100 text-orange-700 ring-1 ring-inset ring-orange-600/20 px-2 py-0.5 rounded-full text-xs font-bold group-hover:bg-orange-200 transition-colors">
-                {unscheduledProjects.length}
-              </span>
-            )}
-          </Button>
         </div>
 
         <div className="flex-1">
