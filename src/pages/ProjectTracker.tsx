@@ -50,6 +50,8 @@ import {
   PauseCircle,
   ListTodo,
   List,
+  EyeOff,
+  Eye,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getHealthHistory } from '../api/dbService';
@@ -86,6 +88,7 @@ export default function ProjectTracker() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchInput, setSearchInput] = useState(searchTerm);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hideKPIs, setHideKPIs] = useState(false);
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
 
@@ -565,9 +568,9 @@ export default function ProjectTracker() {
         </div>
       </div>
 
-      {/* KPI CARDS - COLLAPSIBLE ON SCROLL */}
+      {/* KPI CARDS - COLLAPSIBLE ON SCROLL OR MANUAL TOGGLE */}
       <div
-        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-2 scale-y-100'}`}
+        className={`transition-all duration-200 ease-in-out transform origin-top overflow-hidden shrink-0 ${isScrolled || hideKPIs ? 'max-h-0 opacity-0 mb-0 scale-y-95' : 'max-h-[800px] opacity-100 mb-2 scale-y-100'}`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 px-4 md:px-6 py-2">
           <motion.div
@@ -715,6 +718,25 @@ export default function ProjectTracker() {
             <div className="flex flex-col gap-0 pb-2 pt-2 shrink-0 w-full sticky top-0 z-30 bg-white/95 backdrop-blur-md">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 relative">
                 <div className="flex items-center gap-2 overflow-x-auto custom-thin-scroll">
+                  <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
+                    <button
+                      onClick={() => setHideKPIs(!hideKPIs)}
+                      className={`relative flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 z-10 ${hideKPIs ? 'bg-white shadow-sm border border-slate-200/60 text-primary' : 'text-slate-500 hover:text-slate-700'}`}
+                      title={hideKPIs ? 'Show KPIs' : 'Hide KPIs for Full View'}
+                    >
+                      {hideKPIs ? (
+                        <div className="flex items-center gap-2">
+                           <Eye className="w-4 h-4" />
+                           <span className="hidden sm:inline">Show KPIs</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                           <EyeOff className="w-4 h-4" />
+                           <span className="hidden sm:inline">Hide KPIs</span>
+                        </div>
+                      )}
+                    </button>
+                  </div>
                   <div className="relative flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/60 shadow-inner mr-2 shrink-0">
                     <button
                       onClick={() => setViewMode('list')}
