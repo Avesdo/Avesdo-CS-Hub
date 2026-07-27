@@ -424,8 +424,7 @@ export function QualityMetricsWidget() {
       }
     });
 
-    // Process Quizzes (Knowledge Checks)
-    console.log('QualityMetricsWidget quizAttempts:', quizAttempts);
+    const userAverageScores: Record<string, { totalScore: number; attemptCount: number }> = {};
     quizAttempts.forEach((attempt) => {
       const score = typeof attempt.score === 'number' ? attempt.score : parseFloat(attempt.score);
       const attemptDate = attempt.updatedAt || attempt.completedAt;
