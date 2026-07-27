@@ -245,12 +245,12 @@ const ProjectRow = React.memo(
           <div className="inline-block relative">
             <Select
               value={p.assignee || 'Unassigned'}
-              options={users
+              options={[{ label: "Unassigned", value: "" }, ...users
                 .filter((u) => u.isAccountManager && !u.isDeactivated)
                 .map((u) => ({
                   label: getSettingBadge('managers', u.uid, settings),
                   value: u.uid,
-                }))}
+                }))]}
               onChange={(val) => onUpdateProject(p.id, 'assignee', val)}
               disabled={!hasPermission('project_edit_details')}
               hideCheckmark={true}

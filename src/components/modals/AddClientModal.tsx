@@ -273,12 +273,12 @@ export default function AddClientModal() {
                 render={({ field }) => (
                   <Select
                     value={field.value || ''}
-                    options={users
+                    options={[{ label: "Unassigned", value: "" }, ...users
                       .filter((u) => u.isAccountManager && !u.isDeactivated)
                       .map((u) => ({
                         label: u.displayName || u.email,
                         value: u.uid,
-                      }))}
+                      }))]}
                     onChange={field.onChange}
                     trigger={
                       <TokenTrigger

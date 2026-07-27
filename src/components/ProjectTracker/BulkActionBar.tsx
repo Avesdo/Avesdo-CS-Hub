@@ -56,12 +56,12 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         <div className="relative">
           <Select
             value={pendingUpdates.assignee || 'Unassigned'}
-            options={users
+            options={[{ label: "Unassigned", value: "" }, ...users
               .filter((u) => u.isAccountManager && !u.isDeactivated)
               .map((u) => ({
                 label: getSettingBadge('managers', u.uid, settings),
                 value: u.uid,
-              }))}
+              }))]}
             onChange={(val) => setPendingUpdates((prev) => ({ ...prev, assignee: val }))}
             hideCheckmark={false}
             position="top"
