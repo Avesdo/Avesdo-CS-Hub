@@ -269,7 +269,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
 
               {/* Content Area */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <DeliverablesGrid template={template} project={project} readOnly={isSaving} />
+                <DeliverablesGrid template={template} project={project} readOnly={false} />
               </div>
             </div>
           </FormProvider>
