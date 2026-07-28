@@ -30,7 +30,10 @@ export class ErrorBoundary extends Component<Props, State> {
       // Only reload if we haven't already reloaded in the last 10 seconds (prevents infinite loops)
       if (!lastReload || now - parseInt(lastReload) > 10000) {
         sessionStorage.setItem('chunk_load_error_time', now.toString());
-        window.location.reload();
+        // Force cache bypass by appending a timestamp query param
+        const url = new URL(window.location.href);
+        url.searchParams.set('v', now.toString());
+        window.location.href = url.toString();
       }
     }
   }
