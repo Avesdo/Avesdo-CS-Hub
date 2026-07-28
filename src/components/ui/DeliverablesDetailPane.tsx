@@ -90,7 +90,7 @@ export default function DeliverablesDetailPane({
   // Only watch the currently active item
   const itemData = useWatch({ name: activeItemId || 'none' }) || {};
 
-  if (!activeItemId || !allItems[activeItemId]) {
+  if (!activeItemId || !allItems[activeItemId] || (isClientPortal && hiddenItems.includes(activeItemId))) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-slate-400 max-w-[300px] mx-auto text-center">
         <div className="w-16 h-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200 flex items-center justify-center mb-6 shadow-sm transition-transform">

@@ -97,14 +97,21 @@ export default function DeliverablesGrid({
   // Default select the first item on load
   React.useEffect(() => {
     if (!activeItemId) {
-      const firstSection = visibleSections[0];
-      if (firstSection && firstSection.items.length > 0) {
-        setActiveItemId(firstSection.items[0].id);
-      } else if (customItems.length > 0) {
-        setActiveItemId(customItems[0].id);
+      let firstId = null;
+      for (const section of visibleSections) {
+        if (isClientPortal && hiddenSections.includes(section.id)) continue;
+        const visibleItems = section.items.filter(item => !(isClientPortal && hiddenItems.includes(item.id)));
+        if (visibleItems.length > 0) {
+          firstId = visibleItems[0].id;
+          break;
+        }
       }
+      if (!firstId && customItems.length > 0) {
+        firstId = customItems[0].id;
+      }
+      if (firstId) setActiveItemId(firstId);
     }
-  }, [visibleSections, customItems, activeItemId]);
+  }, [visibleSections, customItems, activeItemId, isClientPortal, hiddenSections, hiddenItems]);
 
   if (visibleSections.length === 0 && !customItems.length) {
     return (

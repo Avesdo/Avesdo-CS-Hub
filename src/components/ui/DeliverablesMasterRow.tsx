@@ -36,6 +36,8 @@ export default function DeliverablesMasterRow({
   const priority = itemData.priority || item.defaultPriority || item.priority || 'Normal';
   const taskName = itemData.taskName || item.taskName || 'Unnamed Item';
 
+  if (isHidden && isClientPortal) return null;
+
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     if (!taskName.toLowerCase().includes(q)) return null;
