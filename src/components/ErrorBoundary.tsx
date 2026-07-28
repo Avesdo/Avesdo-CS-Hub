@@ -25,9 +25,11 @@ export class ErrorBoundary extends Component<Props, State> {
     
     // Automatically reload the page once if a dynamic import fails (usually means a new version was deployed)
     if (error.message && (error.message.includes('Failed to fetch dynamically imported module') || error.message.includes('Importing a module script failed'))) {
-      const isReloaded = sessionStorage.getItem('chunk_load_error_reloaded');
-      if (!isReloaded) {
-        sessionStorage.setItem('chunk_load_error_reloaded', 'true');
+      const lastReload = sessionStorage.getItem('chunk_load_error_time');
+      const now = Date.now();
+      // Only reload if we haven't already reloaded in the last 10 seconds (prevents infinite loops)
+      if (!lastReload || now - parseInt(lastReload) > 10000) {
+        sessionStorage.setItem('chunk_load_error_time', now.toString());
         window.location.reload();
       }
     }
