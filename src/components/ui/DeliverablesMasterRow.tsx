@@ -101,15 +101,17 @@ export default function DeliverablesMasterRow({
           className={`w-full h-full rounded-full ${dotColor} ${isActive ? 'animate-pulse ring-2 ring-offset-1 ring-primary/50' : ''}`}
         />
       </div>
-      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <TruncatedText
-          text={String('' + taskName + '')}
-          containerClassName={`text-[13px] font-semibold ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}
-        >
-          {taskName}
-        </TruncatedText>
+      <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <TruncatedText
+            text={String('' + taskName + '')}
+            containerClassName={`text-[13px] font-semibold ${isActive ? 'text-primary' : 'text-slate-700 group-hover:text-slate-900'}`}
+          >
+            {taskName}
+          </TruncatedText>
+        </div>
         {!isHidden && status !== 'Completed' && (
-          <div className="flex items-center">
+          <div className="shrink-0 flex items-center">
             <span
               className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPriorityColor(priority)}`}
             >
