@@ -22,6 +22,15 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error in component:', error, errorInfo);
+    
+    // Automatically reload the page once if a dynamic import fails (usually means a new version was deployed)
+    if (error.message && (error.message.includes('Failed to fetch dynamically imported module') || error.message.includes('Importing a module script failed'))) {
+      const isReloaded = sessionStorage.getItem('chunk_load_error_reloaded');
+      if (!isReloaded) {
+        sessionStorage.setItem('chunk_load_error_reloaded', 'true');
+        window.location.reload();
+      }
+    }
   }
 
   public render() {
