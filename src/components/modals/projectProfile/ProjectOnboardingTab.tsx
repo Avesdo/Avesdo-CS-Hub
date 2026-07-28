@@ -341,7 +341,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   const getFormSubmitDate = (modalId: string | null) => {
     if (!modalId) return null;
     if (modalId === 'survey') return project?.onboarding?.survey?.submittedAt;
-    if (modalId === 'deliverables') return project?.deliverables?.status === 'Completed';
+    if (modalId === 'deliverables') return project?.deliverables?.status === 'Completed' ? project?.deliverables?.submittedAt : null;
     if (modalId === 'primaryQA') return project?.onboarding?.primaryQA?.submittedAt;
     if (modalId === 'clientQA') return project?.onboarding?.clientQA?.submittedAt;
     if (modalId === 'secondaryQA') return project?.onboarding?.secondaryQA?.submittedAt;
