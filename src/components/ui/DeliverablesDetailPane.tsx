@@ -87,8 +87,8 @@ export default function DeliverablesDetailPane({
 }: DeliverablesDetailPaneProps) {
   const { setValue, getValues } = useFormContext();
 
-  // Only watch the currently active item
-  const itemData = useWatch({ name: activeItemId || 'none' }) || {};
+  // Only watch the currently active item (for standard items)
+  const watchedItemData = useWatch({ name: activeItemId || 'none' }) || {};
 
   if (!activeItemId || !allItems[activeItemId] || (isClientPortal && hiddenItems.includes(activeItemId))) {
     return (
@@ -107,6 +107,10 @@ export default function DeliverablesDetailPane({
   const item = allItems[activeItemId];
   const isCustom = item.isCustom;
   const isHidden = !isCustom && hiddenItems.includes(item.id);
+
+  // Custom items are stored in an array (_customItems) instead of by ID at the root.
+  // Their fully updated state is already merged into `item` by DeliverablesGrid.
+  const itemData = isCustom ? item : watchedItemData;
 
   const handleChange = (field: string, val: any) => {
     if (isCustom) {
