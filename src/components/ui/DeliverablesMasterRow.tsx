@@ -52,6 +52,7 @@ export default function DeliverablesMasterRow({
   else if (['Question', 'Additional Pending', 'Pending'].includes(status))
     dotColor = 'bg-amber-500';
   else if (['Delayed'].includes(status)) dotColor = 'bg-rose-500';
+  else if (['N/A'].includes(status)) dotColor = 'bg-slate-200';
 
   const getPriorityColor = (prio: string) => {
     switch (prio) {
@@ -110,7 +111,7 @@ export default function DeliverablesMasterRow({
             {taskName}
           </TruncatedText>
         </div>
-        {!isHidden && status !== 'Completed' && (
+        {!isHidden && status !== 'Completed' && status !== 'N/A' && (
           <div className="shrink-0 flex items-center">
             <span
               className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPriorityColor(priority)}`}

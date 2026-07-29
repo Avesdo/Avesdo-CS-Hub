@@ -19,6 +19,8 @@ const HeaderProgress = ({ template, project }: { template: any; project: any }) 
   let total = 0;
   let completed = 0;
 
+  const hiddenItems = values._hiddenItems || [];
+
   // Count standard items
   const activeFeatures = project?.features || [];
   (template?.sections || []).forEach((sec: any) => {
@@ -28,17 +30,20 @@ const HeaderProgress = ({ template, project }: { template: any; project: any }) 
       sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
     ) {
       sec.items.forEach((item: any) => {
-        total++;
+        if (hiddenItems.includes(item.id)) return;
         const st = values[item.id]?.status;
-        if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(st)) completed++;
+        if (st === 'N/A') return;
+        total++;
+        if (['Completed', 'Setup Completed', 'Draft Complete'].includes(st)) completed++;
       });
     }
   });
   // Count custom items
   const customs = values._customItems || [];
-  total += customs.length;
   customs.forEach((c: any) => {
-    if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(c.status)) completed++;
+    if (c.status === 'N/A') return;
+    total++;
+    if (['Completed', 'Setup Completed', 'Draft Complete'].includes(c.status)) completed++;
   });
 
   const pct = total === 0 ? 0 : (completed / total) * 100;
@@ -99,6 +104,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       const now = new Date().toISOString();
       let total = 0;
       let completed = 0;
+      const hiddenItems = currentValues._hiddenItems || [];
       const activeFeatures = project?.features || [];
       (template?.sections || []).forEach((sec: any) => {
         if (
@@ -107,16 +113,19 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
           sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
         ) {
           sec.items.forEach((item: any) => {
-            total++;
+            if (hiddenItems.includes(item.id)) return;
             const st = currentValues[item.id]?.status;
-            if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(st)) completed++;
+            if (st === 'N/A') return;
+            total++;
+            if (['Completed', 'Setup Completed', 'Draft Complete'].includes(st)) completed++;
           });
         }
       });
       const customs = currentValues._customItems || [];
-      total += customs.length;
       customs.forEach((c: any) => {
-        if (['Completed', 'Setup Completed', 'Draft Complete', 'N/A'].includes(c.status))
+        if (c.status === 'N/A') return;
+        total++;
+        if (['Completed', 'Setup Completed', 'Draft Complete'].includes(c.status))
           completed++;
       });
 

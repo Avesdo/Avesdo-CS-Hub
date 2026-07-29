@@ -161,15 +161,17 @@ export default function ClientPortal() {
               return;
             section.items.forEach((item: any) => {
               if ((cleanData as any)._hiddenItems?.includes(item.id)) return;
-              total++;
               const status = (cleanData as any)[item.id]?.status || item.status || 'Pending';
-              if (status === 'Completed') completed++;
+              if (status === 'N/A') return;
+              total++;
+              if (['Completed', 'Setup Completed', 'Draft Complete'].includes(status)) completed++;
             });
           });
           ((cleanData as any)._customItems || []).forEach((cItem: any) => {
             if ((cleanData as any)._hiddenItems?.includes(cItem.id)) return;
+            if (cItem.status === 'N/A') return;
             total++;
-            if (cItem.status === 'Completed') completed++;
+            if (['Completed', 'Setup Completed', 'Draft Complete'].includes(cItem.status)) completed++;
           });
           isDeliverablesComplete = total > 0 && completed === total;
         }
