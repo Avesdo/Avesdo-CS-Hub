@@ -139,7 +139,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       };
 
       const toastOptions = silent
-        ? undefined
+        ? { silent: true }
         : {
             successMsg: 'Deliverables saved successfully!',
             errorMsg: 'Failed to save deliverables.',
