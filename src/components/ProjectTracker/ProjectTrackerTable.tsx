@@ -860,7 +860,7 @@ export const ProjectTrackerTable: React.FC<ProjectTrackerTableProps> = React.mem
                 showHealthScore={showHealthScore}
                 getHealthBadge={getHealthBadge}
                 useRelativeDate={activeTab === 'Actively Onboarding'}
-                showYearInDate={!(groupA && activeTab !== 'All Onboarding')}
+                showYearInDate={activeTab !== 'Actively Onboarding'}
                 onUpdateProject={onUpdateProject}
                 getSettingBadge={getSettingBadge}
                 showTimeline={showTimeline}
