@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import GlobalSearch from './GlobalSearch';
 import { Bell, Check, X, Trash2 } from 'lucide-react';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import {
   AppNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   clearAllNotifications,
+  sendEmailAlert,
 } from '../utils/notificationUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
@@ -54,6 +55,30 @@ export function NotificationBell({
     });
     return () => unsubscribe();
   }, []);
+
+  // Agent Relay: Automatically send any failed client email alerts
+  useEffect(() => {
+    const failedEmails = notifications.filter((n) => n.emailSent === false);
+    failedEmails.forEach(async (n) => {
+      // Optimistically update local state to prevent loop before DB confirms
+      setNotifications((prev) =>
+        prev.map((notif) => (notif.id === n.id ? { ...notif, emailSent: true } : notif))
+      );
+
+      if (n.projectId && n.projectName && n.formName && n.type) {
+        const actionType = n.type === 'submission' ? 'submitted' : 'updated';
+        const success = await sendEmailAlert(n.projectId, n.projectName, n.formName, actionType);
+        if (success) {
+          await updateDoc(doc(db, 'notifications', n.id), { emailSent: true });
+        } else {
+          // Revert on failure so it can be retried later
+          setNotifications((prev) =>
+            prev.map((notif) => (notif.id === n.id ? { ...notif, emailSent: false } : notif))
+          );
+        }
+      }
+    });
+  }, [notifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 

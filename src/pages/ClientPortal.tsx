@@ -214,19 +214,22 @@ export default function ClientPortal() {
                     .replace(/([A-Z])/g, ' $1')
                     .replace(/^./, (str) => str.toUpperCase());
 
-      await createNotification(project.id, project.name, actionType, prettyFormName);
+      const notificationId = await createNotification(project.id, project.name, actionType, prettyFormName);
 
       if (
         !autoSave &&
         !isSaveProgress &&
         ['survey', 'clientQA', 'certification', 'onboardingCsat'].includes(currentFormType)
       ) {
-        await sendEmailAlert(
+        const success = await sendEmailAlert(
           project.id,
           project.name,
           prettyFormName,
           isFirstSubmission ? 'submitted' : 'updated'
         );
+        if (notificationId) {
+          await updateDoc(doc(db, 'notifications', notificationId), { emailSent: success });
+        }
       }
 
       // Invalidate the TanStack query to refetch fresh project data

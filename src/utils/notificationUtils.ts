@@ -10,6 +10,7 @@ export interface AppNotification {
   title?: string;
   createdAt: string;
   read: boolean;
+  emailSent?: boolean;
 }
 
 // 1. Create a notification in Firebase
@@ -18,10 +19,10 @@ export async function createNotification(
   projectName: string,
   type: 'submission' | 'update' | 'academy',
   formName: string
-) {
+): Promise<string | undefined> {
   try {
     const notificationsRef = collection(db, 'notifications');
-    await addDoc(notificationsRef, {
+    const docRef = await addDoc(notificationsRef, {
       projectId,
       projectName,
       type,
@@ -29,6 +30,7 @@ export async function createNotification(
       createdAt: new Date().toISOString(),
       read: false,
     });
+    return docRef.id;
   } catch (err) {
     console.error('Failed to create notification:', err);
   }
@@ -71,10 +73,10 @@ export async function sendEmailAlert(
   projectName: string,
   formName: string,
   action: 'submitted' | 'updated'
-) {
+): Promise<boolean> {
   if (!APPS_SCRIPT_WEBHOOK_URL) {
     console.log('Email alert suppressed: No Webhook URL configured.');
-    return;
+    return false;
   }
 
   const projectUrl = `https://avesdo-cs-hub.web.app/?drawer=project&drawerId=${projectId}`;
@@ -96,7 +98,9 @@ export async function sendEmailAlert(
         body: `Client for project "${projectName}" has ${action} their ${formName}. Please log into the CS Hub to review.\n\nView Project: ${projectUrl}`,
       }),
     });
+    return true;
   } catch (err) {
     console.error('Failed to send email alert:', err);
+    return false;
   }
 }
