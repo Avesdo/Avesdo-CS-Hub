@@ -68,7 +68,7 @@ export const useSupportStore = create<SupportState>((set, get) => ({
   tickets: [],
   isLoading: false,
   hasFetched: false,
-  dateRange: 'lastMonth',
+  dateRange: 'thisQuarter',
   setDateRange: (range) => set({ dateRange: range }),
   customStartDate: null,
   customEndDate: null,
