@@ -348,6 +348,7 @@ export default function ProjectTracker() {
         } else if (field === 'onboardingPhase' && value === 'Released') {
           updates.projectStatus = 'Active';
           updates.timelineStatus = 'Released';
+          updates.phaseUpdatedAt = Date.now();
           const today = new Date();
           const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
           updates.releaseDateVal = localMidnight.getTime();
@@ -356,6 +357,8 @@ export default function ProjectTracker() {
             day: 'numeric',
             year: 'numeric',
           });
+        } else if (field === 'onboardingPhase') {
+          updates.phaseUpdatedAt = Date.now();
         }
 
         const oldVal = p[field as keyof typeof p];
@@ -414,6 +417,7 @@ export default function ProjectTracker() {
           if (pUpdates.timelineStatus === 'Released') {
             pUpdates.projectStatus = 'Active';
             pUpdates.onboardingPhase = 'Released';
+            pUpdates.phaseUpdatedAt = Date.now();
             const today = new Date();
             const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             pUpdates.releaseDateVal = localMidnight.getTime();
@@ -426,17 +430,24 @@ export default function ProjectTracker() {
             pUpdates.releaseDateVal = null;
             pUpdates.releaseDateStr = '';
           }
-        } else if (pUpdates.onboardingPhase === 'Released') {
-          pUpdates.projectStatus = 'Active';
-          pUpdates.timelineStatus = 'Released';
-          const today = new Date();
-          const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-          pUpdates.releaseDateVal = localMidnight.getTime();
-          pUpdates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          });
+        }
+
+        if (pUpdates.onboardingPhase) {
+          if (pUpdates.onboardingPhase === 'Released') {
+            pUpdates.projectStatus = 'Active';
+            pUpdates.timelineStatus = 'Released';
+            pUpdates.phaseUpdatedAt = Date.now();
+            const today = new Date();
+            const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            pUpdates.releaseDateVal = localMidnight.getTime();
+            pUpdates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+          } else {
+            pUpdates.phaseUpdatedAt = Date.now();
+          }
         }
 
         if (pUpdates.projectStatus === 'Active' && p.projectStatus === 'Onboarding') {

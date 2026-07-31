@@ -196,6 +196,7 @@ export default function ClientPortal() {
         updateObj = { [`onboarding.${currentFormType}`]: payload };
         if (isFirstSubmission && currentFormType === 'survey') {
           updateObj['onboardingPhase'] = 'Onboarding Survey Received';
+          updateObj['phaseUpdatedAt'] = Date.now();
         }
       }
 

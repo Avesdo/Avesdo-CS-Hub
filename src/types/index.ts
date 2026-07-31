@@ -56,6 +56,7 @@ export interface Project {
   isArchived?: boolean;
   timelineStatus?: string;
   onboardingPhase?: string;
+  phaseUpdatedAt?: number;
   teamworkLink?: string;
   features?: string[];
   region?: string;

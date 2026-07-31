@@ -267,13 +267,17 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
       if (field === 'timelineStatus' && value === 'Released') {
         updates.projectStatus = 'Active';
         updates.onboardingPhase = 'Released';
+        updates.phaseUpdatedAt = Date.now();
         const today = new Date();
         updates.releaseDateVal = today.toISOString();
       } else if (field === 'onboardingPhase' && value === 'Released') {
         updates.projectStatus = 'Active';
         updates.timelineStatus = 'Released';
+        updates.phaseUpdatedAt = Date.now();
         const today = new Date();
         updates.releaseDateVal = today.toISOString();
+      } else if (field === 'onboardingPhase') {
+        updates.phaseUpdatedAt = Date.now();
       }
 
       await updateProjectRecord(
@@ -319,9 +323,10 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
   const completedCount = isReleased ? MILESTONES.length : activeIndex;
   const progressPercentage = Math.round((completedCount / MILESTONES.length) * 100);
 
-  const getDaysInPhase = (lastUpdated: number) => {
-    if (!lastUpdated) return 0;
-    const diffTime = Math.abs(new Date().getTime() - lastUpdated);
+  const getDaysInPhase = (lastUpdated: number, phaseUpdatedAt?: number) => {
+    const timestamp = phaseUpdatedAt || lastUpdated;
+    if (!timestamp) return 0;
+    const diffTime = Math.abs(new Date().getTime() - timestamp);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
@@ -649,13 +654,16 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                       {isActive && !isReleased && project?.lastUpdated && (
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm ${
-                            getDaysInPhase(project.lastUpdated) > 14
+                            getDaysInPhase(project.lastUpdated, project.phaseUpdatedAt) > 14
                               ? 'bg-red-50 text-red-600 border border-red-200'
                               : 'bg-amber-50 text-amber-600 border border-amber-200'
                           }`}
                         >
-                          ⏱ {getDaysInPhase(project.lastUpdated)}{' '}
-                          {getDaysInPhase(project.lastUpdated) === 1 ? 'day' : 'days'} in phase
+                          ⏱ {getDaysInPhase(project.lastUpdated, project.phaseUpdatedAt)}{' '}
+                          {getDaysInPhase(project.lastUpdated, project.phaseUpdatedAt) === 1
+                            ? 'day'
+                            : 'days'}{' '}
+                          in phase
                         </span>
                       )}
                     </div>

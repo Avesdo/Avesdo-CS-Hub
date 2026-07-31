@@ -262,6 +262,7 @@ export default function ProjectProfileModal() {
       updates.timelineStatus = 'Scheduled';
       updates.implementationStatus = 'Scheduled';
       updates.onboardingPhase = 'Released';
+      updates.phaseUpdatedAt = new Date().getTime();
       const today = new Date();
       const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       updates.releaseDateVal = localMidnight.getTime();
