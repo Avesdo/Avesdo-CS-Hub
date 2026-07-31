@@ -65,7 +65,12 @@ export function NotificationBell({
         prev.map((notif) => (notif.id === n.id ? { ...notif, emailSent: true } : notif))
       );
 
-      if (n.projectId && n.projectName && n.formName && n.type) {
+      if (
+        n.projectId &&
+        n.projectName &&
+        n.formName &&
+        (n.type === 'submission' || n.type === 'update')
+      ) {
         const actionType = n.type === 'submission' ? 'submitted' : 'updated';
         const success = await sendEmailAlert(n.projectId, n.projectName, n.formName, actionType);
         if (success) {

@@ -328,20 +328,42 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
 
   const isFormSubmitted = (modalId: string | null) => {
     if (!modalId) return false;
-    if (modalId === 'survey') return project?.onboarding?.survey?.status === 'Submitted';
+    if (modalId === 'survey')
+      return (
+        project?.onboarding?.survey?.status === 'Submitted' ||
+        !!project?.onboarding?.survey?.submittedAt
+      );
     if (modalId === 'deliverables') return false; // Deliverables don't have a specific submit status
-    if (modalId === 'primaryQA') return project?.onboarding?.primaryQA?.status === 'Submitted';
-    if (modalId === 'clientQA') return project?.onboarding?.clientQA?.status === 'Submitted';
-    if (modalId === 'secondaryQA') return project?.onboarding?.secondaryQA?.status === 'Submitted';
+    if (modalId === 'primaryQA')
+      return (
+        project?.onboarding?.primaryQA?.status === 'Submitted' ||
+        !!project?.onboarding?.primaryQA?.submittedAt
+      );
+    if (modalId === 'clientQA')
+      return (
+        project?.onboarding?.clientQA?.status === 'Submitted' ||
+        !!project?.onboarding?.clientQA?.submittedAt
+      );
+    if (modalId === 'secondaryQA')
+      return (
+        project?.onboarding?.secondaryQA?.status === 'Submitted' ||
+        !!project?.onboarding?.secondaryQA?.submittedAt
+      );
     if (modalId === 'certification')
-      return project?.onboarding?.certification?.status === 'Submitted';
+      return (
+        project?.onboarding?.certification?.status === 'Submitted' ||
+        !!project?.onboarding?.certification?.submittedAt
+      );
     return false;
   };
 
   const getFormSubmitDate = (modalId: string | null) => {
     if (!modalId) return null;
     if (modalId === 'survey') return project?.onboarding?.survey?.submittedAt;
-    if (modalId === 'deliverables') return project?.deliverables?.status === 'Completed' ? project?.deliverables?.submittedAt : null;
+    if (modalId === 'deliverables')
+      return project?.deliverables?.status === 'Completed'
+        ? project?.deliverables?.submittedAt
+        : null;
     if (modalId === 'primaryQA') return project?.onboarding?.primaryQA?.submittedAt;
     if (modalId === 'clientQA') return project?.onboarding?.clientQA?.submittedAt;
     if (modalId === 'secondaryQA') return project?.onboarding?.secondaryQA?.submittedAt;
@@ -650,11 +672,21 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                       {submitDate && (
                         <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                           Completed:{' '}
-                          {new Date(submitDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          {['survey', 'clientQA', 'certification'].includes(milestone.modal || '')
+                            ? new Date(submitDate)
+                                .toLocaleString('en-US', {
+                                  month: 'long',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                })
+                                .replace(' at ', ' ')
+                            : new Date(submitDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
                         </span>
                       )}
                       {status !== 'Draft' &&

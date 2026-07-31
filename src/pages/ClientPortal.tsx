@@ -171,7 +171,8 @@ export default function ClientPortal() {
             if ((cleanData as any)._hiddenItems?.includes(cItem.id)) return;
             if (cItem.status === 'N/A') return;
             total++;
-            if (['Completed', 'Setup Completed', 'Draft Complete'].includes(cItem.status)) completed++;
+            if (['Completed', 'Setup Completed', 'Draft Complete'].includes(cItem.status))
+              completed++;
           });
           isDeliverablesComplete = total > 0 && completed === total;
         }
@@ -214,7 +215,12 @@ export default function ClientPortal() {
                     .replace(/([A-Z])/g, ' $1')
                     .replace(/^./, (str) => str.toUpperCase());
 
-      const notificationId = await createNotification(project.id, project.name, actionType, prettyFormName);
+      const notificationId = await createNotification(
+        project.id,
+        project.name,
+        actionType,
+        prettyFormName
+      );
 
       if (
         !autoSave &&

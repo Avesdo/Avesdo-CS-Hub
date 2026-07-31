@@ -125,8 +125,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       customs.forEach((c: any) => {
         if (c.status === 'N/A') return;
         total++;
-        if (['Completed', 'Setup Completed', 'Draft Complete'].includes(c.status))
-          completed++;
+        if (['Completed', 'Setup Completed', 'Draft Complete'].includes(c.status)) completed++;
       });
 
       const isComplete = total > 0 && completed === total;
@@ -214,15 +213,16 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                         {(project?.deliverables?.submittedAt || project?.deliverables?.updatedAt) &&
                           !isSaving && (
                             <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium px-3 py-0.5 bg-slate-100 rounded-full">
-                              {project?.deliverables?.status === 'Completed' && project?.deliverables?.submittedAt && (
-                                <span>
-                                  Completed:{' '}
-                                  {new Date(project?.deliverables.submittedAt).toLocaleDateString(
-                                    'en-US',
-                                    { month: 'short', day: 'numeric', year: 'numeric' }
-                                  )}
-                                </span>
-                              )}
+                              {project?.deliverables?.status === 'Completed' &&
+                                project?.deliverables?.submittedAt && (
+                                  <span>
+                                    Completed:{' '}
+                                    {new Date(project?.deliverables.submittedAt).toLocaleDateString(
+                                      'en-US',
+                                      { month: 'short', day: 'numeric', year: 'numeric' }
+                                    )}
+                                  </span>
+                                )}
                               {project?.deliverables?.updatedAt &&
                                 (project?.deliverables?.status !== 'Completed' ||
                                   project?.deliverables?.updatedAt !==

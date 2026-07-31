@@ -185,7 +185,7 @@ export function useScheduleData() {
         // Exclude single-day time off if it's today
         const isSingleDay = sDate.getTime() === eDate.getTime();
         if (isSingleDay && diffDaysStart === 0) return false;
-        
+
         return diffDaysEnd >= 0 && diffDaysStart <= 7;
       })
       .map((t) => ({

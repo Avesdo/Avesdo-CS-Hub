@@ -100,7 +100,9 @@ export default function DeliverablesGrid({
       let firstId = null;
       for (const section of visibleSections) {
         if (isClientPortal && hiddenSections.includes(section.id)) continue;
-        const visibleItems = section.items.filter(item => !(isClientPortal && hiddenItems.includes(item.id)));
+        const visibleItems = section.items.filter(
+          (item) => !(isClientPortal && hiddenItems.includes(item.id))
+        );
         if (visibleItems.length > 0) {
           firstId = visibleItems[0].id;
           break;

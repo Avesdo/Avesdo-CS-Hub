@@ -601,12 +601,15 @@ export default function ClientProfileModal() {
 
                         <div>
                           <Select
-                            options={[{ label: "Unassigned", value: "" }, ...users
-                              .filter((u) => u.isAccountManager && !u.isDeactivated)
-                              .map((u) => ({
-                                label: u.displayName || u.email,
-                                value: u.uid,
-                              }))]}
+                            options={[
+                              { label: 'Unassigned', value: '' },
+                              ...users
+                                .filter((u) => u.isAccountManager && !u.isDeactivated)
+                                .map((u) => ({
+                                  label: u.displayName || u.email,
+                                  value: u.uid,
+                                })),
+                            ]}
                             value={client?.accountManager || ''}
                             onChange={(val) => handleUpdateManager(val)}
                             disabled={!hasPermission('client_edit_profile')}

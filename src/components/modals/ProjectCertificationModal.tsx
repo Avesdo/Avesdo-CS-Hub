@@ -44,6 +44,7 @@ export default function ProjectCertificationModal({
         ...project.onboarding,
         certification: {
           ...cleanData,
+          status: 'Submitted',
           submittedAt: project.onboarding?.certification?.submittedAt || now,
           updatedAt: now,
         },

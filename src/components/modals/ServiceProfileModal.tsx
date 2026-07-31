@@ -680,12 +680,15 @@ export default function ServiceProfileModal() {
                         </div>
                         <div>
                           <MultiSelect
-                            options={[{ label: "Unassigned", value: "" }, ...users
-                              .filter((u) => u.isAccountManager && !u.isDeactivated)
-                              .map((u) => ({
-                                label: u.displayName || u.email,
-                                value: u.uid,
-                              }))]}
+                            options={[
+                              { label: 'Unassigned', value: '' },
+                              ...users
+                                .filter((u) => u.isAccountManager && !u.isDeactivated)
+                                .map((u) => ({
+                                  label: u.displayName || u.email,
+                                  value: u.uid,
+                                })),
+                            ]}
                             values={
                               service?.managers ||
                               (service?.manager && service.manager !== 'Unassigned'

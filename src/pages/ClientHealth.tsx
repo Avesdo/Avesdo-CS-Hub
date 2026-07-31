@@ -288,12 +288,15 @@ export default function ClientHealth() {
             <div className="inline-block relative">
               <Select
                 value={c.accountManager || 'Unassigned'}
-                options={[{ label: 'Unassigned', value: '' }, ...users
-                  .filter((u) => u.isAccountManager && !u.isDeactivated)
-                  .map((u) => ({
-                    label: getSettingBadge('managers', u.uid, settings),
-                    value: u.uid,
-                  }))]}
+                options={[
+                  { label: 'Unassigned', value: '' },
+                  ...users
+                    .filter((u) => u.isAccountManager && !u.isDeactivated)
+                    .map((u) => ({
+                      label: getSettingBadge('managers', u.uid, settings),
+                      value: u.uid,
+                    })),
+                ]}
                 onChange={(val) => handleUpdateManager(c.clientId, val)}
                 disabled={!hasPermission('client_edit_profile')}
                 hideCheckmark={true}

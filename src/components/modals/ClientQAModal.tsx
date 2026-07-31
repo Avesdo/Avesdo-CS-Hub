@@ -41,6 +41,7 @@ export default function ClientQAModal({ project, onClose }: ClientQAModalProps) 
         ...project.onboarding,
         clientQA: {
           ...cleanData,
+          status: 'Submitted',
           submittedAt: project.onboarding?.clientQA?.submittedAt || now,
           updatedAt: now,
         },

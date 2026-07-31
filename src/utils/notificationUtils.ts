@@ -29,6 +29,7 @@ export async function createNotification(
       formName,
       createdAt: new Date().toISOString(),
       read: false,
+      ...(type !== 'academy' ? { emailSent: false } : {}),
     });
     return docRef.id;
   } catch (err) {

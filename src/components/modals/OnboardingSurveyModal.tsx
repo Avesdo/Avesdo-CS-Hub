@@ -41,6 +41,7 @@ export default function OnboardingSurveyModal({ project, onClose }: OnboardingSu
         ...project.onboarding,
         survey: {
           ...cleanData,
+          status: 'Submitted',
           submittedAt: project.onboarding?.survey?.submittedAt || now,
           updatedAt: now,
         },
