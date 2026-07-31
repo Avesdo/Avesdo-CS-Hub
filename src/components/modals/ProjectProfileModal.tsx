@@ -171,7 +171,9 @@ export default function ProjectProfileModal() {
       if (drawerData?.data?.targetTab) {
         setActiveTab(drawerData.data.targetTab as any);
       } else {
-        const p = projects.find((p) => p.id === drawerData?.entityId);
+        const p = projects.find(
+          (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId
+        );
         if (p?.projectStatus === 'Onboarding') {
           setActiveTab('onboarding');
         } else {
@@ -479,7 +481,7 @@ export default function ProjectProfileModal() {
 
   const navItems = [
     { id: 'onboarding', label: 'Onboarding', icon: ClipboardList },
-    { id: 'health', label: 'Health & Trends', icon: Activity },
+    { id: 'health', label: 'Health', icon: Activity },
     { id: 'overview', label: 'Features', icon: LayoutDashboard },
     { id: 'services', label: 'Services', icon: Layers },
     { id: 'notes', label: 'Timeline', icon: FileText },

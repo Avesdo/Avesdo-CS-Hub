@@ -126,9 +126,7 @@ export function UpcomingActivityWidget({
                   onClick={() =>
                     isService
                       ? openDrawer('service', act.originalItem.id)
-                      : openDrawer('project', act.originalItem.id, {
-                          targetTab: 'overview',
-                        })
+                      : openDrawer('project', act.originalItem.id)
                   }
                 >
                   <div className="flex justify-between items-center">

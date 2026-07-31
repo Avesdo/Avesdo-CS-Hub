@@ -365,7 +365,7 @@ export default function ClientProfileModal() {
   }, [projects, projectSearch]);
 
   const navItems = [
-    { id: 'health', label: 'Health & Trends', icon: Activity },
+    { id: 'health', label: 'Health', icon: Activity },
     { id: 'projects', label: 'Projects', icon: LayoutDashboard },
     { id: 'services', label: 'Services', icon: Briefcase },
     { id: 'notes', label: 'Timeline', icon: History },

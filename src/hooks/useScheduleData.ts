@@ -182,6 +182,10 @@ export function useScheduleData() {
           (sDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         );
         // It's upcoming if it starts within 7 days, or is currently ongoing (ends >= today)
+        // Exclude single-day time off if it's today
+        const isSingleDay = sDate.getTime() === eDate.getTime();
+        if (isSingleDay && diffDaysStart === 0) return false;
+        
         return diffDaysEnd >= 0 && diffDaysStart <= 7;
       })
       .map((t) => ({
