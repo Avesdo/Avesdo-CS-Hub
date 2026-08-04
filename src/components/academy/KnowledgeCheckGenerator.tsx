@@ -175,45 +175,8 @@ export default function KnowledgeCheckGenerator() {
                 );
 
                 // Trigger Email Webhook
-                if (import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL) {
-                  try {
-                    const monthNames = [
-                      'January',
-                      'February',
-                      'March',
-                      'April',
-                      'May',
-                      'June',
-                      'July',
-                      'August',
-                      'September',
-                      'October',
-                      'November',
-                      'December',
-                    ];
-                    const monthName = monthNames[updatedQuiz.targetMonth - 1] || '';
-
-                    await fetch(import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL, {
-                      method: 'POST',
-                      mode: 'no-cors',
-                      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                      body: JSON.stringify({
-                        action: 'assign_quiz',
-                        emailTo: enrolledEmails || 'support@avesdo.com', // Added here for old script compatibility
-                        projectName: `Avesdo Academy`, // For old script compatibility
-                        formName: `Knowledge Check`, // For old script compatibility
-                        projectUrl: `https://avesdo-cs-hub.web.app/?drawer=academy`, // For old script compatibility
-                        payload: {
-                          email: enrolledEmails || 'support@avesdo.com',
-                          subject: `[Avesdo Academy] Your Knowledge Check is Ready`,
-                          quizMonthYear: `${monthName} ${updatedQuiz.targetYear}`,
-                        },
-                      }),
-                    });
-                  } catch (err) {
-                    console.error('Failed to trigger email webhook', err);
-                  }
-                }
+                const { triggerAssignQuizWebhook } = await import('../../api/academyCron');
+                await triggerAssignQuizWebhook(updatedQuiz, enrolledEmails);
 
                 // Add in-app notification
                 import('../../utils/notificationUtils').then(({ createNotification }) => {

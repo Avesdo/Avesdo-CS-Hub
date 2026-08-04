@@ -79,6 +79,7 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
   useFirebaseSync();
   const ready = useAppStore((state) => state.ready);
   const settings = useAppStore((state) => state.settings);
+  const user = useAppStore((state) => state.user);
 
   React.useEffect(() => {
     // Frontend Cron: Check if snapshot needs to run today
@@ -92,11 +93,17 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
       }
 
       // Trigger background Academy Reminder check for admins
-      import('./api/academyReminder').then(({ checkAcademyReminders }) => {
-        checkAcademyReminders().catch(console.error);
-      });
+      if (user) {
+        import('./api/academyReminder').then(({ checkAcademyReminders }) => {
+          checkAcademyReminders().catch(console.error);
+        });
+
+        import('./api/academyCron').then(({ checkScheduledQuizzes }) => {
+          checkScheduledQuizzes().catch(console.error);
+        });
+      }
     }
-  }, [ready, settings]);
+  }, [ready, settings, user]);
 
   if (
     !ready.settings ||
