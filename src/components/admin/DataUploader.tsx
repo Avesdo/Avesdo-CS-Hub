@@ -80,6 +80,8 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
     return new Date().getTime();
   });
 
+  const [fullSyncHappyFox, setFullSyncHappyFox] = useState(false);
+
   const [isCompiling, setIsCompiling] = useState(false);
   const [compileStep, setCompileStep] = useState(0);
   const [compileResult, setCompileResult] = useState<{ updated: number; intakes: number } | null>(
@@ -892,6 +894,38 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         }
       }
 
+      // Perform Full Sync for HappyFox
+      if (happyfoxFile.parsedData && fullSyncHappyFox) {
+        const happyfoxData = happyfoxFile.parsedData;
+        const uploadedTicketIds = new Set(
+          happyfoxData.map((row: any) => row['Ticket ID']).filter(Boolean)
+        );
+
+        const ticketsSnapshot = await getDocs(collection(db, 'support_tickets'));
+        const existingTicketIds = ticketsSnapshot.docs.map((doc) => doc.id);
+
+        let deleteBatch = writeBatch(db);
+        let deletesInBatch = 0;
+
+        for (const existingId of existingTicketIds) {
+          if (!uploadedTicketIds.has(existingId)) {
+            deleteBatch.delete(doc(db, 'support_tickets', existingId));
+            deletesInBatch++;
+            updateCount++;
+
+            if (deletesInBatch === 450) {
+              await deleteBatch.commit();
+              deleteBatch = writeBatch(db);
+              deletesInBatch = 0;
+            }
+          }
+        }
+
+        if (deletesInBatch > 0) {
+          await deleteBatch.commit();
+        }
+      }
+
       if (updatePromises.length > 0) {
         await Promise.all(updatePromises);
       }
@@ -1232,6 +1266,28 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
                                 value={satisfactionDate}
                                 onChange={(val) => setSatisfactionDate(val || new Date().getTime())}
                               />
+                            </div>
+                          </div>
+                        )}
+                        {f.type === 'happyfox' && (
+                          <div className="flex items-center gap-2 border border-red-200 bg-red-50 px-2 py-1.5 rounded-lg">
+                            <input
+                              type="checkbox"
+                              id="fullSyncHappyFox"
+                              checked={fullSyncHappyFox}
+                              onChange={(e) => setFullSyncHappyFox(e.target.checked)}
+                              className="w-4 h-4 rounded border-red-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                            />
+                            <div className="flex flex-col leading-none">
+                              <label
+                                htmlFor="fullSyncHappyFox"
+                                className="text-[11px] font-bold text-red-800 cursor-pointer"
+                              >
+                                Perform Full Sync
+                              </label>
+                              <span className="text-[9px] text-red-600 font-medium mt-0.5">
+                                Deletes missing tickets
+                              </span>
                             </div>
                           </div>
                         )}
