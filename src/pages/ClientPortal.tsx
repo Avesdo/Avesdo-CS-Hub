@@ -216,12 +216,11 @@ export default function ClientPortal() {
                     .replace(/([A-Z])/g, ' $1')
                     .replace(/^./, (str) => str.toUpperCase());
 
-      const notificationId = await createNotification(
-        project.id,
-        project.name,
-        actionType,
-        prettyFormName
-      );
+      const shouldNotify =
+        !isSaveProgress && (!autoSave || (isDeliverablesComplete && !formNode?.submittedAt));
+      if (shouldNotify) {
+        await createNotification(project.id, project.name, actionType, prettyFormName);
+      }
 
       // Invalidate the TanStack query to refetch fresh project data
       queryClient.invalidateQueries({ queryKey: ['project', identifier] });
