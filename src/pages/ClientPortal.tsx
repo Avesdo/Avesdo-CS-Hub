@@ -216,8 +216,9 @@ export default function ClientPortal() {
                     .replace(/([A-Z])/g, ' $1')
                     .replace(/^./, (str) => str.toUpperCase());
 
-      const shouldNotify =
-        !isSaveProgress && (!autoSave || (isDeliverablesComplete && !formNode?.submittedAt));
+      const allowedFormsForNotification = ['survey', 'clientQA', 'certification'];
+      const shouldNotify = !isSaveProgress && allowedFormsForNotification.includes(currentFormType);
+
       if (shouldNotify) {
         await createNotification(project.id, project.name, actionType, prettyFormName);
       }
