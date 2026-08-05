@@ -60,7 +60,7 @@ service cloud.firestore {
       allow get: if !isAvesdoEmployee();
       allow list: if !isAvesdoEmployee() && request.query.limit <= 1;
       allow create: if hasPermission('project_create');
-      allow update: if hasPermission('project_edit_details') || hasPermission('project_add_notes') || hasPermission('project_archive') || (!isAvesdoEmployee() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase']));
+      allow update: if hasPermission('project_edit_details') || hasPermission('project_add_notes') || hasPermission('project_archive') || (!isAvesdoEmployee() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['onboarding', 'deliverables', 'health', 'onboardingPhase', 'phaseUpdatedAt']));
       allow delete: if hasPermission('hard_delete_archives');
     }
 

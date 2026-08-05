@@ -175,7 +175,7 @@ export default function KnowledgeCheckGenerator() {
                 );
 
                 // Trigger Email Webhook
-                const { triggerAssignQuizWebhook } = await import('../../api/academyCron');
+                const { triggerAssignQuizWebhook } = await import('../../api/academyService');
                 await triggerAssignQuizWebhook(updatedQuiz, enrolledEmails);
 
                 // Add in-app notification

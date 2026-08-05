@@ -97,10 +97,6 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
         import('./api/academyReminder').then(({ checkAcademyReminders }) => {
           checkAcademyReminders().catch(console.error);
         });
-
-        import('./api/academyCron').then(({ checkScheduledQuizzes }) => {
-          checkScheduledQuizzes().catch(console.error);
-        });
       }
     }
   }, [ready, settings, user]);

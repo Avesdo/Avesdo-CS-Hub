@@ -157,3 +157,46 @@ export const academyService = {
     await deleteDoc(progressRef);
   },
 };
+
+export const triggerAssignQuizWebhook = async (quiz: Quiz, enrolledEmails: string) => {
+  const webhookUrl = import.meta.env.VITE_APPS_SCRIPT_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const monthName = monthNames[quiz.targetMonth - 1] || '';
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'assign_quiz',
+        emailTo: enrolledEmails || 'support@avesdo.com',
+        projectName: 'Avesdo Academy',
+        formName: 'Knowledge Check',
+        projectUrl: 'https://avesdo-cs-hub.web.app/?drawer=academy',
+        payload: {
+          email: enrolledEmails || 'support@avesdo.com',
+          subject: '[Avesdo Academy] Your Knowledge Check is Ready',
+          quizMonthYear: `${monthName} ${quiz.targetYear}`,
+        },
+      }),
+    });
+  } catch (err) {
+    console.error('Failed to trigger assign_quiz webhook', err);
+  }
+};
