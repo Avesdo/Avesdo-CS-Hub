@@ -107,6 +107,10 @@ service cloud.firestore {
       allow write: if isAvesdoEmployee();
     }
 
+    match /quiz_progress/{progressId} {
+      allow read, write: if isAvesdoEmployee();
+    }
+
     match /academy_tags/{tagId} {
       allow read: if isAvesdoEmployee();
       allow create, update: if hasPermission('edit_tags') || hasPermission('manage_academy') || isSuperAdmin();

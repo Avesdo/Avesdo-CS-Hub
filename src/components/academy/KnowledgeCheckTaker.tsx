@@ -130,21 +130,31 @@ export default function KnowledgeCheckTaker({
       });
       const score = (scoreCount / questions.length) * 100;
 
-      await academyService.saveQuizAttempt({
+      const attemptPayload: any = {
         id: existingAttempt ? existingAttempt.id : uuidv4(),
         quizId: draftQuiz.id,
         userId: user?.uid || 'unknown-user',
         score,
         answers: selectedAnswers,
         completedAt: existingAttempt ? existingAttempt.completedAt : Date.now(),
-        updatedAt: existingAttempt ? Date.now() : undefined,
-        originalScore: existingAttempt
-          ? (existingAttempt.originalScore ?? existingAttempt.score)
-          : undefined,
-        originalAnswers: existingAttempt
-          ? (existingAttempt.originalAnswers ?? existingAttempt.answers)
-          : undefined,
-      });
+      };
+
+      if (existingAttempt) {
+        attemptPayload.updatedAt = Date.now();
+        if (existingAttempt.originalScore !== undefined) {
+          attemptPayload.originalScore = existingAttempt.originalScore;
+        } else {
+          attemptPayload.originalScore = existingAttempt.score;
+        }
+
+        if (existingAttempt.originalAnswers !== undefined) {
+          attemptPayload.originalAnswers = existingAttempt.originalAnswers;
+        } else {
+          attemptPayload.originalAnswers = existingAttempt.answers;
+        }
+      }
+
+      await academyService.saveQuizAttempt(attemptPayload);
 
       await academyService.deleteQuizProgress(draftQuiz.id, user?.uid || 'unknown-user');
       await fetchQuizAttempts(draftQuiz.id);
