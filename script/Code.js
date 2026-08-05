@@ -111,3 +111,130 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+function checkUnsentEmails() {
+  var props = PropertiesService.getScriptProperties();
+  var apiKey = props.getProperty('FIREBASE_API_KEY');
+  var email = props.getProperty('FIREBASE_ADMIN_EMAIL');
+  var password = props.getProperty('FIREBASE_ADMIN_PASSWORD');
+  var projectId = props.getProperty('FIREBASE_PROJECT_ID');
+  
+  if (!apiKey || !email || !password || !projectId) {
+    console.error("Missing Firebase configuration in Script Properties.");
+    return;
+  }
+  
+  // 1. Authenticate with Identity Toolkit
+  var authUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey;
+  var authOptions = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify({ email: email, password: password, returnSecureToken: true }),
+    muteHttpExceptions: true
+  };
+  
+  var authRes = UrlFetchApp.fetch(authUrl, authOptions);
+  if (authRes.getResponseCode() !== 200) {
+    console.error("Firebase Authentication failed: " + authRes.getContentText());
+    return;
+  }
+  
+  var idToken = JSON.parse(authRes.getContentText()).idToken;
+  
+  // 2. Query Firestore for emailSent == false
+  var firestoreUrl = 'https://firestore.googleapis.com/v1/projects/' + projectId + '/databases/(default)/documents:runQuery';
+  var queryPayload = {
+    structuredQuery: {
+      from: [{ collectionId: 'notifications' }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: 'emailSent' },
+          op: 'EQUAL',
+          value: { booleanValue: false }
+        }
+      }
+    }
+  };
+  
+  var queryOptions = {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + idToken },
+    payload: JSON.stringify(queryPayload),
+    muteHttpExceptions: true
+  };
+  
+  var queryRes = UrlFetchApp.fetch(firestoreUrl, queryOptions);
+  if (queryRes.getResponseCode() !== 200) {
+    console.error("Firestore query failed: " + queryRes.getContentText());
+    return;
+  }
+  
+  var results = JSON.parse(queryRes.getContentText());
+  
+  // 3. Process results
+  for (var i = 0; i < results.length; i++) {
+    var doc = results[i].document;
+    if (!doc) continue; // Skip if no document (e.g., empty result)
+    
+    var fields = doc.fields;
+    var formName = fields.formName ? fields.formName.stringValue : 'A form';
+    var projectName = fields.projectName ? fields.projectName.stringValue : 'A Project';
+    var projId = fields.projectId ? fields.projectId.stringValue : '';
+    var type = fields.type ? fields.type.stringValue : 'submission';
+    var actionStr = type === 'submission' ? 'submitted' : 'updated';
+    var projectUrl = 'https://avesdo-cs-hub.web.app/?drawer=project&drawerId=' + projId;
+    
+    // Generate HTML Body
+    var htmlContent = '<div style="background-color: #f8fafc; padding: 40px 20px; font-family: \'Inter\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">' +
+      '<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">' +
+        '<div style="background-color: #00bdd9; padding: 32px 40px; text-align: left;">' +
+          '<h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;">CS Hub Alert</h1>' +
+          '<p style="margin: 8px 0 0 0; color: #e0f8fb; font-size: 15px;">New client activity recorded</p>' +
+        '</div>' +
+        '<div style="padding: 40px;">' +
+          '<h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: #0f172a;">' + formName + ' ' + actionStr.charAt(0).toUpperCase() + actionStr.slice(1) + '</h2>' +
+          '<p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #475569;">The <strong>' + formName + '</strong> for <strong>"' + projectName + '"</strong> has been successfully ' + actionStr + ' by the client.</p>' +
+          '<p style="margin: 0 0 32px 0; font-size: 16px; line-height: 1.6; color: #475569;">Please log into the CS Hub to review the submitted details and advance the project workflow.</p>' +
+          '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">' +
+            '<tr><td align="left">' +
+              '<a href="' + projectUrl + '" style="display: inline-block; padding: 14px 28px; background-color: #00bdd9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 15px; box-shadow: 0 4px 14px 0 rgba(0, 189, 217, 0.25);">View Project in CS Hub</a>' +
+            '</td></tr>' +
+          '</table>' +
+          '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />' +
+          '<p style="margin: 0; font-size: 13px; color: #94a3b8; line-height: 1.5;">This is an automated notification from the Avesdo CS Hub.<br/>Please do not reply directly to this email.</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+    
+    // Send Email
+    try {
+      MailApp.sendEmail({
+        to: 'support@avesdo.com',
+        subject: '[CS Hub Alert] ' + formName + ' ' + actionStr + ' for "' + projectName + '"',
+        body: 'Client for project "' + projectName + '" has ' + actionStr + ' their ' + formName + '. Please log into the CS Hub to review.\n\nView Project: ' + projectUrl,
+        htmlBody: htmlContent
+      });
+      
+      // Update Firestore emailSent: true
+      var updateUrl = 'https://firestore.googleapis.com/v1/' + doc.name + '?updateMask.fieldPaths=emailSent';
+      var updatePayload = { fields: { emailSent: { booleanValue: true } } };
+      var updateOptions = {
+        method: 'patch',
+        contentType: 'application/json',
+        headers: { Authorization: 'Bearer ' + idToken },
+        payload: JSON.stringify(updatePayload),
+        muteHttpExceptions: true
+      };
+      
+      var patchRes = UrlFetchApp.fetch(updateUrl, updateOptions);
+      if (patchRes.getResponseCode() !== 200) {
+        console.error('Failed to update doc: ' + patchRes.getContentText());
+      } else {
+        console.log('Sent email and updated document: ' + doc.name);
+      }
+    } catch (e) {
+      console.error('Failed to send email for doc: ' + doc.name + ' - Error: ' + e.toString());
+    }
+  }
+}

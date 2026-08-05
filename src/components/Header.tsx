@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import GlobalSearch from './GlobalSearch';
 import { Bell, Check, X, Trash2 } from 'lucide-react';
-import {
-  collection,
-  query,
-  onSnapshot,
-  orderBy,
-  doc,
-  updateDoc,
-  runTransaction,
-} from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import {
   AppNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   clearAllNotifications,
-  sendEmailAlert,
 } from '../utils/notificationUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
@@ -63,44 +54,6 @@ export function NotificationBell({
     });
     return () => unsubscribe();
   }, []);
-
-  // Agent Relay: Automatically send any failed client email alerts
-  useEffect(() => {
-    const failedEmails = notifications.filter((n) => n.emailSent === false);
-    failedEmails.forEach(async (n) => {
-      if (
-        n.projectId &&
-        n.projectName &&
-        n.formName &&
-        (n.type === 'submission' || n.type === 'update')
-      ) {
-        const notifRef = doc(db, 'notifications', n.id);
-
-        try {
-          // Use a transaction to ensure only ONE active Admin browser claims this email
-          await runTransaction(db, async (transaction) => {
-            const docSnap = await transaction.get(notifRef);
-            if (!docSnap.exists() || docSnap.data().emailSent === true) {
-              throw new Error('Already claimed');
-            }
-            // Optimistically lock it in the DB so other admins don't send it
-            transaction.update(notifRef, { emailSent: true });
-          });
-
-          // If transaction succeeded, THIS browser is responsible for sending the email
-          const actionType = n.type === 'submission' ? 'submitted' : 'updated';
-          const success = await sendEmailAlert(n.projectId, n.projectName, n.formName, actionType);
-
-          if (!success) {
-            // Revert if the email failed to send, so someone else can try later
-            await updateDoc(notifRef, { emailSent: false });
-          }
-        } catch (e) {
-          // Transaction failed (meaning another admin already claimed it). Do nothing.
-        }
-      }
-    });
-  }, [notifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 

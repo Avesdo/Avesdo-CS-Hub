@@ -4,7 +4,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import { Project } from '../types';
 import { ClientPortalSkeleton } from '../components/ui/Skeleton';
-import { createNotification, sendEmailAlert } from '../utils/notificationUtils';
+import { createNotification } from '../utils/notificationUtils';
 import { AlertCircle } from 'lucide-react';
 import { useProjectQuery, useSettingsQuery } from '../hooks/useQueries';
 
@@ -222,25 +222,6 @@ export default function ClientPortal() {
         actionType,
         prettyFormName
       );
-
-      if (
-        !autoSave &&
-        !isSaveProgress &&
-        ['survey', 'clientQA', 'certification', 'onboardingCsat'].includes(currentFormType)
-      ) {
-        // Fire and forget - attempt to send immediately if the client's browser allows it
-        sendEmailAlert(
-          project.id,
-          project.name,
-          prettyFormName,
-          isFirstSubmission ? 'submitted' : 'updated'
-        ).catch(() => {});
-
-        // We do NOT update emailSent: true here because we cannot reliably know
-        // if the client's opaque request actually executed the Apps Script or was blocked.
-        // We leave emailSent: false, so the Agent Relay in Header.tsx will definitely
-        // send it and confirm it when an Admin logs in.
-      }
 
       // Invalidate the TanStack query to refetch fresh project data
       queryClient.invalidateQueries({ queryKey: ['project', identifier] });
