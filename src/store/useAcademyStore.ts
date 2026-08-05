@@ -119,8 +119,12 @@ export const useAcademyStore = create<AcademyState>((set) => ({
           },
           {} as Record<string, any>
         )
-      );
-      set({ quizAttempts: deduped, isLoading: false });
+      ) as QuizAttempt[];
+
+      set((state) => {
+        const otherAttempts = state.quizAttempts.filter((a) => a.quizId !== quizId);
+        return { quizAttempts: [...otherAttempts, ...deduped], isLoading: false };
+      });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }

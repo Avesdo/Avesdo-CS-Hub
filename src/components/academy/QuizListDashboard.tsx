@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ChevronRight,
   FileText,
@@ -14,16 +14,29 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useAppStore } from '../../store/useAppStore';
 import { format } from 'date-fns';
 import SmartPasteModal from '../modals/SmartPasteModal';
-import { useState } from 'react';
 
 export default function QuizListDashboard() {
-  const { activeQuizzes, quizAttempts, setSelectedQuizId } = useAcademyStore();
+  const { activeQuizzes, quizAttempts, setSelectedQuizId, fetchQuizzes, isLoading } =
+    useAcademyStore();
   const { hasPermission } = usePermissions();
   const { user } = useAppStore();
 
   const canManage = hasPermission('manage_academy');
   const currentUserId = user?.uid;
   const [isImporterOpen, setIsImporterOpen] = useState(false);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetchQuizzes(canManage, currentUserId);
+  }, [fetchQuizzes, canManage, currentUserId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   const getMonthName = (monthNumber: number) => {
     const date = new Date();
     date.setMonth(monthNumber - 1);
