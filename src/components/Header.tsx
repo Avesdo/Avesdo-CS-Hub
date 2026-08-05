@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import GlobalSearch from './GlobalSearch';
 import { Bell, Check, X, Trash2 } from 'lucide-react';
-import { collection, query, onSnapshot, orderBy, doc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  doc,
+  updateDoc,
+  runTransaction,
+} from 'firebase/firestore';
 import { db } from '../api/firebase';
 import {
   AppNotification,
@@ -60,26 +68,35 @@ export function NotificationBell({
   useEffect(() => {
     const failedEmails = notifications.filter((n) => n.emailSent === false);
     failedEmails.forEach(async (n) => {
-      // Optimistically update local state to prevent loop before DB confirms
-      setNotifications((prev) =>
-        prev.map((notif) => (notif.id === n.id ? { ...notif, emailSent: true } : notif))
-      );
-
       if (
         n.projectId &&
         n.projectName &&
         n.formName &&
         (n.type === 'submission' || n.type === 'update')
       ) {
-        const actionType = n.type === 'submission' ? 'submitted' : 'updated';
-        const success = await sendEmailAlert(n.projectId, n.projectName, n.formName, actionType);
-        if (success) {
-          await updateDoc(doc(db, 'notifications', n.id), { emailSent: true });
-        } else {
-          // Revert on failure so it can be retried later
-          setNotifications((prev) =>
-            prev.map((notif) => (notif.id === n.id ? { ...notif, emailSent: false } : notif))
-          );
+        const notifRef = doc(db, 'notifications', n.id);
+
+        try {
+          // Use a transaction to ensure only ONE active Admin browser claims this email
+          await runTransaction(db, async (transaction) => {
+            const docSnap = await transaction.get(notifRef);
+            if (!docSnap.exists() || docSnap.data().emailSent === true) {
+              throw new Error('Already claimed');
+            }
+            // Optimistically lock it in the DB so other admins don't send it
+            transaction.update(notifRef, { emailSent: true });
+          });
+
+          // If transaction succeeded, THIS browser is responsible for sending the email
+          const actionType = n.type === 'submission' ? 'submitted' : 'updated';
+          const success = await sendEmailAlert(n.projectId, n.projectName, n.formName, actionType);
+
+          if (!success) {
+            // Revert if the email failed to send, so someone else can try later
+            await updateDoc(notifRef, { emailSent: false });
+          }
+        } catch (e) {
+          // Transaction failed (meaning another admin already claimed it). Do nothing.
         }
       }
     });

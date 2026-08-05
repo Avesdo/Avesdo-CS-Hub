@@ -228,15 +228,18 @@ export default function ClientPortal() {
         !isSaveProgress &&
         ['survey', 'clientQA', 'certification', 'onboardingCsat'].includes(currentFormType)
       ) {
-        const success = await sendEmailAlert(
+        // Fire and forget - attempt to send immediately if the client's browser allows it
+        sendEmailAlert(
           project.id,
           project.name,
           prettyFormName,
           isFirstSubmission ? 'submitted' : 'updated'
-        );
-        if (notificationId) {
-          await updateDoc(doc(db, 'notifications', notificationId), { emailSent: success });
-        }
+        ).catch(() => {});
+
+        // We do NOT update emailSent: true here because we cannot reliably know
+        // if the client's opaque request actually executed the Apps Script or was blocked.
+        // We leave emailSent: false, so the Agent Relay in Header.tsx will definitely
+        // send it and confirm it when an Admin logs in.
       }
 
       // Invalidate the TanStack query to refetch fresh project data
