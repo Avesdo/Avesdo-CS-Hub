@@ -367,7 +367,7 @@ export default function QuizListDashboard() {
         isOpen={isImporterOpen}
         onClose={() => setIsImporterOpen(false)}
         onSuccess={() => {
-          useAcademyStore.getState().fetchQuizzes();
+          useAcademyStore.getState().fetchQuizzes(canManage, currentUserId);
         }}
       />
     </div>

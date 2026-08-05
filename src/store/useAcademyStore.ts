@@ -21,6 +21,8 @@ interface AcademyState {
   setError: (error: string | null) => void;
 }
 
+let fetchQuizzesId = 0;
+
 export const useAcademyStore = create<AcademyState>((set) => ({
   activeQuizzes: [],
   draftQuiz: null,
@@ -35,13 +37,19 @@ export const useAcademyStore = create<AcademyState>((set) => ({
   setSelectedQuizId: (selectedQuizId) => set({ selectedQuizId }),
   setKBArticles: (kbArticles) => set({ kbArticles }),
   fetchQuizzes: async (canManage?: boolean, userId?: string) => {
+    fetchQuizzesId++;
+    const currentFetchId = fetchQuizzesId;
+
     try {
       set({ isLoading: true, error: null });
       const quizzes = await academyService.getQuizzes();
+      if (fetchQuizzesId !== currentFetchId) return;
       set({ activeQuizzes: quizzes, isLoading: false });
 
       if (canManage) {
         const attempts = await academyService.getAllQuizAttempts();
+        if (fetchQuizzesId !== currentFetchId) return;
+
         const activeQuizIds = quizzes.map((q) => q.id);
         const filteredAttempts = attempts.filter((a) => activeQuizIds.includes(a.quizId));
 
@@ -64,6 +72,8 @@ export const useAcademyStore = create<AcademyState>((set) => ({
         set({ quizAttempts: deduped });
       } else if (userId) {
         const attempts = await academyService.getAllUserQuizAttempts(userId);
+        if (fetchQuizzesId !== currentFetchId) return;
+
         const activeQuizIds = quizzes.map((q) => q.id);
         const filteredAttempts = attempts.filter((a) => activeQuizIds.includes(a.quizId));
 
@@ -86,6 +96,7 @@ export const useAcademyStore = create<AcademyState>((set) => ({
         set({ quizAttempts: deduped });
       }
     } catch (error: any) {
+      if (fetchQuizzesId !== currentFetchId) return;
       set({ error: error.message, isLoading: false });
     }
   },

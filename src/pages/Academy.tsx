@@ -16,11 +16,12 @@ export default function Academy() {
   const activeTab = searchParams.get('tab') || 'tag-database';
 
   const { fetchQuizzes } = useAcademyStore();
-  const { user } = useAppStore();
+  const { user, settings } = useAppStore();
 
   useEffect(() => {
+    if (!user || !settings) return;
     fetchQuizzes(canManage, user?.uid);
-  }, [fetchQuizzes, canManage, user?.uid]);
+  }, [fetchQuizzes, canManage, user?.uid, settings]);
 
   return (
     <div className="flex flex-1 h-full w-full overflow-hidden bg-white">
