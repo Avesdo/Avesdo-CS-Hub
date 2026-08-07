@@ -293,6 +293,7 @@ export const exportAllFormResponsesToCSV = (
 ) => {
   const submissions: { projectName: string; data: any }[] = [];
   projects.forEach((p) => {
+    if (p.isArchived) return;
     const flag = 'has' + formKey.charAt(0).toUpperCase() + formKey.slice(1);
     const data = isDeliverables
       ? p.deliverables
@@ -300,7 +301,11 @@ export const exportAllFormResponsesToCSV = (
         ? p.health?.onboardingCsat
         : p.onboarding?.[formKey];
 
-    if (p[flag] || (data && Object.keys(data).length > 0)) {
+    const isSubmitted = isDeliverables
+      ? p[flag] || (data && Object.keys(data).length > 0)
+      : !!data?.submittedAt;
+
+    if (isSubmitted) {
       submissions.push({ projectName: p.name, data: data || {} });
     }
   });

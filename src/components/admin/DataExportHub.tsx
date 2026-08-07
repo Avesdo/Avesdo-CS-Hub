@@ -73,13 +73,18 @@ export const DataExportHub: React.FC<DataExportHubProps> = ({ projects, getTempl
           // Calculate Entry Count (Rows) based on the exact same logic the exporter uses
           let entryCount = 0;
           projects.forEach((p) => {
+            if (p.isArchived) return;
             const flag = 'has' + form.key.charAt(0).toUpperCase() + form.key.slice(1);
             const data = form.isDeliverables
               ? p.deliverables
               : form.key === 'onboardingCsat'
                 ? p.health?.onboardingCsat
                 : p.onboarding?.[form.key];
-            if (p[flag] || (data && Object.keys(data).length > 0)) {
+            const isValidEntry = form.isDeliverables
+              ? p[flag] || (data && Object.keys(data).length > 0)
+              : !!data?.submittedAt;
+
+            if (isValidEntry) {
               entryCount++;
             }
           });
