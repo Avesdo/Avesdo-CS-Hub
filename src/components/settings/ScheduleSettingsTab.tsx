@@ -269,166 +269,174 @@ export function ScheduleSettingsTab() {
               )
                 .toISOString()
                 .split('T')[0];
-              const visibleTimeOff = (settings?.timeOff || []).filter((t: any) => {
-                if (showPastTimeOff) return true;
-                const end = t.endDate || t.date;
-                return end >= todayStr;
-              });
+              const visibleTimeOff = (settings?.timeOff || [])
+                .map((t: any, i: number) => ({ ...t, originalIndex: i }))
+                .filter((t: any) => {
+                  if (showPastTimeOff) return true;
+                  const end = t.endDate || t.date;
+                  return end >= todayStr;
+                });
 
               return (
                 <>
-                  {visibleTimeOff.map((t: any, i: number) => (
-                    <div
-                      key={i}
-                      className="flex justify-between items-center bg-white p-3 px-4 rounded-xl border border-slate-200 text-sm shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      {editingTimeOffIndex === i ? (
-                        <div className="flex items-center gap-3 w-full">
-                          <DateRangePicker
-                            preset="custom"
-                            startDate={editTimeOffStart}
-                            endDate={editTimeOffEnd}
-                            onChange={(_, start, end) => {
-                              setEditTimeOffStart(start);
-                              setEditTimeOffEnd(end);
-                            }}
-                            className="w-[220px]"
-                            hidePresets={true}
-                            placeholder="Select Date"
-                            variant="outline"
-                          />
-                          <Select
-                            value={editTimeOffManager}
-                            onChange={(val) => setEditTimeOffManager(val)}
-                            options={users
-                              .filter((u) => u.isAccountManager && !u.isDeactivated)
-                              .map((u) => ({
-                                value: u.uid,
-                                label: getUserName(u.uid),
-                              }))}
-                            trigger={
+                  {visibleTimeOff.map((t: any) => {
+                    const i = t.originalIndex;
+                    return (
+                      <div
+                        key={i}
+                        className="flex justify-between items-center bg-white p-3 px-4 rounded-xl border border-slate-200 text-sm shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        {editingTimeOffIndex === i ? (
+                          <div className="flex items-center gap-3 w-full">
+                            <DateRangePicker
+                              preset="custom"
+                              startDate={editTimeOffStart}
+                              endDate={editTimeOffEnd}
+                              onChange={(_, start, end) => {
+                                setEditTimeOffStart(start);
+                                setEditTimeOffEnd(end);
+                              }}
+                              className="w-[220px]"
+                              hidePresets={true}
+                              placeholder="Select Date"
+                              variant="outline"
+                            />
+                            <Select
+                              value={editTimeOffManager}
+                              onChange={(val) => setEditTimeOffManager(val)}
+                              options={users
+                                .filter((u) => u.isAccountManager && !u.isDeactivated)
+                                .map((u) => ({
+                                  value: u.uid,
+                                  label: getUserName(u.uid),
+                                }))}
+                              trigger={
+                                <Button
+                                  variant="outline"
+                                  className="flex-1 max-w-[200px] font-normal justify-between"
+                                >
+                                  {editTimeOffManager ? (
+                                    getUserName(editTimeOffManager)
+                                  ) : (
+                                    <span className="text-muted-foreground">Select Manager...</span>
+                                  )}
+                                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                                </Button>
+                              }
+                            />
+                            <div className="flex items-center gap-2 ml-auto">
                               <Button
-                                variant="outline"
-                                className="flex-1 max-w-[200px] font-normal justify-between"
+                                size="sm"
+                                onClick={() => {
+                                  if (editTimeOffStart && editTimeOffEnd && editTimeOffManager) {
+                                    const newEntry = {
+                                      startDate: format(new Date(editTimeOffStart), 'yyyy-MM-dd'),
+                                      endDate: format(new Date(editTimeOffEnd), 'yyyy-MM-dd'),
+                                      manager: editTimeOffManager,
+                                    };
+                                    const existingTimeOff = [...(settings?.timeOff || [])];
+                                    existingTimeOff[i] = newEntry;
+                                    existingTimeOff.sort(
+                                      (a: any, b: any) =>
+                                        new Date(a.startDate || a.date).getTime() -
+                                        new Date(b.startDate || b.date).getTime()
+                                    );
+                                    saveSettings({
+                                      ...(settings as any),
+                                      timeOff: existingTimeOff,
+                                    });
+                                    setEditingTimeOffIndex(null);
+                                    setEditTimeOffStart(null);
+                                    setEditTimeOffEnd(null);
+                                    setEditTimeOffManager('');
+                                  }
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white"
                               >
-                                {editTimeOffManager ? (
-                                  getUserName(editTimeOffManager)
-                                ) : (
-                                  <span className="text-muted-foreground">Select Manager...</span>
-                                )}
-                                <ChevronDown className="w-4 h-4 text-slate-400" />
+                                Save
                               </Button>
-                            }
-                          />
-                          <div className="flex items-center gap-2 ml-auto">
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                if (editTimeOffStart && editTimeOffEnd && editTimeOffManager) {
-                                  const newEntry = {
-                                    startDate: format(new Date(editTimeOffStart), 'yyyy-MM-dd'),
-                                    endDate: format(new Date(editTimeOffEnd), 'yyyy-MM-dd'),
-                                    manager: editTimeOffManager,
-                                  };
-                                  const existingTimeOff = [...(settings?.timeOff || [])];
-                                  existingTimeOff[i] = newEntry;
-                                  existingTimeOff.sort(
-                                    (a: any, b: any) =>
-                                      new Date(a.startDate || a.date).getTime() -
-                                      new Date(b.startDate || b.date).getTime()
-                                  );
-                                  saveSettings({ ...(settings as any), timeOff: existingTimeOff });
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => {
                                   setEditingTimeOffIndex(null);
                                   setEditTimeOffStart(null);
                                   setEditTimeOffEnd(null);
                                   setEditTimeOffManager('');
-                                }
-                              }}
-                              className="bg-green-500 hover:bg-green-600 text-white"
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => {
-                                setEditingTimeOffIndex(null);
-                                setEditTimeOffStart(null);
-                                setEditTimeOffEnd(null);
-                                setEditTimeOffManager('');
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-4">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-slate-800">
-                                {(t.startDate || t.date) === (t.endDate || t.date)
-                                  ? format(
-                                      new Date(`${t.startDate || t.date}T00:00:00`),
-                                      'MMM d, yyyy'
-                                    )
-                                  : `${format(new Date(`${t.startDate || t.date}T00:00:00`), 'MMM d, yyyy')} - ${format(new Date(`${t.endDate || t.date}T00:00:00`), 'MMM d, yyyy')}`}
-                              </span>
+                                }}
+                              >
+                                Cancel
+                              </Button>
                             </div>
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                <User className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-4">
+                              <div className="flex flex-col">
+                                <span className="font-bold text-slate-800">
+                                  {(t.startDate || t.date) === (t.endDate || t.date)
+                                    ? format(
+                                        new Date(`${t.startDate || t.date}T00:00:00`),
+                                        'MMM d, yyyy'
+                                      )
+                                    : `${format(new Date(`${t.startDate || t.date}T00:00:00`), 'MMM d, yyyy')} - ${format(new Date(`${t.endDate || t.date}T00:00:00`), 'MMM d, yyyy')}`}
+                                </span>
                               </div>
-                              <span className="font-medium text-slate-700">
-                                {getUserName(t.manager)}
-                              </span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <User className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <span className="font-medium text-slate-700">
+                                  {getUserName(t.manager)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          {canEdit && (
-                            <div className="flex items-center gap-1">
-                              <Tooltip content="Edit time off">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const sDate = new Date(
-                                      `${t.startDate || t.date}T00:00:00`
-                                    ).getTime();
-                                    const eDate = new Date(
-                                      `${t.endDate || t.date}T00:00:00`
-                                    ).getTime();
-                                    setEditTimeOffStart(sDate);
-                                    setEditTimeOffEnd(eDate);
-                                    setEditTimeOffManager(t.manager);
-                                    setEditingTimeOffIndex(i);
-                                  }}
-                                  className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip content="Remove time off">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const newTimeOff = (settings?.timeOff || []).filter(
-                                      (_, index) => index !== i
-                                    );
-                                    saveSettings({ ...(settings as any), timeOff: newTimeOff });
-                                  }}
-                                  className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </Tooltip>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  ))}
+                            {canEdit && (
+                              <div className="flex items-center gap-1">
+                                <Tooltip content="Edit time off">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      const sDate = new Date(
+                                        `${t.startDate || t.date}T00:00:00`
+                                      ).getTime();
+                                      const eDate = new Date(
+                                        `${t.endDate || t.date}T00:00:00`
+                                      ).getTime();
+                                      setEditTimeOffStart(sDate);
+                                      setEditTimeOffEnd(eDate);
+                                      setEditTimeOffManager(t.manager);
+                                      setEditingTimeOffIndex(i);
+                                    }}
+                                    className="w-8 h-8 text-slate-400 hover:text-primary hover:bg-primary/5"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                </Tooltip>
+                                <Tooltip content="Remove time off">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      const newTimeOff = (settings?.timeOff || []).filter(
+                                        (_, index) => index !== i
+                                      );
+                                      saveSettings({ ...(settings as any), timeOff: newTimeOff });
+                                    }}
+                                    className="w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                   {visibleTimeOff.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-10 px-4 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
                       <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center mb-3">

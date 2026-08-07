@@ -47,13 +47,13 @@ export default function KnowledgeCheckResults() {
 
   const isEnrolled = authUser?.uid ? enrolledIds.includes(authUser.uid) : false;
   const userAttempt = authUser?.uid
-    ? quizAttempts.find((a) => a.userId === authUser.uid)
+    ? quizAttempts.find((a) => a.userId === authUser.uid && a.quizId === quiz?.id)
     : undefined;
   const hasTaken = !!userAttempt;
 
   const userResults = enrolledIds.map((userId) => {
     const user = users.find((u) => u.uid === userId);
-    const attempt = quizAttempts.find((a) => a.userId === userId);
+    const attempt = quizAttempts.find((a) => a.userId === userId && a.quizId === quiz?.id);
     return {
       user: {
         id: userId,
@@ -85,12 +85,13 @@ export default function KnowledgeCheckResults() {
       r.user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const completedCount = quizAttempts.length;
+  const currentQuizAttempts = quizAttempts.filter((a) => a.quizId === quiz?.id);
+  const completedCount = currentQuizAttempts.length;
   const enrolledCount = enrolledIds.length;
   const pendingCount = enrolledCount - completedCount;
   const averageScore =
     completedCount > 0
-      ? quizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount
+      ? currentQuizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount
       : 0;
 
   if (isTakingQuiz) {
