@@ -218,7 +218,7 @@ export function useScheduleData() {
     }));
 
     let upcomingWeekendCoverage = '';
-    // If today is Thursday (4) or Friday (5), grab Saturday's (6) coverage
+    // If today is Thursday (4) or Friday (5), grab Saturday's (6) and Sunday's (7) coverage
     if (today.getDay() === 4 || today.getDay() === 5) {
       const saturday = new Date(today);
       saturday.setDate(today.getDate() + (6 - today.getDay()));
@@ -227,8 +227,30 @@ export function useScheduleData() {
         cmpDate.setHours(0, 0, 0, 0);
         return cmpDate.getTime() === saturday.getTime();
       });
-      if (satData?.pstThurSunShift && !knownNonNames.includes(satData.pstThurSunShift)) {
-        upcomingWeekendCoverage = satData.pstThurSunShift;
+
+      const sunday = new Date(saturday);
+      sunday.setDate(saturday.getDate() + 1);
+      const sunData = scheduleData.find((d) => {
+        const cmpDate = new Date(d.dateFull);
+        cmpDate.setHours(0, 0, 0, 0);
+        return cmpDate.getTime() === sunday.getTime();
+      });
+
+      const satShift =
+        satData?.pstThurSunShift && !knownNonNames.includes(satData.pstThurSunShift)
+          ? satData.pstThurSunShift
+          : '';
+      const sunShift =
+        sunData?.pstThurSunShift && !knownNonNames.includes(sunData.pstThurSunShift)
+          ? sunData.pstThurSunShift
+          : '';
+
+      if (satShift && sunShift && satShift !== sunShift) {
+        upcomingWeekendCoverage = `${satShift} (Sat) & ${sunShift} (Sun)`;
+      } else if (satShift) {
+        upcomingWeekendCoverage = satShift;
+      } else if (sunShift) {
+        upcomingWeekendCoverage = sunShift;
       }
     }
 
