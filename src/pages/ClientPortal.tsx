@@ -131,9 +131,21 @@ export default function ClientPortal() {
           ? { ...project.deliverables }
           : { ...project.onboarding?.[currentFormType as any] };
 
-      const cleanData = Object.fromEntries(
-        Object.entries(data || {}).filter(([_, v]) => v !== undefined)
-      );
+      // Deep clean undefined values (Firebase throws an error if any nested field is undefined)
+      const removeUndefined = (obj: any): any => {
+        if (Array.isArray(obj)) {
+          return obj.map((item) => removeUndefined(item)).filter((item) => item !== undefined);
+        } else if (obj !== null && typeof obj === 'object') {
+          return Object.fromEntries(
+            Object.entries(obj)
+              .map(([k, v]) => [k, removeUndefined(v)])
+              .filter(([_, v]) => v !== undefined)
+          );
+        }
+        return obj;
+      };
+
+      const cleanData = removeUndefined(data || {});
 
       const isFirstSubmission = overrideStatus === 'In Progress' ? false : !formNode?.submittedAt;
       const payload = {
