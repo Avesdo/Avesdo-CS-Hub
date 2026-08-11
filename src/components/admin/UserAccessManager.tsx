@@ -42,6 +42,9 @@ import { TruncatedText } from '../../components/ui/TruncatedText';
 import { CustomPicker } from '../settings/SettingsHelpers';
 import { Tooltip } from '../ui/Tooltip';
 
+type SortField = 'name' | 'status' | 'role' | 'accountManager' | 'lastLogin' | 'joined';
+type SortDir = 'asc' | 'desc';
+
 export function UserAccessManager() {
   const { settings } = useAppStore();
   const { appUser } = useAuth();
@@ -62,6 +65,34 @@ export function UserAccessManager() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRoleId, setInviteRoleId] = useState('');
   const [isInviting, setIsInviting] = useState(false);
+
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField>('lastLogin');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir('desc');
+    }
+  };
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return (
+        <div className="w-4 h-4 opacity-0 group-hover:opacity-40 transition-opacity ml-1">
+          <ChevronDown className="w-4 h-4" />
+        </div>
+      );
+    }
+    return sortDir === 'asc' ? (
+      <ChevronUp className="w-4 h-4 text-primary ml-1" />
+    ) : (
+      <ChevronDown className="w-4 h-4 text-primary ml-1" />
+    );
+  };
 
   const roles = settings?.roles || [];
 
@@ -175,9 +206,36 @@ export function UserAccessManager() {
       return matchesSearch && matchesRole && matchesStatus;
     })
     .sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0).getTime();
-      const dateB = new Date(b.createdAt || 0).getTime();
-      return dateB - dateA;
+      let comparison = 0;
+      switch (sortField) {
+        case 'name': {
+          const nameA = (a.displayName || a.email || '').toLowerCase();
+          const nameB = (b.displayName || b.email || '').toLowerCase();
+          comparison = nameA.localeCompare(nameB);
+          break;
+        }
+        case 'status':
+          comparison = (a.isDeactivated ? 1 : 0) - (b.isDeactivated ? 1 : 0);
+          break;
+        case 'role': {
+          const roleA = roles.find((r) => r.id === a.roleId)?.name || '';
+          const roleB = roles.find((r) => r.id === b.roleId)?.name || '';
+          comparison = roleA.localeCompare(roleB);
+          break;
+        }
+        case 'accountManager':
+          comparison = (a.isAccountManager ? 1 : 0) - (b.isAccountManager ? 1 : 0);
+          break;
+        case 'lastLogin':
+          comparison = (a.lastLogin || 0) - (b.lastLogin || 0);
+          break;
+        case 'joined':
+          comparison = (a.createdAt || 0) - (b.createdAt || 0);
+          break;
+        default:
+          comparison = 0;
+      }
+      return sortDir === 'asc' ? comparison : -comparison;
     });
 
   return (
@@ -300,23 +358,59 @@ export function UserAccessManager() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50/80 sticky top-0 z-10 backdrop-blur-sm">
               <tr>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  User
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('name')}
+                >
+                  <div className="flex items-center">
+                    User
+                    {renderSortIcon('name')}
+                  </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  Status
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('status')}
+                >
+                  <div className="flex items-center">
+                    Status
+                    {renderSortIcon('status')}
+                  </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  Role
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('role')}
+                >
+                  <div className="flex items-center">
+                    Role
+                    {renderSortIcon('role')}
+                  </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  Account Manager
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('accountManager')}
+                >
+                  <div className="flex items-center">
+                    Account Manager
+                    {renderSortIcon('accountManager')}
+                  </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  Last Login
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('lastLogin')}
+                >
+                  <div className="flex items-center">
+                    Last Login
+                    {renderSortIcon('lastLogin')}
+                  </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200">
-                  Joined
+                <th
+                  className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 cursor-pointer hover:bg-slate-100/50 group select-none transition-colors"
+                  onClick={() => handleSort('joined')}
+                >
+                  <div className="flex items-center">
+                    Joined
+                    {renderSortIcon('joined')}
+                  </div>
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold text-slate-500 border-b border-slate-200 text-right">
                   Actions
