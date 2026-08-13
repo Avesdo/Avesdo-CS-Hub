@@ -694,6 +694,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
 
               clientData.feedback.push({
                 name: userName,
+                email: userEmail,
                 score: score,
                 feedback: feedbackText,
               });
@@ -755,6 +756,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
               promoters: monthData.promoters,
               passives: monthData.passives,
               detractors: monthData.detractors,
+              feedback: monthData.feedback,
               submittedAt: d.toISOString(),
             };
 
@@ -778,10 +780,9 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
               });
 
               if (existingMonthIndex !== -1) {
-                if (newHistory[existingMonthIndex].score !== historyEntry.score) {
-                  newHistory[existingMonthIndex] = historyEntry;
-                  historyChanged = true;
-                }
+                // Always overwrite to ensure new fields (like feedback, promoters breakdown) are saved
+                newHistory[existingMonthIndex] = historyEntry;
+                historyChanged = true;
               } else {
                 newHistory.push(historyEntry);
                 historyChanged = true;

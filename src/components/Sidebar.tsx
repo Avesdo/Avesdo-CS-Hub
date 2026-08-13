@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   X,
   GraduationCap,
+  Star,
   Tags,
   ChevronDown,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function Sidebar() {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
     academy: location.pathname.includes('/academy'),
+    support: location.pathname.includes('/support') || location.pathname.includes('/quality'),
   });
 
   const toggleMenu = (id: string) => {
@@ -107,7 +109,15 @@ export default function Sidebar() {
               { to: '/clients', icon: <Activity className="w-4 h-4" />, label: 'Clients' },
               { to: '/projects', icon: <ListTodo className="w-4 h-4" />, label: 'Projects' },
               { to: '/services', icon: <Briefcase className="w-4 h-4" />, label: 'Services' },
-              { to: '/support', icon: <LifeBuoy className="w-4 h-4" />, label: 'Support' },
+              {
+                id: 'support',
+                icon: <LifeBuoy className="w-4 h-4" />,
+                label: 'Support',
+                subItems: [
+                  { to: '/support', label: 'Helpdesk' },
+                  { to: '/quality', label: 'Sentiment' },
+                ],
+              },
               {
                 id: 'academy',
                 icon: <GraduationCap className="w-4 h-4" />,
@@ -166,7 +176,7 @@ export default function Sidebar() {
                                 className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all w-full ${isStrictActive ? 'text-primary bg-primary/5 shadow-sm ring-1 ring-primary/10' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
                               >
                                 <span className="truncate">{sub.label}</span>
-                                {sub.badge && (
+                                {'badge' in sub && (sub as any).badge && (
                                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse ml-auto shrink-0" />
                                 )}
                               </NavLink>

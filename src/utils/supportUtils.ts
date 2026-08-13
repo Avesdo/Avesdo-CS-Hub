@@ -17,7 +17,7 @@ import {
 
 export const getTrendPeriodText = (dateRange: string) => {
   switch (dateRange) {
-    case '7d':
+    case 'last7':
       return 'vs previous 7 days';
     case 'thisMonth':
       return 'vs last month';
@@ -27,14 +27,16 @@ export const getTrendPeriodText = (dateRange: string) => {
       return 'vs last quarter';
     case 'lastQuarter':
       return 'vs previous quarter';
-    case 'ytd':
+    case 'thisYear':
+      return 'vs last year';
+    case 'lastYear':
       return 'vs previous year';
     case 'all':
       return 'all time';
     case 'custom':
       return 'vs previous period';
     default:
-      return 'vs last 30 days';
+      return 'vs previous period';
   }
 };
 
@@ -83,43 +85,41 @@ export function getBaseTickets(
   let prevStart = new Date(0);
   let prevEnd = new Date(0);
 
-  if (dateRange === '7d') {
-    start = subDays(startOfDay(now), 6);
+  if (dateRange === 'last7') {
+    start = startOfDay(subDays(now, 7));
     end = now;
-    prevEnd = subDays(start, 1);
-    prevEnd.setHours(23, 59, 59, 999);
-    prevStart = subDays(startOfDay(prevEnd), 6);
+    prevStart = startOfDay(subDays(now, 14));
+    prevEnd = new Date(start.getTime() - 1);
   } else if (dateRange === 'thisMonth') {
     start = startOfMonth(now);
     end = now;
     prevStart = startOfMonth(subMonths(now, 1));
     prevEnd = endOfMonth(subMonths(now, 1));
-    prevEnd.setHours(23, 59, 59, 999);
   } else if (dateRange === 'lastMonth') {
     start = startOfMonth(subMonths(now, 1));
-    end = endOfMonth(subMonths(now, 1));
-    end.setHours(23, 59, 59, 999);
+    end = new Date(endOfMonth(subMonths(now, 1)).setHours(23, 59, 59, 999));
     prevStart = startOfMonth(subMonths(now, 2));
-    prevEnd = endOfMonth(subMonths(now, 2));
-    prevEnd.setHours(23, 59, 59, 999);
+    prevEnd = new Date(endOfMonth(subMonths(now, 2)).setHours(23, 59, 59, 999));
   } else if (dateRange === 'thisQuarter') {
     start = startOfQuarter(now);
     end = now;
     prevStart = startOfQuarter(subQuarters(now, 1));
     prevEnd = endOfQuarter(subQuarters(now, 1));
-    prevEnd.setHours(23, 59, 59, 999);
   } else if (dateRange === 'lastQuarter') {
     start = startOfQuarter(subQuarters(now, 1));
-    end = endOfQuarter(subQuarters(now, 1));
-    end.setHours(23, 59, 59, 999);
+    end = new Date(endOfQuarter(subQuarters(now, 1)).setHours(23, 59, 59, 999));
     prevStart = startOfQuarter(subQuarters(now, 2));
-    prevEnd = endOfQuarter(subQuarters(now, 2));
-    prevEnd.setHours(23, 59, 59, 999);
-  } else if (dateRange === 'ytd') {
+    prevEnd = new Date(endOfQuarter(subQuarters(now, 2)).setHours(23, 59, 59, 999));
+  } else if (dateRange === 'thisYear') {
     start = new Date(now.getFullYear(), 0, 1);
     end = now;
     prevStart = new Date(now.getFullYear() - 1, 0, 1);
     prevEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+  } else if (dateRange === 'lastYear') {
+    start = new Date(now.getFullYear() - 1, 0, 1);
+    end = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+    prevStart = new Date(now.getFullYear() - 2, 0, 1);
+    prevEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
   } else if (dateRange === 'all') {
     start = new Date(0);
     end = now;
@@ -317,7 +317,7 @@ export function getChartData(
   >();
 
   const getGroupKey = (d: Date) => {
-    if (dateRange === '7d') {
+    if (dateRange === 'last7') {
       return format(d, 'EEE'); // Mon, Tue
     } else if (
       dateRange === 'thisMonth' ||
@@ -326,15 +326,14 @@ export function getChartData(
       dateRange === 'lastQuarter'
     ) {
       return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM d')}`;
-    } else if (dateRange === 'ytd' || dateRange === 'all') {
+    } else if (dateRange === 'thisYear' || dateRange === 'lastYear' || dateRange === 'all') {
       return format(startOfMonth(d), 'MMM yy');
     } else if (dateRange === 'custom') {
       const start = customStartDate ? new Date(customStartDate) : new Date(0);
       const end = customEndDate ? new Date(customEndDate) : new Date();
       const diff = differenceInDays(end, start);
-      if (diff <= 7) return format(d, 'EEE');
-      if (diff <= 90) return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM d')}`;
-      return format(startOfMonth(d), 'MMM yy');
+      if (diff <= 95) return `Week of ${format(startOfWeek(d, { weekStartsOn: 1 }), 'MMM d')}`; // up to ~3 months
+      return format(startOfMonth(d), 'MMM yy'); // Fallback to month
     }
     return format(d, 'MMM d');
   };

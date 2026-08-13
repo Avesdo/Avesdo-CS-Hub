@@ -38,26 +38,8 @@ interface SupportState {
   tickets: SupportTicket[];
   isLoading: boolean;
   hasFetched: boolean;
-  dateRange:
-    | '7d'
-    | 'thisMonth'
-    | 'lastMonth'
-    | 'thisQuarter'
-    | 'lastQuarter'
-    | 'ytd'
-    | 'all'
-    | 'custom';
-  setDateRange: (
-    range:
-      | '7d'
-      | 'thisMonth'
-      | 'lastMonth'
-      | 'thisQuarter'
-      | 'lastQuarter'
-      | 'ytd'
-      | 'all'
-      | 'custom'
-  ) => void;
+  dateRange: 'last7' | 'thisMonth' | 'lastMonth' | 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'lastYear' | 'all' | 'custom' | string;
+  setDateRange: (range: string) => void;
   customStartDate: number | null;
   customEndDate: number | null;
   setCustomDates: (start: number | null, end: number | null) => void;

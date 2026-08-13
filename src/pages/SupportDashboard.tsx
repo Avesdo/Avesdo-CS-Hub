@@ -21,7 +21,6 @@ import { ActivityHeatmapWidget } from '../components/support/ActivityHeatmapWidg
 import { TimeAndEffortQuadrantWidget } from '../components/support/TimeAndEffortQuadrantWidget';
 import { HighFrictionSourcesWidget } from '../components/support/HighFrictionSourcesWidget';
 import { WorkloadMatrixWidget } from '../components/support/WorkloadMatrixWidget';
-import { QualityMetricsWidget } from '../components/support/QualityMetricsWidget';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -129,7 +128,7 @@ export default function SupportDashboard() {
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 shrink-0 px-4 md:px-6 pt-4 pb-4 bg-white z-30">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-            Support Dashboard
+            Helpdesk Analytics
           </h1>
           <p className="text-base text-muted-foreground mt-1">
             Comprehensive overview of ticket trends, resolution metrics, and team workload.
@@ -287,6 +286,15 @@ export default function SupportDashboard() {
             preset={dateRange}
             startDate={customStartDate}
             endDate={customEndDate}
+            presets={[
+              { label: 'This Month', value: 'thisMonth' },
+              { label: 'Last Month', value: 'lastMonth' },
+              { label: 'This Quarter', value: 'thisQuarter' },
+              { label: 'Last Quarter', value: 'lastQuarter' },
+              { label: 'Year to date', value: 'thisYear' },
+              { label: 'All Time', value: 'all' },
+              { label: 'Custom Range', value: 'custom' },
+            ]}
             onChange={(preset, start, end) => {
               if (preset === 'custom') setCustomDates(start, end);
               setDateRange(preset);
@@ -327,9 +335,6 @@ export default function SupportDashboard() {
           </motion.div>
           <motion.div variants={itemVariants}>
             <WorkloadMatrixWidget chartData={chartData} managerFilter={managerFilter} />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <QualityMetricsWidget />
           </motion.div>
         </motion.div>
       </div>

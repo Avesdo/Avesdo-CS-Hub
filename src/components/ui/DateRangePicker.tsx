@@ -16,15 +16,7 @@ import {
 } from 'date-fns';
 import { Button } from './button';
 
-type PresetRange =
-  | '7d'
-  | 'thisMonth'
-  | 'lastMonth'
-  | 'thisQuarter'
-  | 'lastQuarter'
-  | 'ytd'
-  | 'all'
-  | 'custom';
+export type PresetRange = 'last7' | 'thisMonth' | 'lastMonth' | 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'lastYear' | 'all' | 'custom' | string;
 
 interface DateRangePickerProps {
   preset: PresetRange;
@@ -37,15 +29,12 @@ interface DateRangePickerProps {
   hidePresets?: boolean;
   placeholder?: string;
   variant?: 'default' | 'outline';
+  presets?: { label: string; value: PresetRange }[];
 }
 
 const PRESETS: { label: string; value: PresetRange }[] = [
-  { label: 'Last 7 Days', value: '7d' },
-  { label: 'This Month', value: 'thisMonth' },
-  { label: 'Last Month', value: 'lastMonth' },
-  { label: 'This Quarter', value: 'thisQuarter' },
-  { label: 'Last Quarter', value: 'lastQuarter' },
-  { label: 'Year to Date', value: 'ytd' },
+  { label: 'This Year (YTD)', value: 'thisYear' },
+  { label: 'Last Year', value: 'lastYear' },
   { label: 'All Time', value: 'all' },
   { label: 'Custom Range', value: 'custom' },
 ];
@@ -61,6 +50,7 @@ export function DateRangePicker({
   hidePresets = false,
   placeholder,
   variant = 'default',
+  presets = PRESETS,
 }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [leftMonth, setLeftMonth] = useState<Date>(startOfMonth(new Date()));
@@ -112,7 +102,7 @@ export function DateRangePicker({
 
   const getDisplayString = () => {
     if (preset !== 'custom' && !hidePresets) {
-      return PRESETS.find((p) => p.value === preset)?.label || placeholder || 'Select Date Range';
+      return presets.find((p) => p.value === preset)?.label || placeholder || 'Select Date Range';
     }
     if (startDate && endDate) {
       return `${format(new Date(startDate), 'MMM dd, yyyy')} - ${format(new Date(endDate), 'MMM dd, yyyy')}`;
@@ -337,7 +327,7 @@ export function DateRangePicker({
           {/* Presets Section */}
           {!hidePresets && (
             <div className="w-48 bg-transparent border-l border-slate-200/60 p-2 flex flex-col gap-1">
-              {PRESETS.map((p) => (
+              {presets.map((p) => (
                 <Button
                   variant="ghost"
                   key={p.value}

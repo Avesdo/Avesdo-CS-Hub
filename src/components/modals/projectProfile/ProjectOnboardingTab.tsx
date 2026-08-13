@@ -269,13 +269,25 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
         updates.onboardingPhase = 'Released';
         updates.phaseUpdatedAt = Date.now();
         const today = new Date();
-        updates.releaseDateVal = today.toISOString();
+        const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        updates.releaseDateVal = localMidnight.getTime();
+        updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
       } else if (field === 'onboardingPhase' && value === 'Released') {
         updates.projectStatus = 'Active';
         updates.timelineStatus = 'Released';
         updates.phaseUpdatedAt = Date.now();
         const today = new Date();
-        updates.releaseDateVal = today.toISOString();
+        const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        updates.releaseDateVal = localMidnight.getTime();
+        updates.releaseDateStr = localMidnight.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
       } else if (field === 'onboardingPhase') {
         updates.phaseUpdatedAt = Date.now();
       }

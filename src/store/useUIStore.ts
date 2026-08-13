@@ -6,6 +6,7 @@ export type DrawerType =
   | 'client'
   | 'dashDrilldown'
   | 'unscheduledProjects'
+  | 'csatSubmissions'
   | null;
 export type ModalType = 'addClient' | 'addProject' | 'addService' | 'scheduleModal' | null;
 

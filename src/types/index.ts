@@ -27,6 +27,10 @@ export interface Client {
   }[];
   clientNpsHistory?: {
     score: number;
+    promoters?: number;
+    passives?: number;
+    detractors?: number;
+    feedback?: { name: string; email?: string; score: number; feedback: string }[];
     submittedAt: string;
   }[];
   [key: string]: any; // Allow other properties while migrating
