@@ -4,28 +4,22 @@ import { calculateClientHealth, calculateProjectHealth } from '../utils/scoringU
 import { Client, Project, Settings } from '../types';
 import LZString from 'lz-string';
 
-export async function generateDailyHealthSnapshots() {
+export async function generateDailyHealthSnapshots(
+  storeClients: Client[],
+  storeProjects: Project[],
+  storeSettings: Settings
+) {
   try {
-    // 1. Fetch all necessary data
-    const clientsSnap = await getDocs(collection(db, 'clients'));
-    const projectsSnap = await getDocs(collection(db, 'projects'));
-    const settingsSnap = await getDoc(doc(db, 'settings', 'global_config'));
+    // 1. Filter and map data from the store
+    const clients: Client[] = storeClients.filter((c) => !c.isArchived);
+    const settings: Settings = storeSettings || ({} as Settings);
 
-    const clients: Client[] = clientsSnap.docs
-      .map((d) => ({ id: d.id, clientId: d.id, ...d.data() }) as unknown as Client)
-      .filter((c) => !c.isArchived);
-
-    const settings: Settings = settingsSnap.exists()
-      ? (settingsSnap.data() as Settings)
-      : ({} as Settings);
-
-    const projects: Project[] = projectsSnap.docs
-      .map((d) => {
-        const p = { id: d.id, projectId: d.id, ...d.data() } as unknown as Project;
+    const projects: Project[] = storeProjects
+      .filter((p) => !p.isArchived)
+      .map((p) => {
         const pHealth = calculateProjectHealth(p, settings);
         return { ...p, healthScore: pHealth.totalScore };
-      })
-      .filter((p) => !p.isArchived);
+      });
 
     // 2. Fetch the existing health_history document
     const historyRef = doc(db, 'settings', 'health_history');

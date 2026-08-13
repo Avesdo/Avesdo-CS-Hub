@@ -89,7 +89,8 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
       if (settings.lastSnapshotDate !== todayStr) {
         // Trigger background snapshot generation
         import('./api/snapshotService').then(({ generateDailyHealthSnapshots }) => {
-          generateDailyHealthSnapshots().catch(console.error);
+          const state = useAppStore.getState();
+          generateDailyHealthSnapshots(state.clients, state.projects, state.settings!).catch(console.error);
         });
       }
 

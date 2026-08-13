@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GlobalSearch from './GlobalSearch';
 import { Bell, Check, X, Trash2 } from 'lucide-react';
-import { collection, query, onSnapshot, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy, doc, updateDoc, limit } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import {
   AppNotification,
@@ -44,7 +44,7 @@ export function NotificationBell({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(50));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const notifs = snapshot.docs.map((doc) => ({
         id: doc.id,
