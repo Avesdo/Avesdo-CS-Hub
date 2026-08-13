@@ -37,7 +37,7 @@ export default function Sidebar() {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
     academy: location.pathname.includes('/academy'),
-    support: location.pathname.includes('/support') || location.pathname.includes('/quality'),
+    support: location.pathname.includes('/helpdesk') || location.pathname.includes('/sentiment'),
   });
 
   const toggleMenu = (id: string) => {
@@ -114,8 +114,8 @@ export default function Sidebar() {
                 icon: <LifeBuoy className="w-4 h-4" />,
                 label: 'Support',
                 subItems: [
-                  { to: '/support', label: 'Helpdesk' },
-                  { to: '/quality', label: 'Sentiment' },
+                  { to: '/helpdesk', label: 'Helpdesk' },
+                  { to: '/sentiment', label: 'Sentiment' },
                 ],
               },
               {

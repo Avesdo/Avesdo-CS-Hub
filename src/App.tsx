@@ -33,10 +33,10 @@ const ClientHealth = React.lazy(() => import('./pages/ClientHealth'));
 const ProjectTracker = React.lazy(() => import('./pages/ProjectTracker'));
 const ServiceHub = React.lazy(() => import('./pages/ServiceHub'));
 const Settings = React.lazy(() => import('./pages/Settings'));
-const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
+const HelpdeskDashboard = React.lazy(() => import('./pages/HelpdeskDashboard'));
 const Academy = React.lazy(() => import('./pages/Academy'));
 const TagDatabase = React.lazy(() => import('./pages/TagDatabase'));
-const QualityDashboard = React.lazy(() => import('./pages/QualityDashboard'));
+const SentimentDashboard = React.lazy(() => import('./pages/SentimentDashboard'));
 
 const Login = React.lazy(() => import('./pages/Login'));
 const ClientPortal = React.lazy(() => import('./pages/ClientPortal'));
@@ -199,18 +199,18 @@ function AnimatedRoutes() {
           }
         />
         <Route
-          path="/support"
+          path="/helpdesk"
           element={
             <PageWrapper>
-              <SupportDashboard />
+              <HelpdeskDashboard />
             </PageWrapper>
           }
         />
         <Route
-          path="/quality"
+          path="/sentiment"
           element={
             <PageWrapper>
-              <QualityDashboard />
+              <SentimentDashboard />
             </PageWrapper>
           }
         />
