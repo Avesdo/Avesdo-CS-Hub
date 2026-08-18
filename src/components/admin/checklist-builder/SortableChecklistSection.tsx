@@ -29,8 +29,12 @@ export function SortableChecklistSection({
   handleUpdateSection,
   handleRemoveSection,
   features,
+  showArchived,
 }: any) {
   const [isEditingDesc, setIsEditingDesc] = React.useState(false);
+  const visibleItems = showArchived
+    ? section.items
+    : section.items.filter((i: any) => !i.isArchived);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: section.id,
@@ -93,6 +97,32 @@ export function SortableChecklistSection({
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Archived Toggle */}
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div
+                  className={`w-8 h-[18px] rounded-full relative transition-colors ${section.isArchived ? 'bg-amber-500' : 'bg-slate-200 group-hover:bg-slate-300'}`}
+                >
+                  <div
+                    className={`absolute top-[2px] left-[2px] w-[14px] h-[14px] bg-white rounded-full transition-transform shadow-sm ${section.isArchived ? 'translate-x-[14px]' : 'translate-x-0'}`}
+                  />
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={section.isArchived || false}
+                    onChange={(e) => {
+                      handleUpdateSection(index, {
+                        isArchived: e.target.checked,
+                      });
+                    }}
+                  />
+                </div>
+                <span className="text-[13px] font-semibold text-slate-700">Archived</span>
+              </label>
+            </div>
+
+            <div className="w-px h-4 bg-slate-200 mx-1" />
+
             {/* Logic Toggle */}
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 cursor-pointer group">
@@ -228,18 +258,21 @@ export function SortableChecklistSection({
                 onDragEnd={handleItemDragEnd}
               >
                 <SortableContext
-                  items={section.items.map((i: any) => i.id)}
+                  items={visibleItems.map((i: any) => i.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {section.items.map((item: any, itemIdx: number) => (
-                    <SortableChecklistItem
-                      key={item.id}
-                      item={item}
-                      itemIdx={itemIdx}
-                      handleUpdateItem={handleUpdateItem}
-                      handleRemoveItem={handleRemoveItem}
-                    />
-                  ))}
+                  {visibleItems.map((item: any) => {
+                    const itemIdx = section.items.findIndex((i: any) => i.id === item.id);
+                    return (
+                      <SortableChecklistItem
+                        key={item.id}
+                        item={item}
+                        itemIdx={itemIdx}
+                        handleUpdateItem={handleUpdateItem}
+                        handleRemoveItem={handleRemoveItem}
+                      />
+                    );
+                  })}
                 </SortableContext>
               </DndContext>
               <div className="pt-2 pb-1 px-1">

@@ -16,7 +16,17 @@ import {
 } from 'date-fns';
 import { Button } from './button';
 
-export type PresetRange = 'last7' | 'thisMonth' | 'lastMonth' | 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'lastYear' | 'all' | 'custom' | string;
+export type PresetRange =
+  | 'last7'
+  | 'thisMonth'
+  | 'lastMonth'
+  | 'thisQuarter'
+  | 'lastQuarter'
+  | 'thisYear'
+  | 'lastYear'
+  | 'all'
+  | 'custom'
+  | string;
 
 interface DateRangePickerProps {
   preset: PresetRange;

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import { FormField } from '../TemplateDesigner';
 import { SortableFieldItem } from './SortableFieldItem';
-import { LayoutTemplate } from 'lucide-react';
+import { LayoutTemplate, Archive, EyeOff } from 'lucide-react';
 
 interface FormCanvasProps {
   fields: FormField[];
@@ -13,6 +13,7 @@ interface FormCanvasProps {
   handleRemoveField: (idx: number) => void;
   handleDuplicateField: (idx: number) => void;
   features: string[];
+  showArchived: boolean;
 }
 
 export function FormCanvas({
@@ -23,10 +24,14 @@ export function FormCanvas({
   handleRemoveField,
   handleDuplicateField,
   features,
+  showArchived,
 }: FormCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: 'form-canvas',
   });
+
+  const hasArchived = fields.some((f) => f.isArchived);
+  const visibleFields = showArchived ? fields : fields.filter((f) => !f.isArchived);
 
   if (fields.length === 0) {
     return (
@@ -50,26 +55,32 @@ export function FormCanvas({
   return (
     <div
       ref={setNodeRef}
-      className="h-full overflow-y-auto overflow-x-hidden custom-thin-scroll px-10 py-10 pb-32"
+      className="h-full overflow-y-auto overflow-x-hidden custom-thin-scroll px-10 py-10 pb-32 relative"
       onClick={() => setSelectedFieldId(null)}
     >
-      <div className="max-w-3xl mx-auto space-y-3">
-        <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-          {fields.map((field, index) => (
-            <div key={field.id} onClick={(e) => e.stopPropagation()}>
-              <SortableFieldItem
-                field={field}
-                index={index}
-                fields={fields}
-                isSelected={selectedFieldId === field.id}
-                onSelect={() => setSelectedFieldId(field.id)}
-                handleUpdateField={handleUpdateField}
-                handleRemoveField={handleRemoveField}
-                handleDuplicateField={handleDuplicateField}
-                features={features}
-              />
-            </div>
-          ))}
+      <div className="max-w-3xl mx-auto flex flex-col gap-3">
+        <SortableContext
+          items={visibleFields.map((f) => f.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {visibleFields.map((field) => {
+            const index = fields.findIndex((f) => f.id === field.id);
+            return (
+              <div key={field.id} onClick={(e) => e.stopPropagation()}>
+                <SortableFieldItem
+                  field={field}
+                  index={index}
+                  fields={fields}
+                  isSelected={selectedFieldId === field.id}
+                  onSelect={() => setSelectedFieldId(field.id)}
+                  handleUpdateField={handleUpdateField}
+                  handleRemoveField={handleRemoveField}
+                  handleDuplicateField={handleDuplicateField}
+                  features={features}
+                />
+              </div>
+            );
+          })}
         </SortableContext>
       </div>
     </div>

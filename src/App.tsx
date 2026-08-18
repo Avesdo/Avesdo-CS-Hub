@@ -90,7 +90,9 @@ function SyncWrapper({ children }: { children: React.ReactNode }) {
         // Trigger background snapshot generation
         import('./api/snapshotService').then(({ generateDailyHealthSnapshots }) => {
           const state = useAppStore.getState();
-          generateDailyHealthSnapshots(state.clients, state.projects, state.settings!).catch(console.error);
+          generateDailyHealthSnapshots(state.clients, state.projects, state.settings!).catch(
+            console.error
+          );
         });
       }
 

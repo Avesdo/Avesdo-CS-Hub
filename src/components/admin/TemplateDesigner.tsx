@@ -43,6 +43,8 @@ import {
   ChevronUp,
   ChevronDown,
   Eye,
+  EyeOff,
+  Archive,
   X,
   Mail,
   LayoutTemplate,
@@ -105,6 +107,7 @@ export interface FormField {
   } | null;
   dependsOnFeature?: string[];
   featureLogicEnabled?: boolean;
+  isArchived?: boolean;
 }
 
 export interface DeliverableTemplateItem {
@@ -112,6 +115,7 @@ export interface DeliverableTemplateItem {
   taskName: string;
   defaultNote: string;
   defaultPriority?: string;
+  isArchived?: boolean;
 }
 
 export interface ChecklistSection {
@@ -120,6 +124,7 @@ export interface ChecklistSection {
   description: string;
   dependsOnFeature: string[];
   logicEnabled?: boolean;
+  isArchived?: boolean;
   items: DeliverableTemplateItem[];
 }
 
@@ -206,6 +211,12 @@ export default function TemplateDesigner() {
   const [fields, setFields] = useState<FormField[]>(activeTemplate?.fields || []);
   const [sections, setSections] = useState<ChecklistSection[]>(activeTemplate?.sections || []);
   const [showPreview, setShowPreview] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
+
+  const hasArchived =
+    activeTemplate?.type === 'checklist'
+      ? sections.some((s) => s.isArchived || s.items.some((i) => i.isArchived))
+      : fields.some((f) => f.isArchived);
 
   const hasUnsavedChanges = React.useMemo(() => {
     if (!activeTemplate) return false;
@@ -348,6 +359,16 @@ export default function TemplateDesigner() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {hasArchived && (
+            <Button
+              variant="outline"
+              onClick={() => setShowArchived(!showArchived)}
+              className={`flex items-center gap-2 shadow-sm transition-colors ${showArchived ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'text-slate-600'}`}
+            >
+              {showArchived ? <EyeOff className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
+              {showArchived ? 'Hide Archived' : 'Show Archived'}
+            </Button>
+          )}
           {hasUnsavedChanges && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-md border bg-amber-50 text-amber-600 border-amber-200/50 hidden sm:flex">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
@@ -374,9 +395,19 @@ export default function TemplateDesigner() {
 
       <div className="flex-1 flex overflow-hidden bg-white">
         {activeTemplate.type === 'checklist' ? (
-          <ChecklistBuilder sections={sections} setSections={setSections} features={features} />
+          <ChecklistBuilder
+            sections={sections}
+            setSections={setSections}
+            features={features}
+            showArchived={showArchived}
+          />
         ) : (
-          <FormBuilder fields={fields} setFields={setFields} features={features} />
+          <FormBuilder
+            fields={fields}
+            setFields={setFields}
+            features={features}
+            showArchived={showArchived}
+          />
         )}
       </div>
 

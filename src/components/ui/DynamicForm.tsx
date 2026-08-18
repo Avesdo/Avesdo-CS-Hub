@@ -74,6 +74,9 @@ export function DynamicForm({
 
   // Function to determine if a field should be shown based on logic
   const isFieldVisible = (field: FormField) => {
+    // 0. Archived Field Logic
+    if (field.isArchived && !initialValues[field.id] && !readOnly) return false;
+
     // 1. Feature Logic
     if (field.featureLogicEnabled && field.dependsOnFeature && field.dependsOnFeature.length > 0) {
       const hasFeature = field.dependsOnFeature.some((f) => projectFeatures.includes(f));

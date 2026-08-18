@@ -76,23 +76,44 @@ export function SortableChecklistItem({ item, itemIdx, handleUpdateItem, handleR
             </button>
           </Tooltip>
 
-          <div className="flex items-center gap-2 pt-1">
-            <span className="text-[11px] font-bold text-slate-400">Priority</span>
-            <Select
-              value={item.defaultPriority || 'Normal'}
-              onChange={(val) => handleUpdateItem(itemIdx, { defaultPriority: val })}
-              options={['Low', 'Normal', 'High', 'Critical'].map((p) => ({ label: p, value: p }))}
-              trigger={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-[12px] bg-slate-50 flex items-center gap-1.5 shadow-sm font-semibold"
+          <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-400">Priority</span>
+              <Select
+                value={item.defaultPriority || 'Normal'}
+                onChange={(val) => handleUpdateItem(itemIdx, { defaultPriority: val })}
+                options={['Low', 'Normal', 'High', 'Critical'].map((p) => ({ label: p, value: p }))}
+                trigger={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-[12px] bg-slate-50 flex items-center gap-1.5 shadow-sm font-semibold"
+                  >
+                    {item.defaultPriority || 'Normal'}
+                    <ChevronDown className="w-3 h-3 text-slate-400" />
+                  </Button>
+                }
+              />
+            </div>
+
+            <div className="flex items-center gap-2 ml-1">
+              <span className="text-[11px] font-bold text-slate-400">Archived</span>
+              <label className="flex items-center cursor-pointer group">
+                <div
+                  className={`w-8 h-[18px] rounded-full relative transition-colors ${item.isArchived ? 'bg-amber-500' : 'bg-slate-300 group-hover:bg-slate-400'}`}
                 >
-                  {item.defaultPriority || 'Normal'}
-                  <ChevronDown className="w-3 h-3 text-slate-400" />
-                </Button>
-              }
-            />
+                  <div
+                    className={`absolute top-[2px] left-[2px] w-3.5 h-3.5 bg-white rounded-full transition-transform shadow-sm ${item.isArchived ? 'translate-x-[14px]' : 'translate-x-0'}`}
+                  />
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={item.isArchived || false}
+                    onChange={(e) => handleUpdateItem(itemIdx, { isArchived: e.target.checked })}
+                  />
+                </div>
+              </label>
+            </div>
           </div>
         </div>
       </div>

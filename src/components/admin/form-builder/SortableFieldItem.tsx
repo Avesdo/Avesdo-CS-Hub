@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { Tooltip } from '../../ui/Tooltip';
 import { PropertiesPanel } from './FieldPropertiesPanel';
-import { TruncatedText } from '../../../components/ui/TruncatedText';
 
 export const getFieldMeta = (type: FieldType) => {
   for (const cat of FIELD_PALETTE_CATEGORIES) {
@@ -243,6 +242,29 @@ export function SortableFieldItem({
                         <div className="w-px h-4 bg-slate-200"></div>
 
                         <div className="flex items-center gap-2">
+                          <span className="text-[12px] font-semibold text-slate-600">Archived</span>
+                          <label className="flex items-center cursor-pointer group">
+                            <div
+                              className={`w-8 h-[18px] rounded-full relative transition-colors ${field.isArchived ? 'bg-amber-500' : 'bg-slate-300 group-hover:bg-slate-400'}`}
+                            >
+                              <div
+                                className={`absolute top-[2px] left-[2px] w-3.5 h-3.5 bg-white rounded-full transition-transform shadow-sm ${field.isArchived ? 'translate-x-[14px]' : 'translate-x-0'}`}
+                              />
+                              <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={field.isArchived || false}
+                                onChange={(e) =>
+                                  handleUpdateField(index, { isArchived: e.target.checked })
+                                }
+                              />
+                            </div>
+                          </label>
+                        </div>
+
+                        <div className="w-px h-4 bg-slate-200"></div>
+
+                        <div className="flex items-center gap-2">
                           <span className="text-[12px] font-semibold text-slate-600">Logic</span>
                           <label className="flex items-center cursor-pointer group">
                             <div
@@ -301,26 +323,15 @@ export function SortableFieldItem({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 w-full justify-between pr-2">
-                  <TruncatedText
-                    text={String(
-                      '' + field.label ||
-                        (`New ${meta.label} Question` + '' + field.required &&
-                          (
-                            <Tooltip content="Required">
-                              <span className="text-red-500 ml-1">*</span>
-                            </Tooltip>
-                          ) + '')
-                    )}
-                    containerClassName="text-[15px] font-bold text-slate-900"
-                  >
+                <div className="flex items-start gap-3 w-full justify-between pr-2 pt-0.5">
+                  <div className="text-[15px] font-bold text-slate-900 break-words leading-snug max-w-[85%]">
                     {field.label || `New ${meta.label} Question`}
                     {field.required && (
                       <Tooltip content="Required">
                         <span className="text-red-500 ml-1">*</span>
                       </Tooltip>
                     )}
-                  </TruncatedText>
+                  </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {field.logicEnabled && (
                       <Tooltip content="Field logic enabled">

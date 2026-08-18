@@ -17,9 +17,10 @@ interface FormBuilderProps {
   fields: FormField[];
   setFields: React.Dispatch<React.SetStateAction<FormField[]>>;
   features: string[];
+  showArchived: boolean;
 }
 
-export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
+export function FormBuilder({ fields, setFields, features, showArchived }: FormBuilderProps) {
   useEffect(() => {
     document.body.style.overflowX = 'hidden';
     return () => {
@@ -137,6 +138,7 @@ export function FormBuilder({ fields, setFields, features }: FormBuilderProps) {
             handleRemoveField={handleRemoveField}
             handleDuplicateField={handleDuplicateField}
             features={features}
+            showArchived={showArchived}
           />
         </div>
         <div className="w-[320px] shrink-0 border-l border-slate-200 bg-white h-full z-10 shadow-sm relative flex flex-col">

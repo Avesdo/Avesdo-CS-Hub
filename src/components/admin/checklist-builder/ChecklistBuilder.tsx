@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FolderOpen } from 'lucide-react';
 import {
   DndContext,
@@ -21,9 +21,16 @@ interface ChecklistBuilderProps {
   sections: ChecklistSection[];
   setSections: React.Dispatch<React.SetStateAction<ChecklistSection[]>>;
   features: string[];
+  showArchived: boolean;
 }
 
-export function ChecklistBuilder({ sections, setSections, features }: ChecklistBuilderProps) {
+export function ChecklistBuilder({
+  sections,
+  setSections,
+  features,
+  showArchived,
+}: ChecklistBuilderProps) {
+  const visibleSections = showArchived ? sections : sections.filter((s) => !s.isArchived);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -87,29 +94,35 @@ export function ChecklistBuilder({ sections, setSections, features }: ChecklistB
               </button>
             </div>
           ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleSectionDragEnd}
-            >
-              <div className="space-y-6">
-                <SortableContext
-                  items={sections.map((s) => s.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {sections.map((section, index) => (
-                    <SortableChecklistSection
-                      key={section.id}
-                      section={section}
-                      index={index}
-                      handleUpdateSection={handleUpdateSection}
-                      handleRemoveSection={handleRemoveSection}
-                      features={features}
-                    />
-                  ))}
-                </SortableContext>
-              </div>
-            </DndContext>
+            <>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleSectionDragEnd}
+              >
+                <div className="space-y-6">
+                  <SortableContext
+                    items={visibleSections.map((s) => s.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {visibleSections.map((section) => {
+                      const sectionIndex = sections.findIndex((s) => s.id === section.id);
+                      return (
+                        <SortableChecklistSection
+                          key={section.id}
+                          section={section}
+                          index={sectionIndex}
+                          handleUpdateSection={handleUpdateSection}
+                          handleRemoveSection={handleRemoveSection}
+                          features={features}
+                          showArchived={showArchived}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                </div>
+              </DndContext>
+            </>
           )}
 
           {sections.length > 0 && (

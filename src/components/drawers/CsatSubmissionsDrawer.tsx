@@ -225,7 +225,10 @@ export default function CsatSubmissionsDrawer() {
                     onChange={(e) => setHasCommentsOnly(e.target.checked)}
                     className="w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-primary focus:ring-offset-0 cursor-pointer"
                   />
-                  <label htmlFor="hasCommentsOnly" className="text-[13px] font-medium text-slate-600 cursor-pointer select-none">
+                  <label
+                    htmlFor="hasCommentsOnly"
+                    className="text-[13px] font-medium text-slate-600 cursor-pointer select-none"
+                  >
                     With comments
                   </label>
                 </div>
@@ -242,7 +245,7 @@ export default function CsatSubmissionsDrawer() {
                   let categoryLabel = 'Detractor';
                   let colorClass = 'text-rose-600';
                   let badgeClass = 'bg-rose-50 text-rose-600 border-rose-100';
-                  
+
                   if (sub.score >= 9) {
                     categoryLabel = 'Promoter';
                     colorClass = 'text-emerald-600';
@@ -276,7 +279,7 @@ export default function CsatSubmissionsDrawer() {
                               </TruncatedText>
                             )}
                           </div>
-                          
+
                           <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
                             <Calendar className="w-3.5 h-3.5" />
                             <span>{formatDate(sub.submittedAt)}</span>
@@ -284,15 +287,19 @@ export default function CsatSubmissionsDrawer() {
                         </div>
 
                         <div className="flex flex-col items-end shrink-0 pl-4 gap-1.5">
-                          <div className={`text-lg font-bold leading-none tracking-tight ${colorClass}`}>
+                          <div
+                            className={`text-lg font-bold leading-none tracking-tight ${colorClass}`}
+                          >
                             {sub.score}
                           </div>
-                          <div className={`text-[10px] font-bold px-1.5 py-0.5 mt-1 rounded text-center border ${badgeClass}`}>
+                          <div
+                            className={`text-[10px] font-bold px-1.5 py-0.5 mt-1 rounded text-center border ${badgeClass}`}
+                          >
                             {categoryLabel}
                           </div>
                         </div>
                       </div>
-                      
+
                       {sub.feedback && (
                         <div className="mt-4 pt-3 border-t border-slate-100 w-full">
                           <div className="flex gap-2">
@@ -322,7 +329,7 @@ export default function CsatSubmissionsDrawer() {
                           >
                             {sub.name || 'Unknown User'}
                           </TruncatedText>
-                          
+
                           <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
                             <Calendar className="w-3.5 h-3.5" />
                             <span>
@@ -348,7 +355,7 @@ export default function CsatSubmissionsDrawer() {
                           >
                             {score}%
                           </div>
-                          
+
                           <div className="flex flex-col items-end gap-1 mt-1">
                             {sub.happy > 0 && (
                               <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[11px] font-bold">

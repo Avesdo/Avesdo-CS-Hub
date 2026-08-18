@@ -68,11 +68,22 @@ export default function DeliverablesGrid({
   const visibleSections = useMemo(() => {
     if (!template?.sections) return [];
     const activeFeatures = project?.features || [];
-    return template.sections.filter((section) => {
-      if (!section.dependsOnFeature || section.dependsOnFeature.length === 0) return true;
-      return section.dependsOnFeature.some((f) => activeFeatures.includes(f));
-    });
-  }, [template, project]);
+    return template.sections
+      .map((section) => ({
+        ...section,
+        items: section.items.filter((item) => {
+          const hasData = project?.deliverables?.[item.id] || getValues(`deliverables.${item.id}`);
+          const isArchived = item.isArchived || section.isArchived;
+          if (isArchived && !hasData && !readOnly) return false;
+          return true;
+        }),
+      }))
+      .filter((section) => {
+        if (section.isArchived && section.items.length === 0 && !readOnly) return false;
+        if (!section.dependsOnFeature || section.dependsOnFeature.length === 0) return true;
+        return section.dependsOnFeature.some((f) => activeFeatures.includes(f));
+      });
+  }, [template, project, getValues, readOnly]);
 
   // Aggregate all items for easier mapping in the detail pane
   const allItems = useMemo(() => {
