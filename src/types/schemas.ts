@@ -71,6 +71,10 @@ export const ServiceSchema = z
     dateVal: z.number().catch(0),
     isArchived: z.boolean().optional().catch(false),
     serviceValue: z.number().optional().catch(0),
+    invoiceSent: z.boolean().optional(),
+    invoicePaid: z.boolean().optional(),
+    invoiceNumber: z.string().optional(),
+    commissionPaid: z.boolean().optional(),
   })
   .passthrough();
 

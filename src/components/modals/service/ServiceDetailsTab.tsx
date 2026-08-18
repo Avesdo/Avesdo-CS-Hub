@@ -165,19 +165,21 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
   };
 
   // Invoice Draft
-  const [invoiceDraft, setInvoiceDraft] = useState(service?.invoiceNum || '');
+  const [invoiceDraft, setInvoiceDraft] = useState(service?.invoiceNumber || '');
   useEffect(() => {
-    setInvoiceDraft(service?.invoiceNum || '');
-  }, [service?.invoiceNum]);
+    setInvoiceDraft(service?.invoiceNumber || '');
+  }, [service?.invoiceNumber]);
 
   const handleInvoiceChange = (val: string) => {
     setInvoiceDraft(val);
     if (val.trim().length > 0 && !service?.invoiceSent) {
-      handleUpdate('invoiceSent', true, service?.invoiceSent, 'Invoice Sent', { invoiceNum: val });
+      handleUpdate('invoiceSent', true, service?.invoiceSent, 'Invoice Sent', {
+        invoiceNumber: val,
+      });
     }
   };
   const handleInvoiceBlur = () => {
-    handleUpdate('invoiceNum', invoiceDraft, service?.invoiceNum, 'Invoice Number');
+    handleUpdate('invoiceNumber', invoiceDraft, service?.invoiceNumber, 'Invoice Number');
   };
 
   // Commission Draft
@@ -242,7 +244,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
   const handleCommPaidToggle = (checked: boolean) => {
     if (checked) {
       const d = new Date();
-      handleUpdate('commPaid', true, service?.commPaid, 'Commission Paid', {
+      handleUpdate('commissionPaid', true, service?.commissionPaid, 'Commission Paid', {
         commDateVal: d.getTime(),
         commDateStr: d.toLocaleDateString('en-US', {
           month: 'short',
@@ -251,7 +253,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
         }),
       });
     } else {
-      handleUpdate('commPaid', false, service?.commPaid, 'Commission Paid', {
+      handleUpdate('commissionPaid', false, service?.commissionPaid, 'Commission Paid', {
         commDateVal: null,
         commDateStr: '',
       });
@@ -484,13 +486,13 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
             <div className="flex flex-col gap-6 pt-2">
               <label className="flex items-center gap-3 cursor-pointer group w-fit">
                 <div
-                  className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.commPaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}
+                  className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${service?.commissionPaid ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-transparent group-hover:border-primary/50'}`}
                 >
-                  {service?.commPaid && <LucideIcons.Check className="w-3.5 h-3.5" />}
+                  {service?.commissionPaid && <LucideIcons.Check className="w-3.5 h-3.5" />}
                 </div>
                 <input
                   type="checkbox"
-                  checked={service?.commPaid || false}
+                  checked={service?.commissionPaid || false}
                   disabled={!hasPermission('service_edit_financials')}
                   onChange={(e) => handleCommPaidToggle(e.target.checked)}
                   className="hidden"
@@ -500,7 +502,7 @@ export default function ServiceDetailsTab({ service }: ServiceDetailsTabProps) {
                 </span>
               </label>
 
-              {service?.commPaid && (
+              {service?.commissionPaid && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                   <label className="text-[13px] font-medium text-slate-500 mb-2 block">
                     Payment date

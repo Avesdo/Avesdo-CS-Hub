@@ -105,16 +105,16 @@ const ServiceRow = React.memo(
         className="hover:bg-slate-50 transition-colors group cursor-pointer bg-white hover:relative hover:z-[100]"
         onClick={() => openDrawer('service', s.id)}
       >
-        <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2 w-[35%] sm:w-[30%] lg:w-[25%]">
+        <td className="sticky left-0 z-20 group-hover:z-[110] bg-white group-hover:bg-slate-50 transition-colors border-r-0 px-6 py-2 w-[35%] sm:w-[30%] lg:w-[16%]">
           <TruncatedText
             text={s.name || 'Unnamed Service'}
-            className="font-bold text-[13px] text-foreground w-full min-w-[180px] group-hover:text-primary transition-colors"
+            className="font-bold text-[13px] text-foreground w-full min-w-[120px] group-hover:text-primary transition-colors"
           />
         </td>
-        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0 hidden md:table-cell max-w-0 w-[15%]">
+        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium border-l-0 hidden md:table-cell max-w-0 w-[16%]">
           <TruncatedText text={s.projectName || 'No Project'} className="w-full" />
         </td>
-        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium max-w-0 w-[15%]">
+        <td className="px-6 py-2 text-[13px] text-muted-foreground font-medium max-w-0 w-[16%]">
           <TruncatedText
             text={s.clientName || s.clients?.join(', ') || 'No Client'}
             className="w-full"
@@ -149,8 +149,34 @@ const ServiceRow = React.memo(
           {sDate}
         </td>
         {activeTab !== 'Included' && (
-          <td className="px-6 py-2 text-[13px] font-bold text-foreground text-right whitespace-nowrap">
+          <td className="px-6 py-2 text-right font-medium text-[13px] text-foreground">
             {formatCurrency(Number(s.price) || 0)}
+          </td>
+        )}
+        {!['Pending', 'Lost', 'Included'].includes(activeTab) && (
+          <td className="px-6 py-2">
+            <div className="flex flex-col items-center justify-center gap-1.5">
+              {s.type === 'Included' || s.outcome === 'Lost' ? (
+                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">N/A</span>
+              ) : !s.invoiceSent && !s.invoicePaid ? (
+                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">Not Sent</span>
+              ) : (
+                <UITooltip content={s.invoiceNumber ? `Invoice #: ${s.invoiceNumber}` : 'No Invoice #'}>
+                  <div className="flex flex-col items-center gap-1.5 cursor-help">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors border whitespace-nowrap ${
+                      s.invoicePaid ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                    }`}>
+                      {s.invoicePaid && !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0 ? 'Inv. Paid' : s.invoicePaid ? 'Paid' : 'Inv. Sent'}
+                    </span>
+                    {s.invoicePaid && !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border border-amber-200 bg-amber-50 text-amber-700 whitespace-nowrap">
+                        Comm. Due
+                      </span>
+                    )}
+                  </div>
+                </UITooltip>
+              )}
+            </div>
           </td>
         )}
       </motion.tr>
@@ -750,10 +776,10 @@ export default function ServiceHub() {
           >
             {useMemo(
               () => (
-                <table className="w-full text-left bg-white border-separate border-spacing-0">
+                <table className="w-full table-fixed text-left bg-white border-separate border-spacing-0">
                   <thead className="sticky top-0 z-[80] bg-slate-50/90 backdrop-blur-md shadow-sm">
                     <tr className="bg-slate-50/95 backdrop-blur-md text-slate-500 text-[11px] font-bold tracking-wider h-[45px]">
-                      <th className="w-[35%] sm:w-[30%] lg:w-[25%] group/th sticky left-0 z-[90] bg-slate-50/95 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
+                      <th className="w-[35%] sm:w-[30%] lg:w-[16%] group/th sticky left-0 z-[90] bg-slate-50/95 backdrop-blur-md border-b border-border border-r-0 px-6 py-2">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -770,7 +796,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[15%] group/th px-6 py-2 border-b border-border border-l-0 hidden md:table-cell">
+                      <th className="w-[16%] group/th px-6 py-2 border-b border-border border-l-0 hidden md:table-cell">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -787,7 +813,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[15%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[16%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -804,7 +830,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[10%] group/th px-6 py-2 border-b border-border hidden lg:table-cell">
+                      <th className="w-[4%] group/th px-6 py-2 border-b border-border hidden lg:table-cell">
                         <div className="flex items-center justify-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -820,7 +846,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[12%] group/th px-6 py-2 border-b border-border hidden xl:table-cell">
+                      <th className="w-[10%] group/th px-6 py-2 border-b border-border hidden xl:table-cell">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -836,7 +862,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[11%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -852,7 +878,7 @@ export default function ServiceHub() {
                           />
                         </div>
                       </th>
-                      <th className="w-[12%] group/th px-6 py-2 border-b border-border">
+                      <th className="w-[9%] group/th px-6 py-2 border-b border-border">
                         <div className="flex items-center gap-1.5">
                           <span
                             className="cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
@@ -865,17 +891,20 @@ export default function ServiceHub() {
                         </div>
                       </th>
                       {activeTab !== 'Included' && (
-                        <>
-                          <th
-                            className="w-[10%] group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
-                            onClick={() => handleSort('price')}
-                          >
-                            <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
-                              {renderSortArrow('price')}
-                              Invoice Value
-                            </div>
-                          </th>
-                        </>
+                        <th
+                          className="w-[8%] group/th px-6 py-2 border-b border-border cursor-pointer hover:text-primary transition-colors text-right"
+                          onClick={() => handleSort('price')}
+                        >
+                          <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
+                            <ArrowUpDown className="h-3.5 w-3.5 opacity-0 group-hover/th:opacity-100 transition-opacity" />
+                            Invoice Value
+                          </div>
+                        </th>
+                      )}
+                      {!['Pending', 'Lost', 'Included'].includes(activeTab) && (
+                        <th className="w-[10%] group/th px-6 py-2 border-b border-border text-center whitespace-nowrap">
+                          Payment Status
+                        </th>
                       )}
                     </tr>
                   </thead>
@@ -888,7 +917,7 @@ export default function ServiceHub() {
                     {paddingTop > 0 && (
                       <tr>
                         <td
-                          colSpan={activeTab === 'Included' ? 7 : 8}
+                          colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)}
                           style={{ height: paddingTop, border: 0, padding: 0 }}
                         />
                       </tr>
@@ -918,14 +947,14 @@ export default function ServiceHub() {
                     {paddingBottom > 0 && (
                       <tr>
                         <td
-                          colSpan={activeTab === 'Included' ? 7 : 8}
+                          colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)}
                           style={{ height: paddingBottom, border: 0, padding: 0 }}
                         />
                       </tr>
                     )}
                     {tableData.length === 0 && (
                       <tr>
-                        <td colSpan={activeTab === 'Included' ? 7 : 8} className="px-6 py-4">
+                        <td colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)} className="px-6 py-4">
                           <EmptyState
                             icon={Briefcase}
                             title="No services found"

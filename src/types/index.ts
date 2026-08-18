@@ -101,6 +101,10 @@ export interface Service {
   dateVal: number;
   isArchived?: boolean;
   serviceValue?: number;
+  invoiceSent?: boolean;
+  invoicePaid?: boolean;
+  invoiceNumber?: string;
+  commissionPaid?: boolean;
   [key: string]: any;
 }
 

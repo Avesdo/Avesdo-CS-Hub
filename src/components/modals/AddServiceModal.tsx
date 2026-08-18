@@ -259,6 +259,8 @@ export default function AddServiceModal() {
           contactName: data.contactName || '',
           outcome: 'Proposal Sent',
           invoiceSent: false,
+          invoicePaid: false,
+          invoiceNumber: '',
           commissionPaid: false,
           dateVal: today.getTime(),
           dateStr: today.toLocaleDateString('en-US', {
