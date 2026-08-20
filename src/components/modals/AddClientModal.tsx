@@ -136,7 +136,7 @@ export default function AddClientModal() {
       setTimeout(() => {
         handleClose(true);
         if (isModalOpen('addProject')) {
-          window.dispatchEvent(new CustomEvent('clientCreated', { detail: newClientId }));
+          window.dispatchEvent(new CustomEvent('clientCreated', { detail: newClient }));
         } else {
           setTimeout(() => {
             openDrawer('client', newClient.id);

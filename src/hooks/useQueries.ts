@@ -17,10 +17,17 @@ export function useProjectQuery(projectIdOrSlug: string | undefined) {
         const { limit } = await import('firebase/firestore');
         const q = query(collection(db, 'projects'), where('slug', '==', projectIdOrSlug), limit(1));
         const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          throw new Error('Project not found');
+        if (!querySnapshot.empty) {
+          snap = querySnapshot.docs[0];
+        } else {
+          // 3. If still not found, try searching in pastSlugs
+          const pastQ = query(collection(db, 'projects'), where('pastSlugs', 'array-contains', projectIdOrSlug), limit(1));
+          const pastSnapshot = await getDocs(pastQ);
+          if (pastSnapshot.empty) {
+            throw new Error('Project not found');
+          }
+          snap = pastSnapshot.docs[0];
         }
-        snap = querySnapshot.docs[0];
       }
       return { id: snap.id, ...snap.data() } as Project;
     },

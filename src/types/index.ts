@@ -1,6 +1,7 @@
 export interface Client {
   clientId: string;
   slug?: string;
+  pastSlugs?: string[];
   companyName: string;
   accountManager: string;
   activeProjectCount: number;

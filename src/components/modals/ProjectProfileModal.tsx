@@ -52,6 +52,7 @@ import toast from 'react-hot-toast';
 import { Button } from '../ui/button';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TruncatedText } from '../../components/ui/TruncatedText';
+import { generateUniqueSlug } from '../../utils/urlUtils';
 
 const TokenTrigger = ({
   label,
@@ -131,7 +132,7 @@ export default function ProjectProfileModal() {
   const drawerData = getDrawerData('project');
   const isClosing = drawerData?.isClosing;
   const project = projects.find(
-    (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId
+    (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId || (p.pastSlugs && p.pastSlugs.includes(drawerData?.entityId as string))
   );
 
   useEffect(() => {
@@ -172,7 +173,7 @@ export default function ProjectProfileModal() {
         setActiveTab(drawerData.data.targetTab as any);
       } else {
         const p = projects.find(
-          (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId
+          (p) => p.id === drawerData?.entityId || p.slug === drawerData?.entityId || (p.pastSlugs && p.pastSlugs.includes(drawerData?.entityId as string))
         );
         if (p?.projectStatus === 'Onboarding') {
           setActiveTab('onboarding');
@@ -199,8 +200,17 @@ export default function ProjectProfileModal() {
     try {
       const oldName = project.name || 'Unnamed Project';
       const newName = editNameValue.trim();
+      
+      const existingSlugs = new Set(projects.map((p) => p.slug || '').filter(Boolean));
+      const newSlug = generateUniqueSlug(newName, existingSlugs);
+      
+      const newPastSlugs = [...(project.pastSlugs || [])];
+      if (project.slug && !newPastSlugs.includes(project.slug)) {
+        newPastSlugs.push(project.slug);
+      }
+
       await updateProjectRecord(
-        { ...project, name: newName },
+        { ...project, name: newName, slug: newSlug, pastSlugs: newPastSlugs },
         {
           successMsg: `Project Name successfully updated to '${newName}'`,
           errorMsg: `Failed to update Project Name to '${newName}'`,
