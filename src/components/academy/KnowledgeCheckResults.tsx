@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Search, CheckCircle2, XCircle, Eye, RotateCcw } from 'lucide-react';
+import {
+  Search,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  Activity,
+  Users,
+  Award,
+  Eye,
+} from 'lucide-react';
 import { QuizAttempt } from '../../types';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Tooltip } from '../ui/Tooltip';
 import { useAuth } from '../../context/AuthContext';
-import { usePermissions } from '../../hooks/usePermissions';
 import { useAppStore } from '../../store/useAppStore';
 
 import KnowledgeCheckTaker from './KnowledgeCheckTaker';
@@ -14,8 +21,6 @@ export default function KnowledgeCheckResults() {
   const { activeQuizzes, selectedQuizId, fetchQuizAttempts, quizAttempts, isLoading } =
     useAcademyStore();
   const { user: authUser } = useAuth();
-  const { hasPermission } = usePermissions();
-  const canManage = hasPermission('manage_academy');
   const quiz = activeQuizzes.find((q) => q.id === selectedQuizId);
 
   const [selectedAttempt, setSelectedAttempt] = useState<QuizAttempt | null>(null);
@@ -74,6 +79,9 @@ export default function KnowledgeCheckResults() {
     if (!a.attempt && b.attempt) return 1;
 
     if (a.attempt && b.attempt) {
+      if (b.attempt.score !== a.attempt.score) {
+        return b.attempt.score - a.attempt.score;
+      }
       return (b.attempt.completedAt || 0) - (a.attempt.completedAt || 0);
     }
     return 0;
@@ -89,6 +97,7 @@ export default function KnowledgeCheckResults() {
   const completedCount = currentQuizAttempts.length;
   const enrolledCount = enrolledIds.length;
   const pendingCount = enrolledCount - completedCount;
+  const perfectCount = currentQuizAttempts.filter(a => a.score === 100).length;
   const averageScore =
     completedCount > 0
       ? currentQuizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount
@@ -106,10 +115,10 @@ export default function KnowledgeCheckResults() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white p-6 gap-6">
+    <div className="flex flex-col h-full bg-slate-50/50 p-6 gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-800">Results</h2>
+          <h2 className="text-2xl font-bold text-slate-800">Results</h2>
           <p className="text-sm text-slate-500">{assessmentName}</p>
         </div>
         <div className="flex items-center gap-4">
@@ -129,33 +138,17 @@ export default function KnowledgeCheckResults() {
               Edit Answers
             </button>
           )}
-          <div className="relative w-64">
+          <div className="relative w-72">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search results..."
+              placeholder="Search agent name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
             />
           </div>
         </div>
-      </div>
-
-      <div className="mb-2">
-        <div className="flex items-baseline gap-2">
-          <span
-            className={`text-4xl font-black tracking-tight ${completedCount > 0 ? (averageScore >= 80 ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-300'}`}
-          >
-            {completedCount > 0 ? Math.round(averageScore) : 0}%
-          </span>
-          <span className="text-lg font-medium text-slate-500">Average Score</span>
-        </div>
-        {completedCount < enrolledCount && (
-          <p className="text-sm font-medium text-slate-500 mt-1">
-            {completedCount} of {enrolledCount} completed
-          </p>
-        )}
       </div>
 
       <div className="flex-1 overflow-auto custom-thin-scroll">
@@ -163,134 +156,175 @@ export default function KnowledgeCheckResults() {
           <div className="flex items-center justify-center py-12 text-slate-500">
             Loading attempts...
           </div>
-        ) : filteredResults.length > 0 ? (
-          <div className="pb-20">
-            {/* Completed Section */}
-            {filteredResults.filter((r) => r.attempt).length > 0 && (
-              <div className="mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {filteredResults
-                    .filter((r) => r.attempt)
-                    .map(({ user, attempt }) => {
-                      const isPassing = attempt && attempt.score >= 80;
-                      const statusColor = isPassing
-                        ? 'bg-gradient-to-br from-emerald-50/80 via-white to-white border-emerald-200/50 hover:border-emerald-300/50'
-                        : 'bg-gradient-to-br from-amber-50/80 via-white to-white border-amber-200/50 hover:border-amber-300/50';
-                      const correctCount = attempt
-                        ? Math.round((attempt.score / 100) * (quiz?.questions.length || 0))
-                        : 0;
+        ) : (
+          <div className="pb-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div className="p-3 bg-primary/10 text-primary rounded-lg">
+                  <Award className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-500">Average Score</p>
+                  <h3
+                    className={`text-2xl font-bold ${completedCount > 0 ? (averageScore >= 80 ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-700'}`}
+                  >
+                    {completedCount > 0 ? `${Math.round(averageScore)}%` : '0%'}
+                  </h3>
+                </div>
+              </div>
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-lg">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-500">Completion</p>
+                  <h3 className="text-2xl font-bold text-slate-800">
+                    {completedCount}{' '}
+                    <span className="text-lg text-slate-400 font-medium">/ {enrolledCount}</span>
+                  </h3>
+                </div>
+              </div>
+              {/* Perfect Scores */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center shrink-0">
+                    <Award className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">Perfect Scores</p>
+                    <h3 className="text-2xl font-bold text-slate-800">{perfectCount}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                      return (
-                        <div
-                          key={user.id}
-                          onClick={() => setSelectedAttempt(attempt!)}
-                          className={`group flex flex-col p-5 rounded-2xl border ${statusColor} hover:shadow-md transition-all cursor-pointer relative overflow-hidden`}
-                        >
-                          <div className="flex items-center justify-between mb-6 mt-1">
-                            <div className="flex items-center gap-3">
-                              {user.photoURL ? (
-                                <img
-                                  src={user.photoURL}
-                                  alt={user.name}
-                                  className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
-                                />
-                              ) : (
-                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-700 font-semibold border border-slate-200 shadow-sm">
-                                  {user.name.charAt(0)}
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full table-auto">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200">
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 tracking-wider">
+                          Agent
+                        </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                          Score
+                        </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                          Date Taken
+                        </th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {filteredResults.length > 0 ? (
+                      filteredResults.map(({ user, attempt }) => {
+                        const isPassing = attempt && attempt.score >= 80;
+                        return (
+                          <tr
+                            key={user.id}
+                            className={`transition-colors group ${
+                              authUser && user.id === authUser.uid
+                                ? 'bg-primary/5 hover:bg-primary/10 border-l-2 border-primary'
+                                : 'bg-white hover:bg-slate-50/50'
+                            }`}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-3">
+                                {user.photoURL ? (
+                                  <img
+                                    src={user.photoURL}
+                                    alt={user.name}
+                                    className="w-9 h-9 rounded-full object-cover border border-slate-200"
+                                  />
+                                ) : (
+                                  <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-semibold border border-slate-200">
+                                    {user.name.charAt(0)}
+                                  </div>
+                                )}
+                                <div>
+                                  <div className="text-sm font-medium text-slate-900">
+                                    {user.name}
+                                  </div>
+                                  <div className="text-sm text-slate-500">{user.email}</div>
                                 </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                              {attempt ? (
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                  Completed
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                  Pending
+                                </span>
                               )}
-                              <div>
-                                <h3 className="text-sm font-bold text-slate-800">{user.name}</h3>
-                                <p className="text-xs text-slate-500 font-medium">
-                                  {new Date(attempt!.completedAt!).toLocaleDateString('en-US', {
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {attempt ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={`text-sm font-bold ${isPassing ? 'text-emerald-600' : 'text-amber-600'}`}
+                                    >
+                                      {Math.round(attempt.score)}%
+                                    </span>
+                                    {isPassing ? (
+                                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-600">
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  {attempt.originalScore !== undefined && (
+                                    <span className="flex items-center gap-1 text-[10px] font-medium text-slate-400">
+                                      <RotateCcw className="w-2.5 h-2.5" />
+                                      1st: {Math.round(attempt.originalScore)}%
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="block text-center text-sm text-slate-400">-</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-slate-500">
+                              {attempt?.completedAt
+                                ? new Date(attempt.completedAt).toLocaleDateString('en-US', {
                                     month: 'short',
                                     day: 'numeric',
                                     year: 'numeric',
-                                  })}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-primary">
-                              <Eye className="w-5 h-5" />
-                            </div>
-                          </div>
-
-                          <div className="mt-auto">
-                            <div className="flex items-end gap-2">
-                              <span
-                                className={`text-3xl font-black tracking-tight leading-none ${isPassing ? 'text-emerald-700' : 'text-amber-700'}`}
-                              >
-                                {Math.round(attempt!.score)}%
-                              </span>
-                              <div className="flex flex-col">
-                                <span
-                                  className={`text-sm font-medium ${isPassing ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
+                                  })
+                                : '-'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                              {attempt ? (
+                                <button
+                                  onClick={() => setSelectedAttempt(attempt)}
+                                  className="text-slate-400 group-hover:text-primary transition-colors flex items-center justify-center gap-1.5 mx-auto"
                                 >
-                                  ({correctCount} of {quiz?.questions.length} correct)
-                                </span>
-                              </div>
-                              {attempt!.originalScore !== undefined && (
-                                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 w-fit ml-auto mb-1">
-                                  <RotateCcw className="w-3 h-3 text-slate-400" />
-                                  <span>1st Attempt: {Math.round(attempt!.originalScore)}%</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
+                                  <Eye className="w-4 h-4" />
+                                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+                                </button>
+                              ) : null}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
+                          No results found matching your search.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
-            )}
-
-            {/* Pending Section */}
-            {filteredResults.filter((r) => !r.attempt).length > 0 && (
-              <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {filteredResults
-                    .filter((r) => !r.attempt)
-                    .map(({ user }) => (
-                      <div
-                        key={user.id}
-                        className="group flex flex-col p-5 rounded-2xl border bg-gradient-to-br from-slate-50/80 via-white to-white border-slate-200/60 hover:border-slate-300/60 hover:shadow-md transition-all cursor-default relative overflow-hidden"
-                      >
-                        <div className="flex items-center justify-between mb-6 mt-1">
-                          <div className="flex items-center gap-3">
-                            {user.photoURL ? (
-                              <img
-                                src={user.photoURL}
-                                alt={user.name}
-                                className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-700 font-semibold border border-slate-200 shadow-sm">
-                                {user.name.charAt(0)}
-                              </div>
-                            )}
-                            <div>
-                              <h3 className="text-sm font-bold text-slate-800">{user.name}</h3>
-                              <p className="text-xs text-slate-500 font-medium">Not started</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-auto">
-                          <div className="flex items-end gap-2 h-8">
-                            <span className="text-lg font-bold tracking-tight text-slate-400">
-                              Pending
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center justify-center py-12 text-slate-500">
-            No results found.
+            </div>
           </div>
         )}
       </div>
@@ -303,7 +337,7 @@ export default function KnowledgeCheckResults() {
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-thin-scroll">
-            <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 mb-6">
+            <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 mb-6 shadow-sm">
               <div>
                 <p className="text-sm text-slate-500 font-medium">Final Score</p>
                 <div className="flex items-baseline gap-2">

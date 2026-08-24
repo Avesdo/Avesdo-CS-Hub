@@ -8,6 +8,11 @@ import {
   AlertCircle,
   Trash2,
   RotateCcw,
+  ClipboardCheck,
+  Target,
+  BookOpen,
+  Award,
+  TrendingUp,
 } from 'lucide-react';
 import { useAcademyStore } from '../../store/useAcademyStore';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -118,6 +123,8 @@ export default function QuizListDashboard() {
     const answeredCount = quizAttemptsList.length;
     const enrolledCount = quiz.enrolledUserIds?.length || 0;
     const pendingCount = Math.max(0, enrolledCount - answeredCount);
+    const totalAssigned = enrolledCount || answeredCount || 1;
+    const completionRate = Math.round((answeredCount / totalAssigned) * 100);
     const averageScore =
       answeredCount > 0
         ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
@@ -136,22 +143,26 @@ export default function QuizListDashboard() {
           }
         }}
         onClick={() => setSelectedQuizId(quiz.id)}
-        className="group relative flex flex-row items-center justify-between p-6 bg-white border border-slate-200 shadow-sm rounded-2xl hover:border-primary/40 hover:shadow-md transition-all duration-200 text-left w-full overflow-hidden"
+        className={`group relative flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white border border-slate-200 shadow-sm rounded-2xl hover:border-primary/40 hover:shadow-md transition-all duration-300 text-left w-full overflow-hidden gap-6 ${
+          !canManage ? 'bg-gradient-to-br from-primary/5 via-white to-white border-primary/20' : ''
+        }`}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="flex items-center gap-5 relative z-10">
-          <div className="p-3.5 rounded-xl shrink-0 bg-primary/10 text-primary">
-            <Calendar className="w-6 h-6" />
+        <div className="flex items-start md:items-center gap-5 relative z-10 w-full md:w-auto">
+          <div className={`p-4 rounded-2xl shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+            !canManage ? 'bg-primary text-white shadow-primary/20' : 'bg-primary/10 text-primary'
+          }`}>
+            <ClipboardCheck className="w-7 h-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2.5">
-              <h3 className="font-bold text-slate-900 tracking-tight text-lg">
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="font-bold text-slate-900 tracking-tight text-xl">
                 {getMonthName(quiz.targetMonth)} {quiz.targetYear}
               </h3>
               {canManage && isDraft && (
                 <span
-                  className="flex items-center gap-1 text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md"
+                  className="flex items-center gap-1.5 text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md"
                   title={getStatusText(quiz.status)}
                 >
                   <AlertCircle className="w-3.5 h-3.5" />
@@ -159,39 +170,53 @@ export default function QuizListDashboard() {
                 </span>
               )}
             </div>
+            {!canManage && (
+              <p className="text-sm font-medium text-slate-600">
+                You have a pending knowledge check ready for you!
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-8 relative z-10 text-sm">
-          <div className="flex flex-col items-end gap-2.5">
+        <div className="flex items-center gap-8 relative z-10 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex flex-col items-start md:items-end gap-2.5 w-full md:w-auto">
             {!canManage && (
-              <span className="bg-amber-100 text-amber-700 py-1 px-3 rounded-lg text-xs font-bold tracking-wide">
-                Pending action
-              </span>
+              <div className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors py-2 px-5 rounded-xl text-sm font-bold tracking-wide w-full md:w-auto justify-center">
+                <Target className="w-4 h-4" /> Start Knowledge Check
+              </div>
             )}
 
             {canManage && !isDraft && (
-              <div className="flex items-center gap-2 font-semibold">
-                <span className="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
-                  {answeredCount} Answered
-                </span>
-                {pendingCount > 0 && (
-                  <span className="text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
-                    {pendingCount} Pending
-                  </span>
-                )}
+              <div className="flex items-center gap-6 w-full md:w-[22rem]">
+                <div className="flex flex-col gap-2.5 flex-1">
+                  <div className="flex items-center justify-between text-sm font-semibold">
+                    <span className={completionRate >= 100 ? "text-emerald-600 flex items-center gap-1" : "text-slate-600"}>
+                      {completionRate >= 100 && <Award className="w-4 h-4" />}
+                      {completionRate >= 100 ? "Team Complete!" : "Team Progress"}
+                    </span>
+                    <span className={completionRate >= 100 ? "text-emerald-700" : "text-slate-900"}>{answeredCount} / {enrolledCount} Done</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-1000 ${completionRate >= 100 ? 'bg-emerald-500' : 'bg-primary'}`} 
+                      style={{ width: `${completionRate}%` }} 
+                    />
+                  </div>
+                </div>
+
                 {averageScore !== null && (
-                  <span
-                    className={`px-2.5 py-1 rounded-lg border font-semibold ${averageScore >= 80 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}
-                  >
-                    Avg: {averageScore}%
-                  </span>
+                  <div className="flex flex-col items-center justify-center pl-6 border-l border-slate-100 shrink-0">
+                    <span className="text-[11px] font-bold text-slate-400 mb-0.5 tracking-wider">Avg Score</span>
+                    <span className={`text-2xl font-black ${averageScore >= 80 ? 'text-emerald-600' : 'text-amber-500'}`}>
+                      {averageScore}%
+                    </span>
+                  </div>
                 )}
               </div>
             )}
           </div>
 
-          <div className="text-slate-400 group-hover:text-primary transition-colors bg-slate-50 p-2.5 rounded-full group-hover:bg-primary/10 shrink-0">
+          <div className="text-slate-400 group-hover:text-primary transition-colors bg-slate-50 p-3 rounded-full group-hover:bg-primary/10 shrink-0 hidden md:block">
             <ChevronRight className="w-5 h-5" />
           </div>
         </div>
@@ -213,80 +238,93 @@ export default function QuizListDashboard() {
         ? Math.round(quizAttemptsList.reduce((acc, curr) => acc + curr.score, 0) / answeredCount)
         : null;
 
-    const statusColor = attempt
-      ? scorePercentage! >= 80
-        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-white to-white'
-        : 'border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-white'
-      : 'border-slate-200 bg-gradient-to-br from-slate-50/80 via-white to-white';
+    const isSuccess = attempt ? scorePercentage! >= 80 : false;
+    
+    const adminSuccess = averageAdminScore !== null ? averageAdminScore >= 80 : false;
+
+    const statusColor = canManage
+      ? (averageAdminScore !== null ? (adminSuccess ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-200 bg-amber-50/30') : 'border-slate-200 bg-slate-50/50')
+      : (attempt 
+          ? (isSuccess ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-200 bg-amber-50/30')
+          : 'border-slate-200 bg-slate-50/50');
+
+    const radius = 24;
+    const circumference = 2 * Math.PI * radius;
+    const score = canManage ? averageAdminScore : scorePercentage;
+    const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
+    
+    const headerColor = canManage 
+      ? 'bg-primary/15 text-slate-700' 
+      : attempt 
+        ? (isSuccess ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700')
+        : 'bg-slate-50 text-slate-600';
 
     return (
       <div
         key={quiz.id}
         onClick={() => setSelectedQuizId(quiz.id)}
-        className={`group flex flex-col p-5 rounded-2xl border ${statusColor} hover:shadow-md transition-all cursor-pointer relative overflow-hidden`}
+        className="group flex flex-col rounded-2xl border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer relative overflow-hidden bg-white"
       >
-        <div className="flex items-center justify-between mb-6 mt-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-white border border-slate-100 text-slate-400 rounded-lg shadow-sm">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-800">
-                {getMonthName(quiz.targetMonth)} {quiz.targetYear}
-              </h3>
-              {!canManage && (
-                <p className="text-xs text-slate-500 font-medium">
-                  {attempt
-                    ? `Submitted ${format(new Date(attempt.completedAt), 'MMM d, yyyy')}`
-                    : 'Expired'}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-primary">
-            <ChevronRight className="w-5 h-5" />
-          </div>
+        {/* Calendar Header (Tear-off Top) */}
+        <div className={`py-3 px-5 flex items-center justify-center gap-1.5 ${headerColor}`}>
+          <span className="font-bold text-lg tracking-wider">
+            {getMonthName(quiz.targetMonth)}
+          </span>
+          <span className="font-medium opacity-90 text-lg">
+            {quiz.targetYear}
+          </span>
+          {!canManage && attempt && (
+            <span className="bg-slate-900/10 px-2 py-0.5 rounded text-xs font-semibold backdrop-blur-sm ml-2">
+              {format(new Date(attempt.completedAt), 'MMM d')}
+            </span>
+          )}
         </div>
 
-        <div className="mt-auto">
+        {/* Calendar Body */}
+        <div className="p-6 flex items-center justify-center gap-12 flex-1 bg-gradient-to-b from-white to-slate-50/50">
           {canManage ? (
-            <div className="flex items-end gap-3 h-8">
-              <span className="text-lg font-bold tracking-tight text-slate-800">
-                {answeredCount} <span className="text-sm font-medium text-slate-500">Ans.</span>
-              </span>
-              {averageAdminScore !== null && (
-                <span
-                  className={`text-lg font-bold tracking-tight ${averageAdminScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}
-                >
-                  {averageAdminScore}%{' '}
-                  <span className="text-sm font-medium text-slate-500">Avg.</span>
-                </span>
-              )}
-            </div>
-          ) : attempt ? (
-            <div className="flex items-end gap-2">
-              <span
-                className={`text-3xl font-black tracking-tight leading-none ${scorePercentage! >= 80 ? 'text-emerald-700' : 'text-amber-700'}`}
-              >
-                {scorePercentage}%
-              </span>
+            <>
               <div className="flex flex-col">
-                <span
-                  className={`text-sm font-medium ${scorePercentage! >= 80 ? 'text-emerald-600/80' : 'text-amber-600/80'}`}
-                >
-                  Score
+                <span className="text-sm font-medium text-slate-500 mb-1">Participants</span>
+                <span className="text-3xl font-black tracking-tight text-slate-800 flex items-baseline gap-1.5">
+                  {answeredCount}
+                  <span className="text-sm font-bold text-slate-400">done</span>
                 </span>
               </div>
-              {attempt.originalScore !== undefined && (
-                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 w-fit ml-auto mb-1">
-                  <RotateCcw className="w-3 h-3 text-slate-400" />
-                  <span>1st Attempt: {Math.round(attempt.originalScore)}%</span>
+              
+              {averageAdminScore !== null && (
+                <div className="flex flex-col items-end">
+                   <span className="text-sm font-medium text-slate-500 mb-1">Avg Score</span>
+                   <span className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${adminSuccess ? 'text-emerald-600' : 'text-amber-600'}`}>
+                     {averageAdminScore}
+                     <span className={`text-sm font-bold ${adminSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}>%</span>
+                   </span>
                 </div>
               )}
-            </div>
+            </>
+          ) : attempt ? (
+            <>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-slate-500 mb-1">Your Score</span>
+                <span className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${isSuccess ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {scorePercentage}
+                  <span className={`text-sm font-bold ${isSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}>%</span>
+                </span>
+              </div>
+              
+              {attempt.originalScore !== undefined && (
+                <div className="flex flex-col items-end justify-center">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 mt-2 w-fit shadow-sm">
+                    <RotateCcw className="w-3 h-3 text-slate-400" />
+                    <span>1st: {Math.round(attempt.originalScore)}%</span>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="flex items-end gap-2 h-8">
-              <span className="text-lg font-bold tracking-tight text-slate-400">Missed</span>
+            <div className="flex items-center gap-3 text-slate-400 py-2 w-full justify-center">
+              <AlertCircle className="w-5 h-5" />
+              <span className="text-base font-bold tracking-tight">Missed</span>
             </div>
           )}
         </div>
@@ -342,7 +380,7 @@ export default function QuizListDashboard() {
             ) : active.length > 0 ? (
               <div className="space-y-4">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Currently Active
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Current
                 </h3>
                 {active.map((q) => renderHeroCard(q))}
               </div>
@@ -352,7 +390,7 @@ export default function QuizListDashboard() {
           ) : active.length > 0 ? (
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4">
-                <AlertCircle className="w-4 h-4 text-amber-500" /> Current Assignment
+                <AlertCircle className="w-4 h-4 text-amber-500" /> Current
               </h3>
               {active.map((q) => renderHeroCard(q))}
             </div>
@@ -363,15 +401,28 @@ export default function QuizListDashboard() {
 
         {/* HISTORY SECTION */}
         {past.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                History
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {past.map((q) => renderHistoryRow(q))}
-            </div>
+          <section className="space-y-8">
+            {Object.entries(
+              past.reduce((acc, quiz) => {
+                const year = quiz.targetYear;
+                if (!acc[year]) acc[year] = [];
+                acc[year].push(quiz);
+                return acc;
+              }, {} as Record<number, typeof past>)
+            )
+              .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+              .map(([year, quizzes]) => (
+                <div key={year}>
+                  <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                    <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                      {year} Completed
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {(quizzes as any[]).map((q: any) => renderHistoryRow(q))}
+                  </div>
+                </div>
+              ))}
           </section>
         )}
       </div>
