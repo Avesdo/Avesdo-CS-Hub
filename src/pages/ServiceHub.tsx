@@ -251,6 +251,7 @@ export default function ServiceHub() {
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [managerFilter, setManagerFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(
     location.state?.dateRange || null
   );
@@ -262,6 +263,7 @@ export default function ServiceHub() {
     typeFilter.length +
     managerFilter.length +
     statusFilter.length +
+    paymentStatusFilter.length +
     (dateRange ? 1 : 0);
 
   const removeFilterItem = (filterSetter: any, filterArray: string[], item: string) => {
@@ -275,6 +277,7 @@ export default function ServiceHub() {
     setTypeFilter([]);
     setManagerFilter([]);
     setStatusFilter([]);
+    setPaymentStatusFilter([]);
     setDateRange(null);
   };
 
@@ -283,6 +286,7 @@ export default function ServiceHub() {
   const allProjects = useMemo(() => getAllServiceProjects(services), [services]);
   const allClients = useMemo(() => getAllServiceClients(services), [services]);
   const allTypes = useMemo(() => getAllServiceTypes(settings), [settings]);
+  const allPaymentStatuses = ['Not Sent', 'Inv. Sent', 'Paid', 'Inv. Paid', 'Comm. Due', 'N/A'];
   const allManagersIds = useMemo(
     () => getAllServiceManagers(services, settings),
     [services, settings]
@@ -363,7 +367,8 @@ export default function ServiceHub() {
       typeFilter,
       managerFilter,
       statusFilter,
-      dateRange
+      dateRange,
+      paymentStatusFilter
     );
   }, [
     services,
@@ -375,6 +380,7 @@ export default function ServiceHub() {
     managerFilter,
     statusFilter,
     dateRange,
+    paymentStatusFilter,
   ]);
 
   // Sorting and Searching (from existing hook)
@@ -751,6 +757,11 @@ export default function ServiceHub() {
                 onRemove: (v) => removeFilterItem(setStatusFilter, statusFilter, v),
               },
               {
+                label: 'Payment',
+                values: paymentStatusFilter,
+                onRemove: (v) => removeFilterItem(setPaymentStatusFilter, paymentStatusFilter, v),
+              },
+              {
                 label: 'Completion Date',
                 values: dateRange
                   ? [`${dateRange.start || '...'} to ${dateRange.end || '...'}`]
@@ -903,7 +914,14 @@ export default function ServiceHub() {
                       )}
                       {!['Pending', 'Lost', 'Included'].includes(activeTab) && (
                         <th className="w-[10%] group/th px-6 py-2 border-b border-border text-center whitespace-nowrap">
-                          Payment Status
+                          <div className="flex items-center justify-center gap-1.5">
+                            <span>Payment Status</span>
+                            <ColumnFilter
+                              options={allPaymentStatuses}
+                              selected={paymentStatusFilter}
+                              onChange={setPaymentStatusFilter}
+                            />
+                          </div>
                         </th>
                       )}
                     </tr>

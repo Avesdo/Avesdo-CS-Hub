@@ -9,7 +9,8 @@ export function getFilteredServices(
   typeFilter: string[],
   managerFilter: string[],
   statusFilter: string[],
-  dateRange: { start: string; end: string } | null
+  dateRange: { start: string; end: string } | null,
+  paymentStatusFilter?: string[]
 ): Service[] {
   return services.filter((s) => {
     if (activeTab === 'Pending' && s.status !== 'Proposal Sent') return false;
@@ -31,6 +32,10 @@ export function getFilteredServices(
       if (!mNames.some((m: string) => managerFilter.includes(m))) return false;
     }
     if (statusFilter.length > 0 && !statusFilter.includes(s.status || 'None')) return false;
+    if (paymentStatusFilter && paymentStatusFilter.length > 0) {
+      const statuses = getPaymentStatuses(s);
+      if (!statuses.some((status) => paymentStatusFilter.includes(status))) return false;
+    }
 
     if (dateRange && s.dateVal) {
       const sDate = new Date(s.dateVal);
@@ -49,6 +54,20 @@ export function getFilteredServices(
 
     return true;
   });
+}
+
+export function getPaymentStatuses(s: Service): string[] {
+  if (s.type === 'Included' || s.outcome === 'Lost') return ['N/A'];
+  if (!s.invoiceSent && !s.invoicePaid) return ['Not Sent'];
+  
+  if (s.invoicePaid) {
+    const commDue = !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0;
+    if (commDue) {
+      return ['Inv. Paid', 'Comm. Due'];
+    }
+    return ['Paid'];
+  }
+  return ['Inv. Sent'];
 }
 
 export function getServiceKpiData(services: Service[]) {
