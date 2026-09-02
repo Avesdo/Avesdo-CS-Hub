@@ -6,6 +6,9 @@ import {
   ChevronRight,
   FileText,
   ExternalLink,
+  AppWindow,
+  Briefcase,
+  BookOpen,
   Mail,
   Phone,
   ClipboardList,
@@ -402,7 +405,7 @@ export function PortalDashboard({
                   className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200"
                 >
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-300">
-                    <ExternalLink className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+                    <AppWindow className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
                   </div>
                   <div>
                     <div className="text-sm font-bold text-slate-800">Avesdo Platform</div>
@@ -417,7 +420,7 @@ export function PortalDashboard({
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200"
                   >
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-300">
-                      <ExternalLink className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+                      <Briefcase className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-slate-800">Teamwork</div>
@@ -434,7 +437,7 @@ export function PortalDashboard({
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200"
                   >
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-300">
-                      <ExternalLink className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+                      <BookOpen className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300" />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-slate-800">Knowledge Base</div>

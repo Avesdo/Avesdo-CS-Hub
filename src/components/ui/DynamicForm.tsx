@@ -738,7 +738,7 @@ export function DynamicForm({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 flex items-center justify-between p-5 sm:px-8 border-t border-slate-100 bg-white/95 backdrop-blur-md shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.05)] z-10 rounded-b-2xl">
+      <div className="shrink-0 flex items-center justify-between py-4 px-5 sm:px-8 border-t border-slate-100 bg-white/95 backdrop-blur-md shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.05)] z-10 rounded-b-2xl">
         <div>
           {onCancel && (
             <button
