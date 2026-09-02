@@ -144,9 +144,6 @@ export default function KnowledgeCheckGenerator() {
             onClick={async () => {
               if (!draftQuiz) return;
               try {
-                const { useAppStore } = await import('../../store/useAppStore');
-                const users = useAppStore.getState().users;
-
                 // Use the enrolled users the user manually selected, or fallback to all active account managers if none
                 const activeAccountManagers = users.filter(
                   (u) => !u.isDeactivated && u.isAccountManager
