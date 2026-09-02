@@ -97,7 +97,7 @@ export default function KnowledgeCheckResults() {
   const completedCount = currentQuizAttempts.length;
   const enrolledCount = enrolledIds.length;
   const pendingCount = enrolledCount - completedCount;
-  const perfectCount = currentQuizAttempts.filter(a => a.score === 100).length;
+  const perfectCount = currentQuizAttempts.filter((a) => a.score === 100).length;
   const averageScore =
     completedCount > 0
       ? currentQuizAttempts.reduce((acc, curr) => acc + curr.score, 0) / completedCount
@@ -203,22 +203,22 @@ export default function KnowledgeCheckResults() {
                 <table className="w-full table-auto">
                   <thead>
                     <tr className="bg-slate-50/80 border-b border-slate-200">
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 tracking-wider">
-                          Agent
-                        </th>
-                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
-                          Score
-                        </th>
-                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
-                          Date Taken
-                        </th>
-                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 tracking-wider">
+                        Agent
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                        Score
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                        Date Taken
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
                     {filteredResults.length > 0 ? (
@@ -307,7 +307,9 @@ export default function KnowledgeCheckResults() {
                                   className="text-slate-400 group-hover:text-primary transition-colors flex items-center justify-center gap-1.5 mx-auto"
                                 >
                                   <Eye className="w-4 h-4" />
-                                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+                                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    View
+                                  </span>
                                 </button>
                               ) : null}
                             </td>

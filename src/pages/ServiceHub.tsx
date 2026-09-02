@@ -157,22 +157,40 @@ const ServiceRow = React.memo(
           <td className="px-6 py-2">
             <div className="flex flex-col items-center justify-center gap-1.5">
               {s.type === 'Included' || s.outcome === 'Lost' ? (
-                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">N/A</span>
+                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">
+                  N/A
+                </span>
               ) : !s.invoiceSent && !s.invoicePaid ? (
-                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">Not Sent</span>
+                <span className="text-[11px] text-slate-400 font-medium px-2.5 py-0.5 bg-slate-100 rounded-md">
+                  Not Sent
+                </span>
               ) : (
-                <UITooltip content={s.invoiceNumber ? `Invoice #: ${s.invoiceNumber}` : 'No Invoice #'}>
+                <UITooltip
+                  content={s.invoiceNumber ? `Invoice #: ${s.invoiceNumber}` : 'No Invoice #'}
+                >
                   <div className="flex flex-col items-center gap-1.5 cursor-help">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors border whitespace-nowrap ${
-                      s.invoicePaid ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                    }`}>
-                      {s.invoicePaid && !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0 ? 'Inv. Paid' : s.invoicePaid ? 'Paid' : 'Inv. Sent'}
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors border whitespace-nowrap ${
+                        s.invoicePaid
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                          : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                      }`}
+                    >
+                      {s.invoicePaid &&
+                      !s.commissionPaid &&
+                      (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0
+                        ? 'Inv. Paid'
+                        : s.invoicePaid
+                          ? 'Paid'
+                          : 'Inv. Sent'}
                     </span>
-                    {s.invoicePaid && !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border border-amber-200 bg-amber-50 text-amber-700 whitespace-nowrap">
-                        Comm. Due
-                      </span>
-                    )}
+                    {s.invoicePaid &&
+                      !s.commissionPaid &&
+                      (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border border-amber-200 bg-amber-50 text-amber-700 whitespace-nowrap">
+                          Comm. Due
+                        </span>
+                      )}
                   </div>
                 </UITooltip>
               )}
@@ -935,7 +953,11 @@ export default function ServiceHub() {
                     {paddingTop > 0 && (
                       <tr>
                         <td
-                          colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)}
+                          colSpan={
+                            7 +
+                            (activeTab !== 'Included' ? 1 : 0) +
+                            (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)
+                          }
                           style={{ height: paddingTop, border: 0, padding: 0 }}
                         />
                       </tr>
@@ -965,14 +987,25 @@ export default function ServiceHub() {
                     {paddingBottom > 0 && (
                       <tr>
                         <td
-                          colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)}
+                          colSpan={
+                            7 +
+                            (activeTab !== 'Included' ? 1 : 0) +
+                            (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)
+                          }
                           style={{ height: paddingBottom, border: 0, padding: 0 }}
                         />
                       </tr>
                     )}
                     {tableData.length === 0 && (
                       <tr>
-                        <td colSpan={7 + (activeTab !== 'Included' ? 1 : 0) + (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)} className="px-6 py-4">
+                        <td
+                          colSpan={
+                            7 +
+                            (activeTab !== 'Included' ? 1 : 0) +
+                            (!['Pending', 'Lost', 'Included'].includes(activeTab) ? 1 : 0)
+                          }
+                          className="px-6 py-4"
+                        >
                           <EmptyState
                             icon={Briefcase}
                             title="No services found"

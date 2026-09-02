@@ -59,9 +59,11 @@ export function getFilteredServices(
 export function getPaymentStatuses(s: Service): string[] {
   if (s.type === 'Included' || s.outcome === 'Lost') return ['N/A'];
   if (!s.invoiceSent && !s.invoicePaid) return ['Not Sent'];
-  
+
   if (s.invoicePaid) {
-    const commDue = !s.commissionPaid && (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0;
+    const commDue =
+      !s.commissionPaid &&
+      (parseFloat(s.commission?.toString().replace(/[^0-9.-]+/g, '')) || 0) > 0;
     if (commDue) {
       return ['Inv. Paid', 'Comm. Due'];
     }

@@ -193,51 +193,14 @@ export default function KnowledgeCheckGenerator() {
                 alert('Failed to publish quiz instantly.');
               }
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/50 group whitespace-nowrap shrink-0 ${
-              isReadOnly || !draftQuiz
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed hidden'
-                : 'bg-white text-amber-600 border border-amber-200 hover:bg-amber-50 shadow-sm'
-            }`}
-          >
-            Publish Now
-          </button>
-
-          <button
-            disabled={isReadOnly || !draftQuiz}
-            onClick={async () => {
-              if (!draftQuiz) return;
-              try {
-                const { useAppStore } = await import('../../store/useAppStore');
-                const users = useAppStore.getState().users;
-
-                // Use the enrolled users the user manually selected, or fallback to all active account managers if none
-                const activeAccountManagers = users.filter(
-                  (u) => !u.isDeactivated && u.isAccountManager
-                );
-                const targetUserIds = draftQuiz.enrolledUserIds?.length
-                  ? draftQuiz.enrolledUserIds
-                  : activeAccountManagers.map((u) => u.uid);
-
-                const updatedQuiz = {
-                  ...draftQuiz,
-                  status: 'scheduled' as const,
-                  enrolledUserIds: targetUserIds,
-                };
-                await academyService.createDraftQuiz(updatedQuiz);
-                setActiveQuizzes([...activeQuizzes, updatedQuiz]);
-                setSelectedQuizId(null);
-              } catch (error) {
-                console.error('Failed to schedule quiz:', error);
-              }
-            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 group whitespace-nowrap shrink-0 ${
               isReadOnly || !draftQuiz
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)]'
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed hidden'
+                : 'bg-primary text-white hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] shadow-sm'
             }`}
           >
             <Check className="w-4 h-4" />
-            Approve & Schedule
+            Publish
           </button>
         </div>
       </div>

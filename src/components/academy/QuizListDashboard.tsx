@@ -150,9 +150,11 @@ export default function QuizListDashboard() {
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className="flex items-start md:items-center gap-5 relative z-10 w-full md:w-auto">
-          <div className={`p-4 rounded-2xl shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105 ${
-            !canManage ? 'bg-primary text-white shadow-primary/20' : 'bg-primary/10 text-primary'
-          }`}>
+          <div
+            className={`p-4 rounded-2xl shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+              !canManage ? 'bg-primary text-white shadow-primary/20' : 'bg-primary/10 text-primary'
+            }`}
+          >
             <ClipboardCheck className="w-7 h-7" />
           </div>
           <div>
@@ -190,24 +192,36 @@ export default function QuizListDashboard() {
               <div className="flex items-center gap-6 w-full md:w-[22rem]">
                 <div className="flex flex-col gap-2.5 flex-1">
                   <div className="flex items-center justify-between text-sm font-semibold">
-                    <span className={completionRate >= 100 ? "text-emerald-600 flex items-center gap-1" : "text-slate-600"}>
+                    <span
+                      className={
+                        completionRate >= 100
+                          ? 'text-emerald-600 flex items-center gap-1'
+                          : 'text-slate-600'
+                      }
+                    >
                       {completionRate >= 100 && <Award className="w-4 h-4" />}
-                      {completionRate >= 100 ? "Team Complete!" : "Team Progress"}
+                      {completionRate >= 100 ? 'Team Complete!' : 'Team Progress'}
                     </span>
-                    <span className={completionRate >= 100 ? "text-emerald-700" : "text-slate-900"}>{answeredCount} / {enrolledCount} Done</span>
+                    <span className={completionRate >= 100 ? 'text-emerald-700' : 'text-slate-900'}>
+                      {answeredCount} / {enrolledCount} Done
+                    </span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ${completionRate >= 100 ? 'bg-emerald-500' : 'bg-primary'}`} 
-                      style={{ width: `${completionRate}%` }} 
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${completionRate >= 100 ? 'bg-emerald-500' : 'bg-primary'}`}
+                      style={{ width: `${completionRate}%` }}
                     />
                   </div>
                 </div>
 
                 {averageScore !== null && (
                   <div className="flex flex-col items-center justify-center pl-6 border-l border-slate-100 shrink-0">
-                    <span className="text-[11px] font-bold text-slate-400 mb-0.5 tracking-wider">Avg Score</span>
-                    <span className={`text-2xl font-black ${averageScore >= 80 ? 'text-emerald-600' : 'text-amber-500'}`}>
+                    <span className="text-[11px] font-bold text-slate-400 mb-0.5 tracking-wider">
+                      Avg Score
+                    </span>
+                    <span
+                      className={`text-2xl font-black ${averageScore >= 80 ? 'text-emerald-600' : 'text-amber-500'}`}
+                    >
                       {averageScore}%
                     </span>
                   </div>
@@ -239,24 +253,33 @@ export default function QuizListDashboard() {
         : null;
 
     const isSuccess = attempt ? scorePercentage! >= 80 : false;
-    
+
     const adminSuccess = averageAdminScore !== null ? averageAdminScore >= 80 : false;
 
     const statusColor = canManage
-      ? (averageAdminScore !== null ? (adminSuccess ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-200 bg-amber-50/30') : 'border-slate-200 bg-slate-50/50')
-      : (attempt 
-          ? (isSuccess ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-200 bg-amber-50/30')
-          : 'border-slate-200 bg-slate-50/50');
+      ? averageAdminScore !== null
+        ? adminSuccess
+          ? 'border-emerald-200 bg-emerald-50/30'
+          : 'border-amber-200 bg-amber-50/30'
+        : 'border-slate-200 bg-slate-50/50'
+      : attempt
+        ? isSuccess
+          ? 'border-emerald-200 bg-emerald-50/30'
+          : 'border-amber-200 bg-amber-50/30'
+        : 'border-slate-200 bg-slate-50/50';
 
     const radius = 24;
     const circumference = 2 * Math.PI * radius;
     const score = canManage ? averageAdminScore : scorePercentage;
-    const strokeDashoffset = score !== null ? circumference - (score / 100) * circumference : circumference;
-    
-    const headerColor = canManage 
-      ? 'bg-primary/15 text-slate-700' 
-      : attempt 
-        ? (isSuccess ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700')
+    const strokeDashoffset =
+      score !== null ? circumference - (score / 100) * circumference : circumference;
+
+    const headerColor = canManage
+      ? 'bg-primary/15 text-slate-700'
+      : attempt
+        ? isSuccess
+          ? 'bg-emerald-50 text-emerald-700'
+          : 'bg-amber-50 text-amber-700'
         : 'bg-slate-50 text-slate-600';
 
     return (
@@ -267,12 +290,8 @@ export default function QuizListDashboard() {
       >
         {/* Calendar Header (Tear-off Top) */}
         <div className={`py-3 px-5 flex items-center justify-center gap-1.5 ${headerColor}`}>
-          <span className="font-bold text-lg tracking-wider">
-            {getMonthName(quiz.targetMonth)}
-          </span>
-          <span className="font-medium opacity-90 text-lg">
-            {quiz.targetYear}
-          </span>
+          <span className="font-bold text-lg tracking-wider">{getMonthName(quiz.targetMonth)}</span>
+          <span className="font-medium opacity-90 text-lg">{quiz.targetYear}</span>
           {!canManage && attempt && (
             <span className="bg-slate-900/10 px-2 py-0.5 rounded text-xs font-semibold backdrop-blur-sm ml-2">
               {format(new Date(attempt.completedAt), 'MMM d')}
@@ -291,14 +310,20 @@ export default function QuizListDashboard() {
                   <span className="text-sm font-bold text-slate-400">done</span>
                 </span>
               </div>
-              
+
               {averageAdminScore !== null && (
                 <div className="flex flex-col items-end">
-                   <span className="text-sm font-medium text-slate-500 mb-1">Avg Score</span>
-                   <span className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${adminSuccess ? 'text-emerald-600' : 'text-amber-600'}`}>
-                     {averageAdminScore}
-                     <span className={`text-sm font-bold ${adminSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}>%</span>
-                   </span>
+                  <span className="text-sm font-medium text-slate-500 mb-1">Avg Score</span>
+                  <span
+                    className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${adminSuccess ? 'text-emerald-600' : 'text-amber-600'}`}
+                  >
+                    {averageAdminScore}
+                    <span
+                      className={`text-sm font-bold ${adminSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}
+                    >
+                      %
+                    </span>
+                  </span>
                 </div>
               )}
             </>
@@ -306,12 +331,18 @@ export default function QuizListDashboard() {
             <>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-slate-500 mb-1">Your Score</span>
-                <span className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${isSuccess ? 'text-emerald-600' : 'text-amber-600'}`}>
+                <span
+                  className={`text-3xl font-black tracking-tight flex items-baseline gap-1 ${isSuccess ? 'text-emerald-600' : 'text-amber-600'}`}
+                >
                   {scorePercentage}
-                  <span className={`text-sm font-bold ${isSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}>%</span>
+                  <span
+                    className={`text-sm font-bold ${isSuccess ? 'text-emerald-500/70' : 'text-amber-500/70'}`}
+                  >
+                    %
+                  </span>
                 </span>
               </div>
-              
+
               {attempt.originalScore !== undefined && (
                 <div className="flex flex-col items-end justify-center">
                   <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/60 rounded px-1.5 py-0.5 mt-2 w-fit shadow-sm">
@@ -403,12 +434,15 @@ export default function QuizListDashboard() {
         {past.length > 0 && (
           <section className="space-y-8">
             {Object.entries(
-              past.reduce((acc, quiz) => {
-                const year = quiz.targetYear;
-                if (!acc[year]) acc[year] = [];
-                acc[year].push(quiz);
-                return acc;
-              }, {} as Record<number, typeof past>)
+              past.reduce(
+                (acc, quiz) => {
+                  const year = quiz.targetYear;
+                  if (!acc[year]) acc[year] = [];
+                  acc[year].push(quiz);
+                  return acc;
+                },
+                {} as Record<number, typeof past>
+              )
             )
               .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
               .map(([year, quizzes]) => (

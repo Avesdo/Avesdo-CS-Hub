@@ -21,7 +21,11 @@ export function useProjectQuery(projectIdOrSlug: string | undefined) {
           snap = querySnapshot.docs[0];
         } else {
           // 3. If still not found, try searching in pastSlugs
-          const pastQ = query(collection(db, 'projects'), where('pastSlugs', 'array-contains', projectIdOrSlug), limit(1));
+          const pastQ = query(
+            collection(db, 'projects'),
+            where('pastSlugs', 'array-contains', projectIdOrSlug),
+            limit(1)
+          );
           const pastSnapshot = await getDocs(pastQ);
           if (pastSnapshot.empty) {
             throw new Error('Project not found');

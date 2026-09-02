@@ -81,19 +81,15 @@ export default function SmartPasteModal({ isOpen, onClose, onSuccess }: SmartPas
 
       if (questions.length === 0) throw new Error('No questions found in the JSON.');
 
-      // Calculate next month
+      // Calculate current month
       const today = new Date();
-      let nextMonth = today.getMonth() + 2;
-      let nextYear = today.getFullYear();
-      if (nextMonth > 12) {
-        nextMonth = 1;
-        nextYear++;
-      }
+      const currentMonth = today.getMonth() + 1;
+      const currentYear = today.getFullYear();
 
       const newQuiz: Quiz = {
         id: crypto.randomUUID(),
-        targetMonth: nextMonth,
-        targetYear: nextYear,
+        targetMonth: currentMonth,
+        targetYear: currentYear,
         status: 'draft',
         questions: questions,
         createdAt: Date.now(),
