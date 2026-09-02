@@ -101,7 +101,7 @@ export function PortalFormView({
       </header>
 
       <div className="flex flex-1 overflow-hidden min-h-0 w-full relative">
-        <div className={`flex-1 flex flex-col min-h-0 transition-all duration-300 ${activeFormType === 'deliverables' ? 'px-2 md:px-6' : 'max-w-4xl mx-auto w-full px-4 md:px-6 pt-6 md:pt-8 pb-0'}`}>
+        <div className={`flex-1 flex flex-col min-h-0 transition-all duration-300 ${activeFormType === 'deliverables' ? 'px-2 md:px-6' : 'max-w-4xl mx-auto w-full px-4 md:px-6 pt-0 pb-0'}`}>
           <div className="bg-white overflow-hidden flex-1 flex flex-col min-h-0">
             {!template ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">

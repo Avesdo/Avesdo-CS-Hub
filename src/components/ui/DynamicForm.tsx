@@ -658,7 +658,7 @@ export function DynamicForm({
       className="flex flex-col h-full bg-white relative"
     >
       {visiblePages.length > 1 && (
-        <div className="flex items-center gap-1.5 px-6 sm:px-8 pt-8 pb-4 bg-white/95 backdrop-blur-md z-10 shrink-0 border-b border-slate-100/50">
+        <div className="flex items-center gap-1.5 px-6 sm:px-8 pt-6 pb-4 bg-white/95 backdrop-blur-md z-10 shrink-0 border-b border-slate-100/50">
           {visiblePages.map((_, idx) => (
             <div
               key={idx}
