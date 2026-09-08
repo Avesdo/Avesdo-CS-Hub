@@ -54,7 +54,6 @@ import {
   calculateQuarterlyRevenue,
   calculateOnboardingPhases,
   calculateDeliveryTimelines,
-  getAllSystemFeatures,
   calculateFeatureAdoption,
   calculateManagerWorkload,
   getRecentServices,
@@ -190,7 +189,7 @@ export default function Dashboard() {
     [filteredProjects, settings?.timelines]
   );
 
-  const allSystemFeatures = useMemo(() => getAllSystemFeatures(projects), [projects]);
+  const allSystemFeatures = useMemo(() => settings?.features || [], [settings?.features]);
 
   const featureAdoptionCombined = useMemo(
     () => calculateFeatureAdoption(filteredProjects, allSystemFeatures),

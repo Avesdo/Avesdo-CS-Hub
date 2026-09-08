@@ -236,10 +236,7 @@ export const calculateDeliveryTimelines = (
     .filter((t) => t.count > 0);
 };
 
-export const getAllSystemFeatures = (projects: Project[] | null): string[] => {
-  if (!projects) return [];
-  return Array.from(new Set(projects.flatMap((p) => p.features || [])));
-};
+
 
 export const calculateFeatureAdoption = (
   filteredProjects: Project[],
