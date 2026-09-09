@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, FileText, Copy, Check } from 'lucide-react';
+import { X, Save, FileText, Copy, Check, ExternalLink } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import DeliverablesGrid from '../ui/DeliverablesGrid';
 import { updateProjectRecord } from '../../api/dbService';
@@ -241,6 +241,17 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap">
+                    {project?.teamworkLink && (
+                      <a
+                        href={project.teamworkLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-all duration-200 border border-transparent bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 hover:-translate-y-0.5 px-4 py-2 h-9 focus:ring-2 focus:ring-slate-400/20 focus:outline-none"
+                      >
+                        <ExternalLink className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                        Teamwork
+                      </a>
+                    )}
                     <button
                       onClick={() =>
                         exportFormToCSV('Deliverables Checklist', project, methods.getValues(), {
