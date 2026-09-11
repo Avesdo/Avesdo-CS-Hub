@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import { createPortal } from 'react-dom';
 import {
   FileText,
@@ -691,22 +692,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                     <div className="flex items-center gap-3 mt-0.5">
                       {submitDate && (
                         <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                          Completed:{' '}
-                          {['survey', 'clientQA', 'certification'].includes(milestone.modal || '')
-                            ? new Date(submitDate)
-                                .toLocaleString('en-US', {
-                                  month: 'long',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: 'numeric',
-                                  minute: '2-digit',
-                                })
-                                .replace(' at ', ' ')
-                            : new Date(submitDate).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
+                          Completed: {format(new Date(submitDate), 'MMM d, yyyy h:mm a')}
                         </span>
                       )}
                       {status !== 'Draft' &&
@@ -714,12 +700,7 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                         updateDate !== submitDate &&
                         (!submitDate || new Date(updateDate) > new Date(submitDate)) && (
                           <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                            Updated:{' '}
-                            {new Date(updateDate).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
+                            Updated: {format(new Date(updateDate), 'MMM d, yyyy h:mm a')}
                           </span>
                         )}
                     </div>
