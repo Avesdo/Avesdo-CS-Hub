@@ -690,19 +690,20 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
                       )}
                     </p>
                     <div className="flex items-center gap-3 mt-0.5">
-                      {submitDate && (
+                      {submitDate && (!milestone.modal || milestone.modal === 'deliverables' ? true : status === 'Submitted') && (
                         <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                           Completed: {format(new Date(submitDate), 'MMM d, yyyy h:mm a')}
                         </span>
                       )}
-                      {status !== 'Draft' &&
-                        updateDate &&
-                        updateDate !== submitDate &&
-                        (!submitDate || new Date(updateDate) > new Date(submitDate)) && (
-                          <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                            Updated: {format(new Date(updateDate), 'MMM d, yyyy h:mm a')}
-                          </span>
-                        )}
+                      {updateDate && 
+                       (milestone.modal === 'deliverables' 
+                         ? (!submitDate || new Date(updateDate).getTime() - new Date(submitDate).getTime() > 60000)
+                         : (submitDate && status === 'Submitted' && new Date(updateDate).getTime() - new Date(submitDate).getTime() > 60000)
+                       ) && (
+                        <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                          Updated: {format(new Date(updateDate), 'MMM d, yyyy h:mm a')}
+                        </span>
+                      )}
                     </div>
                   </div>
 
