@@ -155,10 +155,24 @@ export const exportFormToCSV = (
   const idToTitle: Record<string, string> = {};
   const idToPriority: Record<string, string> = {};
 
+  const projectFeatures = projectData?.features || [];
+
   if (template?.type === 'checklist' && template.sections) {
     template.sections.forEach((sec: any) => {
+      const hasSectionFeature =
+        !sec.dependsOnFeature ||
+        sec.dependsOnFeature.length === 0 ||
+        sec.dependsOnFeature.some((f: string) => projectFeatures.includes(f));
+
+      if (!hasSectionFeature) return;
+
       if (sec.items) {
         sec.items.forEach((item: any) => {
+          const hasData = !!dataToExport[item.id];
+          const isArchived = item.isArchived || sec.isArchived;
+          
+          if (isArchived && !hasData) return;
+
           keys.push(item.id);
           idToTitle[item.id] = item.taskName || item.id;
           idToPriority[item.id] = item.priority || 'Normal';
@@ -167,7 +181,18 @@ export const exportFormToCSV = (
     });
   } else if (template?.fields) {
     template.fields.forEach((field: any) => {
-      if (field.type !== 'page_break' && field.type !== 'header') {
+      const hasFieldFeature =
+        !field.featureLogicEnabled ||
+        !field.dependsOnFeature ||
+        field.dependsOnFeature.length === 0 ||
+        field.dependsOnFeature.some((f: string) => projectFeatures.includes(f));
+
+      const hasData = !!dataToExport[field.id];
+      const isArchived = field.isArchived;
+      
+      if (isArchived && !hasData) return;
+
+      if (hasFieldFeature && field.type !== 'page_break' && field.type !== 'header') {
         keys.push(field.id);
         idToTitle[field.id] = field.label || field.id;
       }
