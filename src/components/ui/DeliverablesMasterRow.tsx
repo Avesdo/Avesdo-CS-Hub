@@ -49,8 +49,9 @@ export default function DeliverablesMasterRow({
   else if (['Draft Complete'].includes(status)) dotColor = 'bg-teal-500';
   else if (['In Progress'].includes(status)) dotColor = 'bg-blue-500';
   else if (['Provided', 'Received'].includes(status)) dotColor = 'bg-indigo-500';
-  else if (['Question', 'Additional Pending', 'Pending'].includes(status))
+  else if (['Question', 'Additional Pending'].includes(status))
     dotColor = 'bg-amber-500';
+  else if (['Pending'].includes(status)) dotColor = 'bg-yellow-500';
   else if (['Delayed'].includes(status)) dotColor = 'bg-rose-500';
   else if (['N/A'].includes(status)) dotColor = 'bg-slate-200';
 
