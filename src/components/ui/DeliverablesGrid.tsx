@@ -16,8 +16,24 @@ import { DatePicker } from './DatePicker';
 import { ChecklistSection } from '../admin/TemplateDesigner';
 import DeliverablesMasterRow from './DeliverablesMasterRow';
 import DeliverablesDetailPane from './DeliverablesDetailPane';
+import SortableDeliverablesCustomRow from './SortableDeliverablesCustomRow';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { Button } from './button';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface DeliverablesGridProps {
   template: { sections?: ChecklistSection[] };
@@ -58,6 +74,27 @@ export default function DeliverablesGrid({
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = customItems.findIndex((item: any) => item.id === active.id);
+      const newIndex = customItems.findIndex((item: any) => item.id === over.id);
+      const newCustomItems = arrayMove(customItems, oldIndex, newIndex);
+      setValue('_customItems', newCustomItems, { shouldDirty: true });
+    }
+  };
 
   const toggleCollapseSection = (sectionId: string) => {
     setCollapsedSections((prev) =>
@@ -323,22 +360,26 @@ export default function DeliverablesGrid({
                 </div>
                 {!collapsedSections.includes('custom') && (
                   <div className="flex flex-col gap-0.5">
-                    {customItems.map((customItem: any) => (
-                      <DeliverablesMasterRow
-                        key={customItem.id}
-                        item={customItem}
-                        isCustom={true}
-                        isHidden={false}
-                        isSelected={selectedItems.includes(customItem.id)}
-                        isActive={activeItemId === customItem.id}
-                        readOnly={readOnly}
-                        isClientPortal={isClientPortal}
-                        searchQuery={searchQuery}
-                        onSelect={toggleSelectItem}
-                        onActivate={setActiveItemId}
-                        onToggleHide={toggleHideItem}
-                      />
-                    ))}
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                      <SortableContext items={customItems.map((c: any) => c.id)} strategy={verticalListSortingStrategy}>
+                        {customItems.map((customItem: any) => (
+                          <SortableDeliverablesCustomRow
+                            key={customItem.id}
+                            item={customItem}
+                            isCustom={true}
+                            isHidden={false}
+                            isSelected={selectedItems.includes(customItem.id)}
+                            isActive={activeItemId === customItem.id}
+                            readOnly={readOnly}
+                            isClientPortal={isClientPortal}
+                            searchQuery={searchQuery}
+                            onSelect={toggleSelectItem}
+                            onActivate={setActiveItemId}
+                            onToggleHide={toggleHideItem}
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
                   </div>
                 )}
               </div>

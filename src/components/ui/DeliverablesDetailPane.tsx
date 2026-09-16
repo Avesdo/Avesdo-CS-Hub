@@ -160,26 +160,33 @@ export default function DeliverablesDetailPane({
           </div>
 
           <div className="flex items-start justify-between gap-4">
-            {isCustom && !readOnly ? (
-              <input
-                type="text"
-                value={taskName}
-                onChange={(e) => handleChange('taskName', e.target.value)}
-                className="flex-1 text-[20px] font-bold text-slate-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-primary/20 rounded-md -ml-2 px-2 py-1"
-                placeholder="Enter item name..."
-              />
-            ) : (
-              <h2 className="text-[20px] font-bold text-slate-900 leading-snug">{taskName}</h2>
-            )}
+            <div className="flex-1 min-w-0 flex items-center gap-2 group/title relative">
+              {!readOnly && !isClientPortal ? (
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={taskName}
+                    onChange={(e) => handleChange('taskName', e.target.value)}
+                    className="w-full text-[20px] font-bold text-slate-900 bg-transparent border border-transparent outline-none focus:ring-2 focus:ring-primary/20 hover:border-slate-300 hover:bg-slate-50 focus:bg-white rounded-md -ml-2 px-2 py-1 pr-8 transition-colors"
+                    placeholder="Enter item name..."
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover/title:opacity-100 pointer-events-none text-slate-400 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                  </div>
+                </div>
+              ) : (
+                <h2 className="text-[20px] font-bold text-slate-900 leading-snug">{taskName}</h2>
+              )}
 
-            {isCustom && !readOnly && (
-              <button
-                onClick={handleCustomItemRemove}
-                className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
+              {isCustom && !readOnly && !isClientPortal && (
+                <button
+                  onClick={handleCustomItemRemove}
+                  className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {item.defaultNote && !isCustom && (

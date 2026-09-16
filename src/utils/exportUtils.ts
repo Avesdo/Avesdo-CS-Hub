@@ -249,7 +249,7 @@ export const exportFormToCSV = (
       const val = dataToExport[k] || {};
       rows.push(
         [
-          escapeCSV(taskName),
+          escapeCSV(val.taskName || taskName),
           escapeCSV(val.status || 'Pending'),
           escapeCSV(val.priority || idToPriority[k] || 'Normal'),
           escapeCSV(val.resource || ''),
