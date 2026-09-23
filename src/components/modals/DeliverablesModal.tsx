@@ -78,7 +78,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
   useEffect(() => {
     if (!project?.deliverables || Object.keys(project.deliverables).length === 0) {
       const now = new Date().toISOString();
-      const initialDraft = { submittedAt: now, updatedAt: now, status: 'Draft' };
+      const initialDraft = { updatedAt: now, status: 'Draft' };
       updateProjectRecord(
         { ...project, deliverables: initialDraft },
         { successMsg: 'Checklist generated.', errorMsg: 'Failed to generate checklist.' },
@@ -129,10 +129,11 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       });
 
       const isComplete = total > 0 && completed === total;
+      const wasComplete = project?.deliverables?.status === 'Completed';
 
       const updatedDeliverables = {
         ...currentValues,
-        submittedAt: isComplete ? currentValues.submittedAt || now : currentValues.submittedAt,
+        submittedAt: isComplete ? (wasComplete ? (currentValues.submittedAt || now) : now) : undefined,
         updatedAt: now,
         status: isComplete ? 'Completed' : 'In Progress',
       };
