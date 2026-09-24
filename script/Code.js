@@ -113,31 +113,32 @@ function doPost(e) {
 }
 
 function checkUnsentEmails() {
-  var props = PropertiesService.getScriptProperties();
-  var apiKey = props.getProperty('FIREBASE_API_KEY');
-  var email = props.getProperty('FIREBASE_ADMIN_EMAIL');
-  var password = props.getProperty('FIREBASE_ADMIN_PASSWORD');
-  var projectId = props.getProperty('FIREBASE_PROJECT_ID');
-  
-  if (!apiKey || !email || !password || !projectId) {
-    console.error("Missing Firebase configuration in Script Properties.");
-    return;
-  }
-  
-  // 1. Authenticate with Identity Toolkit
-  var authUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey;
-  var authOptions = {
-    method: 'post',
-    contentType: 'application/json',
-    payload: JSON.stringify({ email: email, password: password, returnSecureToken: true }),
-    muteHttpExceptions: true
-  };
-  
-  var authRes = UrlFetchApp.fetch(authUrl, authOptions);
-  if (authRes.getResponseCode() !== 200) {
-    console.error("Firebase Authentication failed: " + authRes.getContentText());
-    return;
-  }
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var apiKey = props.getProperty('FIREBASE_API_KEY');
+    var email = props.getProperty('FIREBASE_ADMIN_EMAIL');
+    var password = props.getProperty('FIREBASE_ADMIN_PASSWORD');
+    var projectId = props.getProperty('FIREBASE_PROJECT_ID');
+    
+    if (!apiKey || !email || !password || !projectId) {
+      console.error("Missing Firebase configuration in Script Properties.");
+      return;
+    }
+    
+    // 1. Authenticate with Identity Toolkit
+    var authUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey;
+    var authOptions = {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({ email: email, password: password, returnSecureToken: true }),
+      muteHttpExceptions: true
+    };
+    
+    var authRes = UrlFetchApp.fetch(authUrl, authOptions);
+    if (authRes.getResponseCode() !== 200) {
+      console.error("Firebase Authentication failed: " + authRes.getContentText());
+      return;
+    }
   
   var idToken = JSON.parse(authRes.getContentText()).idToken;
   
@@ -239,7 +240,15 @@ function checkUnsentEmails() {
   }
   
   // 4. Check Scheduled Quizzes
-  checkScheduledQuizzes(idToken, projectId);
+  try {
+    checkScheduledQuizzes(idToken, projectId);
+  } catch (e) {
+    console.error("Error in checkScheduledQuizzes: " + e.toString());
+  }
+  
+  } catch (globalError) {
+    console.error("Uncaught error in checkUnsentEmails: " + globalError.toString());
+  }
 }
 
 function checkScheduledQuizzes(idToken, projectId) {
