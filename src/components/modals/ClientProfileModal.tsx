@@ -99,7 +99,7 @@ const TokenTrigger = ({
 export default function ClientProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
   const stackIndex = activeDrawers.findIndex((d) => d.type === 'client');
-  const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
+  const zIndexBase = 210 + Math.max(0, stackIndex) * 20;
   const clients = useAppStore((state) => state.clients);
   const settings = useAppStore((state) => state.settings);
   const projects = useAppStore((state) => state.projects);

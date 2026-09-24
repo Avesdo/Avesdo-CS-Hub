@@ -111,7 +111,7 @@ const ReadOnlyPill = ({ label, value, icon: Icon }: any) => (
 export default function ServiceProfileModal() {
   const { isDrawerOpen, getDrawerData, closeDrawer, activeDrawer, activeDrawers } = useUIStore();
   const stackIndex = activeDrawers.findIndex((d) => d.type === 'service');
-  const zIndexBase = 100 + Math.max(0, stackIndex) * 20;
+  const zIndexBase = 210 + Math.max(0, stackIndex) * 20;
   const services = useAppStore((state) => state.services);
   const settings = useAppStore((state) => state.settings);
   const user = useAppStore((state) => state.user);
