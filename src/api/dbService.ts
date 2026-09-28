@@ -732,7 +732,21 @@ export async function saveSettings(settings: Settings, config?: ToastConfig) {
   const successMsg = config?.successMsg || 'Global configuration updated successfully';
   const errorMsg = config?.errorMsg || 'Failed to update global configuration';
   try {
-    await setDoc(doc(db, 'settings', 'global_config'), settings);
+    // 1. Create a point-in-time backup of the new settings before overwriting
+    try {
+      const backupId = `backup_${Date.now()}`;
+      await setDoc(doc(db, 'settings_backups', backupId), {
+        ...settings,
+        savedAt: new Date().toISOString(),
+        timestamp: Date.now()
+      });
+    } catch (backupErr) {
+      console.warn("Failed to create settings backup:", backupErr);
+    }
+
+    // 2. Save the settings with merge: true to prevent accidental wiping of omitted fields
+    await setDoc(doc(db, 'settings', 'global_config'), settings, { merge: true });
+    
     if (!silent) toast.success(successMsg);
     return { success: true };
   } catch (err: any) {

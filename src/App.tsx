@@ -76,6 +76,7 @@ function PermissionRoute({
   return <>{children}</>;
 }
 
+
 function SyncWrapper({ children }: { children: React.ReactNode }) {
   useFirebaseSync();
   const ready = useAppStore((state) => state.ready);
@@ -305,6 +306,7 @@ export default function App() {
               }
             />
           </Routes>
+          
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>

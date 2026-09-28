@@ -187,8 +187,6 @@ export function SortableFieldItem({
         ref={setNodeRef}
         style={style}
         onClick={onSelect}
-        {...attributes}
-        {...listeners}
         className={`bg-white w-full rounded-xl transition-all relative group flex flex-col border cursor-pointer pt-2 ${
           isSelected
             ? 'border-primary ring-2 ring-primary/20 shadow-md bg-white'
@@ -206,6 +204,13 @@ export function SortableFieldItem({
           }}
         >
           <div className="flex items-center gap-3">
+            <div
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-1 -ml-2 text-slate-300 hover:text-slate-500 transition-colors shrink-0 flex items-center justify-center"
+            >
+              <GripVertical className="w-[18px] h-[18px]" />
+            </div>
             <div
               className={`p-1.5 rounded-lg shrink-0 transition-colors ${isSelected ? 'bg-primary-50 text-primary-500' : 'bg-slate-100 text-slate-500'}`}
             >

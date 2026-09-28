@@ -76,21 +76,14 @@ export function DateRangePicker({
   );
   const [endInput, setEndInput] = useState(endDate ? format(new Date(endDate), 'MM-dd-yyyy') : '');
 
-  // Sync inputs with local state
-  useEffect(() => {
-    setStartInput(localStart ? format(new Date(localStart), 'MM-dd-yyyy') : '');
-  }, [localStart]);
-
-  useEffect(() => {
-    setEndInput(localEnd ? format(new Date(localEnd), 'MM-dd-yyyy') : '');
-  }, [localEnd]);
-
   // Sync state when opening
   useEffect(() => {
     if (isOpen) {
       setLocalPreset(preset);
       setLocalStart(startDate);
       setLocalEnd(endDate);
+      setStartInput(startDate ? format(new Date(startDate), 'MM-dd-yyyy') : '');
+      setEndInput(endDate ? format(new Date(endDate), 'MM-dd-yyyy') : '');
 
       const startM = startDate ? startOfMonth(new Date(startDate)) : startOfMonth(new Date());
       setLeftMonth(startM);
@@ -106,7 +99,32 @@ export function DateRangePicker({
         setRightMonth(addMonths(startM, 1));
       }
     }
-  }, [isOpen, preset, startDate, endDate]);
+  }, [isOpen]);
+
+  // Sync state if values change from outside when NOT open
+  useEffect(() => {
+    if (!isOpen) {
+      setLocalPreset(preset);
+      setLocalStart(startDate);
+      setLocalEnd(endDate);
+      setStartInput(startDate ? format(new Date(startDate), 'MM-dd-yyyy') : '');
+      setEndInput(endDate ? format(new Date(endDate), 'MM-dd-yyyy') : '');
+
+      const startM = startDate ? startOfMonth(new Date(startDate)) : startOfMonth(new Date());
+      setLeftMonth(startM);
+
+      if (endDate) {
+        const endM = startOfMonth(new Date(endDate));
+        if (startM.getTime() === endM.getTime()) {
+          setRightMonth(addMonths(startM, 1));
+        } else {
+          setRightMonth(endM);
+        }
+      } else {
+        setRightMonth(addMonths(startM, 1));
+      }
+    }
+  }, [preset, startDate, endDate]);
 
   const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -135,14 +153,18 @@ export function DateRangePicker({
     // If no start date, or both are selected, start a new selection
     if (!localStart || (localStart && localEnd)) {
       setLocalStart(time);
+      setStartInput(format(new Date(time), 'MM-dd-yyyy'));
       setLocalEnd(null);
+      setEndInput('');
     }
     // If start date exists but no end date
     else if (localStart && !localEnd) {
       if (time < localStart) {
         setLocalStart(time); // Restart if clicking before
+        setStartInput(format(new Date(time), 'MM-dd-yyyy'));
       } else {
         setLocalEnd(time);
+        setEndInput(format(new Date(time), 'MM-dd-yyyy'));
         onChange('custom', localStart, time);
         setIsOpen(false); // Auto close on finish
       }

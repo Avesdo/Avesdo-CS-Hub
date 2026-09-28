@@ -45,18 +45,23 @@ export function DatePicker({
   );
   const [dateInput, setDateInput] = useState(value ? format(new Date(value), 'MM-dd-yyyy') : '');
 
-  // Sync input with local state
-  useEffect(() => {
-    setDateInput(localDate ? format(new Date(localDate), 'MM-dd-yyyy') : '');
-  }, [localDate]);
-
   // Sync state when opening
   useEffect(() => {
     if (isOpen) {
       setLocalDate(value || null);
       setCalMonth(startOfMonth(value ? new Date(value) : new Date()));
+      setDateInput(value ? format(new Date(value), 'MM-dd-yyyy') : '');
     }
-  }, [isOpen, value]);
+  }, [isOpen]);
+
+  // Sync state if value changes from outside when NOT open
+  useEffect(() => {
+    if (!isOpen) {
+      setLocalDate(value || null);
+      setCalMonth(startOfMonth(value ? new Date(value) : new Date()));
+      setDateInput(value ? format(new Date(value), 'MM-dd-yyyy') : '');
+    }
+  }, [value]);
 
   const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -93,6 +98,7 @@ export function DatePicker({
   const handleDayClick = (day: Date) => {
     const time = day.getTime();
     setLocalDate(time);
+    setDateInput(format(day, 'MM-dd-yyyy'));
     applyDate(time);
     setIsOpen(false);
   };
@@ -102,6 +108,7 @@ export function DatePicker({
     const time = today.getTime();
     setLocalDate(time);
     setCalMonth(startOfMonth(today));
+    setDateInput(format(today, 'MM-dd-yyyy'));
     applyDate(time);
     setIsOpen(false);
   };

@@ -175,8 +175,9 @@ export function RoleManagerTab() {
         const snapshot = await getDocs(usersRef);
         const counts: Record<string, number> = {};
         snapshot.forEach((doc) => {
-          const roleId = doc.data().roleId;
-          if (roleId) {
+          const data = doc.data();
+          const roleId = data.roleId;
+          if (roleId && !data.isDeactivated) {
             counts[roleId] = (counts[roleId] || 0) + 1;
           }
         });
