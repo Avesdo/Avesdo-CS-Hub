@@ -200,7 +200,7 @@ export function MultiSelect({
           values.map((val) => (
             <span
               key={val}
-              className="bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1"
+              className="bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1 whitespace-nowrap"
             >
               {getLabelForValue(val)}
               <button

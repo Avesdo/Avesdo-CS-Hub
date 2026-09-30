@@ -360,8 +360,15 @@ export default function DeliverablesGrid({
                 </div>
                 {!collapsedSections.includes('custom') && (
                   <div className="flex flex-col gap-0.5">
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                      <SortableContext items={customItems.map((c: any) => c.id)} strategy={verticalListSortingStrategy}>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={customItems.map((c: any) => c.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
                         {customItems.map((customItem: any) => (
                           <SortableDeliverablesCustomRow
                             key={customItem.id}

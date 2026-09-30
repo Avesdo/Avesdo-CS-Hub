@@ -19,17 +19,13 @@ import { Tooltip } from './ui/Tooltip';
 import { useScheduleData } from '../hooks/useScheduleData';
 import {
   Calendar as CalendarIcon,
-  ExternalLink,
   Sun,
-  UserX,
-  Clock,
-  CheckCircle2,
-  ChevronRight,
   AlertTriangle,
   CalendarDays,
   Users,
   User,
   CheckCheck,
+  Clock,
 } from 'lucide-react';
 
 export function NotificationBell({
@@ -199,9 +195,19 @@ export function TeamScheduleWidget({
 
   const todayData = getTodaySchedule();
 
+  const formatShortName = (name: string): string => {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length > 1) {
+      return `${parts[0]} ${parts[parts.length - 1][0].toUpperCase()}.`;
+    }
+    return name;
+  };
+
   const getUserName = (id: string) => {
     const u = users.find((user) => user.uid === id);
-    return u ? u.displayName || u.name || u.email || id : id;
+    const fullName = u ? u.displayName || u.name || u.email || id : id;
+    return formatShortName(fullName);
   };
 
   const renderContent = () => {
@@ -235,70 +241,88 @@ export function TeamScheduleWidget({
     const isWeekend = currentDay === 0 || currentDay === 6;
     const isThurFri = currentDay === 4 || currentDay === 5;
 
-    type ShiftState = 'active' | 'upcoming' | 'completed';
     interface Shift {
       id: string;
       name: string;
       timeRange: string;
       managers: string[];
-      state: ShiftState;
+      isActive: boolean;
+      color: 'sky' | 'indigo' | 'purple';
     }
+
+    const colorThemes: Record<
+      'sky' | 'indigo' | 'purple',
+      { card: string; title: string; icon: string; names: string }
+    > = {
+      sky: {
+        card: 'bg-sky-50/40 border-sky-200/80',
+        title: 'text-sky-800',
+        icon: 'text-sky-500',
+        names: 'text-sky-900',
+      },
+      indigo: {
+        card: 'bg-indigo-50/40 border-indigo-200/80',
+        title: 'text-indigo-800',
+        icon: 'text-indigo-500',
+        names: 'text-indigo-900',
+      },
+      purple: {
+        card: 'bg-purple-50/40 border-purple-200/80',
+        title: 'text-purple-800',
+        icon: 'text-purple-500',
+        names: 'text-purple-900',
+      },
+    };
 
     const shifts: Shift[] = [];
 
-    // 1. EST: Mon - Fri 9:00 AM - 5:00 PM EST
+    // 1. EST: Mon - Fri 9-5 EST
     if (!isWeekend) {
-      let state: ShiftState = 'upcoming';
-      if (estHour >= 17) state = 'completed';
-      else if (estHour >= 9) state = 'active';
-
+      const isActive = estHour >= 9 && estHour < 17;
       shifts.push({
         id: 'est',
-        name: '9:00 AM - 5:00 PM EST',
+        name: '9-5 EST',
         timeRange: '9:00 AM - 5:00 PM EST',
         managers: todayData.estManagers || [],
-        state,
+        isActive,
+        color: 'sky',
       });
     }
 
-    // 2. PST: Mon - Fri 9:00 AM - 5:00 PM PST
+    // 2. PST: Mon - Fri 9-5 PST
     if (!isWeekend) {
-      let state: ShiftState = 'upcoming';
-      if (pstHour >= 17) state = 'completed';
-      else if (pstHour >= 9) state = 'active';
-
+      const isActive = pstHour >= 9 && pstHour < 17;
       shifts.push({
         id: 'pst',
-        name: '9:00 AM - 5:00 PM PST',
+        name: '9-5 PST',
         timeRange: '9:00 AM - 5:00 PM PST',
         managers: todayData.pstManagers || [],
-        state,
+        isActive,
+        color: 'indigo',
       });
     }
 
-    // 3. PST 8-6: 8:00 AM - 6:00 PM PST
-    const combinedPstManagers = Array.from(new Set([
-      ...(todayData.pstWedSatManagers || []),
-      ...(todayData.pstSunWedManagers || [])
-    ]));
+    // 3. PST 8-6: 8-6 PST
+    const combinedPstManagers = Array.from(
+      new Set([...(todayData.pstWedSatManagers || []), ...(todayData.pstSunWedManagers || [])])
+    );
 
     if (combinedPstManagers.length > 0) {
-      let state: ShiftState = 'upcoming';
-      if (pstHour >= 18) state = 'completed';
-      else if (pstHour >= 8) state = 'active';
-
+      const isActive = pstHour >= 8 && pstHour < 18;
       shifts.push({
         id: 'pst-extended',
-        name: '8:00 AM - 6:00 PM PST',
+        name: '8-6 PST',
         timeRange: '8:00 AM - 6:00 PM PST',
         managers: combinedPstManagers,
-        state,
+        isActive,
+        color: 'purple',
       });
     }
 
     const hasUpcoming =
       todayData.upcomingHolidays?.length ||
       todayData.upcomingTimeOff?.length ||
+      todayData.upcomingDst?.length ||
       (isThurFri && todayData.upcomingWeekendCoverage);
 
     const formatDates = (dates: string[]) => {
@@ -329,41 +353,45 @@ export function TeamScheduleWidget({
           </div>
         )}
 
+        {todayData.isDstDay && (
+          <div className="bg-sky-50 border-b border-sky-100 p-3 text-center">
+            <h4 className="text-sky-800 font-bold text-sm mb-0.5 flex justify-center items-center gap-1.5">
+              <Clock className="w-4 h-4 text-sky-600" /> {todayData.dstName}
+            </h4>
+            <p className="text-sky-600 font-medium text-xs">{todayData.dstDescription}</p>
+          </div>
+        )}
+
         <div className="p-2 space-y-1.5">
           <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 mb-2 px-1">
             <Sun className="w-3.5 h-3.5 text-amber-500" /> Today's Coverage
           </div>
 
           {shifts.map((shift) => {
-            const isActive = shift.state === 'active';
-            const isCompleted = shift.state === 'completed';
+            const theme = colorThemes[shift.color];
+            const cardClasses = shift.isActive
+              ? `${theme.card} opacity-100`
+              : 'bg-slate-50/60 border-slate-200/60 opacity-60';
+            const titleClasses = shift.isActive ? theme.title : 'text-slate-500';
+            const iconClasses = shift.isActive ? theme.icon : 'text-slate-400';
+            const namesClasses = shift.isActive ? theme.names : 'text-slate-500';
+
             return (
               <div
                 key={shift.id}
-                className={`flex flex-col px-3 py-2 rounded-lg border transition-colors ${isActive ? 'bg-emerald-50/40 border-emerald-200' : isCompleted ? 'bg-slate-50 border-slate-100 opacity-60' : 'bg-white border-slate-200 shadow-sm'}`}
+                className={`flex flex-col px-3 py-2 rounded-lg border transition-colors ${cardClasses}`}
               >
-                <div className="flex items-center justify-between mb-0.5">
-                  <div className="flex items-center gap-2">
-                    <h4
-                      className={`font-semibold text-sm ${isActive ? 'text-emerald-800' : 'text-slate-700'}`}
-                    >
-                      {shift.name}
-                    </h4>
-                  </div>
-
+                <div className="mb-0.5">
+                  <h4 className={`font-semibold text-sm ${titleClasses}`}>{shift.name}</h4>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0">
                   {shift.managers.length > 1 ? (
-                    <Users
-                      className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
-                    />
+                    <Users className={`w-3.5 h-3.5 shrink-0 ${iconClasses}`} />
                   ) : (
-                    <User
-                      className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-500' : 'text-slate-400'}`}
-                    />
+                    <User className={`w-3.5 h-3.5 shrink-0 ${iconClasses}`} />
                   )}
                   <span
-                    className={`text-sm font-medium ${shift.managers.length > 0 ? (isActive ? 'text-emerald-700' : 'text-slate-600') : 'text-slate-400 italic'}`}
+                    className={`text-sm font-medium ${shift.managers.length > 0 ? namesClasses : 'text-slate-400 italic'}`}
                   >
                     {shift.managers.length > 0
                       ? shift.managers
@@ -464,6 +492,35 @@ export function TeamScheduleWidget({
                   </div>
                 </div>
               )}
+
+              {todayData.upcomingDst && todayData.upcomingDst.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-sky-600 mb-1.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" /> Daylight Saving Time
+                  </div>
+                  <div className="space-y-2">
+                    {todayData.upcomingDst.map((d: any, i: number) => (
+                      <div key={i} className="text-xs flex justify-between items-start gap-2">
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-medium text-slate-700 leading-tight">
+                            {d.shortName || d.name}
+                          </span>
+                          <span className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                            {d.description}
+                          </span>
+                        </div>
+                        <span className="text-slate-500 text-[10.5px] bg-slate-100/50 px-1.5 py-0.5 rounded shrink-0">
+                          {new Date(`${d.date}T12:00:00`).toLocaleDateString(undefined, {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -482,7 +539,7 @@ export function TeamScheduleWidget({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[280px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
+        className="w-[275px] p-0 bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl rounded-xl overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=right]:slide-in-from-left-2"
         side={side}
         align="end"
         sideOffset={sideOffset}

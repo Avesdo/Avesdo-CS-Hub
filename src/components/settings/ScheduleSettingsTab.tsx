@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useUIStore } from '../../store/useUIStore';
+import React, { useState, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { saveSettings } from '../../api/dbService';
 import { MultiSelect } from '../ui/MultiSelect';
@@ -9,7 +8,6 @@ import { Select } from '../ui/Select';
 import { Input } from '../ui/input';
 import { format } from 'date-fns';
 import { Tooltip } from '../ui/Tooltip';
-import * as LucideIcons from 'lucide-react';
 import {
   Check,
   User,
@@ -17,16 +15,16 @@ import {
   Edit2,
   Trash2,
   ChevronDown,
-  ExternalLink,
   Plus,
   X,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 import { usePermissions } from '../../hooks/usePermissions';
 
 export function ScheduleSettingsTab() {
-  const { openModal } = useUIStore();
   const settings = useAppStore((state) => state.settings);
   const users = useAppStore((state) => state.users);
   const { hasPermission } = usePermissions();
@@ -55,123 +53,116 @@ export function ScheduleSettingsTab() {
   const [isAddingTimeOff, setIsAddingTimeOff] = useState(false);
   const [isAddingHoliday, setIsAddingHoliday] = useState(false);
 
-  if (!settings) return null;
-
   const getUserName = (id: string) => {
     const u = users.find((user) => user.uid === id);
     return u ? u.displayName || u.name || u.email || id : id;
   };
 
+  const accountManagerOptions = useMemo(() => {
+    return users
+      .filter((u) => u.isAccountManager && !u.isDeactivated)
+      .map((u) => ({
+        value: u.uid,
+        label: getUserName(u.uid),
+      }));
+  }, [users]);
+
+  if (!settings) return null;
+
+  const shiftsConfig = [
+    {
+      id: 'est',
+      title: 'Mon–Fri • 9:00 AM – 5:00 PM EST',
+      managers: settings?.estManagers || [],
+      saveKey: 'estManagers',
+      color: 'sky',
+      iconBg: 'bg-sky-50 border-sky-100 text-sky-600',
+    },
+    {
+      id: 'pst',
+      title: 'Mon–Fri • 9:00 AM – 5:00 PM PST',
+      managers: settings?.pstManagers || [],
+      saveKey: 'pstManagers',
+      color: 'indigo',
+      iconBg: 'bg-indigo-50 border-indigo-100 text-indigo-600',
+    },
+    {
+      id: 'pstWedSat',
+      title: 'Wed–Sat • 8:00 AM – 6:00 PM PST',
+      managers: settings?.pstWedSatManagers || [],
+      saveKey: 'pstWedSatManagers',
+      color: 'purple',
+      iconBg: 'bg-purple-50 border-purple-100 text-purple-600',
+    },
+    {
+      id: 'pstSunWed',
+      title: 'Sun–Wed • 8:00 AM – 6:00 PM PST',
+      managers: settings?.pstSunWedManagers || [],
+      saveKey: 'pstSunWedManagers',
+      color: 'purple',
+      iconBg: 'bg-purple-50 border-purple-100 text-purple-600',
+    },
+  ];
+
   return (
     <div className="max-w-4xl animate-in fade-in duration-300">
       <div className="space-y-8 mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center border border-sky-100 shrink-0">
-                <LucideIcons.Clock className="w-5 h-5 text-sky-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-800 leading-tight">EST</h3>
-                <p className="text-xs font-medium text-slate-500 mt-1">Mon-Fri 9am-5pm</p>
-              </div>
-            </div>
-            <div>
-              <MultiSelect
-                variant="inline"
-                disabled={!canEdit}
-                options={users
-                  .filter((u) => u.isAccountManager && !u.isDeactivated)
-                  .map((u) => ({
-                    value: u.uid,
-                    label: getUserName(u.uid),
-                  }))}
-                values={settings?.estManagers || []}
-                onChange={(vals) => saveSettings({ ...(settings as any), estManagers: vals })}
-                placeholder="Select managers..."
-              />
-            </div>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-slate-400" />
+              Shift Coverage Assignments
+            </h3>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100 shrink-0">
-                <LucideIcons.Clock className="w-5 h-5 text-indigo-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-800 leading-tight">PST</h3>
-                <p className="text-xs font-medium text-slate-500 mt-1">Mon-Fri 9am-5pm</p>
-              </div>
-            </div>
-            <div>
-              <MultiSelect
-                variant="inline"
-                disabled={!canEdit}
-                options={users
-                  .filter((u) => u.isAccountManager && !u.isDeactivated)
-                  .map((u) => ({
-                    value: u.uid,
-                    label: getUserName(u.uid),
-                  }))}
-                values={settings?.pstManagers || []}
-                onChange={(vals) => saveSettings({ ...(settings as any), pstManagers: vals })}
-                placeholder="Select managers..."
-              />
-            </div>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {shiftsConfig.map((shift) => {
+              const isCovered = shift.managers.length > 0;
+              return (
+                <div
+                  key={shift.id}
+                  className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm hover:border-slate-300 hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${shift.iconBg}`}
+                      >
+                        <Clock className="w-5 h-5" />
+                      </div>
+                      <h4 className="text-sm font-bold text-slate-800">{shift.title}</h4>
+                    </div>
+                    <div>
+                      {isCovered ? (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          {shift.managers.length}{' '}
+                          {shift.managers.length === 1 ? 'Manager' : 'Managers'}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-full">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                          Unassigned
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center border border-violet-100 shrink-0">
-                <LucideIcons.Clock className="w-5 h-5 text-violet-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-800 leading-tight">PST (Wed-Sat)</h3>
-                <p className="text-xs font-medium text-slate-500 mt-1">Wed-Sat 8am-6pm</p>
-              </div>
-            </div>
-            <div>
-              <MultiSelect
-                variant="inline"
-                disabled={!canEdit}
-                options={users
-                  .filter((u) => u.isAccountManager && !u.isDeactivated)
-                  .map((u) => ({
-                    value: u.uid,
-                    label: getUserName(u.uid),
-                  }))}
-                values={settings?.pstWedSatManagers || []}
-                onChange={(vals) => saveSettings({ ...(settings as any), pstWedSatManagers: vals })}
-                placeholder="Select managers..."
-              />
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shrink-0">
-                <LucideIcons.Clock className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-800 leading-tight">PST (Sun-Wed)</h3>
-                <p className="text-xs font-medium text-slate-500 mt-1">Sun-Wed 8am-6pm</p>
-              </div>
-            </div>
-            <div>
-              <MultiSelect
-                variant="inline"
-                disabled={!canEdit}
-                options={users
-                  .filter((u) => u.isAccountManager && !u.isDeactivated)
-                  .map((u) => ({
-                    value: u.uid,
-                    label: getUserName(u.uid),
-                  }))}
-                values={settings?.pstSunWedManagers || []}
-                onChange={(vals) => saveSettings({ ...(settings as any), pstSunWedManagers: vals })}
-                placeholder="Select managers..."
-              />
-            </div>
+                  <div className="pt-3 border-t border-slate-100">
+                    <MultiSelect
+                      variant="inline"
+                      disabled={!canEdit}
+                      options={accountManagerOptions}
+                      values={shift.managers}
+                      onChange={(vals) =>
+                        saveSettings({ ...(settings as any), [shift.saveKey]: vals })
+                      }
+                      placeholder="Assign managers..."
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

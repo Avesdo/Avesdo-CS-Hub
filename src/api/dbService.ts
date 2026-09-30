@@ -738,15 +738,15 @@ export async function saveSettings(settings: Settings, config?: ToastConfig) {
       await setDoc(doc(db, 'settings_backups', backupId), {
         ...settings,
         savedAt: new Date().toISOString(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (backupErr) {
-      console.warn("Failed to create settings backup:", backupErr);
+      console.warn('Failed to create settings backup:', backupErr);
     }
 
     // 2. Save the settings with merge: true to prevent accidental wiping of omitted fields
     await setDoc(doc(db, 'settings', 'global_config'), settings, { merge: true });
-    
+
     if (!silent) toast.success(successMsg);
     return { success: true };
   } catch (err: any) {

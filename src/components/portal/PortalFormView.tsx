@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Home, FileText, AppWindow, Briefcase, BookOpen, Download, Mail, Phone, X } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  FileText,
+  AppWindow,
+  Briefcase,
+  BookOpen,
+  Download,
+  Mail,
+  Phone,
+  X,
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import { exportFormToCSV } from '../../utils/exportUtils';
 import { Project, Settings } from '../../types';
@@ -31,7 +43,6 @@ export function PortalFormView({
   onSaveForm,
   existingData,
 }: PortalFormViewProps) {
-
   const handleCancel = () => {
     onNavigate('dashboard');
   };
@@ -47,8 +58,8 @@ export function PortalFormView({
     >
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 sticky top-0 z-[var(--z-header)] shadow-sm">
         <div className="flex items-center gap-4 sm:gap-6">
-          <button 
-            onClick={handleCancel} 
+          <button
+            onClick={handleCancel}
             className="flex items-center gap-4 group outline-none shrink-0"
             title="Return to Dashboard"
           >
@@ -62,46 +73,47 @@ export function PortalFormView({
               Client Portal
             </span>
           </button>
-          
-          <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
-                    <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-1.5 text-[12px] sm:text-[13px] text-slate-500 font-medium mb-0.5">
-                <button 
-                  onClick={handleCancel} 
-                  className="hover:text-primary transition-colors flex items-center gap-1"
-                >
-                  <Home className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Dashboard</span>
-                </button>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                <button 
-                  onClick={handleCancel} 
-                  className="hover:text-primary transition-colors truncate max-w-[120px] sm:max-w-[200px]"
-                  title={`Return to ${project.name} Dashboard`}
-                >
-                  {project.name}
-                </button>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <h1 className="text-base sm:text-lg font-bold text-slate-800 leading-tight truncate max-w-[200px] sm:max-w-none">
-                  {template?.name || activeFormType}
-                </h1>
-                {isSubmitting && activeFormType === 'deliverables' && (
-                  <span className="text-[11px] font-bold text-primary flex items-center gap-1.5 animate-pulse shrink-0">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" /> 
-                    <span className="hidden sm:inline">Auto-saving...</span>
-                    <span className="sm:hidden">Saving...</span>
-                  </span>
-                )}
-              </div>
-            </div>
-        </div>
 
+          <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1.5 text-[12px] sm:text-[13px] text-slate-500 font-medium mb-0.5">
+              <button
+                onClick={handleCancel}
+                className="hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Home className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </button>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+              <button
+                onClick={handleCancel}
+                className="hover:text-primary transition-colors truncate max-w-[120px] sm:max-w-[200px]"
+                title={`Return to ${project.name} Dashboard`}
+              >
+                {project.name}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <h1 className="text-base sm:text-lg font-bold text-slate-800 leading-tight truncate max-w-[200px] sm:max-w-none">
+                {template?.name || activeFormType}
+              </h1>
+              {isSubmitting && activeFormType === 'deliverables' && (
+                <span className="text-[11px] font-bold text-primary flex items-center gap-1.5 animate-pulse shrink-0">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span className="hidden sm:inline">Auto-saving...</span>
+                  <span className="sm:hidden">Saving...</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden min-h-0 w-full relative">
-        <div className={`flex-1 flex flex-col min-h-0 transition-all duration-300 ${activeFormType === 'deliverables' ? 'px-2 md:px-6' : 'max-w-4xl mx-auto w-full px-4 md:px-6 pt-0 pb-0'}`}>
+        <div
+          className={`flex-1 flex flex-col min-h-0 transition-all duration-300 ${activeFormType === 'deliverables' ? 'px-2 md:px-6' : 'max-w-4xl mx-auto w-full px-4 md:px-6 pt-0 pb-0'}`}
+        >
           <div className="bg-white overflow-hidden flex-1 flex flex-col min-h-0">
             {!template ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -182,10 +194,12 @@ export function PortalFormView({
                   </div>
                 </a>
               )}
-              
+
               {activeFormType === 'deliverables' && (
                 <button
-                  onClick={() => exportFormToCSV('Deliverables Checklist', project, existingData, template)}
+                  onClick={() =>
+                    exportFormToCSV('Deliverables Checklist', project, existingData, template)
+                  }
                   className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-transparent hover:border-slate-200 transition-all duration-300 group text-left"
                 >
                   <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300">

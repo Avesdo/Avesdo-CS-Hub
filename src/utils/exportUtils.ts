@@ -170,7 +170,7 @@ export const exportFormToCSV = (
         sec.items.forEach((item: any) => {
           const hasData = !!dataToExport[item.id];
           const isArchived = item.isArchived || sec.isArchived;
-          
+
           if (isArchived && !hasData) return;
 
           keys.push(item.id);
@@ -189,7 +189,7 @@ export const exportFormToCSV = (
 
       const hasData = !!dataToExport[field.id];
       const isArchived = field.isArchived;
-      
+
       if (isArchived && !hasData) return;
 
       if (hasFieldFeature && field.type !== 'page_break' && field.type !== 'header') {
@@ -429,5 +429,3 @@ export const exportAllFormResponsesToCSV = (
   URL.revokeObjectURL(url);
   toast.success('Export Complete', `${filename} has been downloaded`);
 };
-
-

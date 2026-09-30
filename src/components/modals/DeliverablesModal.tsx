@@ -133,7 +133,11 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
 
       const updatedDeliverables = {
         ...currentValues,
-        submittedAt: isComplete ? (wasComplete ? (currentValues.submittedAt || now) : now) : undefined,
+        submittedAt: isComplete
+          ? wasComplete
+            ? currentValues.submittedAt || now
+            : now
+          : undefined,
         updatedAt: now,
         status: isComplete ? 'Completed' : 'In Progress',
       };

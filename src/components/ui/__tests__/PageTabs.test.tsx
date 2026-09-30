@@ -23,8 +23,10 @@ describe('PageTabs', () => {
     const activeTabButton = screen.getByText('All Clients').closest('button');
     const inactiveTabButton = screen.getByText('Active').closest('button');
 
-    expect(activeTabButton).toHaveClass('bg-white');
-    expect(inactiveTabButton).toHaveClass('bg-muted');
+    expect(activeTabButton).toHaveClass('text-primary');
+    expect(inactiveTabButton).toHaveClass('text-slate-500');
+    expect(activeTabButton?.querySelector('.bg-white')).toBeInTheDocument();
+    expect(inactiveTabButton?.querySelector('.bg-white')).toBeNull();
   });
 
   it('calls onTabChange with the correct label when clicked', () => {
