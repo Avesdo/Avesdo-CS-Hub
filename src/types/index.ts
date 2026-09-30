@@ -130,6 +130,8 @@ export interface Settings {
   };
   estManagers?: string[];
   pstManagers?: string[];
+  pstWedSatManagers?: string[];
+  pstSunWedManagers?: string[];
   statHolidays?: { date: string; name: string; location: string }[];
   timeOff?: {
     date?: string;

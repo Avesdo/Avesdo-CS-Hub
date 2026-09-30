@@ -246,7 +246,7 @@ export function TeamScheduleWidget({
 
     const shifts: Shift[] = [];
 
-    // 1. EST Core
+    // 1. EST: Mon - Fri 9:00 AM - 5:00 PM EST
     if (!isWeekend) {
       let state: ShiftState = 'upcoming';
       if (estHour >= 17) state = 'completed';
@@ -254,54 +254,44 @@ export function TeamScheduleWidget({
 
       shifts.push({
         id: 'est',
-        name: 'EST',
+        name: '9:00 AM - 5:00 PM EST',
         timeRange: '9:00 AM - 5:00 PM EST',
         managers: todayData.estManagers || [],
         state,
       });
     }
 
-    // 2. PST Core
+    // 2. PST: Mon - Fri 9:00 AM - 5:00 PM PST
     if (!isWeekend) {
       let state: ShiftState = 'upcoming';
-      if (pstHour >= 18) state = 'completed';
-      else if (pstHour >= 10) state = 'active';
+      if (pstHour >= 17) state = 'completed';
+      else if (pstHour >= 9) state = 'active';
 
       shifts.push({
         id: 'pst',
-        name: 'PST',
-        timeRange: '10:00 AM - 6:00 PM PST',
+        name: '9:00 AM - 5:00 PM PST',
+        timeRange: '9:00 AM - 5:00 PM PST',
         managers: todayData.pstManagers || [],
         state,
       });
     }
 
-    // 3. PST Extended / Weekend
-    if (isThurFri || isWeekend) {
+    // 3. PST 8-6: 8:00 AM - 6:00 PM PST
+    const combinedPstManagers = Array.from(new Set([
+      ...(todayData.pstWedSatManagers || []),
+      ...(todayData.pstSunWedManagers || [])
+    ]));
+
+    if (combinedPstManagers.length > 0) {
       let state: ShiftState = 'upcoming';
-      if (pstHour >= 19) state = 'completed';
-      else if (pstHour >= 9) state = 'active';
+      if (pstHour >= 18) state = 'completed';
+      else if (pstHour >= 8) state = 'active';
 
       shifts.push({
-        id: 'pst-ext',
-        name: isWeekend ? 'Weekend' : 'PST Extended',
-        timeRange: '9:00 AM - 7:00 PM PST',
-        managers: todayData.pstThurSunManager ? [todayData.pstThurSunManager] : [],
-        state,
-      });
-    }
-
-    // 4. After Hours
-    if (!isWeekend) {
-      let state: ShiftState = 'upcoming';
-      if (pstHour >= 17 || pstHour < 1) state = 'active';
-      else if (pstHour >= 1) state = 'upcoming';
-
-      shifts.push({
-        id: 'after-hours',
-        name: 'After Hours',
-        timeRange: '5:00 PM - 1:00 AM PST',
-        managers: todayData.istMonFriManager ? [todayData.istMonFriManager] : [],
+        id: 'pst-extended',
+        name: '8:00 AM - 6:00 PM PST',
+        timeRange: '8:00 AM - 6:00 PM PST',
+        managers: combinedPstManagers,
         state,
       });
     }
@@ -360,7 +350,7 @@ export function TeamScheduleWidget({
                       {shift.name}
                     </h4>
                   </div>
-                  <div className="text-[10px] font-semibold text-slate-400">{shift.timeRange}</div>
+
                 </div>
                 <div className="flex items-center gap-1.5 mt-0">
                   {shift.managers.length > 1 ? (

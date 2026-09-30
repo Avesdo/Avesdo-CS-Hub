@@ -65,7 +65,7 @@ export function ScheduleSettingsTab() {
   return (
     <div className="max-w-4xl animate-in fade-in duration-300">
       <div className="space-y-8 mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
             <div className="flex items-start gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center border border-sky-100 shrink-0">
@@ -100,7 +100,7 @@ export function ScheduleSettingsTab() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-800 leading-tight">PST</h3>
-                <p className="text-xs font-medium text-slate-500 mt-1">Mon-Fri 10am-6pm</p>
+                <p className="text-xs font-medium text-slate-500 mt-1">Mon-Fri 9am-5pm</p>
               </div>
             </div>
             <div>
@@ -122,25 +122,55 @@ export function ScheduleSettingsTab() {
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
             <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100 shrink-0">
-                <LucideIcons.Clock className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center border border-violet-100 shrink-0">
+                <LucideIcons.Clock className="w-5 h-5 text-violet-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-800 leading-tight">
-                  PST Extended, Weekend, and After Hours
-                </h3>
+                <h3 className="text-base font-bold text-slate-800 leading-tight">PST (Wed-Sat)</h3>
+                <p className="text-xs font-medium text-slate-500 mt-1">Wed-Sat 8am-6pm</p>
               </div>
             </div>
-            <div className="pt-2">
-              <a
-                href="https://docs.google.com/spreadsheets/d/1sBG1AyGHvyNPkGVLfgcQwdIiz0GxXV4rM2wltZ_7msA/edit?usp=sharing"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-semibold text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 transition-all"
-              >
-                <ExternalLink className="w-4 h-4" />
-                View Schedule
-              </a>
+            <div>
+              <MultiSelect
+                variant="inline"
+                disabled={!canEdit}
+                options={users
+                  .filter((u) => u.isAccountManager && !u.isDeactivated)
+                  .map((u) => ({
+                    value: u.uid,
+                    label: getUserName(u.uid),
+                  }))}
+                values={settings?.pstWedSatManagers || []}
+                onChange={(vals) => saveSettings({ ...(settings as any), pstWedSatManagers: vals })}
+                placeholder="Select managers..."
+              />
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shrink-0">
+                <LucideIcons.Clock className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-800 leading-tight">PST (Sun-Wed)</h3>
+                <p className="text-xs font-medium text-slate-500 mt-1">Sun-Wed 8am-6pm</p>
+              </div>
+            </div>
+            <div>
+              <MultiSelect
+                variant="inline"
+                disabled={!canEdit}
+                options={users
+                  .filter((u) => u.isAccountManager && !u.isDeactivated)
+                  .map((u) => ({
+                    value: u.uid,
+                    label: getUserName(u.uid),
+                  }))}
+                values={settings?.pstSunWedManagers || []}
+                onChange={(vals) => saveSettings({ ...(settings as any), pstSunWedManagers: vals })}
+                placeholder="Select managers..."
+              />
             </div>
           </div>
         </div>

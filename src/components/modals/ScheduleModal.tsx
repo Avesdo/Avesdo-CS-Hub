@@ -32,7 +32,7 @@ export default function ScheduleModal() {
   const { isModalOpen, closeModal } = useUIStore();
   const isOpen = isModalOpen('scheduleModal');
 
-  const { scheduleData, loading, error } = useScheduleData();
+  const { scheduleData, loading, error, getScheduleForDay } = useScheduleData();
   const settings = useAppStore((state) => state.settings);
   const users = useAppStore((state) => state.users);
 
@@ -75,10 +75,7 @@ export default function ScheduleModal() {
       const dTime = addDays(startDate, i);
 
       // Match with schedule data
-      const sData = scheduleData.find((s) => {
-        const sD = startOfDay(new Date(s.dateFull));
-        return sD.getTime() === dTime.getTime();
-      });
+      const sData = getScheduleForDay(dTime);
 
       // Settings holiday override
       const settingsHoliday = (settings?.statHolidays || []).find((h) => {
@@ -99,10 +96,12 @@ export default function ScheduleModal() {
         isPast: isBefore(dTime, today),
         isToday: isSameDay(dTime, today),
         isCurrentMonth: isSameMonth(dTime, currentMonth),
-        isHoliday: sData?.isHoliday || !!settingsHoliday,
-        holidayName: settingsHoliday?.name || sData?.holidayName || '',
-        pstThurSunShift: sData?.pstThurSunShift || '',
-        istMonFriShift: sData?.istMonFriShift || '',
+        isHoliday: !!settingsHoliday,
+        holidayName: settingsHoliday?.name || '',
+        estManagers: sData?.estManagers || [],
+        pstManagers: sData?.pstManagers || [],
+        pstWedSatManagers: sData?.pstWedSatManagers || [],
+        pstSunWedManagers: sData?.pstSunWedManagers || [],
         peopleOff: Array.from(new Set(peopleOff)), // unique
       };
     });
@@ -168,10 +167,16 @@ export default function ScheduleModal() {
                   <div className="w-2.5 h-2.5 rounded-full bg-primary" /> Today
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CalendarIcon className="w-3.5 h-3.5 text-indigo-500" /> PST Extended / Weekend
+                  <CalendarIcon className="w-3.5 h-3.5 text-sky-500" /> EST
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Moon className="w-3.5 h-3.5 text-violet-500" /> After Hours
+                  <CalendarIcon className="w-3.5 h-3.5 text-indigo-500" /> PST
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CalendarIcon className="w-3.5 h-3.5 text-violet-500" /> PST (Wed-Sat)
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CalendarIcon className="w-3.5 h-3.5 text-purple-500" /> PST (Sun-Wed)
                 </div>
                 <div className="flex items-center gap-1.5">
                   <UserX className="w-3.5 h-3.5 text-red-500" /> Away
@@ -221,8 +226,10 @@ export default function ScheduleModal() {
                       const hasAnomalies =
                         d.isHoliday ||
                         d.peopleOff.length > 0 ||
-                        d.pstThurSunShift ||
-                        d.istMonFriShift;
+                        d.estManagers.length > 0 ||
+                        d.pstManagers.length > 0 ||
+                        d.pstWedSatManagers.length > 0 ||
+                        d.pstSunWedManagers.length > 0;
 
                       return (
                         <Tooltip
@@ -265,30 +272,44 @@ export default function ScheduleModal() {
                                     </div>
                                   )}
 
-                                  {(d.pstThurSunShift || d.istMonFriShift) && (
+                                  {(d.estManagers.length > 0 || d.pstManagers.length > 0 || d.pstWedSatManagers.length > 0 || d.pstSunWedManagers.length > 0) && (
                                     <div className="flex flex-col gap-1.5">
                                       <span className="text-[10px] tracking-wider font-bold text-slate-400">
                                         Shifts
                                       </span>
-                                      {d.pstThurSunShift && (
-                                        <div className="px-2 py-1.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-semibold flex items-center gap-2">
-                                          <CalendarIcon className="w-3.5 h-3.5 text-indigo-400" />
+                                      {d.estManagers.length > 0 && (
+                                        <div className="px-2 py-1.5 bg-sky-50 text-sky-700 rounded-md text-xs font-semibold flex items-center gap-2">
+                                          <CalendarIcon className="w-3.5 h-3.5 text-sky-400" />
                                           <span>
-                                            <span className="text-indigo-400 mr-1">
-                                              {isWeekend ? 'Weekend:' : 'PST Extended:'}
-                                            </span>
-                                            {d.pstThurSunShift}
+                                            <span className="text-sky-400 mr-1">9:00 AM - 5:00 PM EST:</span>
+                                            {d.estManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
                                           </span>
                                         </div>
                                       )}
-                                      {d.istMonFriShift && (
-                                        <div className="px-2 py-1.5 bg-violet-50 text-violet-700 rounded-md text-xs font-semibold flex items-center gap-2">
-                                          <Moon className="w-3.5 h-3.5 text-violet-400" />
+                                      {d.pstManagers.length > 0 && (
+                                        <div className="px-2 py-1.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-semibold flex items-center gap-2">
+                                          <CalendarIcon className="w-3.5 h-3.5 text-indigo-400" />
                                           <span>
-                                            <span className="text-violet-400 mr-1">
-                                              After Hours:
-                                            </span>
-                                            {d.istMonFriShift}
+                                            <span className="text-indigo-400 mr-1">9:00 AM - 5:00 PM PST:</span>
+                                            {d.pstManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
+                                          </span>
+                                        </div>
+                                      )}
+                                      {(d.pstWedSatManagers.length > 0 || d.pstSunWedManagers.length > 0) && (
+                                        <div className="px-2 py-1.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-semibold flex items-center gap-2">
+                                          <CalendarIcon className="w-3.5 h-3.5 text-indigo-400" />
+                                          <span>
+                                            <span className="text-indigo-400 mr-1">8:00 AM - 6:00 PM PST:</span>
+                                            {Array.from(new Set([...d.pstWedSatManagers, ...d.pstSunWedManagers])).map((m: any) => getUserName(m.uid || m)).join(', ')}
+                                          </span>
+                                        </div>
+                                      )}
+                                      {d.pstSunWedManagers.length > 0 && (
+                                        <div className="px-2 py-1.5 bg-purple-50 text-purple-700 rounded-md text-xs font-semibold flex items-center gap-2">
+                                          <CalendarIcon className="w-3.5 h-3.5 text-purple-400" />
+                                          <span>
+                                            <span className="text-purple-400 mr-1">PST (Sun-Wed):</span>
+                                            {d.pstSunWedManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
                                           </span>
                                         </div>
                                       )}
@@ -350,22 +371,40 @@ export default function ScheduleModal() {
                                   <span>{d.holidayName || 'Holiday'}</span>
                                 </TruncatedText>
                               )}
-                              {d.pstThurSunShift && (
+                              {d.estManagers.length > 0 && (
                                 <TruncatedText
-                                  text={d.pstThurSunShift.split(' ')[0]}
+                                  text={d.estManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
+                                  containerClassName="w-full text-[10px] font-bold text-sky-700 bg-sky-50/80 border border-sky-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
+                                >
+                                  <CalendarIcon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
+                                  <span>{d.estManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}</span>
+                                </TruncatedText>
+                              )}
+                              {d.pstManagers.length > 0 && (
+                                <TruncatedText
+                                  text={d.pstManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
                                   containerClassName="w-full text-[10px] font-bold text-indigo-700 bg-indigo-50/80 border border-indigo-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
                                 >
                                   <CalendarIcon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
-                                  <span>{d.pstThurSunShift.split(' ')[0]}</span>
+                                  <span>{d.pstManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}</span>
                                 </TruncatedText>
                               )}
-                              {d.istMonFriShift && (
+                              {d.pstWedSatManagers.length > 0 && (
                                 <TruncatedText
-                                  text={d.istMonFriShift.split(' ')[0]}
+                                  text={d.pstWedSatManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
                                   containerClassName="w-full text-[9px] font-bold text-violet-700 bg-violet-50/80 border border-violet-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
                                 >
-                                  <Moon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
-                                  <span>{d.istMonFriShift.split(' ')[0]}</span>
+                                  <CalendarIcon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
+                                  <span>{d.pstWedSatManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}</span>
+                                </TruncatedText>
+                              )}
+                              {d.pstSunWedManagers.length > 0 && (
+                                <TruncatedText
+                                  text={d.pstSunWedManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}
+                                  containerClassName="w-full text-[9px] font-bold text-purple-700 bg-purple-50/80 border border-purple-100/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1"
+                                >
+                                  <CalendarIcon className="w-2.5 h-2.5 shrink-0 opacity-70" />{' '}
+                                  <span>{d.pstSunWedManagers.map((m: any) => getUserName(m.uid || m)).join(', ')}</span>
                                 </TruncatedText>
                               )}
                             </div>
