@@ -109,7 +109,7 @@ export default function DeliverablesGrid({
       .map((section) => ({
         ...section,
         items: section.items.filter((item) => {
-          const hasData = project?.deliverables?.[item.id] || getValues(`deliverables.${item.id}`);
+          const hasData = project?.deliverables?.[item.id] || getValues(item.id);
           const isArchived = item.isArchived || section.isArchived;
           if (isArchived && !hasData && !readOnly) return false;
           return true;

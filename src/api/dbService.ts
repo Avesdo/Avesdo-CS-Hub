@@ -34,6 +34,23 @@ export type ToastConfig = {
   errorMsg?: string;
 };
 
+export const sanitizeForFirestore = (obj: any): any => {
+  if (obj === undefined) return undefined;
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (obj instanceof Date) return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeForFirestore).filter((v) => v !== undefined);
+  }
+  const clean: Record<string, any> = {};
+  for (const [key, val] of Object.entries(obj)) {
+    const cleanedVal = sanitizeForFirestore(val);
+    if (cleanedVal !== undefined) {
+      clean[key] = cleanedVal;
+    }
+  }
+  return clean;
+};
+
 export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
   const state: AppState = {
     settings: null,
@@ -564,7 +581,7 @@ export async function updateProjectRecord(
       });
     }
     // -------------------------
-    await setDoc(doc(db, 'projects', finalProject.id), finalProject);
+    await setDoc(doc(db, 'projects', finalProject.id), sanitizeForFirestore(finalProject));
     if (!silent) toast.success(successMsg);
     return { success: true, id: finalProject.id };
   } catch (err: any) {

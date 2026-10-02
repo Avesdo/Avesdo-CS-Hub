@@ -360,7 +360,7 @@ export default function DeliverablesDetailPane({
                 disabled={readOnly || isHidden}
                 content={clientNoteVal}
                 onChange={(val) => {
-                  if (itemData.note !== undefined) handleChange('note', undefined);
+                  if (itemData.note !== undefined) handleChange('note', '');
                   handleChange('clientNote', val);
                 }}
                 placeholder="Enter any notes, questions, or context here..."

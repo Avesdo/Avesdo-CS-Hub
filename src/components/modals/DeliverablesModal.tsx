@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, FileText, Copy, Check, ExternalLink } from 'lucide-react';
+import { X, Save, FileText, Copy, Check, ExternalLink, Loader2 } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import DeliverablesGrid from '../ui/DeliverablesGrid';
 import { updateProjectRecord } from '../../api/dbService';
 import { exportFormToCSV } from '../../utils/exportUtils';
 import { useForm, FormProvider, useWatch, useFormContext } from 'react-hook-form';
+import { useAppStore } from '../../store/useAppStore';
+import { toast } from '../../utils/toast';
 
 interface DeliverablesModalProps {
   project: any;
@@ -67,12 +69,25 @@ const HeaderProgress = ({ template, project }: { template: any; project: any }) 
 };
 
 export default function DeliverablesModal({ project, template, onClose }: DeliverablesModalProps) {
+  const settings = useAppStore((state) => state.settings);
+
+  const activeTemplate =
+    template?.sections && template.sections.length > 0
+      ? template
+      : settings?.templates?.deliverables ||
+        Object.values(settings?.templates || {}).find(
+          (t: any) => t?.name === 'Deliverables Checklist' || t?.type === 'checklist'
+        ) ||
+        template;
+
   const methods = useForm({
     defaultValues: project?.deliverables || {},
   });
 
   const [isSaving, setIsSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedState = useRef<string>(JSON.stringify(project?.deliverables || {}));
 
   // Auto-generate a draft on first open so the state changes to "View"
   useEffect(() => {
@@ -96,32 +111,42 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const lastSavedState = useRef<string>(JSON.stringify(project?.deliverables || {}));
-
-  const handleSave = async (silent = false, currentValues: any) => {
+  const handleSave = async (silent = false, currentValues?: any) => {
     setIsSaving(true);
+    const valuesToSave = currentValues || methods.getValues();
+    const toastOptions = silent
+      ? { silent: true }
+      : {
+          successMsg: 'Deliverables saved successfully!',
+          errorMsg: 'Failed to save deliverables.',
+        };
+
     try {
+      const freshProject =
+        useAppStore.getState().projects.find((p: any) => p.id === project.id) || project;
       const now = new Date().toISOString();
       let total = 0;
       let completed = 0;
-      const hiddenItems = currentValues._hiddenItems || [];
-      const activeFeatures = project?.features || [];
-      (template?.sections || []).forEach((sec: any) => {
+      const hiddenItems = valuesToSave._hiddenItems || [];
+      const activeFeatures = freshProject?.features || [];
+
+      (activeTemplate?.sections || []).forEach((sec: any) => {
         if (
           !sec.dependsOnFeature ||
           sec.dependsOnFeature.length === 0 ||
           sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
         ) {
-          sec.items.forEach((item: any) => {
+          (sec.items || []).forEach((item: any) => {
             if (hiddenItems.includes(item.id)) return;
-            const st = currentValues[item.id]?.status;
+            const st = valuesToSave[item.id]?.status;
             if (st === 'N/A') return;
             total++;
             if (['Completed', 'Setup Completed', 'Draft Complete'].includes(st)) completed++;
           });
         }
       });
-      const customs = currentValues._customItems || [];
+
+      const customs = valuesToSave._customItems || [];
       customs.forEach((c: any) => {
         if (c.status === 'N/A') return;
         total++;
@@ -129,58 +154,72 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       });
 
       const isComplete = total > 0 && completed === total;
-      const wasComplete = project?.deliverables?.status === 'Completed';
+      const wasComplete = freshProject?.deliverables?.status === 'Completed';
 
-      const updatedDeliverables = {
-        ...currentValues,
-        submittedAt: isComplete
-          ? wasComplete
-            ? currentValues.submittedAt || now
-            : now
-          : undefined,
+      const updatedDeliverables: any = {
+        ...valuesToSave,
+        submittedAt: isComplete ? (wasComplete ? valuesToSave.submittedAt || now : now) : null,
         updatedAt: now,
         status: isComplete ? 'Completed' : 'In Progress',
       };
 
-      const toastOptions = silent
-        ? { silent: true }
-        : {
-            successMsg: 'Deliverables saved successfully!',
-            errorMsg: 'Failed to save deliverables.',
-          };
-
-      await updateProjectRecord({ ...project, deliverables: updatedDeliverables }, toastOptions);
+      await updateProjectRecord(
+        { ...freshProject, deliverables: updatedDeliverables },
+        toastOptions
+      );
       lastSavedState.current = JSON.stringify(updatedDeliverables);
-      if (!silent) onClose();
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error('Failed to save deliverables:', e);
+      if (!silent) {
+        toast.error(toastOptions.errorMsg || 'Failed to save deliverables.');
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleSaveRef = useRef(handleSave);
+  handleSaveRef.current = handleSave;
+
   // Auto-save effect using RHF subscription
   useEffect(() => {
-    const subscription = methods.watch((value) => {
-      const timer = setTimeout(() => {
-        const currentStateString = JSON.stringify(value);
+    const subscription = methods.watch(() => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        const currentVal = methods.getValues();
+        const currentStateString = JSON.stringify(currentVal);
         if (currentStateString !== lastSavedState.current) {
-          handleSave(true, value);
+          handleSaveRef.current(true, currentVal);
         }
-      }, 1500);
-      return () => clearTimeout(timer);
+      }, 1000);
     });
-    return () => subscription.unsubscribe();
-  }, [methods.watch, project, template, onClose]);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      subscription.unsubscribe();
+    };
+  }, [methods.watch]);
+
+  const handleClose = async () => {
+    const currentVal = methods.getValues();
+    if (JSON.stringify(currentVal) !== lastSavedState.current) {
+      await handleSave(true, currentVal);
+    }
+    onClose();
+  };
 
   return (
-    <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
+    <Dialog.Root open={true} onOpenChange={(open) => !open && handleClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal-overlay)] bg-black/40 backdrop-blur-sm transition-opacity" />
         <Dialog.Content
           onEscapeKeyDown={(e) => {
             e.preventDefault();
-            onClose();
+            handleClose();
           }}
           onInteractOutside={(e) => {
             if (e.detail.originalEvent.type === 'focusin') {
@@ -188,7 +227,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
               return;
             }
             e.preventDefault();
-            onClose();
+            handleClose();
           }}
           className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[var(--z-modal)] w-full max-w-6xl h-[95vh] outline-none flex flex-col"
         >
@@ -258,9 +297,10 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                       </a>
                     )}
                     <button
+                      type="button"
                       onClick={() =>
                         exportFormToCSV('Deliverables Checklist', project, methods.getValues(), {
-                          ...template,
+                          ...activeTemplate,
                           type: 'checklist',
                         })
                       }
@@ -270,6 +310,7 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                       Download CSV
                     </button>
                     <button
+                      type="button"
                       onClick={handleCopyLink}
                       className="group inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition-all duration-300 px-4 py-2 h-9 focus:ring-2 focus:ring-primary/20 focus:outline-none bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 hover:-translate-y-0.5"
                     >
@@ -281,7 +322,21 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                       {copied ? 'Copied!' : 'Copy Client Link'}
                     </button>
                     <button
-                      onClick={onClose}
+                      type="button"
+                      disabled={isSaving}
+                      onClick={() => handleSave(false, methods.getValues())}
+                      className="bg-primary hover:bg-primary/90 text-white text-[13px] font-semibold px-4 py-2 h-9 rounded-lg shadow-sm flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {isSaving ? (
+                        <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4 shrink-0" />
+                      )}
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClose}
                       className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
                     >
                       <X className="w-5 h-5" />
@@ -289,12 +344,12 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
                   </div>
                 </div>
 
-                <HeaderProgress template={template} project={project} />
+                <HeaderProgress template={activeTemplate} project={project} />
               </div>
 
               {/* Content Area */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <DeliverablesGrid template={template} project={project} readOnly={false} />
+                <DeliverablesGrid template={activeTemplate} project={project} readOnly={false} />
               </div>
             </div>
           </FormProvider>

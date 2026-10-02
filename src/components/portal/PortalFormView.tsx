@@ -270,20 +270,28 @@ function DeliverablesPortalView({ project, template, initialData, onSave, isSubm
     defaultValues: initialData || {},
   });
 
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const lastSavedState = React.useRef<string>(JSON.stringify(initialData || {}));
 
   React.useEffect(() => {
     const subscription = methods.watch((value) => {
-      const timer = setTimeout(() => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
         const currentString = JSON.stringify(value);
         if (currentString !== lastSavedState.current) {
           onSave(value, true); // true for autoSave
           lastSavedState.current = currentString;
         }
-      }, 1500);
-      return () => clearTimeout(timer);
+      }, 1000);
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      subscription.unsubscribe();
+    };
   }, [methods.watch, onSave]);
 
   return (

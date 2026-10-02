@@ -29,6 +29,7 @@ if (typeof window !== 'undefined' && import.meta.env.VITE_FIREBASE_APP_CHECK_SIT
 
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  ignoreUndefinedProperties: true,
 });
 
 export const auth = getAuth(app);

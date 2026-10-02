@@ -291,7 +291,7 @@ export default function HelpdeskDashboard() {
               { label: 'Last Month', value: 'lastMonth' },
               { label: 'This Quarter', value: 'thisQuarter' },
               { label: 'Last Quarter', value: 'lastQuarter' },
-              { label: 'Year to date', value: 'thisYear' },
+              { label: 'Year to Date', value: 'thisYear' },
               { label: 'All Time', value: 'all' },
               { label: 'Custom Range', value: 'custom' },
             ]}

@@ -133,7 +133,7 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
         type = 'knowledge_base';
       } else {
         toast.error(
-          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', 'nps', 'happyfox', or 'knowledge_base'.`
+          `Could not determine report type for ${file.name}. Please ensure filename contains 'satisfaction', 'sessions', 'views', 'nps', or 'happyfox'.`
         );
         return;
       }
@@ -1177,43 +1177,96 @@ export const DataUploader: React.FC<Props> = ({ onCompileStateChange }) => {
               <div className="relative z-20 pointer-events-auto">
                 <Tooltip
                   content={
-                    <div className="flex flex-col gap-2 p-1 text-left min-w-[280px]">
-                      <p className="font-semibold text-slate-800 border-b border-slate-200 pb-1.5">
-                        Filename Mapping & Recommended Schedule
-                      </p>
-                      <ul className="list-disc pl-4 space-y-1.5 text-[12px] text-slate-600">
-                        <li>
-                          <strong>Support Tickets</strong> ('happyfox') -{' '}
-                          <span className="text-slate-900 font-medium">Weekly</span>
-                        </li>
-                        <li>
-                          <strong>Support CSAT</strong> ('satisfaction') -{' '}
-                          <span className="text-slate-900 font-medium">Monthly</span>
-                        </li>
-                        <li>
-                          <strong>Sessions</strong> ('sessions') -{' '}
-                          <span className="text-slate-900 font-medium">Monthly</span>
-                        </li>
-                        <li>
-                          <strong>Page Views</strong> ('views') -{' '}
-                          <span className="text-slate-900 font-medium">Monthly</span>
-                        </li>
-                        <li>
-                          <strong>Platform NPS</strong> ('nps') -{' '}
-                          <span className="text-slate-900 font-medium">Monthly</span>
-                        </li>
-                        <li>
-                          <strong>Knowledge Base</strong> ('kb') -{' '}
-                          <span className="text-slate-900 font-medium">Ad-hoc</span>
-                        </li>
-                      </ul>
+                    <div className="flex flex-col gap-2.5 p-1 text-left min-w-[300px] max-w-[360px] whitespace-normal">
+                      <div className="border-b border-slate-200 pb-2">
+                        <p className="font-bold text-slate-900 text-xs">
+                          Filename Mapping & Upload Guidelines
+                        </p>
+                        <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                          Recommended upload frequency and export date ranges.
+                        </p>
+                      </div>
+
+                      <div className="space-y-2 text-[11px] text-slate-600">
+                        <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-800">
+                              Support CSAT{' '}
+                              <span className="text-slate-400 font-normal font-mono text-[10px]">
+                                ('satisfaction')
+                              </span>
+                            </span>
+                            <span className="text-amber-700 bg-amber-50 border border-amber-200/60 text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                              1 Month Only
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
+                            Monthly upload. Export exactly 1 month; uses the Report Date picker to
+                            assign all responses to that single month's score.
+                          </p>
+                        </div>
+
+                        <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-800">
+                              Sessions & Page Views{' '}
+                              <span className="text-slate-400 font-normal font-mono text-[10px]">
+                                ('sessions', 'views')
+                              </span>
+                            </span>
+                            <span className="text-blue-700 bg-blue-50 border border-blue-200/60 text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                              Last 3+ Months
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
+                            Monthly upload. Export at least 3 months (or All-Time) so the system can
+                            calculate 90-day rolling averages for active users and feature usage.
+                          </p>
+                        </div>
+
+                        <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-800">
+                              Platform NPS{' '}
+                              <span className="text-slate-400 font-normal font-mono text-[10px]">
+                                ('nps')
+                              </span>
+                            </span>
+                            <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                              All-Time or Monthly
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
+                            Monthly upload. Auto-dated by individual response timestamp. Safe to
+                            export all-time history in a single file.
+                          </p>
+                        </div>
+
+                        <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-800">
+                              Support Tickets{' '}
+                              <span className="text-slate-400 font-normal font-mono text-[10px]">
+                                ('happyfox')
+                              </span>
+                            </span>
+                            <span className="text-purple-700 bg-purple-50 border border-purple-200/60 text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                              Weekly / All-Time
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[10.5px] leading-relaxed">
+                            Weekly upload. Export All-Time if running "Perform Full Sync", or recent
+                            weeks for incremental updates.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   }
-                  position="bottom"
+                  position="right"
                 >
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 bg-white hover:bg-slate-50 transition-colors px-3 py-1.5 rounded-full border border-slate-200 shadow-sm cursor-help">
-                    <Info className="w-3.5 h-3.5" />
-                    <span>Formatting guidelines</span>
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-800 transition-colors px-3.5 py-1.5 rounded-full border border-slate-200 shadow-sm cursor-help">
+                    <Info className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Upload guidelines & schedule</span>
                   </div>
                 </Tooltip>
               </div>
