@@ -1,122 +1,198 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { saveSettings } from '../../api/dbService';
 import { toast } from '../../utils/toast';
 import { DonutChart } from '../ui/DonutChart';
 import { DualThumbSlider } from '../ui/DualThumbSlider';
-import { Tooltip } from '../ui/Tooltip';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { usePermissions } from '../../hooks/usePermissions';
+import { Settings } from '../../types';
+import {
+  ScoringWeights,
+  ScoringThresholds,
+  DEFAULT_WEIGHTS,
+  DEFAULT_THRESHOLDS,
+  PILLARS,
+  SLIDER_STYLES,
+  TotalAllocationBadge,
+  PillarRow,
+} from './ScoringSettingsHelpers';
 
 export function ScoringSettingsTab() {
   const settings = useAppStore((state) => state.settings);
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('edit_health_scoring');
 
-  const [projectWeights, setProjectWeights] = useState({
-    opActivity: 35,
-    featAdoption: 25,
-    userVol: 15,
-    financial: 15,
-    csat: 10,
-  });
-  const [thresholds, setThresholds] = useState({ healthy: 80, warning: 50 });
+  const savedWeights: ScoringWeights = useMemo(
+    () => ({
+      opActivity: settings?.scoring?.weights?.opActivity ?? DEFAULT_WEIGHTS.opActivity,
+      featAdoption: settings?.scoring?.weights?.featAdoption ?? DEFAULT_WEIGHTS.featAdoption,
+      userVol: settings?.scoring?.weights?.userVol ?? DEFAULT_WEIGHTS.userVol,
+      financial: settings?.scoring?.weights?.financial ?? DEFAULT_WEIGHTS.financial,
+      csat: settings?.scoring?.weights?.csat ?? DEFAULT_WEIGHTS.csat,
+    }),
+    [
+      settings?.scoring?.weights?.opActivity,
+      settings?.scoring?.weights?.featAdoption,
+      settings?.scoring?.weights?.userVol,
+      settings?.scoring?.weights?.financial,
+      settings?.scoring?.weights?.csat,
+    ]
+  );
+
+  const savedThresholds: ScoringThresholds = useMemo(
+    () => ({
+      healthy: settings?.scoring?.thresholds?.healthy ?? DEFAULT_THRESHOLDS.healthy,
+      warning: settings?.scoring?.thresholds?.warning ?? DEFAULT_THRESHOLDS.warning,
+    }),
+    [settings?.scoring?.thresholds?.healthy, settings?.scoring?.thresholds?.warning]
+  );
+
+  const [projectWeights, setProjectWeights] = useState<ScoringWeights>(savedWeights);
+  const [thresholds, setThresholds] = useState<ScoringThresholds>(savedThresholds);
+  const [isSavingWeights, setIsSavingWeights] = useState(false);
+  const [isSavingThresholds, setIsSavingThresholds] = useState(false);
+
+  const isInitialized = useRef(false);
+
+  const isDirtyWeights = JSON.stringify(projectWeights) !== JSON.stringify(savedWeights);
+  const isDirtyThresholds =
+    thresholds.warning !== savedThresholds.warning ||
+    thresholds.healthy !== savedThresholds.healthy;
 
   useEffect(() => {
-    if (settings?.scoring) {
-      setProjectWeights(
-        settings.scoring.weights || {
-          opActivity: 35,
-          featAdoption: 25,
-          userVol: 15,
-          financial: 15,
-          csat: 10,
-        }
-      );
-      setThresholds(settings.scoring.thresholds || { healthy: 80, warning: 50 });
+    if (!settings?.scoring) return;
+    if (!isInitialized.current) {
+      setProjectWeights(savedWeights);
+      setThresholds(savedThresholds);
+      isInitialized.current = true;
     }
-  }, [settings]);
+  }, [settings?.scoring, savedWeights, savedThresholds]);
+
+  useEffect(() => {
+    if (!isInitialized.current) return;
+    if (!isDirtyWeights) {
+      setProjectWeights((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(savedWeights)) return prev;
+        return savedWeights;
+      });
+    }
+  }, [savedWeights, isDirtyWeights]);
+
+  useEffect(() => {
+    if (!isInitialized.current) return;
+    if (!isDirtyThresholds) {
+      setThresholds((prev) => {
+        if (prev.warning === savedThresholds.warning && prev.healthy === savedThresholds.healthy) {
+          return prev;
+        }
+        return savedThresholds;
+      });
+    }
+  }, [savedThresholds, isDirtyThresholds]);
 
   if (!settings) return null;
 
-  const totalProjectWeights = Object.values(projectWeights).reduce((a, b) => a + Number(b), 0);
+  const totalProjectWeights =
+    (Number(projectWeights.opActivity) || 0) +
+    (Number(projectWeights.featAdoption) || 0) +
+    (Number(projectWeights.userVol) || 0) +
+    (Number(projectWeights.financial) || 0) +
+    (Number(projectWeights.csat) || 0);
 
-  const handleSaveScoring = async () => {
+  const handleSaveWeights = async () => {
+    if (!settings || !canEdit) return;
     if (totalProjectWeights !== 100) {
       toast.error('Weights must equal exactly 100%');
       return;
     }
+
+    setIsSavingWeights(true);
+    const store = useAppStore.getState();
+    const prevSettings = store.settings;
+
+    const newSettings: Settings = {
+      ...settings,
+      scoring: {
+        ...settings.scoring,
+        weights: projectWeights,
+        thresholds: settings.scoring?.thresholds || thresholds,
+      },
+    };
+
+    store.setAppState({ ...store, settings: newSettings });
+
+    try {
+      await toast.promise(saveSettings(newSettings, { silent: true }), {
+        loading: 'Saving Weights...',
+        success: 'Weights Saved Successfully!',
+        error: 'Failed to save Weights',
+      });
+    } catch {
+      if (prevSettings) {
+        useAppStore.getState().setAppState({
+          ...useAppStore.getState(),
+          settings: prevSettings,
+        });
+      }
+    } finally {
+      setIsSavingWeights(false);
+    }
+  };
+
+  const handleSaveThresholds = async () => {
+    if (!settings || !canEdit) return;
     if (thresholds.warning >= thresholds.healthy) {
       toast.error('Warning threshold must be strictly less than Healthy threshold');
       return;
     }
 
-    const newSettings = {
+    setIsSavingThresholds(true);
+    const store = useAppStore.getState();
+    const prevSettings = store.settings;
+
+    const newSettings: Settings = {
       ...settings,
       scoring: {
-        weights: projectWeights,
+        ...settings.scoring,
+        weights: settings.scoring?.weights || projectWeights,
         thresholds: thresholds,
       },
     };
-    toast.promise(saveSettings(newSettings), {
-      loading: 'Saving Scoring Rules...',
-      success: 'Scoring Rules Saved!',
-      error: 'Failed to save Scoring Rules',
-    });
+
+    store.setAppState({ ...store, settings: newSettings });
+
+    try {
+      await toast.promise(saveSettings(newSettings, { silent: true }), {
+        loading: 'Saving Thresholds...',
+        success: 'Thresholds Saved Successfully!',
+        error: 'Failed to save Thresholds',
+      });
+    } catch {
+      if (prevSettings) {
+        useAppStore.getState().setAppState({
+          ...useAppStore.getState(),
+          settings: prevSettings,
+        });
+      }
+    } finally {
+      setIsSavingThresholds(false);
+    }
   };
+
+  const cannotSaveWeights =
+    !isDirtyWeights || totalProjectWeights !== 100 || isSavingWeights || !canEdit;
+  const cannotSaveThresholds =
+    !isDirtyThresholds ||
+    thresholds.warning >= thresholds.healthy ||
+    isSavingThresholds ||
+    !canEdit;
 
   return (
     <div className="max-w-4xl animate-in fade-in duration-300 space-y-8">
       {/* Unified Health Pillar Weights */}
       <div className="bg-white border border-border rounded-xl shadow-sm p-6">
-        <style>{`
-          .premium-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--slider-color);
-            cursor: grab;
-            transition: transform 0.15s;
-            margin-top: -4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          }
-          .premium-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-          }
-          .premium-slider::-webkit-slider-thumb:active {
-            cursor: grabbing;
-            transform: scale(0.9);
-          }
-          .premium-slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--slider-color);
-            cursor: grab;
-            transition: transform 0.15s;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          }
-          .premium-slider::-moz-range-thumb:hover {
-            transform: scale(1.2);
-          }
-          .premium-slider::-moz-range-thumb:active {
-            cursor: grabbing;
-            transform: scale(0.9);
-          }
-          .premium-slider::-webkit-slider-runnable-track {
-            border-radius: 8px;
-            height: 8px;
-            background: #f1f5f9;
-          }
-          .premium-slider::-moz-range-track {
-            border-radius: 8px;
-            height: 8px;
-            background: #f1f5f9;
-          }
-        `}</style>
+        <style>{SLIDER_STYLES}</style>
         <div className="mb-6">
           <h3 className="text-base font-semibold text-slate-800 mb-1 flex items-center gap-2">
             Health Score Weights
@@ -128,72 +204,14 @@ export function ScoringSettingsTab() {
         <div className="flex flex-col lg:flex-row gap-12 items-center">
           {/* Left: Sliders */}
           <div className="flex-1 w-full space-y-5">
-            {[
-              {
-                label: 'Platform Engagement',
-                key: 'opActivity',
-                val: projectWeights.opActivity,
-                color: '#0ea5e9',
-                tooltip: 'Measures engagement based on the pages accessed and total page views.',
-              },
-              {
-                label: 'Feature Adoption',
-                key: 'featAdoption',
-                val: projectWeights.featAdoption,
-                color: '#0284c7',
-                tooltip:
-                  'Measures the breadth of platform utilization based on enabled features versus total available features.',
-              },
-              {
-                label: 'Financial Standing',
-                key: 'financial',
-                val: projectWeights.financial || 0,
-                color: '#3b82f6',
-                tooltip: 'Measures financial standing based on current invoice payment status.',
-              },
-              {
-                label: 'Active Users',
-                key: 'userVol',
-                val: projectWeights.userVol,
-                color: '#6366f1',
-                tooltip:
-                  'Measures user activity based on active users and their average login frequency.',
-              },
-              {
-                label: 'Client Sentiment',
-                key: 'csat',
-                val: projectWeights.csat,
-                color: '#8b5cf6',
-                tooltip:
-                  'Measures client sentiment based on onboarding satisfaction, support feedback, and NPS.',
-              },
-            ].map((item) => (
-              <div key={item.key} className="flex items-center gap-4">
-                <Tooltip content={item.tooltip} position="top">
-                  <label className="text-sm font-semibold text-slate-600 w-44 flex items-center justify-between gap-1.5 shrink-0 cursor-help pr-2 border-r border-slate-100">
-                    {item.label}
-                    <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
-                  </label>
-                </Tooltip>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  disabled={!canEdit}
-                  className="flex-1 appearance-none bg-transparent cursor-pointer premium-slider disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ '--slider-color': item.color } as React.CSSProperties}
-                  value={item.val}
-                  onChange={(e) =>
-                    setProjectWeights({
-                      ...projectWeights,
-                      [item.key]: Number(e.target.value) || 0,
-                    })
-                  }
-                />
-                <span className="text-sm font-bold text-slate-700 w-12 text-right">
-                  {item.val}%
-                </span>
-              </div>
+            {PILLARS.map((p) => (
+              <PillarRow
+                key={p.key}
+                pillar={p}
+                value={projectWeights[p.key] ?? 0}
+                canEdit={canEdit}
+                onChange={(val) => setProjectWeights((prev) => ({ ...prev, [p.key]: val }))}
+              />
             ))}
           </div>
 
@@ -201,45 +219,43 @@ export function ScoringSettingsTab() {
           <div className="w-full lg:w-64 h-64 shrink-0 flex flex-col items-center justify-center">
             <DonutChart
               total={totalProjectWeights}
-              data={[
-                {
-                  name: 'Platform Engagement',
-                  value: projectWeights.opActivity,
-                  color: '#0ea5e9',
-                },
-                {
-                  name: 'Feature Adoption',
-                  value: projectWeights.featAdoption,
-                  color: '#0284c7',
-                },
-                {
-                  name: 'Financial Standing',
-                  value: projectWeights.financial || 0,
-                  color: '#3b82f6',
-                },
-                { name: 'Active Users', value: projectWeights.userVol, color: '#6366f1' },
-                {
-                  name: 'Client Sentiment',
-                  value: projectWeights.csat,
-                  color: '#8b5cf6',
-                },
-              ].filter((d) => d.value > 0)}
+              data={PILLARS.map((p) => ({
+                name: p.label,
+                value: projectWeights[p.key] ?? 0,
+                color: p.color,
+              })).filter((d) => d.value > 0)}
             />
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end items-center">
-          {canEdit && (
-            <div className="flex gap-4 items-center">
+        <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
+            <TotalAllocationBadge total={totalProjectWeights} />
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            {canEdit && isDirtyWeights && (
               <button
-                onClick={handleSaveScoring}
-                disabled={totalProjectWeights !== 100}
+                type="button"
+                onClick={() => setProjectWeights(savedWeights)}
+                disabled={isSavingWeights}
+                className="px-3.5 h-9 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 disabled:opacity-50"
+              >
+                Discard Changes
+              </button>
+            )}
+            {canEdit && (
+              <button
+                type="button"
+                onClick={handleSaveWeights}
+                disabled={cannotSaveWeights}
                 className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save Weights
+                {isSavingWeights && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSavingWeights ? 'Saving...' : 'Save Weights'}
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -281,15 +297,39 @@ export function ScoringSettingsTab() {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end items-center">
-          {canEdit && (
-            <button
-              onClick={handleSaveScoring}
-              className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95"
-            >
-              Save Thresholds
-            </button>
-          )}
+        <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
+            {thresholds.warning >= thresholds.healthy && (
+              <span className="flex items-center gap-1.5 text-rose-600 font-semibold">
+                <AlertCircle className="w-4 h-4 text-rose-600" />
+                Warning threshold must be strictly less than Healthy threshold
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            {canEdit && isDirtyThresholds && (
+              <button
+                type="button"
+                onClick={() => setThresholds(savedThresholds)}
+                disabled={isSavingThresholds}
+                className="px-3.5 h-9 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 disabled:opacity-50"
+              >
+                Discard Changes
+              </button>
+            )}
+            {canEdit && (
+              <button
+                type="button"
+                onClick={handleSaveThresholds}
+                disabled={cannotSaveThresholds}
+                className="bg-primary text-white px-5 h-9 rounded text-sm font-bold hover:bg-primary/90 flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSavingThresholds && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSavingThresholds ? 'Saving...' : 'Save Thresholds'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
