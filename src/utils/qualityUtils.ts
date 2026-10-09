@@ -1,4 +1,4 @@
-import { startOfQuarter, endOfQuarter, subQuarters, startOfDay } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { useAppStore } from '../store/useAppStore';
 
 export interface OnboardingCsatMetric {
@@ -63,77 +63,282 @@ export interface QualityMetricsData {
   };
 }
 
-export const extractCsatMetrics = (csatData: any) => {
-  let validScore = 0;
-  let comments = '';
-  const scoreRaw = csatData.score;
+const METADATA_KEYS = new Set([
+  'id',
+  'submittedat',
+  'updatedat',
+  'submittedby',
+  'projectid',
+  'status',
+  'createdat',
+  'score',
+]);
 
-  if (scoreRaw !== undefined && scoreRaw !== null && scoreRaw !== '') {
-    const parsed = Number(scoreRaw);
-    if (!isNaN(parsed)) {
-      validScore = parsed <= 5 ? (parsed / 5) * 100 : parsed;
-    }
-  } else {
-    // Generic dynamic extraction: scan all values
-    let sum = 0;
-    let count = 0;
+const UNANSWERED_VALUES = new Set(['unanswered', 'n/a', 'na', 'none', '-', 'null', 'undefined']);
 
-    Object.entries(csatData).forEach(([key, val]) => {
-      // Ignore metadata keys
-      if (['id', 'submittedAt', 'submittedBy', 'projectId', 'status'].includes(key)) return;
+const COMMENT_KEYWORDS = ['comment', 'feedback', 'recognize', 'note', 'additional'];
 
-      if (typeof val === 'number') {
-        sum += val;
-        count++;
-      } else if (typeof val === 'string') {
-        // Check if it's a rating like "5 - Excellent" or "4"
-        const numMatch = val.match(/^(\d+(\.\d+)?)/);
-        if (numMatch && numMatch[1]) {
-          const num = parseFloat(numMatch[1]);
-          // Only consider reasonable ratings (0 to 10)
-          if (!isNaN(num) && num <= 10) {
-            sum += num;
-            count++;
-          }
-        }
-      }
-    });
+export const parseLikertValue = (text: string): number | null => {
+  const lower = text.trim().toLowerCase();
+  if (!lower) return null;
 
-    validScore = count > 0 ? (sum / count / 5) * 100 : 0;
-    // Cap at 100 in case they used a 10-point scale but it was divided by 5
-    if (validScore > 100) validScore = 100;
+  if (UNANSWERED_VALUES.has(lower)) {
+    return null;
   }
 
-  // Explicit comments fields take precedence (case-insensitive key search)
-  let commentKey = Object.keys(csatData).find((key) => {
+  // 1. Neutral (50)
+  // Evaluated first to ensure "neither agree nor disagree" or "neither satisfied nor dissatisfied"
+  // does not match "agree" or "dissatisfied"
+  if (
+    lower.includes('neither') ||
+    lower.includes('neutral') ||
+    lower.includes('acceptable') ||
+    /\b(fair|average)\b/.test(lower)
+  ) {
+    return 50;
+  }
+
+  // 2. Extreme negative (0)
+  if (
+    lower.includes('extremely dissatisfied') ||
+    lower.includes('very dissatisfied') ||
+    lower.includes('strongly disagree') ||
+    lower.includes('terrible') ||
+    lower.includes('very poor') ||
+    lower === 'no'
+  ) {
+    return 0;
+  }
+
+  // 3. Mild negative (25)
+  if (
+    lower.includes('somewhat dissatisfied') ||
+    lower.includes('dissatisfied') ||
+    lower.includes('somewhat disagree') ||
+    lower.includes('disagree') ||
+    lower.includes('poor')
+  ) {
+    return 25;
+  }
+
+  // 4. Extreme positive (100)
+  if (
+    lower.includes('extremely satisfied') ||
+    lower.includes('very satisfied') ||
+    lower.includes('strongly agree') ||
+    lower.includes('excellent') ||
+    lower.includes('great') ||
+    lower === 'yes'
+  ) {
+    return 100;
+  }
+
+  // 5. Mild positive (75)
+  if (
+    lower.includes('somewhat satisfied') ||
+    lower.includes('satisfied') ||
+    lower.includes('somewhat agree') ||
+    lower.includes('agree') ||
+    /\bgood\b/.test(lower)
+  ) {
+    return 75;
+  }
+
+  return null;
+};
+
+export interface ExtractedCsatMetrics {
+  validScore: number;
+  comments: string;
+  count: number;
+}
+
+export const extractCsatMetrics = (csatData: any): ExtractedCsatMetrics => {
+  if (!csatData || typeof csatData !== 'object' || Array.isArray(csatData)) {
+    return { validScore: 0, comments: '', count: 0 };
+  }
+
+  const templateFieldsById: Record<string, any> = {};
+  try {
+    const templates = useAppStore.getState().settings?.templates;
+    const csatTemplate = templates?.onboardingCsat;
+    if (csatTemplate?.fields && Array.isArray(csatTemplate.fields)) {
+      csatTemplate.fields.forEach((f: any) => {
+        if (f.id) templateFieldsById[f.id] = f;
+      });
+    }
+  } catch {
+    // Ignore template lookup failures in test/isolated environments
+  }
+
+  const isCommentOrFreeText = (key: string): boolean => {
     const lowerKey = key.toLowerCase();
-    return lowerKey.includes('comment') || lowerKey.includes('feedback') || lowerKey === 'note';
+    if (COMMENT_KEYWORDS.some((kw) => lowerKey.includes(kw))) {
+      return true;
+    }
+    const templateField = templateFieldsById[key];
+    if (templateField?.label && typeof templateField.label === 'string') {
+      const lowerLabel = templateField.label.toLowerCase();
+      if (COMMENT_KEYWORDS.some((kw) => lowerLabel.includes(kw))) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  let totalScore = 0;
+  let count = 0;
+  const commentParts: string[] = [];
+
+  const addComment = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    if (UNANSWERED_VALUES.has(trimmed.toLowerCase())) return;
+    if (!commentParts.includes(trimmed)) {
+      commentParts.push(trimmed);
+    }
+  };
+
+  Object.entries(csatData).forEach(([key, val]) => {
+    const lowerKey = key.toLowerCase();
+
+    // c) Filter out metadata keys
+    if (METADATA_KEYS.has(lowerKey)) return;
+
+    // Filter out null / undefined
+    if (val === undefined || val === null) return;
+
+    // d) Filter out unanswered text
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      const lowerVal = trimmed.toLowerCase();
+      if (!trimmed || UNANSWERED_VALUES.has(lowerVal)) return;
+    }
+
+    // e) Filter out comment / free-text fields from the quantitative average
+    if (isCommentOrFreeText(key)) {
+      if (typeof val === 'string') {
+        addComment(val);
+      }
+      return;
+    }
+
+    // a) Direct numeric ratings: Number value
+    if (typeof val === 'number') {
+      if (!isNaN(val)) {
+        const is10Scale =
+          lowerKey.includes('nps') ||
+          lowerKey.includes('10') ||
+          lowerKey.includes('recommend') ||
+          val > 5;
+        let score: number;
+        if (val > 10) {
+          score = val;
+        } else if (is10Scale) {
+          score = (val / 10) * 100;
+        } else {
+          score = (val / 5) * 100;
+        }
+        totalScore += Math.min(100, Math.max(0, score));
+        count++;
+      }
+      return;
+    }
+
+    // String ratings (numeric prefixes, fractions, Likert, or comments)
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+
+      // Handle fractions: "4/5", "8 / 10"
+      const fractionMatch = trimmed.match(/^(\d+(\.\d+)?)\s*\/\s*(\d+(\.\d+)?)/);
+      if (fractionMatch) {
+        const num = parseFloat(fractionMatch[1]);
+        const denom = parseFloat(fractionMatch[3]);
+        if (!isNaN(num) && !isNaN(denom) && denom > 0) {
+          totalScore += Math.min(100, Math.max(0, (num / denom) * 100));
+          count++;
+          return;
+        }
+      }
+
+      // a) Handle strings starting with numbers (e.g. "5 - Excellent", "4 / 5", "8")
+      const numMatch = trimmed.match(/^(\d+(\.\d+)?)/);
+      if (numMatch && numMatch[1]) {
+        const numVal = parseFloat(numMatch[1]);
+        if (!isNaN(numVal)) {
+          const is10Scale =
+            lowerKey.includes('nps') ||
+            lowerKey.includes('10') ||
+            lowerKey.includes('recommend') ||
+            numVal > 5;
+          let score: number;
+          if (numVal > 10) {
+            score = numVal;
+          } else if (is10Scale) {
+            score = (numVal / 10) * 100;
+          } else {
+            score = (numVal / 5) * 100;
+          }
+          totalScore += Math.min(100, Math.max(0, score));
+          count++;
+          return;
+        }
+      }
+
+      // b) Standard Likert text options
+      const likertVal = parseLikertValue(trimmed);
+      if (likertVal !== null) {
+        totalScore += likertVal;
+        count++;
+        return;
+      }
+
+      // Unscored text captured as qualitative comments
+      addComment(trimmed);
+    }
   });
 
-  // If no direct key matched, try to find a field in the template whose label contains "comment" or "feedback"
-  if (!commentKey) {
-    try {
-      const templates = useAppStore.getState().settings?.templates;
-      const csatTemplate = templates?.onboardingCsat;
-      if (csatTemplate?.fields) {
-        const templateField = csatTemplate.fields.find((f: any) => {
-          const label = (f.label || '').toLowerCase();
-          return label.includes('comment') || label.includes('feedback') || label === 'note';
-        });
-        if (templateField) {
-          commentKey = templateField.id;
+  // f) Calculate validScore = count > 0 ? Math.min(100, Math.round(totalScore / count)) : 0
+  let validScore = count > 0 ? Math.min(100, Math.round(totalScore / count)) : 0;
+
+  // Fallback for legacy objects that only have a direct `score` property
+  if (
+    count === 0 &&
+    csatData.score !== undefined &&
+    csatData.score !== null &&
+    csatData.score !== ''
+  ) {
+    const raw = csatData.score;
+    if (typeof raw === 'number' && !isNaN(raw)) {
+      validScore = raw <= 5 ? Math.round((raw / 5) * 100) : Math.min(100, Math.round(raw));
+    } else if (typeof raw === 'string') {
+      const parsed = parseFloat(raw);
+      if (!isNaN(parsed)) {
+        validScore =
+          parsed <= 5 ? Math.round((parsed / 5) * 100) : Math.min(100, Math.round(parsed));
+      } else {
+        const likert = parseLikertValue(raw);
+        if (likert !== null) {
+          validScore = likert;
         }
       }
-    } catch (e) {
-      // ignore
     }
   }
 
-  if (commentKey && typeof csatData[commentKey] === 'string') {
-    comments = csatData[commentKey];
+  // Fallback for legacy comments fields
+  if (commentParts.length === 0) {
+    const legacyComment =
+      csatData.comments || csatData.comment || csatData.note || csatData.feedback;
+    if (typeof legacyComment === 'string') {
+      addComment(legacyComment);
+    }
   }
 
-  return { validScore, comments };
+  return {
+    validScore,
+    comments: commentParts.join('\n'),
+    count,
+  };
 };
 
 export function getQualityMetricsData(

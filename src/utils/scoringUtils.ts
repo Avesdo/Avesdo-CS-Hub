@@ -1,5 +1,6 @@
 import { Settings } from '../types';
 import { getClientComputedStatus } from './clientUtils';
+import { extractCsatMetrics } from './qualityUtils';
 
 export interface ProjectHealthResult {
   totalScore: number | 'N/A';
@@ -77,61 +78,14 @@ export function calculateProjectHealth(
       (k) => !['submittedAt', 'updatedAt'].includes(k)
     ).length > 0
   ) {
-    const csatEntries = Object.entries(project.health.onboardingCsat);
-    let totalScore = 0;
-    let count = 0;
-
-    csatEntries.forEach(([key, val]) => {
-      if (['submittedAt', 'updatedAt'].includes(key)) return;
-
-      if (
-        typeof val === 'number' ||
-        (typeof val === 'string' && !isNaN(parseFloat(val)) && !isNaN(Number(val)))
-      ) {
-        const numVal = typeof val === 'number' ? val : parseFloat(val);
-        if (numVal > 10) {
-          totalScore += numVal;
-        } else if (
-          key.toLowerCase().includes('nps') ||
-          numVal > 5 ||
-          key.toLowerCase().includes('10')
-        ) {
-          totalScore += (numVal / 10) * 100;
-        } else {
-          totalScore += (numVal / 5) * 100;
-        }
-        count++;
-      } else if (typeof val === 'string') {
-        const lowerVal = val.toLowerCase();
-        if (lowerVal.includes('extremely satisfied') || lowerVal.includes('very satisfied')) {
-          totalScore += 100;
-          count++;
-        } else if (lowerVal.includes('somewhat satisfied') || lowerVal === 'satisfied') {
-          totalScore += 75;
-          count++;
-        } else if (lowerVal.includes('neither') || lowerVal.includes('neutral')) {
-          totalScore += 50;
-          count++;
-        } else if (lowerVal.includes('somewhat dissatisfied') || lowerVal === 'dissatisfied') {
-          totalScore += 25;
-          count++;
-        } else if (
-          lowerVal.includes('extremely dissatisfied') ||
-          lowerVal.includes('very dissatisfied')
-        ) {
-          totalScore += 0;
-          count++;
-        }
-      }
-    });
-
-    if (count > 0) {
-      csat = Math.round(totalScore / count);
+    const { validScore, count } = extractCsatMetrics(project.health.onboardingCsat);
+    if (count > 0 || project.health.onboardingCsat.score !== undefined) {
+      csat = validScore;
     }
   } else if (project.onboardingCsat !== undefined) {
     const parsed =
       typeof project.onboardingCsat === 'object'
-        ? parseFloat(project.onboardingCsat.score)
+        ? extractCsatMetrics(project.onboardingCsat).validScore
         : parseFloat(project.onboardingCsat);
     if (!isNaN(parsed)) csat = parsed;
   } else if (project.csat === 'Satisfied') {

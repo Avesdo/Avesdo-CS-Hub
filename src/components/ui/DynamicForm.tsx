@@ -146,7 +146,7 @@ export function DynamicForm({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (typeof scrollRef.current?.scrollTo === 'function') {
       scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [currentPage]);
@@ -166,6 +166,7 @@ export function DynamicForm({
         value !== undefined &&
         value !== null &&
         value !== '' &&
+        String(value).trim().toLowerCase() !== 'unanswered' &&
         (!Array.isArray(value) || value.length > 0)
       ) {
         if (Array.isArray(value)) {

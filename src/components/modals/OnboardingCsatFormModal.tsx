@@ -42,9 +42,7 @@ export default function OnboardingCsatFormModal({
   const handleSave = async (data: Record<string, any>) => {
     setIsSaving(true);
     try {
-      const cleanData = Object.fromEntries(
-        Object.entries(data).filter(([_, v]) => v !== undefined)
-      );
+      const cleanData = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
       const now = new Date().toISOString();
       const updatedHealth = {
         ...project.health,
@@ -199,18 +197,7 @@ export default function OnboardingCsatFormModal({
                 </div>
               )}
 
-              {!template ? (
-                <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                    <span className="text-slate-400 text-2xl font-bold">?</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">No Template Found</h3>
-                  <p className="text-slate-500 max-w-md">
-                    The "Onboarding CSAT" template has not been created yet. Please configure it in
-                    Settings &gt; Templates.
-                  </p>
-                </div>
-              ) : isLegacy ? (
+              {isLegacy ? (
                 <div className="flex flex-col h-full overflow-y-auto p-6 md:p-8 custom-thin-scroll">
                   <div className="space-y-6">
                     {Object.entries(existingData || {}).map(([key, val]) => {
@@ -225,22 +212,49 @@ export default function OnboardingCsatFormModal({
                         ].includes(key)
                       )
                         return null;
+
+                      const isUnanswered =
+                        val === undefined ||
+                        val === null ||
+                        val === '' ||
+                        String(val).trim().toLowerCase() === 'unanswered';
+
                       return (
                         <div key={key} className="space-y-1.5">
                           <label className="block text-[14px] font-bold text-slate-800 tracking-tight capitalize">
-                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                            {key
+                              .replace(/([A-Z])/g, ' $1')
+                              .replace(/_/g, ' ')
+                              .trim()}
                           </label>
                           <div className="pl-1 border-l-2 border-primary/20">
                             <div className="pl-3">
-                              <span className="text-slate-900 text-[15px] break-words whitespace-pre-wrap">
-                                {String(val)}
-                              </span>
+                              {isUnanswered ? (
+                                <span className="text-slate-400 italic text-[13px]">
+                                  Unanswered
+                                </span>
+                              ) : (
+                                <span className="text-slate-900 text-[15px] break-words whitespace-pre-wrap">
+                                  {String(val)}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
+                </div>
+              ) : !template ? (
+                <div className="flex flex-col items-center justify-center h-full text-center px-6">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                    <span className="text-slate-400 text-2xl font-bold">?</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">No Template Found</h3>
+                  <p className="text-slate-500 max-w-md">
+                    The "Onboarding CSAT" template has not been created yet. Please configure it in
+                    Settings &gt; Templates.
+                  </p>
                 </div>
               ) : (
                 <DynamicForm
