@@ -1,16 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
-import {
-  Search,
-  Copy,
-  Check,
-  ExternalLink,
-  ChevronRight,
-  Plus,
-  Edit2,
-  Trash2,
-  GripVertical,
-} from 'lucide-react';
+import { Search, ChevronRight, Plus } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -25,336 +15,20 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  useSortable,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { db } from '../../../api/firebase';
-import { doc, writeBatch, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { toast } from '../../../utils/toast';
-import localImportsData from '../../../data/localHelpfulImports.json';
 import { useAppStore } from '../../../store/useAppStore';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { TagModal } from './TagModal';
 import { HelpfulImportModal } from './HelpfulImportModal';
 import { CategoryManagerModal } from './CategoryManagerModal';
 import { Select } from '../../ui/Select';
-import { Tooltip } from '../../ui/Tooltip';
 import { TagItem, HelpfulImportItem } from '../../../types';
-
-function SortableTagRow({
-  item,
-  displayTag,
-  canEditTags,
-  canDeleteTags,
-  handleCopy,
-  copiedId,
-  setEditingTag,
-  setIsTagModalOpen,
-  handleDeleteTag,
-}: any) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: item.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 10 : 1,
-    position: isDragging ? ('relative' as const) : ('static' as const),
-  };
-
-  return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className={`hover:bg-slate-50 transition-colors group ${isDragging ? 'bg-slate-50 shadow-md' : ''}`}
-    >
-      <td className="py-2 pr-4 pl-2 align-top">
-        <div className="flex items-center gap-1">
-          {canEditTags && (
-            <button
-              {...attributes}
-              {...listeners}
-              className="p-0.5 cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 rounded flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <GripVertical className="w-4 h-4" />
-            </button>
-          )}
-          <div className="flex items-center justify-start gap-2 flex-1 min-w-0">
-            <span className="font-mono text-primary font-medium bg-primary/5 px-2 py-0.5 rounded break-all border border-primary/10">
-              {displayTag}
-            </span>
-            <Tooltip content={copiedId === item.id ? 'Copied!' : 'Copy tag'}>
-              <button
-                onClick={() => handleCopy(displayTag, item.id)}
-                className="p-1 shrink-0 rounded text-slate-400 hover:text-primary hover:bg-slate-100 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none"
-              >
-                {copiedId === item.id ? (
-                  <Check className="w-3.5 h-3.5 text-green-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-            </Tooltip>
-          </div>
-        </div>
-      </td>
-      <td className="px-4 py-2 align-top text-slate-700 pr-4 leading-relaxed break-words">
-        {item.description}
-      </td>
-      <td className="px-4 py-2 align-top text-slate-500 italic flex justify-between items-start gap-4 break-words">
-        <span className="min-w-0 break-words">{item.example}</span>
-        {(canEditTags || canDeleteTags) && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-            {canEditTags && (
-              <button
-                onClick={() => {
-                  setEditingTag(item);
-                  setIsTagModalOpen(true);
-                }}
-                className="p-1 text-slate-400 hover:text-primary rounded hover:bg-slate-100"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-            )}
-            {canDeleteTags && (
-              <button
-                onClick={() => handleDeleteTag(item.id)}
-                className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        )}
-      </td>
-    </tr>
-  );
-}
-
-function SortableHelpfulImportRow({
-  item,
-  canEditImports,
-  canDeleteImports,
-  setEditingImport,
-  setIsImportModalOpen,
-  handleDeleteImport,
-}: any) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: item.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 10 : 1,
-    position: isDragging ? ('relative' as const) : ('static' as const),
-  };
-
-  return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className={`hover:bg-slate-50 transition-colors group ${isDragging ? 'bg-slate-50 shadow-md' : ''}`}
-    >
-      <td className="py-2 pr-4 pl-2 align-top">
-        <div className="flex items-start gap-1">
-          {canEditImports && (
-            <button
-              {...attributes}
-              {...listeners}
-              className="p-0.5 cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 rounded flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <GripVertical className="w-4 h-4" />
-            </button>
-          )}
-          <div className="flex-1 text-slate-800 font-medium leading-relaxed px-1">
-            {item.action}
-          </div>
-        </div>
-      </td>
-      <td className="px-4 py-2 align-top">
-        {item.project ? (
-          <span className="text-slate-700 font-medium">{item.project}</span>
-        ) : (
-          <span className="text-slate-400 italic text-sm">General</span>
-        )}
-      </td>
-      <td className="px-4 py-2 align-top flex justify-between items-start gap-4">
-        <div className="text-slate-700 w-full overflow-hidden">
-          {item.solution ? (
-            item.solution.startsWith('http') ? (
-              <a
-                href={item.solution}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-primary hover:underline group break-all"
-              >
-                <span className="group-hover:underline">{item.solution}</span>
-                <ExternalLink className="w-3 h-3 shrink-0" />
-              </a>
-            ) : (
-              <span className="whitespace-pre-wrap leading-relaxed">{item.solution}</span>
-            )
-          ) : (
-            <span className="text-slate-400 italic">No solution recorded</span>
-          )}
-        </div>
-
-        {(canEditImports || canDeleteImports) && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-            {canEditImports && (
-              <button
-                onClick={() => {
-                  setEditingImport(item);
-                  setIsImportModalOpen(true);
-                }}
-                className="p-1 text-slate-400 hover:text-primary rounded hover:bg-slate-100"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-            )}
-            {canDeleteImports && (
-              <button
-                onClick={() => handleDeleteImport(item.id)}
-                className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        )}
-      </td>
-    </tr>
-  );
-}
-
-const participantPrefixes: Record<string, { label: string; value: string }[]> = {
-  Purchasers: [
-    {
-      label: 'Purchaser 1',
-      value: 'c1',
-    },
-    {
-      label: 'Purchaser 2',
-      value: 'c2',
-    },
-    {
-      label: 'Purchaser 3',
-      value: 'c3',
-    },
-    {
-      label: 'Purchaser 4',
-      value: 'c4',
-    },
-    {
-      label: 'Purchaser 5',
-      value: 'c5',
-    },
-    {
-      label: 'Purchaser 6',
-      value: 'c6',
-    },
-  ],
-  Realtors: [
-    {
-      label: 'Realtor 1',
-      value: 'r1',
-    },
-    {
-      label: 'Realtor 2',
-      value: 'r2',
-    },
-    {
-      label: 'Realtor 3',
-      value: 'r3',
-    },
-  ],
-  'Sales Rep': [
-    {
-      label: 'Sales Rep 1',
-      value: 's1',
-    },
-  ],
-  Developers: [
-    {
-      label: 'Developer 1',
-      value: 'd1',
-    },
-    {
-      label: 'Developer 2',
-      value: 'd2',
-    },
-    {
-      label: 'Developer 3',
-      value: 'd3',
-    },
-  ],
-  Assignors: [
-    {
-      label: 'Assignor 1 (Form Selection)',
-      value: 'FromAssignor1',
-    },
-    {
-      label: 'Assignor 2 (Form Selection)',
-      value: 'FromAssignor2',
-    },
-    {
-      label: 'Assignor 3 (Form Selection)',
-      value: 'FromAssignor3',
-    },
-  ],
-  Assignees: [
-    {
-      label: 'Assignee 1 (Form Selection)',
-      value: 'FromAssignee1',
-    },
-    {
-      label: 'Assignee 2 (Form Selection)',
-      value: 'FromAssignee2',
-    },
-    {
-      label: 'Assignee 3 (Form Selection)',
-      value: 'FromAssignee3',
-    },
-    {
-      label: 'Assignee 1 (Deal Participants)',
-      value: 'o1',
-    },
-    {
-      label: 'Assignee 2 (Deal Participants)',
-      value: 'o2',
-    },
-    {
-      label: 'Assignee 3 (Deal Participants)',
-      value: 'o3',
-    },
-  ],
-  'Managing Broker': [
-    {
-      label: 'Managing Broker',
-      value: 'ps-managing broker',
-    },
-  ],
-  Guarantors: [
-    {
-      label: 'Guarantor 1',
-      value: 'ps-guarantor',
-    },
-    {
-      label: 'Guarantor 2',
-      value: 'ps-guarantor 2',
-    },
-  ],
-  Transferor: [
-    {
-      label: 'Transferor',
-      value: 'ps-transferor',
-    },
-  ],
-};
-
-const allParticipants = Object.values(participantPrefixes).flat();
+import { participantPrefixes, allParticipants } from './tagDictionaryConstants';
+import { SortableTagRow } from './SortableTagRow';
+import { SortableHelpfulImportRow } from './SortableHelpfulImportRow';
 
 export function TagDictionaryTab() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -387,8 +61,9 @@ export function TagDictionaryTab() {
     try {
       await deleteDoc(doc(db, 'academy_tags', id));
       toast.success('Tag deleted');
-    } catch (e: any) {
-      toast.error('Failed to delete tag: ' + e.message);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to delete tag: ' + message);
     }
   };
 
@@ -397,8 +72,9 @@ export function TagDictionaryTab() {
     try {
       await deleteDoc(doc(db, 'academy_helpful_imports', id));
       toast.success('Import deleted');
-    } catch (e: any) {
-      toast.error('Failed to delete import: ' + e.message);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to delete import: ' + message);
     }
   };
 
@@ -483,25 +159,24 @@ export function TagDictionaryTab() {
   }, [tags, searchQuery, fuse, activePrimaryCategory]);
 
   const primaryCategories = useMemo(() => {
-    const rawKeys = Array.from(allGroups.keys());
     const savedConfig = settings?.academyCategoryOrder || [];
-    const savedPrimaries = savedConfig.map((c) => c.primary);
+    const savedPrimaries = savedConfig.map((c) => c.primary).filter(Boolean);
+    const result = [...savedPrimaries];
 
-    const sorted = rawKeys.sort((a, b) => {
-      const idxA = savedPrimaries.indexOf(a);
-      const idxB = savedPrimaries.indexOf(b);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return a.localeCompare(b);
+    // Add any primary categories from tags that aren't in savedConfig
+    Array.from(allGroups.keys()).forEach((key) => {
+      if (key && !result.includes(key)) {
+        result.push(key);
+      }
     });
-    return sorted;
-  }, [allGroups, settings]);
 
-  // We append helpful references manually if they are not in the main tag list
-  if (!primaryCategories.includes('Helpful References')) {
-    primaryCategories.push('Helpful References');
-  }
+    // Append Helpful References if not present
+    if (!result.includes('Helpful References')) {
+      result.push('Helpful References');
+    }
+
+    return result;
+  }, [allGroups, settings]);
 
   const handleCopy = (tag: string, id: string) => {
     navigator.clipboard.writeText(tag);
@@ -567,8 +242,9 @@ export function TagDictionaryTab() {
 
         try {
           await batch.commit();
-        } catch (e: any) {
-          toast.error('Failed to reorder tags: ' + e.message);
+        } catch (e: unknown) {
+          const message = e instanceof Error ? e.message : 'Unknown error';
+          toast.error('Failed to reorder tags: ' + message);
         }
       }
       return;
@@ -601,8 +277,9 @@ export function TagDictionaryTab() {
 
         try {
           await batch.commit();
-        } catch (e: any) {
-          toast.error('Failed to reorder helpful imports: ' + e.message);
+        } catch (e: unknown) {
+          const message = e instanceof Error ? e.message : 'Unknown error';
+          toast.error('Failed to reorder helpful imports: ' + message);
         }
       }
     }
@@ -753,11 +430,26 @@ export function TagDictionaryTab() {
             ref={scrollContainerRef}
             className="flex-1 overflow-y-auto pl-6 pr-2 md:pl-10 md:pr-6 custom-thin-scroll bg-white"
           >
-            {displayGroups.size === 0 &&
-            !searchQuery &&
-            activePrimaryCategory !== 'Helpful References' ? (
-              <div className="flex items-center justify-center h-full text-slate-500">
-                No tags found in the database.
+            {displayGroups.size === 0 && activePrimaryCategory !== 'Helpful References' ? (
+              <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+                <p className="text-slate-500 text-sm">
+                  {searchQuery
+                    ? `No tags found matching "${searchQuery}".`
+                    : activePrimaryCategory !== 'All'
+                      ? `No tags found in "${activePrimaryCategory}". Click "+ New" above to create the first tag.`
+                      : 'No tags found in the database.'}
+                </p>
+                {canEditTags && !searchQuery && activePrimaryCategory !== 'All' && (
+                  <button
+                    onClick={() => {
+                      setEditingTag(null);
+                      setIsTagModalOpen(true);
+                    }}
+                    className="mt-3 px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-md hover:bg-primary/90 transition-colors flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> New Tag
+                  </button>
+                )}
               </div>
             ) : (
               <div className="space-y-10 w-full pb-32">
@@ -1067,6 +759,11 @@ export function TagDictionaryTab() {
             isOpen={isTagModalOpen}
             onClose={() => setIsTagModalOpen(false)}
             tagData={editingTag}
+            defaultCategory={
+              activePrimaryCategory !== 'All' && activePrimaryCategory !== 'Helpful References'
+                ? activePrimaryCategory
+                : undefined
+            }
           />
         )}
         {isImportModalOpen && (

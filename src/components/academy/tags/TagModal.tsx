@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../ui/dialog';
 import { TagItem } from '../../../types';
 import { toast } from '../../../utils/toast';
@@ -11,34 +11,76 @@ interface TagModalProps {
   isOpen: boolean;
   onClose: () => void;
   tagData?: TagItem | null;
+  defaultCategory?: string;
 }
 
-export function TagModal({ isOpen, onClose, tagData }: TagModalProps) {
+export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModalProps) {
   const [formData, setFormData] = useState<Partial<TagItem>>({});
   const tags = useAppStore((state) => state.tags || []);
+  const settings = useAppStore((state) => state.settings);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Extract unique categories from existing tags for the dropdown
-  const categories = Array.from(
-    new Set(
-      tags
-        .flatMap((t) => (Array.isArray(t.category) ? t.category : [t.category]))
-        .filter(Boolean) as string[]
-    )
-  ).sort();
+  // Extract unique categories from both existing tags and settings.academyCategoryOrder
+  const categories = useMemo(() => {
+    const categorySet = new Set<string>();
+
+    // 1. All categories from existing tags
+    tags.forEach((t) => {
+      const catList = Array.isArray(t.category) ? t.category : [t.category];
+      catList.forEach((c) => {
+        if (c && typeof c === 'string') {
+          const trimmed = c.trim();
+          if (trimmed) categorySet.add(trimmed);
+        }
+      });
+    });
+
+    // 2. All combinations from settings.academyCategoryOrder
+    const configuredCategories = settings?.academyCategoryOrder || [];
+    configuredCategories.forEach((cfg) => {
+      const primary = cfg.primary?.trim();
+      if (!primary) return;
+
+      const subCategories = cfg.subCategories || [];
+      if (subCategories.length === 0) {
+        categorySet.add(`${primary} - General`);
+      } else {
+        subCategories.forEach((sub) => {
+          const subTrimmed = sub?.trim() || 'General';
+          categorySet.add(`${primary} - ${subTrimmed}`);
+        });
+      }
+    });
+
+    return Array.from(categorySet).sort();
+  }, [tags, settings]);
 
   useEffect(() => {
     if (tagData) {
       setFormData(tagData);
     } else {
+      let initialCategory: string[] = ['Deal Participants - General'];
+      if (defaultCategory && categories.includes(defaultCategory)) {
+        initialCategory = [defaultCategory];
+      } else if (defaultCategory) {
+        const match = categories.find((c) => c.startsWith(`${defaultCategory} -`));
+        if (match) {
+          initialCategory = [match];
+        } else if (categories.length > 0) {
+          initialCategory = [categories[0]];
+        }
+      } else if (categories.length > 0) {
+        initialCategory = [categories[0]];
+      }
+
       setFormData({
         tag: '',
         description: '',
         example: '',
-        category: categories.length > 0 ? [categories[0]] : ['Deal Participants - General'],
+        category: initialCategory,
       });
     }
-  }, [tagData, isOpen]);
+  }, [tagData, isOpen, categories, defaultCategory]);
 
   const handleSubmit = async () => {
     if (
@@ -67,8 +109,9 @@ export function TagModal({ isOpen, onClose, tagData }: TagModalProps) {
       await setDoc(docRef, payload);
       toast.success(tagData ? 'Tag updated successfully' : 'Tag created successfully');
       onClose();
-    } catch (e: any) {
-      toast.error('Failed to save tag: ' + e.message);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to save tag: ' + message);
     } finally {
       setIsSubmitting(false);
     }
