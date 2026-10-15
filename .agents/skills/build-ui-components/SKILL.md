@@ -1,6 +1,6 @@
 ---
 name: build-ui-components
-description: Triggers whenever you are asked to build, modify, or debug UI components, layouts, drawers, modals, tables, or styles.
+description: Use this skill whenever asked to build, modify, or debug UI components, layouts, drawers, modals, tables, or styles.
 ---
 
 # Premium SaaS UI Standards
