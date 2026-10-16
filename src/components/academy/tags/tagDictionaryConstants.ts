@@ -78,7 +78,7 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
       value: 'FromAssignor3',
     },
   ],
-  Assignees: [
+  'Assignees (Form Selection)': [
     {
       label: 'Assignee 1 (Form Selection)',
       value: 'FromAssignee1',
@@ -91,6 +91,8 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
       label: 'Assignee 3 (Form Selection)',
       value: 'FromAssignee3',
     },
+  ],
+  'Assignees (Deal Participants)': [
     {
       label: 'Assignee 1 (Deal Participants)',
       value: 'o1',
@@ -102,6 +104,10 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
     {
       label: 'Assignee 3 (Deal Participants)',
       value: 'o3',
+    },
+    {
+      label: 'Assignee 4 (Deal Participants)',
+      value: 'o4',
     },
   ],
   'Purchaser or Assignee Swap': [

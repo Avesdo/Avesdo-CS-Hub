@@ -89,33 +89,25 @@ export function TagDictionaryTab() {
     'Sales Rep': 's1',
     Developers: 'd1',
     Assignors: 'FromAssignor1',
-    Assignees: 'FromAssignee1',
+    'Assignees (Form Selection)': 'FromAssignee1',
+    'Assignees (Deal Participants)': 'o1',
     'Purchaser or Assignee Swap': 'co1',
     'Managing Broker': 'ps-managing broker',
     Guarantors: 'ps-guarantor',
     Transferor: 'ps-transferor',
   });
   const [dynamicReplacements, setDynamicReplacements] = useState<Record<string, string>>({});
-  const hasSeededSwapTagsRef = useRef(false);
+  const hasSeededParticipantTagsRef = useRef(false);
 
   useEffect(() => {
-    if (hasSeededSwapTagsRef.current || !canEditTags || tags.length === 0) return;
+    if (hasSeededParticipantTagsRef.current || !canEditTags || tags.length === 0) return;
 
     const hasCat = (t: TagItem, target: string) => {
       const cats = Array.isArray(t.category) ? t.category : [t.category];
-      return cats.some((c) => typeof c === 'string' && c.trim() === target);
+      return cats.some(
+        (c) => typeof c === 'string' && c.trim().toLowerCase() === target.toLowerCase()
+      );
     };
-
-    const existingSwapTags = tags.filter(
-      (t) =>
-        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap') ||
-        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap - Witnesses')
-    );
-
-    if (existingSwapTags.length > 0) {
-      hasSeededSwapTagsRef.current = true;
-      return;
-    }
 
     const purchaserTags = tags
       .filter((t) => hasCat(t, 'Deal Participants - Purchasers'))
@@ -127,41 +119,163 @@ export function TagDictionaryTab() {
 
     if (purchaserTags.length === 0 && purchaserWitnessTags.length === 0) return;
 
-    hasSeededSwapTagsRef.current = true;
+    const existingSwapTags = tags.filter(
+      (t) =>
+        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap') ||
+        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap - Witnesses')
+    );
 
+    const legacyAssigneeTags = tags.filter(
+      (t) =>
+        hasCat(t, 'Deal Participants - Assignees') ||
+        hasCat(t, 'Deal Participants - Assignees - Witnesses')
+    );
+
+    const existingAssigneeDpTags = tags.filter(
+      (t) =>
+        hasCat(t, 'Deal Participants - Assignees (Deal Participants)') ||
+        hasCat(t, 'Deal Participants - Assignees (Deal Participants) - Witnesses')
+    );
+
+    const dpCategoryConfig = settings?.academyCategoryOrder?.find(
+      (c) => c.primary === 'Deal Participants'
+    );
+    const needsCategoryOrderUpdate =
+      dpCategoryConfig &&
+      (dpCategoryConfig.subCategories.includes('Assignees') ||
+        dpCategoryConfig.subCategories.includes('Assignees (Deal participants)') ||
+        !dpCategoryConfig.subCategories.includes('Assignees (Form Selection)') ||
+        !dpCategoryConfig.subCategories.includes('Assignees (Deal Participants)'));
+
+    if (
+      existingSwapTags.length > 0 &&
+      legacyAssigneeTags.length === 0 &&
+      existingAssigneeDpTags.length > 0 &&
+      !needsCategoryOrderUpdate
+    ) {
+      hasSeededParticipantTagsRef.current = true;
+      return;
+    }
+
+    hasSeededParticipantTagsRef.current = true;
+
+    const batch = writeBatch(db);
     const maxOrder = tags.reduce((max, t) => Math.max(max, t.order || 0), 0);
     let nextOrder = maxOrder + 1;
 
-    const clonedTags: TagItem[] = [
-      ...purchaserTags.map((t) => ({
-        id: `tag_swap_${t.id}`,
-        tag: t.tag,
-        description: t.description,
-        example: t.example || '',
-        category: ['Deal Participants - Purchaser or Assignee Swap'],
-        order: nextOrder++,
-      })),
-      ...purchaserWitnessTags.map((t) => ({
-        id: `tag_swap_${t.id}`,
-        tag: t.tag,
-        description: t.description,
-        example: t.example || '',
-        category: ['Deal Participants - Purchaser or Assignee Swap - Witnesses'],
-        order: nextOrder++,
-      })),
-    ];
+    // 1. Seed Purchaser or Assignee Swap if empty
+    if (existingSwapTags.length === 0) {
+      const clonedSwapTags: TagItem[] = [
+        ...purchaserTags.map((t) => ({
+          id: `tag_swap_${t.id}`,
+          tag: t.tag,
+          description: t.description,
+          example: t.example || '',
+          category: ['Deal Participants - Purchaser or Assignee Swap'],
+          order: nextOrder++,
+        })),
+        ...purchaserWitnessTags.map((t) => ({
+          id: `tag_swap_${t.id}`,
+          tag: t.tag,
+          description: t.description,
+          example: t.example || '',
+          category: ['Deal Participants - Purchaser or Assignee Swap - Witnesses'],
+          order: nextOrder++,
+        })),
+      ];
+      clonedSwapTags.forEach((newTag) => {
+        batch.set(doc(db, 'academy_tags', newTag.id), newTag);
+      });
+    }
 
-    const batch = writeBatch(db);
-    clonedTags.forEach((newTag) => {
-      batch.set(doc(db, 'academy_tags', newTag.id), newTag);
-    });
+    // 2. Migrate legacy "Deal Participants - Assignees" -> "Deal Participants - Assignees (Form Selection)"
+    if (legacyAssigneeTags.length > 0) {
+      legacyAssigneeTags.forEach((t) => {
+        const cats = Array.isArray(t.category) ? t.category : [t.category];
+        const updatedCats = cats.map((c) => {
+          const trimmed = (c || '').trim();
+          if (trimmed === 'Deal Participants - Assignees') {
+            return 'Deal Participants - Assignees (Form Selection)';
+          }
+          if (trimmed === 'Deal Participants - Assignees - Witnesses') {
+            return 'Deal Participants - Assignees (Form Selection) - Witnesses';
+          }
+          return c;
+        });
+        batch.update(doc(db, 'academy_tags', t.id), { category: updatedCats });
+      });
+    }
+
+    // 3. Seed "Deal Participants - Assignees (Deal Participants)" from Purchasers if empty
+    if (existingAssigneeDpTags.length === 0) {
+      const clonedAssigneeDpTags: TagItem[] = [
+        ...purchaserTags.map((t) => ({
+          id: `tag_assignee_dp_${t.id}`,
+          tag: t.tag,
+          description: t.description.replace(/Purchaser's/g, "Assignee's"),
+          example: t.example || '',
+          category: ['Deal Participants - Assignees (Deal Participants)'],
+          order: nextOrder++,
+        })),
+        ...purchaserWitnessTags.map((t) => ({
+          id: `tag_assignee_dp_${t.id}`,
+          tag: t.tag,
+          description: t.description.replace(/Purchaser's/g, "Assignee's"),
+          example: t.example || '',
+          category: ['Deal Participants - Assignees (Deal Participants) - Witnesses'],
+          order: nextOrder++,
+        })),
+      ];
+      clonedAssigneeDpTags.forEach((newTag) => {
+        batch.set(doc(db, 'academy_tags', newTag.id), newTag);
+      });
+    }
+
+    // 4. Update academyCategoryOrder in settings/global_config if needed
+    if (needsCategoryOrderUpdate && settings?.academyCategoryOrder) {
+      const updatedCategoryOrder = settings.academyCategoryOrder.map((c) => {
+        if (c.primary !== 'Deal Participants') return c;
+        const newSubs: string[] = [];
+        const addUnique = (name: string) => {
+          if (!newSubs.some((s) => s.toLowerCase() === name.toLowerCase())) {
+            newSubs.push(name);
+          }
+        };
+
+        c.subCategories.forEach((sub) => {
+          const lower = sub.trim().toLowerCase();
+          if (lower === 'assignees') {
+            addUnique('Assignees (Form Selection)');
+            addUnique('Assignees (Deal Participants)');
+          } else if (lower === 'assignees (form selection)') {
+            addUnique('Assignees (Form Selection)');
+          } else if (lower === 'assignees (deal participants)') {
+            addUnique('Assignees (Deal Participants)');
+          } else {
+            addUnique(sub);
+          }
+        });
+
+        addUnique('Assignees (Form Selection)');
+        addUnique('Assignees (Deal Participants)');
+
+        return {
+          ...c,
+          subCategories: newSubs,
+        };
+      });
+
+      batch.update(doc(db, 'settings', 'global_config'), {
+        academyCategoryOrder: updatedCategoryOrder,
+      });
+    }
 
     batch.commit().catch((e: unknown) => {
-      hasSeededSwapTagsRef.current = false;
+      hasSeededParticipantTagsRef.current = false;
       const message = e instanceof Error ? e.message : 'Unknown error';
-      toast.error('Failed to populate Purchaser or Assignee Swap tags: ' + message);
+      toast.error('Failed to update Deal Participant subcategories: ' + message);
     });
-  }, [tags, canEditTags]);
+  }, [tags, canEditTags, settings]);
 
   const fuse = useMemo(
     () =>
@@ -548,14 +662,24 @@ export function TagDictionaryTab() {
 
                         {sortedSubs.map(([sub, subSubMap]) => {
                           const isFutureDates = sub.toLowerCase() === 'future dates';
-                          const prefixOptions =
+                          const matchedParticipantKey =
                             primary === 'Deal Participants'
-                              ? participantPrefixes[sub]
+                              ? Object.keys(participantPrefixes).find(
+                                  (k) => k.toLowerCase() === sub.trim().toLowerCase()
+                                )
+                              : undefined;
+                          const prefixOptions =
+                            primary === 'Deal Participants' && matchedParticipantKey
+                              ? participantPrefixes[matchedParticipantKey]
                               : isFutureDates
                                 ? allParticipants
                                 : null;
                           const currentPrefix = prefixOptions
-                            ? (activePrefixes[sub] ?? (isFutureDates ? 'c1' : ''))
+                            ? (activePrefixes[sub] ??
+                              (matchedParticipantKey
+                                ? activePrefixes[matchedParticipantKey]
+                                : undefined) ??
+                              (isFutureDates ? 'c1' : (prefixOptions[0]?.value ?? '')))
                             : '';
                           const showToggles = prefixOptions && prefixOptions.length > 1;
 
