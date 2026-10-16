@@ -14,7 +14,7 @@ interface TagModalProps {
   defaultCategory?: string;
 }
 
-export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModalProps) {
+export function TagModal({ isOpen, onClose, tagData }: TagModalProps) {
   const [formData, setFormData] = useState<Partial<TagItem>>({});
   const tags = useAppStore((state) => state.tags || []);
   const settings = useAppStore((state) => state.settings);
@@ -59,30 +59,16 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
     if (tagData) {
       setFormData(tagData);
     } else {
-      let initialCategory: string[] = ['Deal Participants - General'];
-      if (defaultCategory && categories.includes(defaultCategory)) {
-        initialCategory = [defaultCategory];
-      } else if (defaultCategory) {
-        const match = categories.find((c) => c.startsWith(`${defaultCategory} -`));
-        if (match) {
-          initialCategory = [match];
-        } else if (categories.length > 0) {
-          initialCategory = [categories[0]];
-        }
-      } else if (categories.length > 0) {
-        initialCategory = [categories[0]];
-      }
-
       setFormData({
         tag: '',
         description: '',
         example: '',
-        category: initialCategory,
+        category: [],
         isUnavailable: false,
         unavailableReason: '',
       });
     }
-  }, [tagData, isOpen, categories, defaultCategory]);
+  }, [tagData, isOpen]);
 
   const handleSubmit = async () => {
     const selectedCategories = (
@@ -102,11 +88,26 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
 
     setIsSubmitting(true);
     try {
-      const maxOrder = tags.reduce((max, t) => Math.max(max, t.order || 0), 0);
+      const sortedTags = [...tags].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      const maxOrder = sortedTags.reduce(
+        (max, t, idx) => Math.max(max, typeof t.order === 'number' ? t.order : idx),
+        -1
+      );
       let nextOrder = maxOrder + 1;
 
+      const existingId = tagData?.id || formData.id;
+      const existingSortedIdx = existingId ? sortedTags.findIndex((t) => t.id === existingId) : -1;
+      const preservedOrder =
+        typeof tagData?.order === 'number'
+          ? tagData.order
+          : typeof formData.order === 'number'
+            ? formData.order
+            : existingSortedIdx !== -1
+              ? existingSortedIdx
+              : undefined;
+
       if (selectedCategories.length === 1) {
-        const id = formData.id || `tag_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        const id = existingId || `tag_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         const docRef = doc(db, 'academy_tags', id);
 
         const payload: TagItem = {
@@ -115,7 +116,7 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
           description: formData.description,
           example: formData.example || '',
           category: [selectedCategories[0]],
-          order: typeof formData.order === 'number' ? formData.order : nextOrder++,
+          order: existingId && typeof preservedOrder === 'number' ? preservedOrder : nextOrder++,
           isUnavailable: Boolean(formData.isUnavailable),
           unavailableReason: formData.isUnavailable
             ? (formData.unavailableReason || '').trim()
@@ -128,9 +129,9 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
         const batch = writeBatch(db);
 
         selectedCategories.forEach((cat, idx) => {
-          const isPrimaryExisting = idx === 0 && Boolean(formData.id);
+          const isPrimaryExisting = idx === 0 && Boolean(existingId);
           const id = isPrimaryExisting
-            ? (formData.id as string)
+            ? (existingId as string)
             : `tag_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 9)}`;
 
           const payload: TagItem = {
@@ -140,8 +141,8 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
             example: formData.example || '',
             category: [cat],
             order:
-              isPrimaryExisting && typeof formData.order === 'number'
-                ? formData.order
+              isPrimaryExisting && typeof preservedOrder === 'number'
+                ? preservedOrder
                 : nextOrder++,
             isUnavailable: Boolean(formData.isUnavailable),
             unavailableReason: formData.isUnavailable

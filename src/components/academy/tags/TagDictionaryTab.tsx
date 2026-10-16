@@ -324,6 +324,42 @@ export function TagDictionaryTab() {
     });
   }, [tags, canEditTags, settings]);
 
+  const hasNormalizedOrderRef = useRef(false);
+
+  useEffect(() => {
+    if (hasNormalizedOrderRef.current || !canEditTags || tags.length === 0) return;
+    hasNormalizedOrderRef.current = true;
+
+    const sortedTags = [...tags].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const seenOrders = new Set<number>();
+    const hasMissingOrDuplicateOrder = sortedTags.some((t) => {
+      if (typeof t.order !== 'number') return true;
+      if (seenOrders.has(t.order)) return true;
+      seenOrders.add(t.order);
+      return false;
+    });
+
+    if (!hasMissingOrDuplicateOrder) return;
+
+    const normalizedTags = sortedTags.map((t, index) => ({
+      ...t,
+      order: index,
+    }));
+
+    useAppStore.setState({ tags: normalizedTags });
+
+    const batch = writeBatch(db);
+    normalizedTags.forEach((t, index) => {
+      if (sortedTags[index].order !== t.order) {
+        batch.update(doc(db, 'academy_tags', t.id), { order: t.order });
+      }
+    });
+
+    batch.commit().catch(() => {
+      hasNormalizedOrderRef.current = false;
+    });
+  }, [tags, canEditTags]);
+
   const fuse = useMemo(
     () =>
       new Fuse(tags, {
@@ -336,7 +372,7 @@ export function TagDictionaryTab() {
   // Group tags into Primary -> Sub -> SubSub
   const allGroups = useMemo(() => {
     const map = new Map<string, Map<string, Map<string, TagItem[]>>>();
-    const sortedTags = [...tags].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const sortedTags = [...tags].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     sortedTags.forEach((tag) => {
       const categories = Array.isArray(tag.category) ? tag.category : [tag.category];
 
@@ -366,7 +402,7 @@ export function TagDictionaryTab() {
       result = result.filter((t) => !t.isUnavailable);
     }
 
-    const sortedResult = [...result].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const sortedResult = [...result].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
     const map = new Map<string, Map<string, Map<string, TagItem[]>>>();
     sortedResult.forEach((tag) => {

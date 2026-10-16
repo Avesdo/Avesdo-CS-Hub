@@ -4,6 +4,7 @@ import { HelpfulImportItem } from '../../../types';
 import { toast } from '../../../utils/toast';
 import { db } from '../../../api/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { useAppStore } from '../../../store/useAppStore';
 
 interface HelpfulImportModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface HelpfulImportModalProps {
 
 export function HelpfulImportModal({ isOpen, onClose, importData }: HelpfulImportModalProps) {
   const [formData, setFormData] = useState<Partial<HelpfulImportItem>>({});
+  const helpfulImports = useAppStore((state) => state.helpfulImports || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -30,8 +32,25 @@ export function HelpfulImportModal({ isOpen, onClose, importData }: HelpfulImpor
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const id =
-        formData.id || `import_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      const sortedImports = [...helpfulImports].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      const maxOrder = sortedImports.reduce(
+        (max, item, idx) => Math.max(max, typeof item.order === 'number' ? item.order : idx),
+        -1
+      );
+      const existingId = importData?.id || formData.id;
+      const existingSortedIdx = existingId
+        ? sortedImports.findIndex((i) => i.id === existingId)
+        : -1;
+      const preservedOrder =
+        typeof importData?.order === 'number'
+          ? importData.order
+          : typeof formData.order === 'number'
+            ? formData.order
+            : existingSortedIdx !== -1
+              ? existingSortedIdx
+              : undefined;
+
+      const id = existingId || `import_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       const docRef = doc(db, 'academy_helpful_imports', id);
 
       const payload: HelpfulImportItem = {
@@ -39,13 +58,15 @@ export function HelpfulImportModal({ isOpen, onClose, importData }: HelpfulImpor
         action: formData.action || '',
         project: formData.project || '',
         solution: formData.solution || '',
+        order: existingId && typeof preservedOrder === 'number' ? preservedOrder : maxOrder + 1,
       };
 
       await setDoc(docRef, payload);
       toast.success(importData ? 'Import updated successfully' : 'Import created successfully');
       onClose();
-    } catch (e: any) {
-      toast.error('Failed to save import: ' + e.message);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to save import: ' + message);
     } finally {
       setIsSubmitting(false);
     }
