@@ -104,6 +104,24 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
       value: 'o3',
     },
   ],
+  'Purchaser or Assignee Swap': [
+    {
+      label: 'Purchaser or Assignee 1',
+      value: 'co1',
+    },
+    {
+      label: 'Purchaser or Assignee 2',
+      value: 'co2',
+    },
+    {
+      label: 'Purchaser or Assignee 3',
+      value: 'co3',
+    },
+    {
+      label: 'Purchaser or Assignee 4',
+      value: 'co4',
+    },
+  ],
   'Managing Broker': [
     {
       label: 'Managing Broker',

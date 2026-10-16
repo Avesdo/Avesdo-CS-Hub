@@ -126,9 +126,17 @@ export default function Settings() {
   }, []);
 
   const getTemplate = (formName: string) => {
+    if (formName === 'Onboarding Survey' && settings?.templates?.onboardingSurvey) {
+      return settings.templates.onboardingSurvey;
+    }
     let templateId = Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates?.[k]?.name === formName
+      (k) => k !== 'survey' && settings?.templates?.[k]?.name === formName
     );
+    if (!templateId) {
+      templateId = Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates?.[k]?.name === formName
+      );
+    }
     if (!templateId) {
       templateId = Object.keys(settings?.templates || {}).find(
         (k) => settings?.templates?.[k]?.type === 'form'

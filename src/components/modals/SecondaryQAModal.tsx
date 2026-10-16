@@ -13,11 +13,12 @@ interface SecondaryQAModalProps {
 
 export default function SecondaryQAModal({ project, onClose }: SecondaryQAModalProps) {
   const settings = useAppStore((state) => state.settings);
-  // Find the secondary QA template (e.g., named "Secondary QA")
-  const templateId =
-    Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates[k].name === 'Secondary QA'
-    ) || Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
+  const templateId = settings?.templates?.secondaryQA
+    ? 'secondaryQA'
+    : Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates[k].name === 'Secondary QA'
+      ) ||
+      Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
   const template = templateId ? settings?.templates[templateId] : null;
 
   const [isSaving, setIsSaving] = useState(false);

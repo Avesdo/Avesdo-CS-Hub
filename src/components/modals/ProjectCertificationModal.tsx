@@ -16,10 +16,12 @@ export default function ProjectCertificationModal({
   onClose,
 }: ProjectCertificationModalProps) {
   const settings = useAppStore((state) => state.settings);
-  const templateId =
-    Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates[k].name === 'Project Certification'
-    ) || Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
+  const templateId = settings?.templates?.certification
+    ? 'certification'
+    : Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates[k].name === 'Project Certification'
+      ) ||
+      Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
   const template = templateId ? settings?.templates[templateId] : null;
 
   const [isSaving, setIsSaving] = useState(false);

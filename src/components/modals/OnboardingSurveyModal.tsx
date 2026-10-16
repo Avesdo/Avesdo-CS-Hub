@@ -13,10 +13,15 @@ interface OnboardingSurveyModalProps {
 
 export default function OnboardingSurveyModal({ project, onClose }: OnboardingSurveyModalProps) {
   const settings = useAppStore((state) => state.settings);
-  const templateId =
-    Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates[k].name === 'Onboarding Survey'
-    ) || Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
+  const templateId = settings?.templates?.onboardingSurvey
+    ? 'onboardingSurvey'
+    : Object.keys(settings?.templates || {}).find(
+        (k) => k !== 'survey' && settings?.templates[k].name === 'Onboarding Survey'
+      ) ||
+      Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates[k].name === 'Onboarding Survey'
+      ) ||
+      Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
   const template = templateId ? settings?.templates[templateId] : null;
 
   const [isSaving, setIsSaving] = useState(false);

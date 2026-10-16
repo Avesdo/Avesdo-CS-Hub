@@ -28,6 +28,19 @@ export function DynamicForm({
   readOnly = false,
   projectFeatures = [],
 }: DynamicFormProps) {
+  const normalizedInitialValues = useMemo(() => {
+    if (!initialValues || typeof initialValues !== 'object') return {};
+    const nestedAnswers =
+      initialValues.answers &&
+      typeof initialValues.answers === 'object' &&
+      !Array.isArray(initialValues.answers)
+        ? initialValues.answers
+        : {};
+    const rest = { ...initialValues };
+    delete rest.answers;
+    return { ...nestedAnswers, ...rest };
+  }, [initialValues]);
+
   const {
     register,
     handleSubmit,
@@ -38,7 +51,7 @@ export function DynamicForm({
     setError,
     clearErrors,
   } = useForm({
-    defaultValues: initialValues,
+    defaultValues: normalizedInitialValues,
   });
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -161,11 +174,19 @@ export function DynamicForm({
       );
       const value = formValues[field.id];
       const otherValue = formValues[`${field.id}_other`];
+      const isPlainObject =
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value) &&
+        !(value instanceof Date);
+
+      const hasValidObjectValue = isPlainObject && Object.keys(value).length > 0;
 
       if (
         value !== undefined &&
         value !== null &&
         value !== '' &&
+        (!isPlainObject || hasValidObjectValue) &&
         String(value).trim().toLowerCase() !== 'unanswered' &&
         (!Array.isArray(value) || value.length > 0)
       ) {
@@ -196,7 +217,7 @@ export function DynamicForm({
         } else {
           displayValue = (
             <span className="text-slate-900 text-[15px] break-words whitespace-pre-wrap">
-              {value}
+              {typeof value === 'object' ? JSON.stringify(value) : String(value)}
             </span>
           );
         }

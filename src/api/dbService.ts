@@ -8,6 +8,7 @@ import {
   getDocs,
   deleteDoc,
   updateDoc,
+  deleteField,
   writeBatch,
   query,
   limit,
@@ -95,18 +96,28 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
 
     if (state.settings) {
       let updated = false;
+      const updatePayload: Record<string, any> = {};
       if (!state.settings.statuses.some((s) => s.name === 'Churned')) {
         state.settings.statuses.push({ name: 'Churned', color: 'red', icon: 'TrendingDown' });
+        updatePayload.statuses = state.settings.statuses;
         updated = true;
       }
       if (!state.settings.statuses.some((s) => s.name === 'Cancelled')) {
         state.settings.statuses.push({ name: 'Cancelled', color: 'slate', icon: 'XCircle' });
+        updatePayload.statuses = state.settings.statuses;
+        updated = true;
+      }
+      if (
+        state.settings.templates &&
+        'survey' in state.settings.templates &&
+        'onboardingSurvey' in state.settings.templates
+      ) {
+        delete state.settings.templates.survey;
+        updatePayload['templates.survey'] = deleteField();
         updated = true;
       }
       if (updated) {
-        updateDoc(doc(db, 'settings', 'global_config'), {
-          statuses: state.settings.statuses,
-        }).catch(console.error);
+        updateDoc(doc(db, 'settings', 'global_config'), updatePayload).catch(console.error);
       }
     }
     if (!state.settings) {
@@ -756,6 +767,13 @@ export async function saveSettings(settings: Settings, config?: ToastConfig | bo
       : 'Failed to update global configuration';
   try {
     const cleanSettings = sanitizeForFirestore(settings);
+    if (
+      cleanSettings.templates &&
+      'survey' in cleanSettings.templates &&
+      'onboardingSurvey' in cleanSettings.templates
+    ) {
+      delete cleanSettings.templates.survey;
+    }
 
     // 1. Create a point-in-time backup of the new settings before overwriting
     try {

@@ -46,7 +46,13 @@ export function useSettingsQuery() {
     queryFn: async () => {
       const snap = await getDoc(doc(db, 'settings', 'global_config'));
       if (!snap.exists()) throw new Error('Settings not found');
-      return snap.data() as Settings;
+      const data = snap.data() as Settings;
+      if (data.templates && 'survey' in data.templates && 'onboardingSurvey' in data.templates) {
+        const cleanedTemplates = { ...data.templates };
+        delete cleanedTemplates.survey;
+        return { ...data, templates: cleanedTemplates };
+      }
+      return data;
     },
     staleTime: 60 * 60 * 1000, // 1 hour
   });

@@ -78,6 +78,7 @@ export default function ClientPortal() {
   const getTemplate = (formId: string) => {
     if (!settings?.templates) return null;
     if (formId === 'deliverables') {
+      if (settings.templates.deliverables) return settings.templates.deliverables;
       const tId =
         Object.keys(settings.templates).find(
           (k) => settings.templates[k].name === 'Deliverables Checklist'
@@ -86,18 +87,21 @@ export default function ClientPortal() {
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'survey') {
+      if (settings.templates.onboardingSurvey) return settings.templates.onboardingSurvey;
       const tId = Object.keys(settings.templates).find(
-        (k) => settings.templates[k].name === 'Onboarding Survey'
+        (k) => k !== 'survey' && settings.templates[k].name === 'Onboarding Survey'
       );
-      return tId ? settings.templates[tId] : null;
+      return tId ? settings.templates[tId] : settings.templates.survey || null;
     }
     if (formId === 'clientQA') {
+      if (settings.templates.clientQA) return settings.templates.clientQA;
       const tId = Object.keys(settings.templates).find(
         (k) => settings.templates[k].name === 'Client QA'
       );
       return tId ? settings.templates[tId] : null;
     }
     if (formId === 'certification') {
+      if (settings.templates.certification) return settings.templates.certification;
       const tId = Object.keys(settings.templates).find(
         (k) => settings.templates[k].name === 'Project Certification'
       );

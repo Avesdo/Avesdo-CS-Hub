@@ -74,14 +74,18 @@ async function run() {
     };
   }
 
-  if (!templates.survey || !templates.survey.fields || templates.survey.fields.length === 0) {
-    console.log('Rebuilding Survey Template from', surveyKeys.size, 'keys');
-    templates.survey = {
-      id: 'survey',
+  if (templates.survey) {
+    delete templates.survey;
+  }
+
+  if (!templates.onboardingSurvey || !templates.onboardingSurvey.fields || templates.onboardingSurvey.fields.length === 0) {
+    console.log('Rebuilding Onboarding Survey Template from', surveyKeys.size, 'keys');
+    templates.onboardingSurvey = {
+      id: 'onboardingSurvey',
       name: 'Onboarding Survey',
       type: 'form',
       sections: [],
-      fields: Array.from(surveyKeys).map(k => ({
+      fields: Array.from(surveyKeys).filter(k => !['answers', 'status', 'submittedAt', 'updatedAt', 'score', 'submittedBy'].includes(k)).map(k => ({
         id: k,
         label: k,
         type: 'text',

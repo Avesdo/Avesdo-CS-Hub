@@ -90,11 +90,78 @@ export function TagDictionaryTab() {
     Developers: 'd1',
     Assignors: 'FromAssignor1',
     Assignees: 'FromAssignee1',
+    'Purchaser or Assignee Swap': 'co1',
     'Managing Broker': 'ps-managing broker',
     Guarantors: 'ps-guarantor',
     Transferor: 'ps-transferor',
   });
   const [dynamicReplacements, setDynamicReplacements] = useState<Record<string, string>>({});
+  const hasSeededSwapTagsRef = useRef(false);
+
+  useEffect(() => {
+    if (hasSeededSwapTagsRef.current || !canEditTags || tags.length === 0) return;
+
+    const hasCat = (t: TagItem, target: string) => {
+      const cats = Array.isArray(t.category) ? t.category : [t.category];
+      return cats.some((c) => typeof c === 'string' && c.trim() === target);
+    };
+
+    const existingSwapTags = tags.filter(
+      (t) =>
+        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap') ||
+        hasCat(t, 'Deal Participants - Purchaser or Assignee Swap - Witnesses')
+    );
+
+    if (existingSwapTags.length > 0) {
+      hasSeededSwapTagsRef.current = true;
+      return;
+    }
+
+    const purchaserTags = tags
+      .filter((t) => hasCat(t, 'Deal Participants - Purchasers'))
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    const purchaserWitnessTags = tags
+      .filter((t) => hasCat(t, 'Deal Participants - Purchasers - Witnesses'))
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (purchaserTags.length === 0 && purchaserWitnessTags.length === 0) return;
+
+    hasSeededSwapTagsRef.current = true;
+
+    const maxOrder = tags.reduce((max, t) => Math.max(max, t.order || 0), 0);
+    let nextOrder = maxOrder + 1;
+
+    const clonedTags: TagItem[] = [
+      ...purchaserTags.map((t) => ({
+        id: `tag_swap_${t.id}`,
+        tag: t.tag,
+        description: t.description,
+        example: t.example || '',
+        category: ['Deal Participants - Purchaser or Assignee Swap'],
+        order: nextOrder++,
+      })),
+      ...purchaserWitnessTags.map((t) => ({
+        id: `tag_swap_${t.id}`,
+        tag: t.tag,
+        description: t.description,
+        example: t.example || '',
+        category: ['Deal Participants - Purchaser or Assignee Swap - Witnesses'],
+        order: nextOrder++,
+      })),
+    ];
+
+    const batch = writeBatch(db);
+    clonedTags.forEach((newTag) => {
+      batch.set(doc(db, 'academy_tags', newTag.id), newTag);
+    });
+
+    batch.commit().catch((e: unknown) => {
+      hasSeededSwapTagsRef.current = false;
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to populate Purchaser or Assignee Swap tags: ' + message);
+    });
+  }, [tags, canEditTags]);
 
   const fuse = useMemo(
     () =>
@@ -629,7 +696,9 @@ export function TagDictionaryTab() {
                                             let actualPrefix = currentPrefix;
 
                                             if (subSub === 'Witnesses' && actualPrefix) {
-                                              if (actualPrefix.startsWith('c')) {
+                                              if (actualPrefix.startsWith('co')) {
+                                                actualPrefix = 'cow' + actualPrefix.slice(2);
+                                              } else if (actualPrefix.startsWith('c')) {
                                                 actualPrefix = 'w' + actualPrefix.slice(1);
                                               } else if (
                                                 actualPrefix.startsWith('FromAssignor') ||

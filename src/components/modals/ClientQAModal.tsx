@@ -13,10 +13,12 @@ interface ClientQAModalProps {
 
 export default function ClientQAModal({ project, onClose }: ClientQAModalProps) {
   const settings = useAppStore((state) => state.settings);
-  const templateId =
-    Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates[k].name === 'Client QA'
-    ) || Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
+  const templateId = settings?.templates?.clientQA
+    ? 'clientQA'
+    : Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates[k].name === 'Client QA'
+      ) ||
+      Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
   const template = templateId ? settings?.templates[templateId] : null;
 
   const [isSaving, setIsSaving] = useState(false);

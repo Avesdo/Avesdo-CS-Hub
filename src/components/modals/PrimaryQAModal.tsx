@@ -13,12 +13,12 @@ interface PrimaryQAModalProps {
 
 export default function PrimaryQAModal({ project, onClose }: PrimaryQAModalProps) {
   const settings = useAppStore((state) => state.settings);
-  // Find the primary QA template (e.g., named "Primary QA" or hardcoded ID)
-  // For now, let's assume we find the first 'form' template or one named 'Primary QA'
-  const templateId =
-    Object.keys(settings?.templates || {}).find(
-      (k) => settings?.templates[k].name === 'Primary QA'
-    ) || Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
+  const templateId = settings?.templates?.primaryQA
+    ? 'primaryQA'
+    : Object.keys(settings?.templates || {}).find(
+        (k) => settings?.templates[k].name === 'Primary QA'
+      ) ||
+      Object.keys(settings?.templates || {}).find((k) => settings?.templates[k].type === 'form');
   const template = templateId ? settings?.templates[templateId] : null;
 
   const [isSaving, setIsSaving] = useState(false);
