@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
-import { Search, ChevronRight, Plus } from 'lucide-react';
+import { Search, ChevronRight, Plus, X } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { db } from '../../../api/firebase';
-import { doc, writeBatch, deleteDoc } from 'firebase/firestore';
+import { doc, writeBatch, deleteDoc, updateDoc } from 'firebase/firestore';
 import { toast } from '../../../utils/toast';
 import { useAppStore } from '../../../store/useAppStore';
 import { usePermissions } from '../../../hooks/usePermissions';
@@ -45,6 +45,7 @@ export function TagDictionaryTab() {
   const canDeleteImports = hasPermission('delete_helpful_imports');
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [showUnavailable, setShowUnavailable] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activePrimaryCategory, setActivePrimaryCategory] = useState<string>('All');
 
@@ -55,6 +56,19 @@ export function TagDictionaryTab() {
   const [editingImport, setEditingImport] = useState<HelpfulImportItem | null>(null);
 
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+
+  const handleToggleUnavailable = async (item: TagItem) => {
+    const nextUnavailable = !item.isUnavailable;
+    try {
+      await updateDoc(doc(db, 'academy_tags', item.id), {
+        isUnavailable: nextUnavailable,
+      });
+      toast.success(nextUnavailable ? 'Tag marked as unavailable' : 'Tag marked as available');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      toast.error('Failed to update tag status: ' + message);
+    }
+  };
 
   const handleDeleteTag = async (id: string) => {
     if (!confirm('Are you sure you want to delete this tag?')) return;
@@ -121,6 +135,7 @@ export function TagDictionaryTab() {
 
     const existingSwapTags = tags.filter(
       (t) =>
+        t.id.startsWith('tag_swap_') ||
         hasCat(t, 'Deal Participants - Purchaser or Assignee Swap') ||
         hasCat(t, 'Deal Participants - Purchaser or Assignee Swap - Witnesses')
     );
@@ -133,6 +148,7 @@ export function TagDictionaryTab() {
 
     const existingAssigneeDpTags = tags.filter(
       (t) =>
+        t.id.startsWith('tag_assignee_dp_') ||
         hasCat(t, 'Deal Participants - Assignees (Deal Participants)') ||
         hasCat(t, 'Deal Participants - Assignees (Deal Participants) - Witnesses')
     );
@@ -143,15 +159,18 @@ export function TagDictionaryTab() {
     const needsCategoryOrderUpdate =
       dpCategoryConfig &&
       (dpCategoryConfig.subCategories.includes('Assignees') ||
-        dpCategoryConfig.subCategories.includes('Assignees (Deal participants)') ||
-        !dpCategoryConfig.subCategories.includes('Assignees (Form Selection)') ||
-        !dpCategoryConfig.subCategories.includes('Assignees (Deal Participants)'));
+        dpCategoryConfig.subCategories.includes('Assignees (Deal participants)'));
+
+    const multiCategoryTags = tags.filter(
+      (t) => Array.isArray(t.category) && t.category.filter(Boolean).length > 1
+    );
 
     if (
       existingSwapTags.length > 0 &&
       legacyAssigneeTags.length === 0 &&
       existingAssigneeDpTags.length > 0 &&
-      !needsCategoryOrderUpdate
+      !needsCategoryOrderUpdate &&
+      multiCategoryTags.length === 0
     ) {
       hasSeededParticipantTagsRef.current = true;
       return;
@@ -231,7 +250,35 @@ export function TagDictionaryTab() {
       });
     }
 
-    // 4. Update academyCategoryOrder in settings/global_config if needed
+    // 4. Split any multi-category tags into independent duplicate documents
+    if (multiCategoryTags.length > 0) {
+      multiCategoryTags.forEach((t) => {
+        const validCats = (Array.isArray(t.category) ? t.category : [t.category])
+          .map((c) => (typeof c === 'string' ? c.trim() : ''))
+          .filter(Boolean);
+
+        if (validCats.length <= 1) return;
+
+        batch.update(doc(db, 'academy_tags', t.id), { category: [validCats[0]] });
+
+        validCats.slice(1).forEach((extraCat, idx) => {
+          const splitId = `${t.id}_split_${idx + 1}`;
+          const clonedTag: TagItem = {
+            id: splitId,
+            tag: t.tag,
+            description: t.description,
+            example: t.example || '',
+            category: [extraCat],
+            order: nextOrder++,
+            ...(typeof t.isUnavailable === 'boolean' ? { isUnavailable: t.isUnavailable } : {}),
+            ...(t.unavailableReason ? { unavailableReason: t.unavailableReason } : {}),
+          };
+          batch.set(doc(db, 'academy_tags', splitId), clonedTag);
+        });
+      });
+    }
+
+    // 5. Update academyCategoryOrder in settings/global_config if needed
     if (needsCategoryOrderUpdate && settings?.academyCategoryOrder) {
       const updatedCategoryOrder = settings.academyCategoryOrder.map((c) => {
         if (c.primary !== 'Deal Participants') return c;
@@ -280,7 +327,7 @@ export function TagDictionaryTab() {
   const fuse = useMemo(
     () =>
       new Fuse(tags, {
-        keys: ['tag', 'description', 'category'],
+        keys: ['tag', 'description', 'category', 'unavailableReason'],
         threshold: 0.3,
       }),
     [tags]
@@ -315,6 +362,10 @@ export function TagDictionaryTab() {
       result = fuse.search(searchQuery).map((res) => res.item);
     }
 
+    if (!showUnavailable) {
+      result = result.filter((t) => !t.isUnavailable);
+    }
+
     const sortedResult = [...result].sort((a, b) => (a.order || 0) - (b.order || 0));
 
     const map = new Map<string, Map<string, Map<string, TagItem[]>>>();
@@ -337,7 +388,7 @@ export function TagDictionaryTab() {
       });
     });
     return map;
-  }, [tags, searchQuery, fuse, activePrimaryCategory]);
+  }, [tags, searchQuery, fuse, activePrimaryCategory, showUnavailable]);
 
   const primaryCategories = useMemo(() => {
     const savedConfig = settings?.academyCategoryOrder || [];
@@ -469,13 +520,96 @@ export function TagDictionaryTab() {
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full bg-white w-full">
-        {/* Top Navigation Bar: Glassmorphism tabs + inline search (No bottom border!) */}
-        <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-4 py-1">
-          {/* Horizontal Scrollable Tabs */}
+        {/* Page Header + Search & Admin Actions */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 shrink-0">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+              Tag Database
+            </h1>
+            <p className="text-sm md:text-base text-muted-foreground mt-0.5">
+              Explore standard tags, build dynamic tags, and reference helpful imports.
+            </p>
+          </div>
+
+          {/* Search, Filter & Admin Actions */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {activePrimaryCategory !== 'Helpful References' && (
+              <label className="flex items-center gap-2 px-3 h-9 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-100/80 text-xs font-medium text-slate-600 cursor-pointer select-none shadow-sm whitespace-nowrap transition-colors">
+                <input
+                  type="checkbox"
+                  checked={showUnavailable}
+                  onChange={(e) => setShowUnavailable(e.target.checked)}
+                  className="w-3.5 h-3.5 rounded border-slate-300 text-primary focus:ring-primary/20 cursor-pointer"
+                />
+                <span>Show Unavailable</span>
+              </label>
+            )}
+
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search tags, categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white pl-9 pr-8 py-1.5 text-sm shadow-sm transition-all outline-none placeholder:text-slate-400 h-9 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {canEditTags && activePrimaryCategory !== 'Helpful References' && (
+              <>
+                <button
+                  onClick={() => setIsCategoryManagerOpen(true)}
+                  className="group px-3.5 h-9 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200 hover:text-slate-900 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-sm"
+                  title="Manage Categories"
+                >
+                  Manage Categories
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingTag(null);
+                    setIsTagModalOpen(true);
+                  }}
+                  className="group px-3.5 h-9 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-sm"
+                  title="Create new Tag"
+                >
+                  <Plus className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />{' '}
+                  New Tag
+                </button>
+              </>
+            )}
+
+            {canEditImports && activePrimaryCategory === 'Helpful References' && (
+              <button
+                onClick={() => {
+                  setEditingImport(null);
+                  setIsImportModalOpen(true);
+                }}
+                className="group px-3.5 h-9 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-primary/90 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)] active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-sm"
+                title="Create new Helpful Reference"
+              >
+                <Plus className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />{' '}
+                New Reference
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Dedicated Full-Width Category Tabs Bar */}
+        <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 shrink-0">
           <div className="flex items-center gap-1 overflow-x-auto custom-thin-scroll w-full">
             <button
               onClick={() => setActivePrimaryCategory('All')}
-              className={`px-4 py-2 text-sm font-semibold whitespace-nowrap rounded-t-lg transition-colors border-b-2 ${
+              className={`px-3.5 py-2 text-sm font-semibold whitespace-nowrap rounded-t-lg transition-colors border-b-2 ${
                 activePrimaryCategory === 'All'
                   ? 'border-primary text-primary bg-primary/5'
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
@@ -488,7 +622,7 @@ export function TagDictionaryTab() {
               <button
                 key={primary}
                 onClick={() => setActivePrimaryCategory(primary)}
-                className={`px-4 py-2 text-sm font-semibold whitespace-nowrap rounded-t-lg transition-colors border-b-2 ${
+                className={`px-3.5 py-2 text-sm font-semibold whitespace-nowrap rounded-t-lg transition-colors border-b-2 ${
                   activePrimaryCategory === primary
                     ? 'border-primary text-primary bg-primary/5'
                     : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
@@ -497,55 +631,6 @@ export function TagDictionaryTab() {
                 {primary}
               </button>
             ))}
-          </div>
-
-          {/* Inline Search & Actions */}
-          <div className="flex items-center gap-2 pr-4 shrink-0">
-            <div className="relative w-full md:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-              <input
-                type="text"
-                placeholder="Search tags, categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-w-0 rounded-md border border-slate-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-all outline-none placeholder:text-slate-400 pl-8 pr-8 h-8 focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-
-            {canEditTags && activePrimaryCategory !== 'Helpful References' && (
-              <>
-                <button
-                  onClick={() => setIsCategoryManagerOpen(true)}
-                  className="px-3 h-8 bg-white border border-slate-200 text-slate-700 rounded-md text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-sm"
-                  title="Manage Categories"
-                >
-                  Manage Categories
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingTag(null);
-                    setIsTagModalOpen(true);
-                  }}
-                  className="px-3 h-8 bg-primary text-white rounded-md text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-sm"
-                  title="Create new Tag"
-                >
-                  <Plus className="w-3.5 h-3.5" /> New
-                </button>
-              </>
-            )}
-
-            {canEditImports && activePrimaryCategory === 'Helpful References' && (
-              <button
-                onClick={() => {
-                  setEditingImport(null);
-                  setIsImportModalOpen(true);
-                }}
-                className="px-3 h-8 bg-primary text-white rounded-md text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-sm"
-                title="Create new Helpful Reference"
-              >
-                <Plus className="w-3.5 h-3.5" /> New
-              </button>
-            )}
           </div>
         </div>
 
@@ -638,9 +723,12 @@ export function TagDictionaryTab() {
                   .filter((p) => displayGroups.has(p))
                   .map((primary) => {
                     const subMap = displayGroups.get(primary)!;
-                    const savedConfig =
-                      settings?.academyCategoryOrder?.find((c) => c.primary === primary)
-                        ?.subCategories || [];
+                    const primaryConfig = settings?.academyCategoryOrder?.find(
+                      (c) => c.primary === primary
+                    );
+                    const savedConfig = primaryConfig?.subCategories || [];
+                    const primaryDescription = primaryConfig?.description?.trim();
+                    const subDescriptions = primaryConfig?.subCategoryDescriptions || {};
 
                     const sortedSubs = Array.from(subMap.entries()).sort(([a], [b]) => {
                       const idxA = savedConfig.indexOf(a);
@@ -656,11 +744,17 @@ export function TagDictionaryTab() {
                         key={primary}
                         className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500"
                       >
-                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight pb-1 border-b-2 border-slate-100">
-                          {primary}
-                        </h2>
+                        <div className="pb-1.5 border-b-2 border-slate-100">
+                          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                            {primary}
+                          </h2>
+                          {primaryDescription && (
+                            <p className="text-sm text-slate-500 mt-1">{primaryDescription}</p>
+                          )}
+                        </div>
 
                         {sortedSubs.map(([sub, subSubMap]) => {
+                          const subDescription = subDescriptions[sub]?.trim();
                           const isFutureDates = sub.toLowerCase() === 'future dates';
                           const matchedParticipantKey =
                             primary === 'Deal Participants'
@@ -705,8 +799,15 @@ export function TagDictionaryTab() {
                               id={`category-${primary.replace(/\s+/g, '-')}-${sub.replace(/\s+/g, '-')}`}
                               className="scroll-mt-20 relative flex flex-col gap-3"
                             >
-                              <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md py-2 flex items-center justify-between border-b border-transparent shadow-sm">
-                                <h3 className="text-lg font-bold text-slate-800">{sub}</h3>
+                              <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md py-2 flex items-center justify-between gap-4 border-b border-transparent shadow-sm">
+                                <div>
+                                  <h3 className="text-lg font-bold text-slate-800">{sub}</h3>
+                                  {subDescription && (
+                                    <p className="text-xs text-slate-500 mt-0.5">
+                                      {subDescription}
+                                    </p>
+                                  )}
+                                </div>
 
                                 <div className="flex items-center gap-3">
                                   {/* Example Replacement Input */}
@@ -874,6 +975,7 @@ export function TagDictionaryTab() {
                                                 setEditingTag={setEditingTag}
                                                 setIsTagModalOpen={setIsTagModalOpen}
                                                 handleDeleteTag={handleDeleteTag}
+                                                handleToggleUnavailable={handleToggleUnavailable}
                                               />
                                             );
                                           })}
@@ -971,6 +1073,9 @@ export function TagDictionaryTab() {
           <CategoryManagerModal
             isOpen={isCategoryManagerOpen}
             onClose={() => setIsCategoryManagerOpen(false)}
+            onPrimaryRenamed={(oldName, newName) => {
+              setActivePrimaryCategory((prev) => (prev === oldName ? newName : prev));
+            }}
           />
         )}
       </div>

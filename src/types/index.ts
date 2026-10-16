@@ -145,7 +145,9 @@ export interface Settings {
   academyEnrollments?: string[];
   academyCategoryOrder?: {
     primary: string;
+    description?: string;
     subCategories: string[];
+    subCategoryDescriptions?: Record<string, string>;
   }[];
   [key: string]: any;
 }
@@ -279,6 +281,8 @@ export interface TagItem {
   example?: string;
   category: string | string[];
   order?: number;
+  isUnavailable?: boolean;
+  unavailableReason?: string;
 }
 
 export interface HelpfulImportItem {

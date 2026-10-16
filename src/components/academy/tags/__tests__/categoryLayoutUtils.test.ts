@@ -3,6 +3,7 @@ import {
   computeCategoryHierarchy,
   buildCategoryConfig,
   handleReorderDragEnd,
+  applyCategoryRenamesToTags,
 } from '../categoryLayoutUtils';
 import { TagItem } from '../../../../types';
 
@@ -26,7 +27,11 @@ describe('categoryLayoutUtils', () => {
     const savedConfig = [
       {
         primary: 'Financial',
+        description: 'All financial and deposit tags',
         subCategories: ['Mortgage', 'Deposit'],
+        subCategoryDescriptions: {
+          Deposit: 'Deposit schedule tags',
+        },
       },
       {
         primary: 'Contracts',
@@ -54,6 +59,10 @@ describe('categoryLayoutUtils', () => {
     // Standalone tag has no subcategory -> subOrderMap has empty array without inventing unwanted subcategories
     expect(result.subOrderMap['Standalone']).toEqual([]);
 
+    expect(result.primaryDescriptions['Financial']).toBe('All financial and deposit tags');
+    expect(result.primaryDescriptions['Contracts']).toBeUndefined();
+    expect(result.subDescriptionsMap['Financial']).toEqual({ Deposit: 'Deposit schedule tags' });
+
     expect(result.tagCountsByPrimary['Financial']).toBeUndefined();
     expect(result.tagCountsByPrimary['Contracts']).toBe(1);
     expect(result.tagCountsByPrimary['Standalone']).toBe(1);
@@ -61,19 +70,74 @@ describe('categoryLayoutUtils', () => {
     expect(result.tagCountsBySub['Standalone']).toBeUndefined();
   });
 
-  it('buildCategoryConfig formats categories preserving empty subcategories without fallback', () => {
+  it('buildCategoryConfig formats categories preserving empty subcategories and optional descriptions', () => {
     const primaryOrder = ['Legal', 'Sales'];
     const subOrderMap = {
       Legal: ['NDA', 'Terms'],
       Sales: [],
     };
+    const primaryDescriptions = {
+      Legal: '  Legal document tags  ',
+      Sales: '   ',
+    };
+    const subDescriptionsMap = {
+      Legal: {
+        NDA: 'Non-disclosure tags',
+        RemovedSub: 'Should be ignored',
+      },
+    };
 
-    const config = buildCategoryConfig(primaryOrder, subOrderMap);
+    const config = buildCategoryConfig(
+      primaryOrder,
+      subOrderMap,
+      primaryDescriptions,
+      subDescriptionsMap
+    );
 
     expect(config).toEqual([
-      { primary: 'Legal', subCategories: ['NDA', 'Terms'] },
+      {
+        primary: 'Legal',
+        description: 'Legal document tags',
+        subCategories: ['NDA', 'Terms'],
+        subCategoryDescriptions: {
+          NDA: 'Non-disclosure tags',
+        },
+      },
       { primary: 'Sales', subCategories: [] },
     ]);
+  });
+
+  it('applyCategoryRenamesToTags renames primary and subcategories across tag items', () => {
+    const mockTags: TagItem[] = [
+      {
+        id: '1',
+        tag: '_fullname_',
+        description: 'Full name',
+        category: ['Deal Participants - Purchasers'],
+      },
+      {
+        id: '2',
+        tag: '_witness_',
+        description: 'Witness name',
+        category: ['Deal Participants - Purchasers - Witnesses'],
+      },
+      {
+        id: '3',
+        tag: '_price_',
+        description: 'Price',
+        category: ['Financial - Pricing'],
+      },
+    ];
+
+    const { updatedTags, changedTags } = applyCategoryRenamesToTags(mockTags, [
+      { type: 'sub', primary: 'Deal Participants', from: 'Purchasers', to: 'Buyers' },
+      { type: 'primary', from: 'Deal Participants', to: 'Participants' },
+    ]);
+
+    expect(changedTags).toHaveLength(2);
+    expect(updatedTags[0].category).toEqual(['Participants - Buyers']);
+    expect(updatedTags[1].category).toEqual(['Participants - Buyers - Witnesses']);
+    expect(updatedTags[2].category).toEqual(['Financial - Pricing']);
   });
 
   it('handleReorderDragEnd correctly reorders primary categories', () => {

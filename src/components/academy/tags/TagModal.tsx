@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { TagItem } from '../../../types';
 import { toast } from '../../../utils/toast';
 import { db } from '../../../api/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, writeBatch } from 'firebase/firestore';
 import { useAppStore } from '../../../store/useAppStore';
 import { MultiSelect } from '../../ui/MultiSelect';
 
@@ -78,36 +78,88 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
         description: '',
         example: '',
         category: initialCategory,
+        isUnavailable: false,
+        unavailableReason: '',
       });
     }
   }, [tagData, isOpen, categories, defaultCategory]);
 
   const handleSubmit = async () => {
-    if (
-      !formData.tag ||
-      !formData.description ||
-      !formData.category ||
-      (Array.isArray(formData.category) && formData.category.length === 0)
-    ) {
+    const selectedCategories = (
+      Array.isArray(formData.category)
+        ? formData.category
+        : formData.category
+          ? [formData.category]
+          : []
+    )
+      .map((c) => (typeof c === 'string' ? c.trim() : ''))
+      .filter(Boolean);
+
+    if (!formData.tag || !formData.description || selectedCategories.length === 0) {
       toast.error('Please fill in all required fields (Tag, Description, Category)');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const id = formData.id || `tag_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      const docRef = doc(db, 'academy_tags', id);
+      const maxOrder = tags.reduce((max, t) => Math.max(max, t.order || 0), 0);
+      let nextOrder = maxOrder + 1;
 
-      const payload: TagItem = {
-        id,
-        tag: formData.tag,
-        description: formData.description,
-        example: formData.example || '',
-        category: formData.category,
-      };
+      if (selectedCategories.length === 1) {
+        const id = formData.id || `tag_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        const docRef = doc(db, 'academy_tags', id);
 
-      await setDoc(docRef, payload);
-      toast.success(tagData ? 'Tag updated successfully' : 'Tag created successfully');
+        const payload: TagItem = {
+          id,
+          tag: formData.tag,
+          description: formData.description,
+          example: formData.example || '',
+          category: [selectedCategories[0]],
+          order: typeof formData.order === 'number' ? formData.order : nextOrder++,
+          isUnavailable: Boolean(formData.isUnavailable),
+          unavailableReason: formData.isUnavailable
+            ? (formData.unavailableReason || '').trim()
+            : '',
+        };
+
+        await setDoc(docRef, payload);
+        toast.success(tagData ? 'Tag updated successfully' : 'Tag created successfully');
+      } else {
+        const batch = writeBatch(db);
+
+        selectedCategories.forEach((cat, idx) => {
+          const isPrimaryExisting = idx === 0 && Boolean(formData.id);
+          const id = isPrimaryExisting
+            ? (formData.id as string)
+            : `tag_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 9)}`;
+
+          const payload: TagItem = {
+            id,
+            tag: formData.tag!,
+            description: formData.description!,
+            example: formData.example || '',
+            category: [cat],
+            order:
+              isPrimaryExisting && typeof formData.order === 'number'
+                ? formData.order
+                : nextOrder++,
+            isUnavailable: Boolean(formData.isUnavailable),
+            unavailableReason: formData.isUnavailable
+              ? (formData.unavailableReason || '').trim()
+              : '',
+          };
+
+          batch.set(doc(db, 'academy_tags', id), payload);
+        });
+
+        await batch.commit();
+        toast.success(
+          tagData
+            ? `Tag updated and duplicated into ${selectedCategories.length} independent categories`
+            : `Created ${selectedCategories.length} independent tags across selected categories`
+        );
+      }
+
       onClose();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown error';
@@ -182,6 +234,39 @@ export function TagModal({ isOpen, onClose, tagData, defaultCategory }: TagModal
               placeholder="e.g. ContractName"
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-primary outline-none"
             />
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 space-y-3">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={Boolean(formData.isUnavailable)}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isUnavailable: e.target.checked }))
+                }
+                className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500/20 cursor-pointer"
+              />
+              <span className="text-sm font-medium text-slate-700">
+                Mark as Unavailable (Do Not Use)
+              </span>
+            </label>
+
+            {formData.isUnavailable && (
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">
+                  Warning Note / Reason (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.unavailableReason || ''}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, unavailableReason: e.target.value }))
+                  }
+                  placeholder="e.g. Not working as intended — use [other_tag] instead"
+                  className="w-full border border-red-200 bg-red-50/30 rounded-lg px-3 py-2 text-sm focus:border-red-400 outline-none"
+                />
+              </div>
+            )}
           </div>
         </div>
 
