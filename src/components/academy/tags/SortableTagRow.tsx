@@ -76,13 +76,12 @@ export function SortableTagRow({
               <Tooltip
                 content={
                   item.unavailableReason
-                    ? `Do Not Use: ${item.unavailableReason}`
-                    : 'This tag is currently unavailable and should not be used.'
+                    ? `Does not work: ${item.unavailableReason}`
+                    : 'Does not work'
                 }
               >
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 shrink-0 cursor-not-allowed">
-                  <Ban className="w-3 h-3" />
-                  Do Not Use
+                <span className="inline-flex items-center justify-center p-1 rounded-full bg-red-100 text-red-600 border border-red-200 shrink-0 cursor-not-allowed">
+                  <Ban className="w-3.5 h-3.5" />
                 </span>
               </Tooltip>
             ) : (

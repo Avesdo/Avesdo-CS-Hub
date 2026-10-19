@@ -248,7 +248,7 @@ export function TagModal({ isOpen, onClose, tagData }: TagModalProps) {
                 className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500/20 cursor-pointer"
               />
               <span className="text-sm font-medium text-slate-700">
-                Mark as Unavailable (Do Not Use)
+                Mark as Unavailable (Does Not Work)
               </span>
             </label>
 

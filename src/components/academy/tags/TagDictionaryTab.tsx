@@ -26,7 +26,13 @@ import { HelpfulImportModal } from './HelpfulImportModal';
 import { CategoryManagerModal } from './CategoryManagerModal';
 import { Select } from '../../ui/Select';
 import { TagItem, HelpfulImportItem } from '../../../types';
-import { participantPrefixes, allParticipants } from './tagDictionaryConstants';
+import {
+  participantPrefixes,
+  allParticipants,
+  getDefaultCategoryDescription,
+  getDefaultSubcategoryDescription,
+} from './tagDictionaryConstants';
+import { computeCategoryHierarchy } from './categoryLayoutUtils';
 import { SortableTagRow } from './SortableTagRow';
 import { SortableHelpfulImportRow } from './SortableHelpfulImportRow';
 
@@ -165,12 +171,34 @@ export function TagDictionaryTab() {
       (t) => Array.isArray(t.category) && t.category.filter(Boolean).length > 1
     );
 
+    const signDateDaysToSeed = [
+      60, 90, 100, 180, 200, 240, 270, 300, 305, 365, 400, 420, 450, 500, 600, 720,
+    ];
+    const isSignDateTag = (tagStr: string, days: number) => {
+      const cleaned = tagStr.replace(/[[\]\s]/g, '').toLowerCase();
+      return (
+        cleaned === `signdate${days}` ||
+        cleaned === `future_c1s_signdate${days}` ||
+        cleaned.endsWith(`_signdate${days}`)
+      );
+    };
+    const signDate30Tag = tags.find((t) => isSignDateTag(t.tag, 30));
+    const hasSignDatesCategory = tags.some((t) => hasCat(t, 'Dates - Sign Dates'));
+    const missingSignDateDays =
+      signDate30Tag || hasSignDatesCategory
+        ? signDateDaysToSeed.filter(
+            (days) =>
+              !tags.some((t) => t.id === `tag_signdate_${days}` || isSignDateTag(t.tag, days))
+          )
+        : [];
+
     if (
       existingSwapTags.length > 0 &&
       legacyAssigneeTags.length === 0 &&
       existingAssigneeDpTags.length > 0 &&
       !needsCategoryOrderUpdate &&
-      multiCategoryTags.length === 0
+      multiCategoryTags.length === 0 &&
+      missingSignDateDays.length === 0
     ) {
       hasSeededParticipantTagsRef.current = true;
       return;
@@ -179,7 +207,10 @@ export function TagDictionaryTab() {
     hasSeededParticipantTagsRef.current = true;
 
     const batch = writeBatch(db);
-    const maxOrder = tags.reduce((max, t) => Math.max(max, t.order || 0), 0);
+    const maxOrder = tags.reduce(
+      (max, t, idx) => Math.max(max, typeof t.order === 'number' ? t.order : idx),
+      0
+    );
     let nextOrder = maxOrder + 1;
 
     // 1. Seed Purchaser or Assignee Swap if empty
@@ -317,10 +348,44 @@ export function TagDictionaryTab() {
       });
     }
 
+    // 6. Duplicate SignDate30 for SignDate60..SignDate720 in Dates - Sign Dates
+    if (missingSignDateDays.length > 0 && (signDate30Tag || hasSignDatesCategory)) {
+      const targetCategory = signDate30Tag
+        ? Array.isArray(signDate30Tag.category)
+          ? signDate30Tag.category
+          : [signDate30Tag.category || 'Dates - Sign Dates']
+        : ['Dates - Sign Dates'];
+
+      const baseTagStr = signDate30Tag?.tag || 'future_c1s_SignDate30';
+      const baseDesc =
+        signDate30Tag?.description ||
+        'Displays the date that is 30 days after the First purchaser signed the document.';
+      const baseExample = signDate30Tag?.example || 'October 19, 2026';
+
+      const newSignDateTags: TagItem[] = [];
+      missingSignDateDays.forEach((days) => {
+        const newId = `tag_signdate_${days}`;
+        const newTag: TagItem = {
+          id: newId,
+          tag: baseTagStr.replace(/signdate30/gi, `SignDate${days}`),
+          description: baseDesc.replace(/\b30\b/g, String(days)),
+          example: baseExample,
+          category: [...targetCategory],
+          order: nextOrder++,
+        };
+        newSignDateTags.push(newTag);
+        batch.set(doc(db, 'academy_tags', newId), newTag);
+      });
+
+      useAppStore.setState((state) => ({
+        tags: [...(state.tags ?? []), ...newSignDateTags],
+      }));
+    }
+
     batch.commit().catch((e: unknown) => {
       hasSeededParticipantTagsRef.current = false;
       const message = e instanceof Error ? e.message : 'Unknown error';
-      toast.error('Failed to update Deal Participant subcategories: ' + message);
+      toast.error('Failed to update tag database: ' + message);
     });
   }, [tags, canEditTags, settings]);
 
@@ -359,6 +424,324 @@ export function TagDictionaryTab() {
       hasNormalizedOrderRef.current = false;
     });
   }, [tags, canEditTags]);
+
+  const hasFixedSpellingAndTyposRef = useRef(false);
+
+  useEffect(() => {
+    if (hasFixedSpellingAndTyposRef.current || !canEditTags || tags.length === 0) return;
+
+    const fixSpellingText = (str: string) =>
+      str
+        .replace(/Formating/g, 'Formatting')
+        .replace(/Wirness's/g, "Witness's")
+        .replace(/Wirness/g, 'Witness')
+        .replace(/Inital/g, 'Initial')
+        .replace(/Realtor's Full Name Name/g, "Realtor's Full Name")
+        .replace(/realtore/gi, 'realtor')
+        .replace(/&amp;/g, '&')
+        .replace(/\(123\)\s*456[\u00ad-]?7980/g, '(123) 456-7890')
+        .replace(/\(456\)\s*789[\u00ad-]?1230/g, '(456) 789-1230')
+        .replace(/\u00ad/g, '-')
+        .replace(/\bDrivers License\b/g, "Driver's License")
+        .replace(/\bEft Payment\b/g, 'EFT Payment')
+        .replace(/\bDeal information\b/g, 'Deal Information')
+        .replace(/\b1,23,456\.00\b/g, '123,456.00')
+        .replace(/\b1,23,456\b/g, '123,456');
+
+    const tagUpdates: Array<{
+      id: string;
+      changes: Partial<Pick<TagItem, 'tag' | 'description' | 'example' | 'category'>>;
+    }> = [];
+
+    const updatedTags = tags.map((t) => {
+      const rawCats = Array.isArray(t.category) ? t.category : [t.category];
+      const nextCats = rawCats.map((c) => (typeof c === 'string' ? fixSpellingText(c) : c));
+      const nextTag = t.tag
+        .replace(/\[identifier\]/gi, '[prefix]')
+        .replace(/^Corpc1([si])$/, 'Corp[prefix]$1')
+        .replace(/^NonCorpc1([si])$/, 'NonCorp[prefix]$1');
+      let nextDesc = fixSpellingText(t.description || '');
+      let nextExample = fixSpellingText(t.example || '');
+
+      const isAssignorCat = nextCats.some(
+        (c) => typeof c === 'string' && c.trim().toLowerCase() === 'deal participants - assignors'
+      );
+      const isSwapCat = nextCats.some(
+        (c) =>
+          typeof c === 'string' &&
+          c.trim().toLowerCase() === 'deal participants - purchaser or assignee swap'
+      );
+      const isWitnessCat = nextCats.some(
+        (c) => typeof c === 'string' && c.trim().toLowerCase().endsWith('- witnesses')
+      );
+
+      // Table A: Factual Errors & Copy-Paste Mistakes
+      if (isAssignorCat && nextTag === 'ContractName') {
+        nextDesc = "Assignor's Full Name or Corporation Name";
+      } else if (isSwapCat && nextTag === 'ContractName') {
+        nextDesc = "Purchaser's or Assignee's Full Name or Corporation Name";
+      }
+
+      if (nextTag === 'StorageType[Label]' && nextExample.includes('BikeTypeMedium')) {
+        nextExample = nextExample.replace('BikeTypeMedium', 'StorageTypeMedium');
+      }
+      if (nextTag === 'BikeType[Label]' && nextExample.includes('StorageTypeSmall')) {
+        nextExample = nextExample.replace('StorageTypeSmall', 'BikeTypeSmall');
+      }
+
+      if (isWitnessCat && nextTag === 'Corp[prefix]s') {
+        nextExample = "Witness's Signature";
+      }
+      if (isWitnessCat && nextTag === 'NonCorp[prefix]i') {
+        nextExample = "Witness's Initial";
+      }
+
+      if (nextTag === 'ParkingExtraPrice' && nextExample === '2000.00') {
+        nextExample = '2000.000';
+      }
+      if (nextTag === 'NetOfHst' && nextExample === '5000.00') {
+        nextExample = '575000.00';
+      }
+      if (nextTag === 'NetOfHstBase' && nextExample === '5000.00') {
+        nextExample = '595000.00';
+      }
+
+      if (nextTag === 'c1-contractsigneddatetime') {
+        nextDesc =
+          'Populates the date and time Purchaser 1 signed the contract (only populates on documents added after the contract was signed)';
+      }
+
+      // Table B: Realtor or Sales Rep & Citizenship
+      if (nextTag === 'actualRepName') {
+        nextDesc =
+          "Populates the Realtor's Full Name if a Realtor is on the deal; otherwise populates the Sales Rep's Full Name";
+      } else if (nextTag === 'actualBrokerage') {
+        nextDesc =
+          "Populates the Realtor's Brokerage if a Realtor is on the deal; otherwise populates the Sales Rep's Brokerage";
+      } else if (nextTag === 'actualRepSign') {
+        nextDesc =
+          "Populates the Realtor's Signature if a Realtor is on the deal; otherwise populates the Sales Rep's Signature";
+      } else if (nextTag === 'Citizenship') {
+        nextDesc =
+          'Populates "Canada" for Canadian Citizens and Permanent Residents; otherwise populates the participant\'s citizenship/residency';
+      }
+
+      // Table C: Tags Where "Example" Contained a Description Instead of Sample Output
+      if (nextTag === 'LegalDescription') {
+        nextDesc = 'Legal description of the property (from Listing Setup)';
+        nextExample = 'Strata Lot 32, Plan EPS1234';
+      } else if (nextTag === 'Pid') {
+        nextDesc = 'Parcel Identifier (PID) from Listing Setup';
+        nextExample = '012-345-678';
+      } else if (/^PropExtraTag(\d+)$/.test(nextTag)) {
+        const colNum = nextTag.replace('PropExtraTag', '');
+        nextDesc = `Custom Listing Column ${colNum} (from Listing Setup)`;
+        nextExample = `Custom Value ${colNum}`;
+      } else if (nextTag === 'FormOption[Example]') {
+        nextDesc = 'Populates the selected option text for the specified option tag';
+        nextExample = 'Kitchen Island Upgrade';
+      } else if (nextTag === 'Addendum') {
+        nextDesc = 'Populates custom addendum text entered while adding the form';
+        nextExample = 'Subject to Buyer financing approval.';
+      } else if (nextTag === 'CountPurchaser') {
+        nextDesc = 'Total number of purchasers on the deal';
+        nextExample = '2';
+      } else if (nextTag === 'CountRealtor') {
+        nextDesc = 'Total number of realtors on the deal';
+        nextExample = '1';
+      } else if (nextTag === 'CountAssignee') {
+        nextDesc = 'Total number of assignees on the deal';
+        nextExample = '2';
+      } else if (nextTag === 'noRealtorNa') {
+        nextDesc = 'Populates "N.A" when there is no realtor on the deal';
+        nextExample = 'N.A';
+      } else if (nextTag === 'thereIsNoRealtor') {
+        nextDesc = 'Populates "X" when there is no realtor on the deal';
+        nextExample = 'X';
+      } else if (nextTag === 'thereIsRealtor') {
+        nextDesc = 'Populates "X" when a realtor is present on the deal';
+        nextExample = 'X';
+      }
+
+      // Table D: Clarifying Ambiguous or Vague Tag Descriptions
+      if (nextTag === 'TitleMr') {
+        nextDesc = 'Populates "X" if Title is Mr.';
+      } else if (nextTag === 'TitleMiss') {
+        nextDesc = 'Populates "X" if Title is Miss';
+      } else if (nextTag === 'TitleMs') {
+        nextDesc = 'Populates "X" if Title is Ms.';
+      } else if (nextTag === 'TitleMrs') {
+        nextDesc = 'Populates "X" if Title is Mrs.';
+      } else if (nextTag === 'Business') {
+        nextDesc = 'Occupation / Profession';
+      } else if (nextTag === 'Sin') {
+        nextDesc = 'Social Insurance Number (SIN)';
+      } else if (nextTag === 'IdType') {
+        nextDesc = 'Primary ID Type';
+      } else if (nextTag === 'IdNumber') {
+        nextDesc = 'Primary ID Number';
+      } else if (nextTag === 'IdExpire') {
+        nextDesc = 'Primary ID Expiry Date';
+      } else if (nextTag === 'IdType2') {
+        nextDesc = 'Secondary ID Type';
+      } else if (nextTag === 'IdNumber2') {
+        nextDesc = 'Secondary ID Number';
+      } else if (nextTag === 'IdExpire2') {
+        nextDesc = 'Secondary ID Expiry Date';
+      } else if (nextTag === 'CorpSigner') {
+        nextDesc = 'If corporate, populates "Per: [Authorized Signer Full Name]"; otherwise blank';
+      } else if (nextTag === 'NonCorpName') {
+        nextDesc =
+          'If individual (non-corporate), populates Full Name; if corporate, remains blank';
+      } else if (nextTag === 'CorpName') {
+        nextDesc = 'If corporate, populates the Corporation Name; otherwise blank';
+      } else if (nextTag === 'NonCorp[prefix]s') {
+        nextDesc = isWitnessCat
+          ? 'Individual (non-corporate) Witness Signature; blank if buying as a corporation'
+          : 'Individual (non-corporate) Signature; blank if buying as a corporation';
+      } else if (nextTag === 'NonCorp[prefix]i') {
+        nextDesc = isWitnessCat
+          ? 'Individual (non-corporate) Witness Initial; blank if buying as a corporation'
+          : 'Individual (non-corporate) Initial; blank if buying as a corporation';
+      } else if (nextTag === 'Corp[prefix]s') {
+        nextDesc = isWitnessCat
+          ? 'Corporate Witness Signature; blank if buying as an individual'
+          : 'Corporate Authorized Signer Signature; blank if buying as an individual';
+      } else if (nextTag === 'Corp[prefix]i') {
+        nextDesc = isWitnessCat
+          ? 'Corporate Witness Initial; blank if buying as an individual'
+          : 'Corporate Authorized Signer Initial; blank if buying as an individual';
+      } else if (nextTag === 'OfferOpenDateFull') {
+        nextDesc = 'Offer Open Date (Abbreviated Month)';
+      } else if (nextTag === 'OfferOpenDateDay') {
+        nextDesc = 'Offer Open Day (2 Digits)';
+      } else if (nextTag === 'OfferOpenDateMonth') {
+        nextDesc = 'Offer Open Month (Abbreviated)';
+      } else if (nextTag === 'OfferOpenDateMonthLong') {
+        nextDesc = 'Offer Open Month (Full)';
+      } else if (nextTag === 'OfferOpenDateYear') {
+        nextDesc = 'Offer Open Year (4 Digits)';
+      } else if (nextTag === 'OfferOpenTimeFull') {
+        nextDesc = 'Offer Open Time (12-Hour)';
+      } else if (nextTag === 'c1-contractsigneddate') {
+        nextDesc =
+          'Populates the date Purchaser 1 signed the contract (only populates on documents added after the contract was signed; does not require the new document to be signed)';
+      } else if (nextTag === 'future_c1s_c1-contractsigneddate') {
+        nextDesc =
+          'Populates the contract signing date once this document is signed by the participant (works for both new deals and post-contract addenda)';
+      } else if (nextTag === 'logic_') {
+        if (nextExample.includes('BikeExtra')) {
+          nextDesc =
+            'Conditional Comparison (> or <): e.g., if additional bike locker is greater than 0, show "X", otherwise blank';
+        } else if (nextExample.includes('BoolIsCorp')) {
+          nextDesc =
+            'Corporate Check (Boolean): e.g., if Purchaser 1 is a corporation, output first tag, otherwise output second tag';
+        } else if (nextExample.includes('parkingextra')) {
+          nextDesc =
+            'Multi-Condition Logic (OR / AND): e.g., if extra parking equals 1 or 3, show "y", otherwise blank';
+        }
+      } else if (nextTag === 'da') {
+        nextDesc =
+          'Condition Prefix (Designated Agency): Only populates the attached tag if a Realtor is on the deal';
+      } else if (nextTag === 'cr') {
+        nextDesc =
+          'Condition Prefix (Customer Relationship): Only populates the attached tag if no Realtor is on the deal';
+      }
+
+      const catChanged = JSON.stringify(rawCats) !== JSON.stringify(nextCats);
+      const tagChanged = nextTag !== t.tag;
+      const descChanged = nextDesc !== (t.description || '');
+      const exampleChanged = nextExample !== (t.example || '');
+
+      if (catChanged || tagChanged || descChanged || exampleChanged) {
+        const changes: Partial<Pick<TagItem, 'tag' | 'description' | 'example' | 'category'>> = {};
+        if (catChanged) changes.category = nextCats;
+        if (tagChanged) changes.tag = nextTag;
+        if (descChanged) changes.description = nextDesc;
+        if (exampleChanged) changes.example = nextExample;
+        tagUpdates.push({ id: t.id, changes });
+        return { ...t, ...changes };
+      }
+      return t;
+    });
+
+    const normalizedSavedOrder = settings?.academyCategoryOrder?.map((c) => {
+      const nextPrimary = fixSpellingText(c.primary);
+      const nextSubs = c.subCategories.map((sub) => fixSpellingText(sub));
+      const updatedDescs: Record<string, string> = {};
+      if (c.subCategoryDescriptions) {
+        Object.entries(c.subCategoryDescriptions).forEach(([k, v]) => {
+          updatedDescs[fixSpellingText(k)] = v;
+        });
+      }
+      return {
+        ...c,
+        primary: nextPrimary,
+        subCategories: nextSubs,
+        ...(Object.keys(updatedDescs).length > 0 ? { subCategoryDescriptions: updatedDescs } : {}),
+      };
+    });
+
+    const hierarchy = computeCategoryHierarchy(updatedTags, normalizedSavedOrder);
+    const nextCategoryOrder = hierarchy.primaryOrder.map((p) => {
+      const subs = hierarchy.subOrderMap[p] || [];
+      const primaryDesc = getDefaultCategoryDescription(p) || hierarchy.primaryDescriptions[p];
+      const subDescs: Record<string, string> = {};
+      subs.forEach((s) => {
+        const desc = getDefaultSubcategoryDescription(p, s) || hierarchy.subDescriptionsMap[p]?.[s];
+        if (desc) {
+          subDescs[s] = desc;
+        }
+      });
+      return {
+        primary: p,
+        ...(primaryDesc ? { description: primaryDesc } : {}),
+        subCategories: subs,
+        ...(Object.keys(subDescs).length > 0 ? { subCategoryDescriptions: subDescs } : {}),
+      };
+    });
+
+    const categoryOrderUpdated =
+      Boolean(settings) &&
+      JSON.stringify(nextCategoryOrder) !== JSON.stringify(settings?.academyCategoryOrder || []);
+
+    if (tagUpdates.length === 0 && !categoryOrderUpdated) {
+      if (settings) {
+        hasFixedSpellingAndTyposRef.current = true;
+      }
+      return;
+    }
+
+    if (settings) {
+      hasFixedSpellingAndTyposRef.current = true;
+    }
+
+    useAppStore.setState((state) => ({
+      tags: updatedTags,
+      settings:
+        categoryOrderUpdated && state.settings
+          ? { ...state.settings, academyCategoryOrder: nextCategoryOrder }
+          : state.settings,
+    }));
+
+    if (activePrimaryCategory === 'Formating Tags') {
+      setActivePrimaryCategory('Formatting Tags');
+    }
+
+    const batch = writeBatch(db);
+    tagUpdates.forEach(({ id, changes }) => {
+      batch.update(doc(db, 'academy_tags', id), changes);
+    });
+    if (categoryOrderUpdated) {
+      batch.update(doc(db, 'settings', 'global_config'), {
+        academyCategoryOrder: nextCategoryOrder,
+      });
+    }
+
+    batch.commit().catch(() => {
+      hasFixedSpellingAndTyposRef.current = false;
+    });
+  }, [tags, canEditTags, settings, activePrimaryCategory]);
 
   const fuse = useMemo(
     () =>
@@ -760,10 +1143,11 @@ export function TagDictionaryTab() {
                   .map((primary) => {
                     const subMap = displayGroups.get(primary)!;
                     const primaryConfig = settings?.academyCategoryOrder?.find(
-                      (c) => c.primary === primary
+                      (c) => c.primary.trim().toLowerCase() === primary.trim().toLowerCase()
                     );
                     const savedConfig = primaryConfig?.subCategories || [];
-                    const primaryDescription = primaryConfig?.description?.trim();
+                    const primaryDescription =
+                      primaryConfig?.description?.trim() || getDefaultCategoryDescription(primary);
                     const subDescriptions = primaryConfig?.subCategoryDescriptions || {};
 
                     const sortedSubs = Array.from(subMap.entries()).sort(([a], [b]) => {
@@ -790,8 +1174,12 @@ export function TagDictionaryTab() {
                         </div>
 
                         {sortedSubs.map(([sub, subSubMap]) => {
-                          const subDescription = subDescriptions[sub]?.trim();
-                          const isFutureDates = sub.toLowerCase() === 'future dates';
+                          const subDescription =
+                            subDescriptions[sub]?.trim() ||
+                            getDefaultSubcategoryDescription(primary, sub);
+                          const isFutureDates =
+                            sub.toLowerCase() === 'future dates' ||
+                            sub.toLowerCase() === 'sign dates';
                           const matchedParticipantKey =
                             primary === 'Deal Participants'
                               ? Object.keys(participantPrefixes).find(
@@ -835,85 +1223,88 @@ export function TagDictionaryTab() {
                               id={`category-${primary.replace(/\s+/g, '-')}-${sub.replace(/\s+/g, '-')}`}
                               className="scroll-mt-20 relative flex flex-col gap-3"
                             >
-                              <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md py-2 flex items-center justify-between gap-4 border-b border-transparent shadow-sm">
-                                <div>
-                                  <h3 className="text-lg font-bold text-slate-800">{sub}</h3>
-                                  {subDescription && (
-                                    <p className="text-xs text-slate-500 mt-0.5">
-                                      {subDescription}
-                                    </p>
-                                  )}
-                                </div>
+                              <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md py-2.5 flex flex-col gap-1.5 border-b border-transparent shadow-sm">
+                                <div className="flex flex-wrap items-center justify-between gap-4">
+                                  <h3 className="text-lg font-bold text-slate-800 shrink-0">
+                                    {sub}
+                                  </h3>
 
-                                <div className="flex items-center gap-3">
-                                  {/* Example Replacement Input */}
-                                  {replacementTarget && (
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-sm font-medium text-slate-500">
-                                        Replace {replacementTarget}:
-                                      </span>
-                                      <input
-                                        type="text"
-                                        placeholder={
-                                          replacementTarget === '[Example]'
-                                            ? 'e.g. ClosingDate'
-                                            : 'e.g. Small'
-                                        }
-                                        value={currentReplacement}
-                                        onChange={(e) =>
-                                          setDynamicReplacements((prev) => ({
-                                            ...prev,
-                                            [sub]: e.target.value,
-                                          }))
-                                        }
-                                        className="border border-slate-200 rounded-md px-2.5 py-1 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-48 bg-white shadow-sm transition-all"
-                                      />
-                                    </div>
-                                  )}
-
-                                  {/* Dynamic Toggles */}
-                                  {showToggles && !isFutureDates && (
-                                    <div className="flex flex-wrap items-center gap-1 bg-slate-50 p-1 rounded-md border border-slate-200">
-                                      {prefixOptions.map((prefixOpt) => (
-                                        <button
-                                          key={prefixOpt.value}
-                                          onClick={() =>
-                                            setActivePrefixes((prev) => ({
+                                  <div className="flex items-center gap-3 shrink-0">
+                                    {/* Example Replacement Input */}
+                                    {replacementTarget && (
+                                      <div className="flex items-center gap-2 whitespace-nowrap">
+                                        <span className="text-sm font-medium text-slate-500">
+                                          Replace {replacementTarget}:
+                                        </span>
+                                        <input
+                                          type="text"
+                                          placeholder={
+                                            replacementTarget === '[Example]'
+                                              ? 'e.g. ClosingDate'
+                                              : 'e.g. Small'
+                                          }
+                                          value={currentReplacement}
+                                          onChange={(e) =>
+                                            setDynamicReplacements((prev) => ({
                                               ...prev,
-                                              [sub]: prefixOpt.value,
+                                              [sub]: e.target.value,
                                             }))
                                           }
-                                          className={`px-2 py-1 text-xs font-semibold rounded transition-all ${
-                                            currentPrefix === prefixOpt.value
-                                              ? 'bg-white text-primary shadow-sm border border-slate-200'
-                                              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
-                                          }`}
-                                        >
-                                          {prefixOpt.label}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {showToggles && isFutureDates && (
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-sm font-medium text-slate-600">
-                                        Deal Participant:
-                                      </span>
-                                      <div className="w-[300px]">
-                                        <Select
-                                          value={currentPrefix || 'c1'}
-                                          onChange={(val) =>
-                                            setActivePrefixes((prev) => ({ ...prev, [sub]: val }))
-                                          }
-                                          options={prefixOptions}
-                                          dropdownWidth="w-[300px]"
-                                          menuClassName="z-[100]"
+                                          className="border border-slate-200 rounded-md px-2.5 py-1 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-44 bg-white shadow-sm transition-all"
                                         />
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
+
+                                    {/* Dynamic Toggles */}
+                                    {showToggles && !isFutureDates && (
+                                      <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-lg border border-slate-200 shrink-0">
+                                        {prefixOptions.map((prefixOpt) => (
+                                          <button
+                                            key={prefixOpt.value}
+                                            onClick={() =>
+                                              setActivePrefixes((prev) => ({
+                                                ...prev,
+                                                [sub]: prefixOpt.value,
+                                              }))
+                                            }
+                                            className={`px-2.5 py-1 text-xs font-semibold rounded-md whitespace-nowrap transition-all ${
+                                              currentPrefix === prefixOpt.value
+                                                ? 'bg-white text-primary shadow-sm border border-slate-200'
+                                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                            }`}
+                                          >
+                                            {prefixOpt.label}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {showToggles && isFutureDates && (
+                                      <div className="flex items-center gap-2.5 whitespace-nowrap shrink-0">
+                                        <span className="text-sm font-medium text-slate-600">
+                                          Deal Participant:
+                                        </span>
+                                        <div className="w-[220px]">
+                                          <Select
+                                            value={currentPrefix || 'c1'}
+                                            onChange={(val) =>
+                                              setActivePrefixes((prev) => ({ ...prev, [sub]: val }))
+                                            }
+                                            options={prefixOptions}
+                                            dropdownWidth="w-[220px]"
+                                            menuClassName="z-[100]"
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
+
+                                {subDescription && (
+                                  <p className="text-xs text-slate-500 leading-relaxed">
+                                    {subDescription}
+                                  </p>
+                                )}
                               </div>
 
                               <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
@@ -982,9 +1373,11 @@ export function TagDictionaryTab() {
                                                   parts[1] = `${actualPrefix}s`;
                                                   displayTag = parts.join('_');
                                                 }
-                                              } else if (displayTag.includes('[prefix]')) {
+                                              } else if (
+                                                /\[(prefix|identifier)\]/i.test(displayTag)
+                                              ) {
                                                 displayTag = displayTag.replace(
-                                                  '[prefix]',
+                                                  /\[(prefix|identifier)\]/gi,
                                                   actualPrefix
                                                 );
                                               } else {

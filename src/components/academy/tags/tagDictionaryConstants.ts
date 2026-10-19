@@ -63,6 +63,10 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
       label: 'Developer 3',
       value: 'd3',
     },
+    {
+      label: 'Developer 4',
+      value: 'd4',
+    },
   ],
   Assignors: [
     {
@@ -153,3 +157,130 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
 };
 
 export const allParticipants: ParticipantPrefixOption[] = Object.values(participantPrefixes).flat();
+
+export const DEFAULT_CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  'Listing Information':
+    'Property, suite, address, and custom inventory fields pulled directly from the Listing Setup uploaded to the project.',
+  'Deal Information':
+    'Financial figures, inclusions, upgrades, commissions, deposits, and payment receipt details specific to the transaction.',
+  'Deal Participants':
+    'Contact details, identification, corporate signer fields, and signature/initial tags for everyone involved in the deal. Use the participant selector to switch prefixes.',
+  Dates:
+    'Dynamic date and time tags for contract creation, deal milestones, deposit schedules, and participant signing timestamps.',
+  Special:
+    'Advanced template builders for combining multiple tags, inserting spacing, counting participants, and writing conditional or math expressions.',
+  'Formatting Tags':
+    'Prefix modifiers that format numbers, currency, written-out dollar amounts, and dates when placed directly in front of another tag.',
+};
+
+export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
+  'Listing Information': {
+    'Listing Information':
+      'Details from the Listing Setup uploaded to the project. Contains suite numbers, civic and legal addresses, floor plan specifications, strata fees, and custom listing columns (PropExtraTag1–10).',
+    'Property & Unit Details':
+      'Details from the Listing Setup uploaded to the project. Contains suite numbers, civic and legal addresses, floor plan specifications, strata fees, and custom listing columns (PropExtraTag1–10).',
+  },
+  'Deal Information': {
+    Parking: 'Included and additional parking stall counts, prices, and stall-type checkbox tags.',
+    Storage:
+      'Included and additional storage locker counts, prices, and locker-type checkbox tags.',
+    'Bike Locker':
+      'Included and additional bike locker counts, prices, and locker-type checkbox tags.',
+    'Colour Scheme':
+      'Selected interior colour scheme name and checkbox tags for specific scheme options.',
+    Options: 'Custom upgrade options and option pricing configured on the project.',
+    Commissions:
+      'Buyer realtor commission percentages, tiered dollar amounts, flat bonuses, and realtor-to-purchaser credits.',
+    'Realtor Commission':
+      'Buyer realtor commission percentages, tiered dollar amounts, flat bonuses, and realtor-to-purchaser credits.',
+    'Seller Commission':
+      'Seller / listing brokerage commission percentages, tiered dollar amounts, and total seller commission calculations.',
+    'Disclosure of Remuneration':
+      'Remuneration disclosure figures, combined commission amounts, and net proceeds calculations.',
+    Notes: 'Custom deal notes and transaction remarks entered on the deal.',
+    'Purchase Price':
+      'Base purchase price, total purchase price with upgrades, and net-of-tax calculations.',
+    Deposits:
+      'Individual deposit installment amounts (Deposit1–Deposit5) and occupancy deposit amounts.',
+    Amounts:
+      'Other financial amounts from the Deal Details, including credits/decorating allowances, total upgrade costs, additional costs, and assignment fees.',
+    'EFT Receipts':
+      'Electronic Funds Transfer (EFT) deposit receipt details, including issued dates, due dates, amounts, and account holder names.',
+  },
+  'Deal Participants': {
+    Purchasers:
+      'Primary and co-purchaser (c1–c6) contact info, citizenship, ID verification, corporate fields, and signature/initial tags (including Purchaser witness tags w1–w6).',
+    Realtors:
+      'External buyer realtor (r1–r3) contact details, brokerage information, tax numbers (GST/HST/Tax), and license numbers.',
+    'Sales Rep':
+      'In-house project sales representative (s1) contact details, brokerage info, and signature/initial tags.',
+    'Realtor or Sales Rep':
+      "Fallback tags that automatically populate the Buyer Realtor's info if present on the deal, or the Sales Rep's info if no Realtor is attached.",
+    Developers: 'Developer authorized signatory (d1–d4) signature and initial tags.',
+    Assignors:
+      'Original purchaser / assignor (FromAssignor1–3) contact details, ID fields, and signature/initial tags for assignment agreements (including Assignor witness tags).',
+    'Assignees (Form Selection)':
+      'New buyer / assignee (FromAssignee1–3) contact details, ID fields, and signature/initial tags for forms generated via Form Selection (including Assignee witness tags).',
+    'Assignees (Deal Participants)':
+      'New buyer / assignee (o1–o4) contact details, ID fields, and signature/initial tags pulled from the Deal Participants tab (including Assignee witness tags v1–v4).',
+    'Purchaser or Assignee Swap':
+      'Dynamic participant tags (co1–co4) and witness tags (cow1–cow4) that populate either the Purchaser or the Assignee depending on whether the deal has been assigned.',
+    'Managing Broker':
+      'Managing Broker (ps-managing broker) name, contact details, and signature/initial tags.',
+    Guarantors: 'Deal Guarantor (ps-guarantor) name, contact details, and signature/initial tags.',
+    Transferor: 'Transferor (ps-transferor) name, contact details, and signature/initial tags.',
+  },
+  Dates: {
+    "Today's Date": 'Populates the current date or time at the moment the document is generated.',
+    'Contract Date':
+      'Populates the date the contract was originally created (CreatedFull, day, month, and year breakdowns).',
+    'Deposit Dates': 'Scheduled due dates for deposits and the Occupancy Deposit.',
+    'Deal Dates':
+      'Key transaction milestone dates including Accepted Date, Rescission Expiry, Completion, Possession, Adjustment, and Offer Open dates.',
+    'Subject Dates': 'Subject removal and condition expiry dates configured on the deal.',
+    'Form Dates':
+      'Custom date fields captured on a form (form[Example]Full, day, month, and year breakdowns).',
+    'Formatting Dates & Times':
+      'Prefix modifiers (fdateshort_, fdatefull_, fdatetime_, etc.) placed in front of any date tag to reformat how the date or time displays.',
+    'Future Dates':
+      'Delayed-evaluation wrapper tags (future_[signature]_[datetag]) that wait to populate a date until a specific participant signs the document.',
+    'Sign Dates':
+      'Participant contract signing dates (SignDate) and relative future dates calculated 30 to 720 days after signing (SignDate30–SignDate720). Can be split by using fdate tags (e.g., future_c1s_fdateday_SignDate).',
+  },
+  Special: {
+    'Combining Tags & Spacing':
+      "Connectors (_, ,, _B[1-9]_) for joining multiple tags into a single field, plus CXContractName to list all purchasers separated by 'and'.",
+    'Special Tags':
+      'Deal participant counters (CountPurchaser, CountRealtor, CountAssignee), realtor presence checkboxes, static text (text_), and blank addendum fields.',
+    'Agency Disclosure Tags':
+      'Conditional prefixes (da and cr) that only populate the attached tag depending on whether a Designated Realtor is on the deal.',
+    'Math & Logic Tags':
+      'Formula prefixes (math_ and logic_) for performing arithmetic across price tags or displaying conditional values based on deal rules.',
+  },
+  'Formatting Tags': {
+    'Formatting Numbers & Currency':
+      'Prefix modifiers (fn0_, fc2_, fspell_, fupper_, etc.) for rounding numbers, adding dollar signs/decimals, or spelling numbers out in words.',
+    'Formatting Dates & Times':
+      'Prefix modifiers (fdateshort_, fdatefull_, fdatetime_, etc.) placed in front of any date tag to customize its date or time format.',
+  },
+};
+
+export function getDefaultCategoryDescription(primary: string): string | undefined {
+  if (DEFAULT_CATEGORY_DESCRIPTIONS[primary]) return DEFAULT_CATEGORY_DESCRIPTIONS[primary];
+  const normalizedPrimary = primary.trim().toLowerCase();
+  return Object.entries(DEFAULT_CATEGORY_DESCRIPTIONS).find(
+    ([k]) => k.trim().toLowerCase() === normalizedPrimary
+  )?.[1];
+}
+
+export function getDefaultSubcategoryDescription(primary: string, sub: string): string | undefined {
+  const primaryMap =
+    DEFAULT_SUBCATEGORY_DESCRIPTIONS[primary] ||
+    Object.entries(DEFAULT_SUBCATEGORY_DESCRIPTIONS).find(
+      ([k]) => k.toLowerCase() === primary.trim().toLowerCase()
+    )?.[1];
+  if (!primaryMap) return undefined;
+  if (primaryMap[sub]) return primaryMap[sub];
+  const normalizedSub = sub.trim().toLowerCase();
+  return Object.entries(primaryMap).find(([k]) => k.trim().toLowerCase() === normalizedSub)?.[1];
+}

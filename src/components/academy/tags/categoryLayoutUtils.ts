@@ -2,6 +2,10 @@ import React from 'react';
 import { TagItem } from '../../../types';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
+import {
+  getDefaultCategoryDescription,
+  getDefaultSubcategoryDescription,
+} from './tagDictionaryConstants';
 
 export interface CategoryLayoutState {
   primaryOrder: string[];
@@ -76,19 +80,30 @@ export function computeCategoryHierarchy(
     const rawS = rawSubs[p] ? Array.from(rawSubs[p]) : [];
     const finalSubs = Array.from(new Set([...savedSubs, ...rawS]));
     subOrderMap[p] = finalSubs;
-    if (entry?.description?.trim()) {
-      primaryDescriptions[p] = entry.description.trim();
+
+    const primaryDesc = entry?.description?.trim() || getDefaultCategoryDescription(p);
+    if (primaryDesc) {
+      primaryDescriptions[p] = primaryDesc;
     }
+
+    const subDescs: Record<string, string> = {};
+    finalSubs.forEach((s) => {
+      const savedSubDesc = entry?.subCategoryDescriptions?.[s]?.trim();
+      const defaultSubDesc = getDefaultSubcategoryDescription(p, s);
+      const finalSubDesc = savedSubDesc || defaultSubDesc;
+      if (finalSubDesc) {
+        subDescs[s] = finalSubDesc;
+      }
+    });
     if (entry?.subCategoryDescriptions) {
-      const subDescs: Record<string, string> = {};
       Object.entries(entry.subCategoryDescriptions).forEach(([k, v]) => {
-        if (v && v.trim()) {
+        if (v && v.trim() && !subDescs[k]) {
           subDescs[k] = v.trim();
         }
       });
-      if (Object.keys(subDescs).length > 0) {
-        subDescriptionsMap[p] = subDescs;
-      }
+    }
+    if (Object.keys(subDescs).length > 0) {
+      subDescriptionsMap[p] = subDescs;
     }
     initialCollapsed[p] = true;
   });
