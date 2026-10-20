@@ -111,7 +111,7 @@ export function TagDictionaryTab() {
     Assignors: 'FromAssignor1',
     'Assignees (Form Selection)': 'FromAssignee1',
     'Assignees (Deal Participants)': 'o1',
-    'Purchaser or Assignee Swap': 'co1',
+    'Purchaser or Assignee': 'co1',
     'Managing Broker': 'ps-managing broker',
     Guarantors: 'ps-guarantor',
     Transferor: 'ps-transferor',
@@ -142,6 +142,8 @@ export function TagDictionaryTab() {
     const existingSwapTags = tags.filter(
       (t) =>
         t.id.startsWith('tag_swap_') ||
+        hasCat(t, 'Deal Participants - Purchaser or Assignee') ||
+        hasCat(t, 'Deal Participants - Purchaser or Assignee - Witnesses') ||
         hasCat(t, 'Deal Participants - Purchaser or Assignee Swap') ||
         hasCat(t, 'Deal Participants - Purchaser or Assignee Swap - Witnesses')
     );
@@ -213,7 +215,7 @@ export function TagDictionaryTab() {
     );
     let nextOrder = maxOrder + 1;
 
-    // 1. Seed Purchaser or Assignee Swap if empty
+    // 1. Seed Purchaser or Assignee if empty
     if (existingSwapTags.length === 0) {
       const clonedSwapTags: TagItem[] = [
         ...purchaserTags.map((t) => ({
@@ -221,7 +223,7 @@ export function TagDictionaryTab() {
           tag: t.tag,
           description: t.description,
           example: t.example || '',
-          category: ['Deal Participants - Purchaser or Assignee Swap'],
+          category: ['Deal Participants - Purchaser or Assignee'],
           order: nextOrder++,
         })),
         ...purchaserWitnessTags.map((t) => ({
@@ -229,7 +231,7 @@ export function TagDictionaryTab() {
           tag: t.tag,
           description: t.description,
           example: t.example || '',
-          category: ['Deal Participants - Purchaser or Assignee Swap - Witnesses'],
+          category: ['Deal Participants - Purchaser or Assignee - Witnesses'],
           order: nextOrder++,
         })),
       ];
@@ -445,6 +447,7 @@ export function TagDictionaryTab() {
         .replace(/\bDrivers License\b/g, "Driver's License")
         .replace(/\bEft Payment\b/g, 'EFT Payment')
         .replace(/\bDeal information\b/g, 'Deal Information')
+        .replace(/Purchaser or Assignee Swap/g, 'Purchaser or Assignee')
         .replace(/\b1,23,456\.00\b/g, '123,456.00')
         .replace(/\b1,23,456\b/g, '123,456');
 
@@ -469,7 +472,8 @@ export function TagDictionaryTab() {
       const isSwapCat = nextCats.some(
         (c) =>
           typeof c === 'string' &&
-          c.trim().toLowerCase() === 'deal participants - purchaser or assignee swap'
+          (c.trim().toLowerCase() === 'deal participants - purchaser or assignee' ||
+            c.trim().toLowerCase() === 'deal participants - purchaser or assignee swap')
       );
       const isWitnessCat = nextCats.some(
         (c) => typeof c === 'string' && c.trim().toLowerCase().endsWith('- witnesses')
@@ -479,7 +483,7 @@ export function TagDictionaryTab() {
       if (isAssignorCat && nextTag === 'ContractName') {
         nextDesc = "Assignor's Full Name or Corporation Name";
       } else if (isSwapCat && nextTag === 'ContractName') {
-        nextDesc = "Purchaser's or Assignee's Full Name or Corporation Name";
+        nextDesc = "Purchaser's Full Name or Corporation Name";
       }
 
       if (nextTag === 'StorageType[Label]' && nextExample.includes('BikeTypeMedium')) {
@@ -489,15 +493,15 @@ export function TagDictionaryTab() {
         nextExample = nextExample.replace('StorageTypeSmall', 'BikeTypeSmall');
       }
 
-      if (isWitnessCat && nextTag === 'Corp[prefix]s') {
+      if (isWitnessCat && (nextTag === 'Corp[prefix]s' || nextTag === 'NonCorp[prefix]s')) {
         nextExample = "Witness's Signature";
       }
-      if (isWitnessCat && nextTag === 'NonCorp[prefix]i') {
+      if (isWitnessCat && (nextTag === 'NonCorp[prefix]i' || nextTag === 'Corp[prefix]i')) {
         nextExample = "Witness's Initial";
       }
 
-      if (nextTag === 'ParkingExtraPrice' && nextExample === '2000.00') {
-        nextExample = '2000.000';
+      if (nextTag === 'ParkingExtraPrice' && nextExample === '2000.000') {
+        nextExample = '2000.00';
       }
       if (nextTag === 'NetOfHst' && nextExample === '5000.00') {
         nextExample = '575000.00';
@@ -572,6 +576,8 @@ export function TagDictionaryTab() {
         nextDesc = 'Populates "X" if Title is Ms.';
       } else if (nextTag === 'TitleMrs') {
         nextDesc = 'Populates "X" if Title is Mrs.';
+      } else if (nextTag === 'TitleDr') {
+        nextDesc = 'Populates "X" if Title is Dr.';
       } else if (nextTag === 'Business') {
         nextDesc = 'Occupation / Profession';
       } else if (nextTag === 'Sin') {

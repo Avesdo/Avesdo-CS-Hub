@@ -114,7 +114,7 @@ export const participantPrefixes: Record<string, ParticipantPrefixOption[]> = {
       value: 'o4',
     },
   ],
-  'Purchaser or Assignee Swap': [
+  'Purchaser or Assignee': [
     {
       label: 'Purchaser or Assignee 1',
       value: 'co1',
@@ -181,13 +181,14 @@ export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, str
       'Details from the Listing Setup uploaded to the project. Contains suite numbers, civic and legal addresses, floor plan specifications, strata fees, and custom listing columns (PropExtraTag1–10).',
   },
   'Deal Information': {
-    Parking: 'Included and additional parking stall counts, prices, and stall-type checkbox tags.',
+    Parking:
+      'Included and additional parking stall counts, prices, stall-type labels, and checkbox tags.',
     Storage:
-      'Included and additional storage locker counts, prices, and locker-type checkbox tags.',
+      'Included and additional storage locker counts, prices, locker-type labels, and checkbox tags.',
     'Bike Locker':
-      'Included and additional bike locker counts, prices, and locker-type checkbox tags.',
+      'Included and additional bike locker counts, prices, locker-type labels, and checkbox tags.',
     'Colour Scheme':
-      'Selected interior colour scheme name and checkbox tags for specific scheme options.',
+      'Selected interior colour scheme name, upgrade cost, and checkbox tags for specific scheme options.',
     Options: 'Custom upgrade options and option pricing configured on the project.',
     Commissions:
       'Buyer realtor commission percentages, tiered dollar amounts, flat bonuses, and realtor-to-purchaser credits.',
@@ -197,13 +198,13 @@ export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, str
       'Seller / listing brokerage commission percentages, tiered dollar amounts, and total seller commission calculations.',
     'Disclosure of Remuneration':
       'Remuneration disclosure figures, combined commission amounts, and net proceeds calculations.',
-    Notes: 'Custom deal notes and transaction remarks entered on the deal.',
+    Notes: 'Subject notes and custom transaction remarks entered on the deal.',
     'Purchase Price':
       'Base purchase price, total purchase price with upgrades, and net-of-tax calculations.',
     Deposits:
       'Individual deposit installment amounts (Deposit1–Deposit5) and occupancy deposit amounts.',
     Amounts:
-      'Other financial amounts from the Deal Details, including credits/decorating allowances, total upgrade costs, additional costs, and assignment fees.',
+      'Other financial amounts from the Deal Details, including credits/decorating allowances, total upgrade costs, additional costs, assignment fees, and GST rebates.',
     'EFT Receipts':
       'Electronic Funds Transfer (EFT) deposit receipt details, including issued dates, due dates, amounts, and account holder names.',
   },
@@ -223,7 +224,7 @@ export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, str
       'New buyer / assignee (FromAssignee1–3) contact details, ID fields, and signature/initial tags for forms generated via Form Selection (including Assignee witness tags).',
     'Assignees (Deal Participants)':
       'New buyer / assignee (o1–o4) contact details, ID fields, and signature/initial tags pulled from the Deal Participants tab (including Assignee witness tags v1–v4).',
-    'Purchaser or Assignee Swap':
+    'Purchaser or Assignee':
       'Dynamic participant tags (co1–co4) and witness tags (cow1–cow4) that populate either the Purchaser or the Assignee depending on whether the deal has been assigned.',
     'Managing Broker':
       'Managing Broker (ps-managing broker) name, contact details, and signature/initial tags.',
@@ -236,7 +237,9 @@ export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, str
       'Populates the date the contract was originally created (CreatedFull, day, month, and year breakdowns).',
     'Deposit Dates': 'Scheduled due dates for deposits and the Occupancy Deposit.',
     'Deal Dates':
-      'Key transaction milestone dates including Accepted Date, Rescission Expiry, Completion, Possession, Adjustment, and Offer Open dates.',
+      'Key transaction milestone dates including Accepted Date, Rescission Expiry, Completion, Estimated Completion, Possession, and Adjustment dates.',
+    'Offer Open for Acceptance Dates':
+      "Expiration date and time breakdowns for how long the buyer's offer remains open for acceptance.",
     'Subject Dates': 'Subject removal and condition expiry dates configured on the deal.',
     'Form Dates':
       'Custom date fields captured on a form (form[Example]Full, day, month, and year breakdowns).',
@@ -246,6 +249,8 @@ export const DEFAULT_SUBCATEGORY_DESCRIPTIONS: Record<string, Record<string, str
       'Delayed-evaluation wrapper tags (future_[signature]_[datetag]) that wait to populate a date until a specific participant signs the document.',
     'Sign Dates':
       'Participant contract signing dates (SignDate) and relative future dates calculated 30 to 720 days after signing (SignDate30–SignDate720). Can be split by using fdate tags (e.g., future_c1s_fdateday_SignDate).',
+    'Contract Signing Dates':
+      'Timestamps for when the original contract or subsequent addenda were signed by the Purchaser or Developer.',
   },
   Special: {
     'Combining Tags & Spacing':
