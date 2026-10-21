@@ -459,7 +459,7 @@ export function TagDictionaryTab() {
     const updatedTags = tags.map((t) => {
       const rawCats = Array.isArray(t.category) ? t.category : [t.category];
       const nextCats = rawCats.map((c) => (typeof c === 'string' ? fixSpellingText(c) : c));
-      const nextTag = t.tag
+      let nextTag = t.tag
         .replace(/\[identifier\]/gi, '[prefix]')
         .replace(/^Corpc1([si])$/, 'Corp[prefix]$1')
         .replace(/^NonCorpc1([si])$/, 'NonCorp[prefix]$1');
@@ -478,6 +478,19 @@ export function TagDictionaryTab() {
       const isWitnessCat = nextCats.some(
         (c) => typeof c === 'string' && c.trim().toLowerCase().endsWith('- witnesses')
       );
+      const isPsHyphenSigCat = nextCats.some((c) => {
+        if (typeof c !== 'string') return false;
+        const lower = c.trim().toLowerCase();
+        return (
+          lower === 'deal participants - managing broker' ||
+          lower === 'deal participants - guarantors' ||
+          lower === 'deal participants - transferor'
+        );
+      });
+
+      if (isPsHyphenSigCat && (nextTag === 's' || nextTag === 'i')) {
+        nextTag = `-${nextTag}`;
+      }
 
       // Table A: Factual Errors & Copy-Paste Mistakes
       if (isAssignorCat && nextTag === 'ContractName') {
@@ -1376,7 +1389,9 @@ export function TagDictionaryTab() {
                                               ) {
                                                 const parts = displayTag.split('_');
                                                 if (parts.length >= 3) {
-                                                  parts[1] = `${actualPrefix}s`;
+                                                  parts[1] = actualPrefix.startsWith('ps-')
+                                                    ? `${actualPrefix}-s`
+                                                    : `${actualPrefix}s`;
                                                   displayTag = parts.join('_');
                                                 }
                                               } else if (
@@ -1386,6 +1401,11 @@ export function TagDictionaryTab() {
                                                   /\[(prefix|identifier)\]/gi,
                                                   actualPrefix
                                                 );
+                                              } else if (
+                                                actualPrefix.startsWith('ps-') &&
+                                                (displayTag === 's' || displayTag === 'i')
+                                              ) {
+                                                displayTag = `${actualPrefix}-${displayTag}`;
                                               } else {
                                                 displayTag = `${actualPrefix}${displayTag}`;
                                               }
