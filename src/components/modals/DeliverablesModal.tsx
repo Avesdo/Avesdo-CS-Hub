@@ -24,14 +24,27 @@ const HeaderProgress = ({ template, project }: { template: any; project: any }) 
   const hiddenItems = values._hiddenItems || [];
 
   // Count standard items
-  const activeFeatures = project?.features || [];
+  const activeFeatures: string[] = project?.features || [];
+  const normalizedActiveFeatures = activeFeatures.map((f: string) => f?.trim().toLowerCase());
+
   (template?.sections || []).forEach((sec: any) => {
-    if (
+    const isVisible =
+      !sec.logicEnabled ||
       !sec.dependsOnFeature ||
       sec.dependsOnFeature.length === 0 ||
-      sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
-    ) {
-      sec.items.forEach((item: any) => {
+      sec.dependsOnFeature.some((f: any) =>
+        normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+      ) ||
+      (sec.items || []).some((item: any) => {
+        const itemVal = values[item.id] || project?.deliverables?.[item.id];
+        return (
+          itemVal &&
+          (typeof itemVal === 'object' ? itemVal.status && itemVal.status !== 'Pending' : true)
+        );
+      });
+
+    if (isVisible) {
+      (sec.items || []).forEach((item: any) => {
         if (hiddenItems.includes(item.id)) return;
         const st = values[item.id]?.status;
         if (st === 'N/A') return;
@@ -76,9 +89,19 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       ? template
       : settings?.templates?.deliverables ||
         Object.values(settings?.templates || {}).find(
-          (t: any) => t?.name === 'Deliverables Checklist' || t?.type === 'checklist'
+          (t: any) =>
+            t?.id === 'deliverables' ||
+            t?.name === 'Deliverables Checklist' ||
+            t?.name?.toLowerCase().includes('deliverable') ||
+            t?.type === 'checklist'
         ) ||
-        template;
+        template || {
+          id: 'deliverables',
+          name: 'Deliverables Checklist',
+          type: 'checklist',
+          fields: [],
+          sections: [],
+        };
 
   const methods = useForm({
     defaultValues: project?.deliverables || {},
@@ -128,14 +151,26 @@ export default function DeliverablesModal({ project, template, onClose }: Delive
       let total = 0;
       let completed = 0;
       const hiddenItems = valuesToSave._hiddenItems || [];
-      const activeFeatures = freshProject?.features || [];
+      const activeFeatures: string[] = freshProject?.features || [];
+      const normalizedActiveFeatures = activeFeatures.map((f: string) => f?.trim().toLowerCase());
 
       (activeTemplate?.sections || []).forEach((sec: any) => {
-        if (
+        const isVisible =
+          !sec.logicEnabled ||
           !sec.dependsOnFeature ||
           sec.dependsOnFeature.length === 0 ||
-          sec.dependsOnFeature.some((f: any) => activeFeatures.includes(f))
-        ) {
+          sec.dependsOnFeature.some((f: any) =>
+            normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+          ) ||
+          (sec.items || []).some((item: any) => {
+            const itemVal = valuesToSave[item.id] || freshProject?.deliverables?.[item.id];
+            return (
+              itemVal &&
+              (typeof itemVal === 'object' ? itemVal.status && itemVal.status !== 'Pending' : true)
+            );
+          });
+
+        if (isVisible) {
           (sec.items || []).forEach((item: any) => {
             if (hiddenItems.includes(item.id)) return;
             const st = valuesToSave[item.id]?.status;

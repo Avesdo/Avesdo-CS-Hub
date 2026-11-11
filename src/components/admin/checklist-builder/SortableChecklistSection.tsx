@@ -140,7 +140,7 @@ export function SortableChecklistSection({
                       const enabled = e.target.checked;
                       handleUpdateSection(index, {
                         logicEnabled: enabled,
-                        dependsOnFeature: enabled ? [] : [],
+                        dependsOnFeature: enabled ? section.dependsOnFeature || [] : [],
                       });
                     }}
                   />
@@ -214,7 +214,7 @@ export function SortableChecklistSection({
               </label>
               <input
                 type="text"
-                value={section.name}
+                value={section.name || (section as any).title || ''}
                 onChange={(e) => handleUpdateSection(index, { name: e.target.value })}
                 className="w-full text-[15px] font-semibold text-slate-900 rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 shadow-sm bg-white"
                 placeholder="e.g. Credit Card Setup"

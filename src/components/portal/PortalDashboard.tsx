@@ -90,15 +90,19 @@ export function PortalDashboard({
       if (dTemplate?.sections && dataNode) {
         let total = 0;
         let completed = 0;
-        const activeFeatures = project?.features || [];
+        const activeFeatures: string[] = project?.features || [];
+        const normalizedActiveFeatures = activeFeatures.map((f: string) => f?.trim().toLowerCase());
+
         dTemplate.sections.forEach((section: any) => {
           if (dataNode._hiddenSections?.includes(section.id)) return;
-          if (
-            section.dependsOnFeature &&
-            section.dependsOnFeature.length > 0 &&
-            !section.dependsOnFeature.some((f: string) => activeFeatures.includes(f))
-          )
-            return;
+          const isVisible =
+            !section.logicEnabled ||
+            !section.dependsOnFeature ||
+            section.dependsOnFeature.length === 0 ||
+            section.dependsOnFeature.some((f: string) =>
+              normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+            );
+          if (!isVisible) return;
           section.items.forEach((item: any) => {
             if (dataNode._hiddenItems?.includes(item.id)) return;
             total++;
@@ -220,16 +224,21 @@ export function PortalDashboard({
                   if (dTemplate?.sections && dataNode) {
                     let total = 0;
                     let completed = 0;
-                    const activeFeatures = project?.features || [];
+                    const activeFeatures: string[] = project?.features || [];
+                    const normalizedActiveFeatures = activeFeatures.map((f: string) =>
+                      f?.trim().toLowerCase()
+                    );
 
                     dTemplate.sections.forEach((section: any) => {
                       if (dataNode._hiddenSections?.includes(section.id)) return;
-                      if (
-                        section.dependsOnFeature &&
-                        section.dependsOnFeature.length > 0 &&
-                        !section.dependsOnFeature.some((f: string) => activeFeatures.includes(f))
-                      )
-                        return;
+                      const isVisible =
+                        !section.logicEnabled ||
+                        !section.dependsOnFeature ||
+                        section.dependsOnFeature.length === 0 ||
+                        section.dependsOnFeature.some((f: string) =>
+                          normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+                        );
+                      if (!isVisible) return;
 
                       section.items.forEach((item: any) => {
                         if (dataNode._hiddenItems?.includes(item.id)) return;

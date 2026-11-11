@@ -104,11 +104,14 @@ export default function DeliverablesGrid({
 
   const visibleSections = useMemo(() => {
     if (!template?.sections) return [];
-    const activeFeatures = project?.features || [];
+    const activeFeatures: string[] = project?.features || [];
+    const normalizedActiveFeatures = activeFeatures.map((f: string) => f?.trim().toLowerCase());
+
     return template.sections
       .map((section) => ({
         ...section,
-        items: section.items.filter((item) => {
+        name: section.name || (section as any).title || 'General Deliverables',
+        items: (section.items || []).filter((item) => {
           const hasData = project?.deliverables?.[item.id] || getValues(item.id);
           const isArchived = item.isArchived || section.isArchived;
           if (isArchived && !hasData && !readOnly) return false;
@@ -117,10 +120,46 @@ export default function DeliverablesGrid({
       }))
       .filter((section) => {
         if (section.isArchived && section.items.length === 0 && !readOnly) return false;
+
+        // 1. If feature logic is not enabled, the section is always visible
+        if (!section.logicEnabled) return true;
+
+        // 2. If no feature dependencies specified, section is always visible
         if (!section.dependsOnFeature || section.dependsOnFeature.length === 0) return true;
-        return section.dependsOnFeature.some((f) => activeFeatures.includes(f));
+
+        // 3. If any item has saved data on this project, keep it visible
+        const hasExistingData = (section.items || []).some((item) => {
+          const itemVal = project?.deliverables?.[item.id] || getValues(item.id);
+          return (
+            itemVal &&
+            (typeof itemVal === 'object' ? itemVal.status && itemVal.status !== 'Pending' : true)
+          );
+        });
+        if (hasExistingData) return true;
+
+        // 4. Case-insensitive, trimmed comparison
+        return section.dependsOnFeature.some((f: string) =>
+          normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+        );
       });
   }, [template, project, getValues, readOnly]);
+
+  const handleCustomItemAdd = () => {
+    const currentCustom = [...customItems];
+    const newItemId = `custom_${Date.now()}`;
+    const newItem = {
+      id: newItemId,
+      taskName: 'New Custom Item',
+      status: 'Pending',
+      priority: 'Normal',
+      resource: '',
+      clientNote: '',
+      internalNote: '',
+      date: null,
+    };
+    setValue('_customItems', [...currentCustom, newItem], { shouldDirty: true });
+    setActiveItemId(newItemId);
+  };
 
   // Aggregate all items for easier mapping in the detail pane
   const allItems = useMemo(() => {
@@ -164,35 +203,32 @@ export default function DeliverablesGrid({
   }, [visibleSections, customItems, activeItemId, isClientPortal, hiddenSections, hiddenItems]);
 
   if (visibleSections.length === 0 && !customItems.length) {
+    const hasFeaturesDefined = Array.isArray(project?.features) && project.features.length > 0;
+
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center h-full bg-slate-50/50 rounded-2xl m-4 border border-dashed border-slate-200">
         <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mb-6">
           <ListTodo className="w-8 h-8 text-slate-300" />
         </div>
         <h3 className="text-[15px] font-bold text-slate-700 mb-2">No Deliverables Required</h3>
-        <p className="text-[13px] text-slate-500 font-medium max-w-[280px]">
-          Based on the selected features, there are no deliverables required for this project.
+        <p className="text-[13px] text-slate-500 font-medium max-w-[360px] mb-5 leading-relaxed">
+          {hasFeaturesDefined
+            ? `Based on the selected features (${project.features.join(', ')}), there are no deliverables required for this project.`
+            : 'No platform features are currently assigned to this project. You can assign features in the Project Features tab, or add custom deliverables below.'}
         </p>
+        {!readOnly && (
+          <Button
+            type="button"
+            onClick={handleCustomItemAdd}
+            className="flex items-center gap-2 text-xs font-semibold shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add Custom Deliverable
+          </Button>
+        )}
       </div>
     );
   }
-
-  const handleCustomItemAdd = () => {
-    const currentCustom = [...customItems];
-    const newItemId = `custom_${Date.now()}`;
-    const newItem = {
-      id: newItemId,
-      taskName: 'New Custom Item',
-      status: 'Pending',
-      priority: 'Normal',
-      resource: '',
-      clientNote: '',
-      internalNote: '',
-      date: null,
-    };
-    setValue('_customItems', [...currentCustom, newItem], { shouldDirty: true });
-    setActiveItemId(newItemId);
-  };
 
   const toggleHideSection = (sectionId: string) => {
     const current = [...hiddenSections];

@@ -884,9 +884,18 @@ export default function ProjectOnboardingTab({ project }: ProjectOnboardingTabPr
           template={
             settings?.templates?.deliverables ||
             Object.values(settings?.templates || {}).find(
-              (t: any) => t.name === 'Deliverables Checklist' || t.type === 'checklist'
-            ) ||
-            {}
+              (t: any) =>
+                t?.id === 'deliverables' ||
+                t?.name === 'Deliverables Checklist' ||
+                t?.name?.toLowerCase().includes('deliverable') ||
+                t?.type === 'checklist'
+            ) || {
+              id: 'deliverables',
+              name: 'Deliverables Checklist',
+              type: 'checklist',
+              fields: [],
+              sections: [],
+            }
           }
           onClose={() => setActiveModal(null)}
         />

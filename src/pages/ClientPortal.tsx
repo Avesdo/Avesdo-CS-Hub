@@ -7,6 +7,7 @@ import { ClientPortalSkeleton } from '../components/ui/Skeleton';
 import { createNotification } from '../utils/notificationUtils';
 import { AlertCircle } from 'lucide-react';
 import { useProjectQuery, useSettingsQuery } from '../hooks/useQueries';
+import { useAppStore } from '../store/useAppStore';
 
 // Subcomponents
 import { PortalDashboard } from '../components/portal/PortalDashboard';
@@ -76,39 +77,52 @@ export default function ClientPortal() {
   }
 
   const getTemplate = (formId: string) => {
-    if (!settings?.templates) return null;
+    const effectiveSettings = settings || useAppStore.getState().settings;
+    const templates = effectiveSettings?.templates;
+
     if (formId === 'deliverables') {
-      if (settings.templates.deliverables) return settings.templates.deliverables;
-      const tId =
-        Object.keys(settings.templates).find(
-          (k) => settings.templates[k].name === 'Deliverables Checklist'
-        ) ||
-        Object.keys(settings.templates).find((k) => settings.templates[k].type === 'checklist');
-      return tId ? settings.templates[tId] : null;
+      if (templates) {
+        if (templates.deliverables) return templates.deliverables;
+        const tList: any[] = Array.isArray(templates) ? templates : Object.values(templates);
+        const found = tList.find(
+          (t: any) =>
+            t?.id === 'deliverables' ||
+            t?.name === 'Deliverables Checklist' ||
+            t?.name?.toLowerCase().includes('deliverable') ||
+            t?.type === 'checklist'
+        );
+        if (found) return found;
+      }
+      return {
+        id: 'deliverables',
+        name: 'Deliverables Checklist',
+        type: 'checklist' as const,
+        fields: [],
+        sections: [],
+      };
     }
+    if (!templates) return null;
     if (formId === 'survey') {
-      if (settings.templates.onboardingSurvey) return settings.templates.onboardingSurvey;
-      const tId = Object.keys(settings.templates).find(
-        (k) => k !== 'survey' && settings.templates[k].name === 'Onboarding Survey'
+      if (templates.onboardingSurvey) return templates.onboardingSurvey;
+      const tId = Object.keys(templates).find(
+        (k) => k !== 'survey' && templates[k]?.name === 'Onboarding Survey'
       );
-      return tId ? settings.templates[tId] : settings.templates.survey || null;
+      return tId ? templates[tId] : templates.survey || null;
     }
     if (formId === 'clientQA') {
-      if (settings.templates.clientQA) return settings.templates.clientQA;
-      const tId = Object.keys(settings.templates).find(
-        (k) => settings.templates[k].name === 'Client QA'
-      );
-      return tId ? settings.templates[tId] : null;
+      if (templates.clientQA) return templates.clientQA;
+      const tId = Object.keys(templates).find((k) => templates[k]?.name === 'Client QA');
+      return tId ? templates[tId] : null;
     }
     if (formId === 'certification') {
-      if (settings.templates.certification) return settings.templates.certification;
-      const tId = Object.keys(settings.templates).find(
-        (k) => settings.templates[k].name === 'Project Certification'
+      if (templates.certification) return templates.certification;
+      const tId = Object.keys(templates).find(
+        (k) => templates[k]?.name === 'Project Certification'
       );
-      return tId ? settings.templates[tId] : null;
+      return tId ? templates[tId] : null;
     }
     if (formId === 'onboardingCsat') {
-      return settings.templates['onboardingCsat'] || null;
+      return templates['onboardingCsat'] || null;
     }
     return null;
   };
@@ -166,15 +180,21 @@ export default function ClientPortal() {
         if (dTemplate?.sections) {
           let total = 0;
           let completed = 0;
-          const activeFeatures = project?.features || [];
+          const activeFeatures: string[] = project?.features || [];
+          const normalizedActiveFeatures = activeFeatures.map((f: string) =>
+            f?.trim().toLowerCase()
+          );
+
           dTemplate.sections.forEach((section: any) => {
             if ((cleanData as any)._hiddenSections?.includes(section.id)) return;
-            if (
-              section.dependsOnFeature &&
-              section.dependsOnFeature.length > 0 &&
-              !section.dependsOnFeature.some((f: string) => activeFeatures.includes(f))
-            )
-              return;
+            const isVisible =
+              !section.logicEnabled ||
+              !section.dependsOnFeature ||
+              section.dependsOnFeature.length === 0 ||
+              section.dependsOnFeature.some((f: string) =>
+                normalizedActiveFeatures.includes(f?.trim().toLowerCase())
+              );
+            if (!isVisible) return;
             section.items.forEach((item: any) => {
               if ((cleanData as any)._hiddenItems?.includes(item.id)) return;
               const status = (cleanData as any)[item.id]?.status || item.status || 'Pending';

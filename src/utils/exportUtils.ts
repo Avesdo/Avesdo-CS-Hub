@@ -155,14 +155,18 @@ export const exportFormToCSV = (
   const idToTitle: Record<string, string> = {};
   const idToPriority: Record<string, string> = {};
 
-  const projectFeatures = projectData?.features || [];
+  const projectFeatures: string[] = projectData?.features || [];
+  const normalizedFeatures = projectFeatures.map((f: string) => f?.trim().toLowerCase());
 
   if (template?.type === 'checklist' && template.sections) {
     template.sections.forEach((sec: any) => {
       const hasSectionFeature =
+        !sec.logicEnabled ||
         !sec.dependsOnFeature ||
         sec.dependsOnFeature.length === 0 ||
-        sec.dependsOnFeature.some((f: string) => projectFeatures.includes(f));
+        sec.dependsOnFeature.some((f: string) =>
+          normalizedFeatures.includes(f?.trim().toLowerCase())
+        );
 
       if (!hasSectionFeature) return;
 
