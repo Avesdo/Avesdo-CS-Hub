@@ -92,18 +92,33 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
 
   const unsubSettings = onSnapshot(doc(db, 'settings', 'global_config'), async (snap) => {
     const rawData = snap.exists() ? snap.data() : null;
-    state.settings = rawData ? (SettingsSchema.parse(rawData) as Settings) : null;
+    if (rawData) {
+      try {
+        const parsed = SettingsSchema.safeParse(rawData);
+        state.settings = (parsed.success ? parsed.data : rawData) as Settings;
+      } catch {
+        state.settings = rawData as Settings;
+      }
+    } else {
+      state.settings = null;
+    }
 
     if (state.settings) {
       let updated = false;
       const updatePayload: Record<string, any> = {};
-      if (!state.settings.statuses.some((s) => s.name === 'Churned')) {
-        state.settings.statuses.push({ name: 'Churned', color: 'red', icon: 'TrendingDown' });
+      if (!state.settings.statuses?.some((s) => s.name === 'Churned')) {
+        state.settings.statuses = [
+          ...(state.settings.statuses || []),
+          { name: 'Churned', color: 'red', icon: 'TrendingDown' },
+        ];
         updatePayload.statuses = state.settings.statuses;
         updated = true;
       }
-      if (!state.settings.statuses.some((s) => s.name === 'Cancelled')) {
-        state.settings.statuses.push({ name: 'Cancelled', color: 'slate', icon: 'XCircle' });
+      if (!state.settings.statuses?.some((s) => s.name === 'Cancelled')) {
+        state.settings.statuses = [
+          ...(state.settings.statuses || []),
+          { name: 'Cancelled', color: 'slate', icon: 'XCircle' },
+        ];
         updatePayload.statuses = state.settings.statuses;
         updated = true;
       }
@@ -121,12 +136,12 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
       }
     }
     if (!state.settings) {
+      // In-memory fallback ONLY. We strictly DO NOT write dummy initial state to Firestore!
       state.settings = {
         managers: [
-          { name: 'Roell P', color: 'indigo', icon: 'User' },
-          { name: 'Jason H', color: 'indigo', icon: 'User' },
-          { name: 'Rashi G', color: 'indigo', icon: 'User' },
-          { name: 'Elton P', color: 'indigo', icon: 'User' },
+          { name: 'Roell Pereira', color: 'indigo', icon: 'User' },
+          { name: 'Jason Hudym', color: 'indigo', icon: 'User' },
+          { name: 'Elton Paul', color: 'indigo', icon: 'User' },
         ],
         clientTypes: [
           { name: 'Developer', color: 'blue', icon: 'Building2' },
@@ -139,16 +154,12 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
           'Credit Card',
           'Deposit Reminders',
           'Closing',
+          'Allocations',
         ],
-        regions: [],
+        regions: ['British Columbia', 'Ontario', 'Alberta'],
         services: [
           { name: 'Sales Training', price: 750 },
           { name: 'Admin Training', price: 1000 },
-          { name: 'Developer Training', price: 500 },
-          { name: 'Dedicated Launch Support', price: 1500 },
-          { name: 'Project Realignment', price: 0 },
-          { name: 'Contract Downloading', price: 0 },
-          { name: 'Assignee ADS', price: 800 },
         ],
         statuses: [
           { name: 'Onboarding', color: 'blue', icon: 'Play' },
@@ -160,30 +171,20 @@ export function setupRealtimeListeners(onUpdate: (state: AppState) => void) {
         ],
         timelines: [
           { name: 'Not Started', color: 'slate', icon: 'Circle' },
-          { name: 'Indefinitely Delayed', color: 'fuchsia', icon: 'PauseCircle' },
           { name: 'On Schedule', color: 'green', icon: 'CheckCircle2' },
-          { name: 'Possibly Delayed', color: 'orange', icon: 'AlertCircle' },
-          { name: 'Delayed', color: 'red', icon: 'XCircle' },
-          { name: 'Released', color: 'blue', icon: 'Rocket' },
         ],
         phases: [
           { name: 'Not Started', color: 'slate', icon: 'Circle' },
-          { name: 'Onboarding Email Sent', color: 'sky', icon: 'Mail' },
-          { name: 'Onboarding Survey Received', color: 'sky', icon: 'FileText' },
-          { name: 'Awaiting Inputs', color: 'purple', icon: 'Hourglass' },
-          { name: 'Setup In Progress', color: 'purple', icon: 'Wrench' },
-          { name: 'Primary QA', color: 'fuchsia', icon: 'Search' },
-          { name: 'Client QA', color: 'fuchsia', icon: 'Users' },
-          { name: 'Secondary QA', color: 'fuchsia', icon: 'SearchCheck' },
-          { name: 'Project Certification', color: 'indigo', icon: 'ShieldCheck' },
           { name: 'Released', color: 'indigo', icon: 'Rocket' },
         ],
         scoring: {
-          weights: { opActivity: 35, featAdoption: 25, userVol: 15, financial: 15, csat: 10 },
-          thresholds: { healthy: 80, warning: 50 },
+          weights: { opActivity: 20, featAdoption: 20, userVol: 20, financial: 20, csat: 20 },
+          thresholds: { healthy: 70, warning: 40 },
         },
+        templates: {},
+        roles: [],
+        rolePermissions: {},
       };
-      await setDoc(doc(db, 'settings', 'global_config'), state.settings);
     }
     state.ready.settings = true;
     checkReady();

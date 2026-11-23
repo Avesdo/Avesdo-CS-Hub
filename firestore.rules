@@ -42,6 +42,11 @@ service cloud.firestore {
       allow delete: if request.auth.token.email.lower() == email;
     }
 
+    match /settings_backups/{backupId} {
+      allow read: if isAvesdoEmployee();
+      allow write: if hasPermission('edit_org_settings') || isSuperAdmin();
+    }
+
     match /settings/{document=**} {
       allow read: if isAvesdoEmployee();
       allow get: if !isAvesdoEmployee();
